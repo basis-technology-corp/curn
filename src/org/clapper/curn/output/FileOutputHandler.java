@@ -85,11 +85,12 @@ public abstract class FileOutputHandler implements OutputHandler
     private File        outputFile  = null;
     private ConfigFile  config      = null;
     private boolean     saveOnly    = false;
+    private String      name        = null;
 
     /**
      * For logging
      */
-    private static Logger log = new Logger (FileOutputHandler.class);
+    private Logger log = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -127,7 +128,12 @@ public abstract class FileOutputHandler implements OutputHandler
 
         this.config = config;
         sectionName = cfgHandler.getSectionName();
+        this.name   = sectionName;
 
+        log = new Logger (FileOutputHandler.class.getName()
+                        + "["
+                        + name
+                        + "]");
         try
         {
             if (sectionName != null)
@@ -274,9 +280,18 @@ public abstract class FileOutputHandler implements OutputHandler
      */
     public boolean hasGeneratedOutput()
     {
-        return (! saveOnly) &&
-               (outputFile != null) &&
-               (outputFile.length() > 0);
+        boolean hasOutput = false;
+
+        if ((! saveOnly) && (outputFile != null))
+        {
+            long len = outputFile.length();
+            log.debug ("outputFile=" + outputFile.getPath() + ", size=" + len);
+
+            hasOutput = (len > 0);
+        }
+
+        log.debug ("hasGeneratedOutput? " + hasOutput);
+        return hasOutput;
     }
 
     /*----------------------------------------------------------------------*\
