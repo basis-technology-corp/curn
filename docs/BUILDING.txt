@@ -75,4 +75,16 @@ See the sample configuration file, sample.cfg, for a sample entry to
 enable use of the HTML output handler.
 
 
+C. Email support
 
+Rssget can email its output, rather than simply printing it on standard
+output. This is especially useful when multiple output handlers are used.
+In that case, the output of each handler is attached to the email message
+as a "multipart/alternative" attachment.
+
+However, email support is built and can run only if the clapper.org utility
+library's email classes are present (and those work only when the Java Mail
+API and the Java Activation Framework are present).
+
+See the documentation for the (separate) clapper.org utility library for
+details.
