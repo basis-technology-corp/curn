@@ -224,6 +224,7 @@ public class HTMLOutputHandler extends FileOutputHandler
 
         doc.getElementChannelDate().removeAttribute ("id");
         doc.getElementItemDate().removeAttribute ("id");
+        doc.getElementChannelLink().removeAttribute ("id");
 
         for (i = 0, it = items.iterator(); it.hasNext(); i++, rowCount++)
         {
@@ -235,6 +236,12 @@ public class HTMLOutputHandler extends FileOutputHandler
 
                 String s = HTMLUtil.textFromHTML (channel.getTitle());
                 doc.setTextChannelTitle (s);
+
+                URL url = channel.getLink();
+                if (url == null)
+                    url = item.getLink();
+
+                doc.getElementChannelLink().setHref (url.toExternalForm());
 
                 date = null;
                 if (config.showDates())
@@ -251,6 +258,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             {
                 doc.setTextChannelTitle ("");
                 doc.setTextChannelDate ("");
+                doc.getElementChannelLink().setHref ("");
                 itemAnchor.setHref ("");
             }
 
