@@ -300,6 +300,12 @@ $Id$
   <target name="fulldist" depends="srcjar,doczip,dist"
           description="Generate the distribution and source jars"/>
 
+  <!--
+  ***************************************************************************
+			     Clean-up Targets
+  ***************************************************************************
+  -->
+
   <target name="clean"
           description="clean up" >
 
