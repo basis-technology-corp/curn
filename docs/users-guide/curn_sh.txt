@@ -13,7 +13,11 @@ $PKG_JAVA_CLASS_DIR/commons-logging.jar:\
 $PKG_JAVA_CLASS_DIR/jdom.jar:\
 $PKG_JAVA_CLASS_DIR/xerces.jar:\
 $PKG_JAVA_CLASS_DIR/jakarta-oro.jar:\
-$UNPKG_JAVA_CLASS_DIR/curn.jar:\
-$UNPKG_JAVA_CLASS_DIR/xmlc-all-runtime.jar \
+$PKG_JAVA_CLASS_DIR/activation.jar:\
+$PKG_JAVA_CLASS_DIR/mail.jar:\
+$UNPKG_JAVA_CLASS_DIR/xmlc-all-runtime.jar:\
+$UNPKG_JAVA_CLASS_DIR/xml-apis.jar:\
+$UNPKG_JAVA_CLASS_DIR/jtidy.jar:\
+$UNPKG_JAVA_CLASS_DIR/curn.jar \
 org.clapper.curn.curn "${@}"
 
