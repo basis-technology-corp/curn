@@ -225,7 +225,9 @@ public class ConfigFile extends Configuration
      * responsible for loading the returned class names and verifying that
      * they implements the appropriate interface(s).
      *
-     * @return a <tt>Collection</tt> of strings containing full class names
+     * @return a <tt>Collection</tt> of strings containing full class names.
+     *         The collection will be empty (but never null) if there are no
+     *         configured output handlers.
      */
     public Collection getOutputHandlerClassNames()
     {
@@ -260,7 +262,7 @@ public class ConfigFile extends Configuration
      * @return a <tt>Map</tt>, where each key is a variable name and each
      *         value is the string value for the key. The map will be empty,
      *         but not null, if there are no additional handler-specific
-     *         variables.
+     *         variables
      *
      * @see #getOutputHandlerClassNames()
      * @see #getOutputHandlerSpecificVariables(String)
@@ -308,6 +310,17 @@ public class ConfigFile extends Configuration
     public String getOutputHandlerSectionName (Class cls)
     {
         return getOutputHandlerSectionName (cls.getName());
+    }
+
+    /**
+     * Return the total number of configured output handlers.
+     *
+     * @return the total number of configured output handlers, or 0 if there
+     *         aren't any
+     */
+    public int totalOutputHandlers()
+    {
+        return outputHandlers.size();
     }
 
     /**
