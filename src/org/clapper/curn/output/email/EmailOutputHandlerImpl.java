@@ -6,7 +6,6 @@ package org.clapper.curn.email;
 
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.EmailOutputHandler;
-import org.clapper.curn.OutputHandlerContainer;
 import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
