@@ -133,11 +133,10 @@ format (0.3) and RSS formats
 <a href="http://web.resource.org/rss/1.0/">1.0</a> and
 <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>. <i>curn</i>
 also comes with built-in adapters for the
-<a href="http://informa.sourceforge.net/">Informa</a> RSS parser and the
-<a href="http://rsslib4j.sourceforge.net/">rsslib4j</a> RSS parser.
-(However, as of the date this document was last update, neither of those
-parser libraries support the Atom format, whereas <tt>MiniRSSParser</tt>
-does.)
+<a href="https://rome.dev.java.net/">Rome</a>, and
+<a href="http://informa.sourceforge.net/">Informa</a> RSS parsers.
+(Note: As of the date this document was last updated, Informa does not support
+the Atom format, whereas <tt>MiniRSSParser</tt> and Rome do.)
 See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
 item for information on how to specify which parser <i>curn</i> should use.
 See the section entitled
@@ -1204,6 +1203,16 @@ in detail, below.</p>
 		  RSS parser (though it's perfectly suited for use in
 		  <i>curn</i>).
 
+	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
+		  
+	      <dd>An adapter class that makes the
+		  <a href="https://rome.dev.java.net/">Rome RSS parser</a>
+		  work with <i>curn</i>.
+		  (The Rome adapter is only available if the appropriate
+		  Rome jar files are in <i>curn</i>'s class path. Note also
+		  that Rome requires version 1.0 of the
+		  <a href="http://www.jdom.org/">JDOM</a> library.)
+
 	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
 		  
 	      <dd>An adapter class that makes the
@@ -1211,15 +1220,6 @@ in detail, below.</p>
 		  work with <i>curn</i>.
 		  (The Informa adapter is only available if the appropriate
 		  Informa jar files are in <i>curn</i>'s class path.)
-
-	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rsslib4j/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rsslib4j.RSSParserAdapter</a>
-		  
-	      <dd>An adapter class that makes the
-		  <a href="http://rsslib4j.sourceforge.net/">rsslib4j RSS parser</a>
-		  work with <i>curn</i>.
-		  (The rsslib4j adapter is only available if the appropriate
-		  rsslib4j jar files are in <i>curn</i>'s class path.)
-
 	    </dl>
 
             <p>Any class that implements
@@ -1520,15 +1520,27 @@ section names are all valid for RSS feed sections.</p>
         <tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
           <td align="left">File name or path name</td>
-	  <td align="left">If set, this parameter specifies the path to
+	  <td align="left"><p>If set, this parameter specifies the path to
 	    a file where <i>curn</i> should save the raw XML contents of
 	    the feed, whenever it downloads the feed. This can be useful
 	    if you have a master version of <i>curn</i> that downloads
 	    a bunch of feeds, with multiple slave versions of <i>curn</i>
             that then run against the downloaded files. (See
             <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
-	    detailed discussion of this tactic.)
-	  </td>
+	    detailed discussion of this tactic.)</p>
+
+	    <p><b>Warning</b>: If the remote feed uses character set other
+	    than the default character set for the local system, there's
+	    the possibility of information loss. <i>curn</i> currently
+	    has no way to save the original feed's character set, so it
+	    tries to convert the feed to the local character set before
+	    saving it. For instance, if you're running <i>curn</i> on
+	    a Unix-like system where the default character set is
+	    "ISO 8859.1", and the remote feed uses "UTF-8", <i>curn</i>
+	    will convert the UTF-8 characters to ISO 8859.1 characters
+	    as it writes the XML to the <span class="code">SaveAs</span> file.
+	    This problem will be addressed in a future release of
+	    <i>curn</i>.</p></td>
 	  <td align="left">No</td>
 	  <td align="left">None</td>
 	</tr>
@@ -1827,7 +1839,8 @@ section.</p>
 		<td align="left" class="code">SaveAs</td>
 	        <td align="left">File name or path name</td>
 	        <td align="left">Save a copy of the generated text to the
-	        specified file. The argument</td>
+	        specified file. The argument is a relative or absolute path
+	        to the file where the feed's XML should be saved.</td>
 	        <td align="left">No</td>
 		<td align="left">None (i.e., no copy is saved)
 	        </td>
@@ -2120,8 +2133,8 @@ RSS parser.</p>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
 instead of 
-<a href="http://informa.sourceforge.net/">Informa</a>,
-<a href="http://rsslib4j.sourceforge.net/">rsslib4j</a>, or
+<a href="https://rome.dev.java.net/">Rome</a>
+<a href="http://informa.sourceforge.net/">Informa</a>, or
 <i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
 (Perhaps it's faster than <i>curn</i>'s built-in parser, or perhaps it
 supports some new RSS syntax that <i>curn</i>'s parser does not support.)

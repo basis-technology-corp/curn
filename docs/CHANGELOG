@@ -3,11 +3,19 @@ $Id$
 
 Version 1.3.2:
 
-- Added adapter classes for the rsslib4j RSS parser. (See
-  http://rsslib4j.sourceforge.net/). Tested with rsslib4j version 0.2 Note
-  that this is largely demoware (or proof-of-concept-ware). Like Informa,
-  rsslib4j doesn't (yet) support the Atom RSS format, whereas curn's
-  built-in MiniRSSParser does.
+- Now handles feeds with alternate character sets (e.g., UTF-8) better.
+  Note that there's still the possibility of information loss if a feed
+  with an alternate character set such as UTF-8 is saved to a local file,
+  and the local file is then parsed by curn. That's because curn currently
+  doesn't have a way to save the original character set, so it converts the
+  feed to the Java VM's native character set before saving it to the local
+  file.
+
+- Added adapter classes for the Rome RSS parser. (See
+  https://rome.dev.java.net/). Test with Rome 0.3. Rome supports all the
+  current RSS feed types.
+
+  NOTE: Rome requires version 1.0 of JDOM (http://www.jdom.org/)
 
 
 Version 1.3.1:
