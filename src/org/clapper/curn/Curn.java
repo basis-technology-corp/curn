@@ -27,7 +27,6 @@
 package org.clapper.curn;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -35,10 +34,12 @@ import java.io.OutputStream;
 import java.io.FileOutputStream;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Iterator;
-import java.util.Collection;
 
 import java.text.MessageFormat;
 
@@ -54,8 +55,6 @@ import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.misc.Logger;
-import org.clapper.util.misc.Semaphore;
-import org.clapper.util.misc.MultiIterator;
 import org.clapper.util.config.ConfigurationException;
 
 /**
@@ -163,11 +162,10 @@ public class Curn
                RSSParserException,
                CurnException
     {
-        Iterator            it;
-        String              parserClassName;
-        Collection          channels;
-        OutputStreamWriter  out;
-        boolean             doParse = true;
+        Iterator    it;
+        String      parserClassName;
+        Collection  channels;
+        boolean     parsingEnabled = true;
 
         loadOutputHandlers (configuration, emailAddresses);
 
@@ -183,7 +181,7 @@ public class Curn
             // No output handlers. No need to instantiate a parser.
 
             log.debug ("No output handlers. Skipping XML parse phase.");
-            doParse = false;
+            parsingEnabled = false;
         }
 
         Collection feeds = configuration.getFeeds();
@@ -191,10 +189,12 @@ public class Curn
             throw new ConfigurationException ("No configured RSS feed URLs.");
 
         if ((configuration.getMaxThreads() == 1) || (feeds.size() == 1))
-            channels = doSingleThreadedFeedDownload (doParse, cache,
+            channels = doSingleThreadedFeedDownload (parsingEnabled,
+                                                     cache,
                                                      configuration);
         else
-            channels = doMultithreadedFeedDownload (doParse, cache,
+            channels = doMultithreadedFeedDownload (parsingEnabled,
+                                                    cache,
                                                     configuration);
 
         if (channels.size() > 0)
@@ -261,19 +261,21 @@ public class Curn
      * Download the configured feeds sequentially. This method is called
      * when the configured number of concurrent download threads is 1.
      *
-     * @param doParse       <tt>true</tt> if parsing is to be done,
-     *                      <tt>false</tt> otherwise
-     * @param feedCache     the loaded cache of feed data; may be modified
-     * @param configuration the parsed configuration
+     * @param parsingEnabled <tt>true</tt> if parsing is to be done,
+     *                       <tt>false</tt> otherwise
+     * @param feedCache      the loaded cache of feed data; may be modified
+     * @param configuration  the parsed configuration
      *
      * @return a <tt>Collection</tt> of <tt>RSSChannel</tt> objects
      *
      * @throws RSSParserException error parsing feeds
+     * @throws CurnException      some other error
      */
-    private Collection doSingleThreadedFeedDownload (boolean    doParse,
+    private Collection doSingleThreadedFeedDownload (boolean    parsingEnabled,
                                                      FeedCache  feedCache,
                                                      ConfigFile configuration)
-        throws RSSParserException
+        throws RSSParserException,
+               CurnException
     {
         // Instantiate a single FeedDownloadThread object, but call it
         // within this thread, instead of spawning another thread.
@@ -292,24 +294,25 @@ public class Curn
         for (Iterator it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
             FeedInfo feedInfo = (FeedInfo) it.next();
-            if (! feedInfo.feedIsEnabled())
+
+            if (! feedShouldBeProcessed (feedInfo, parsingEnabled))
             {
-                log.info ("Skipping disabled feed: " + feedInfo.getURL());
+                // Log messages already emitted.
+
                 continue;
             }
 
-            downloadThread.initializeNewFeed (feedInfo);
-            downloadThread.processFeed();
+            downloadThread.processFeed (feedInfo);
             if (downloadThread.errorOccurred())
             {
                 RSSParserException ex = downloadThread.getException();
                 throw new RSSParserException (ex);
             }
 
-            RSSChannel channel = downloadThread.getParsedChannel();
+            RSSChannel channel = feedInfo.getParsedChannelData();
 
             if (channel != null)
-                channels.add (new ChannelFeedInfo (feedInfo, channel));
+                channels.add (feedInfo);
         }
 
         return channels;
@@ -320,27 +323,28 @@ public class Curn
      * This method is called when the configured number of concurrent
      * download threads is greater than 1.
      *
-     * @param doParse       <tt>true</tt> if parsing is to be done,
-     *                      <tt>false</tt> otherwise
-     * @param feedCache     the loaded cache of feed data; may be modified
-     * @param configuration the parsed configuration
+     * @param parsingEnabled <tt>true</tt> if parsing is to be done,
+     *                       <tt>false</tt> otherwise
+     * @param feedCache      the loaded cache of feed data; may be modified
+     * @param configuration  the parsed configuration
      *
      * @return a <tt>Collection</tt> of <tt>RSSChannel</tt> objects
      *
      * @throws RSSParserException error parsing feeds
+     * @throws CurnException      some other error
      */
-    private Collection doMultithreadedFeedDownload (boolean    doParse,
+    private Collection doMultithreadedFeedDownload (boolean    parsingEnabled,
                                                     FeedCache  feedCache,
                                                     ConfigFile configuration)
-        throws RSSParserException
+        throws RSSParserException,
+               CurnException
     {
-        int                 maxThreads     = configuration.getMaxThreads();
-        Collection          feeds          = configuration.getFeeds();
-        int                 totalFeeds     = feeds.size();
-        Collection          channels       = new ArrayList();
-        LinkedList          idleThreads    = new LinkedList();
-        LinkedList          activeThreads  = new LinkedList();
-        Semaphore           semaphore;
+        int                 maxThreads = configuration.getMaxThreads();
+        Collection          feeds      = configuration.getFeeds();
+        int                 totalFeeds = feeds.size();
+        Collection          channels   = new ArrayList();
+        Collection          threads    = new ArrayList();
+        List                feedQueue  = new LinkedList();
         Iterator            it;
         FeedDownloadThread  thread;
 
@@ -351,12 +355,29 @@ public class Curn
                 + maxThreads
                 + " threads.");
 
-        // Create the signalling semaphore, initialized to the number of
-        // idle threads.
+        // Fill the feed queue and make it a synchronized list.
 
-        semaphore = new Semaphore (maxThreads);
+        for (it = feeds.iterator(); it.hasNext(); )
+        {
+            FeedInfo feedInfo = (FeedInfo) it.next();
 
-        // Create the thread objects.
+            if (! feedShouldBeProcessed (feedInfo, parsingEnabled))
+            {
+                // Log messages already emitted.
+
+                continue;
+            }
+
+            feedQueue.add (feedInfo);
+        }
+
+        if (feedQueue.size() == 0)
+            throw new CurnException ("All configured feeds are disabled.");
+
+        feedQueue = Collections.synchronizedList (feedQueue);
+
+        // Create the thread objects. They'll pull feeds off the queue
+        // themselves.
 
         for (int i = 0; i < maxThreads; i++)
         {
@@ -364,87 +385,23 @@ public class Curn
                                              getRSSParser (configuration),
                                              feedCache,
                                              configuration,
-                                             semaphore);
+                                             feedQueue);
             thread.start();
-            idleThreads.add (thread);
+            threads.add (thread);
         }
 
         log.debug ("Main thread priority is "
                  + Thread.currentThread().getPriority());
 
-        for (it = feeds.iterator(); it.hasNext(); )
-        {
-            FeedInfo feedInfo = (FeedInfo) it.next();
-
-            if (! feedInfo.feedIsEnabled())
-            {
-                log.info ("Skipping disabled feed: "
-                        + feedInfo.getURL().toString());
-                continue;
-            }
-
-            if ((! doParse) && (feedInfo.getSaveAsFile() == null))
-            {
-                log.debug ("Feed "
-                         + feedInfo.getURL().toString()
-                         + ": RSS parsing is disabled and there's no save "
-                         + "file. There's no sense processing this feed.");
-                continue;
-            }
-
-            // Attempt to acquire the semaphore. When we get it, then there's
-            // an idle thread available for use in processing this feed.
-
-            log.debug ("Attempting to acquire signalling semaphore. "
-                     + "Semaphore count is "
-                     + semaphore.getValue());
-            semaphore.acquire();
-            log.debug ("Got semaphore.");
-
-            // First, find any threads that are finished processing their
-            // feeds, to ensure that recently finished threads are added
-            // back to the idleThreads list.
-
-            findIdleThreads (activeThreads, idleThreads);
-
-            int totalIdle = idleThreads.size();
-            log.debug ("Total idle threads: " + totalIdle);
-
-            if (totalIdle == 0)
-            {
-                throw new IllegalStateException ("(BUG) Got semaphore, but "
-                                               + "list of idle threads is "
-                                               + "empty.");
-            }
-
-            // Get the thread object.
-
-            thread = (FeedDownloadThread) idleThreads.removeFirst();
-            log.info ("Starting separate thread to process feed "
-                    + feedInfo.getURL().toString());
-
-            // Initialize it and start it. It will store parsed channel data
-            // in the FeedInfo object.
-
-            thread.initializeNewFeed (feedInfo);
-
-            // Add it to the list of running threads.
-
-            activeThreads.add (thread);
-        }
-
         log.debug ("All feeds have been parceled out to threads. Waiting for "
                  + "threads to complete.");
 
-        it = new MultiIterator (new Collection[] {idleThreads, activeThreads});
-        while (it.hasNext())
+        for (it = threads.iterator(); it.hasNext(); )
         {
             thread = (FeedDownloadThread) it.next();
-            log.info ("Telling thread "
-                    + thread.getName()
-                    + " to stop when idle, and joining it.");
+            String threadName = thread.getName();
 
-            thread.stopWhenIdle();
+            log.info ("Waiting for thread " + threadName);
 
             try
             {
@@ -456,7 +413,7 @@ public class Curn
                 log.debug ("Interrupted during thread join: " + ex.toString());
             }
 
-            log.info ("Joined thread " + thread.getName());
+            log.info ("Joined thread " + threadName);
         }
 
         // Now, scan the list of feeds and find those with channel data.
@@ -467,7 +424,7 @@ public class Curn
             RSSChannel channel  = feedInfo.getParsedChannelData();
 
             if (channel != null)
-                channels.add (new ChannelFeedInfo (feedInfo, channel));
+                channels.add (feedInfo);
         }
 
         return channels;
@@ -491,50 +448,38 @@ public class Curn
     }
 
     /**
-     * Used solely by doMultithreadedFeedDownload(), makes one pass through
-     * a collection of presumed active threads, looking for ones that are
-     * finished processing their feeds. For each such thread, this method
-     * moves the Thread object into the supplied idleThreads list.
+     * Determine whether a feed should be processed. If this method
+     * determines that a feed should not be processed, it emits appropriate
+     * log messages.
      *
-     * @param activeThreads   list of running Thread objects
-     * @param idleThreads     list of idle Thread objects
+     * @param feedInfo        the feed information
+     * @param parsingEnabled  whether or not RSS parsing is enabled
+     *
+     * @return <tt>true</tt> if the feed should be processed,
+     *         <tt>false</tt> if it should be skipped
      */
-    private void findIdleThreads (LinkedList activeThreads,
-                                  LinkedList idleThreads)
+    private boolean feedShouldBeProcessed (FeedInfo feedInfo,
+                                           boolean  parsingEnabled)
     {
-        for (Iterator it = activeThreads.iterator(); it.hasNext(); )
+        boolean process = true;
+
+        if (! feedInfo.feedIsEnabled())
         {
-            FeedDownloadThread thread = (FeedDownloadThread) it.next();
-
-            // NOTE: Must test the thread's "finishing" flag, instead of
-            // calling Thread.isAlive(). The thread has released the parent
-            // semaphore, which can cause a switch in context. The parent
-            // Curn object may be awakened, and the thread put to sleep,
-            // *before* the thread actually dies. We have to use a
-            // different mechanism to determine that the thread is finished
-            // and should be joined, since calling Thread.isAlive() will
-            // return true in that case.
-            
-            if (thread.isDoneProcessingFeed())
-            {
-                log.debug ("Thread " + thread.getName() + " is now idle.");
-
-                if (thread.errorOccurred())
-                {
-                    log.error ("Thread "
-                             + thread.getName()
-                             + " encountered an exception condition.",
-                               thread.getException());
-                }
-
-                thread.clear();
-
-                // Move thread from active list to idle list.
-
-                it.remove();
-                idleThreads.add (thread);
-            }
+            log.info ("Skipping disabled feed: "
+                    + feedInfo.getURL().toString());
+            process = false;
         }
+
+        else if ((! parsingEnabled) && (feedInfo.getSaveAsFile() == null))
+        {
+            log.debug ("Feed "
+                     + feedInfo.getURL().toString()
+                     + ": RSS parsing is disabled and there's no save "
+                     + "file. There's no sense processing this feed.");
+            process = false;
+        }
+
+        return process;
     }
 
     private void displayChannels (Collection channels)
@@ -559,8 +504,8 @@ public class Curn
             for (Iterator itChannel = channels.iterator();
                  itChannel.hasNext(); )
             {
-                ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
-                handler.displayChannel (cfi.getChannel(), cfi.getFeedInfo());
+                FeedInfo fi = (FeedInfo) itChannel.next();
+                handler.displayChannel (fi.getParsedChannelData(), fi);
             }
 
             handler.flush();

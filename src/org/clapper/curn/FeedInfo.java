@@ -401,6 +401,10 @@ public class FeedInfo
         this.ignoreDuplicateTitles = val;
     }
 
+    /*----------------------------------------------------------------------*\
+                          Package-visible Methods
+    \*----------------------------------------------------------------------*/
+
     /**
      * Get the parsed channel data for this feed. This field is set by the
      * main processing logic and does not come from the configuration.
@@ -412,7 +416,7 @@ public class FeedInfo
      * @see Curn
      * @see RSSChannel
      */
-    public RSSChannel getParsedChannelData()
+    RSSChannel getParsedChannelData()
     {
         return parsedChannelData;
     } 
@@ -428,7 +432,7 @@ public class FeedInfo
      * @see Curn
      * @see RSSChannel
      */
-    public void setParsedChannelData (RSSChannel channel)
+    void setParsedChannelData (RSSChannel channel)
     {
         this.parsedChannelData = channel;
     }

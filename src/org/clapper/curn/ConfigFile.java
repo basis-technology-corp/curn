@@ -388,10 +388,24 @@ public class ConfigFile extends Configuration
      *
      * @param newValue the maximum number of threads
      *
+     * @throws ConfigurationException bad value
+     *
      * @see #getMaxThreads
      */
     public void setMaxThreads (int newValue)
+        throws ConfigurationException
     {
+        if (newValue <= 0)
+        {
+            throw new ConfigurationException ("\""
+                                            + VAR_MAX_THREADS
+                                            + "\" configuration value "
+                                            + "cannot be set to "
+                                            + String.valueOf (newValue)
+                                            + ". It must be a positive "
+                                            + "integer.");
+        }
+
         this.maxThreads = newValue;
     }
 
@@ -785,18 +799,9 @@ public class ConfigFile extends Configuration
                                                        DEF_GET_GZIPPED_FEEDS);
 
             defaultSortBy = getSortByValue (MAIN_SECTION, DEF_SORT_BY);
-            maxThreads = getOptionalIntegerValue (MAIN_SECTION,
-                                                  VAR_MAX_THREADS,
-                                                  DEF_MAX_THREADS);
-            if (maxThreads <= 0)
-            {
-                throw new ConfigurationException ("Configuration parameter \""
-                                                + VAR_MAX_THREADS
-                                                + "\" is "
-                                                + String.valueOf (maxThreads)
-                                                + ". It must be a positive "
-                                                + "integer.");
-            }
+            setMaxThreads (getOptionalIntegerValue (MAIN_SECTION,
+                                                    VAR_MAX_THREADS,
+                                                    DEF_MAX_THREADS));
         }
 
         catch (NoSuchVariableException ex)
