@@ -66,6 +66,7 @@ public class RSSGetConfiguration extends Configuration
     private static final String VAR_SHOW_DATES        = "ShowDates";
     private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
     private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
+    private static final String VAR_DISABLE_FEED      = "Disabled";
 
     /**
      * Default values
@@ -77,6 +78,7 @@ public class RSSGetConfiguration extends Configuration
     private static final boolean DEF_NO_CACHE_UPDATE   = false;
     private static final boolean DEF_SUMMARY_ONLY      = false;
     private static final boolean DEF_SHOW_RSS_VERSION  = false;
+    private static final boolean DEF_SHOW_DATES        = false;
     private static final String  DEF_SMTP_HOST         = "localhost";
     private static final String  DEF_EMAIL_SUBJECT     = "RSS Feeds";
     private static final String  DEF_PARSER_CLASS_NAME =
@@ -571,6 +573,9 @@ public class RSSGetConfiguration extends Configuration
             showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_SHOW_RSS_VERSION,
                                                      DEF_SHOW_RSS_VERSION);
+            showDates = getOptionalBooleanValue (MAIN_SECTION,
+                                                 VAR_SHOW_DATES,
+                                                 DEF_SHOW_DATES);
             parserClassName = getOptionalStringValue (MAIN_SECTION,
                                                       VAR_PARSER_CLASS_NAME,
                                                       DEF_PARSER_CLASS_NAME);
@@ -631,6 +636,11 @@ public class RSSGetConfiguration extends Configuration
                               (getOptionalBooleanValue (sectionName,
                                                         VAR_SUMMARY_ONLY,
                                                         summaryOnly));
+            feedInfo.setEnabledFlag
+                              (! getOptionalBooleanValue (sectionName,
+                                                          VAR_DISABLE_FEED,
+                                                          false));
+
             String s = getOptionalStringValue (sectionName,
                                                VAR_TITLE_OVERRIDE,
                                                null);
