@@ -17,31 +17,62 @@ import java.io.File;
 public class FeedInfo
 {
     /*----------------------------------------------------------------------*\
+                             Public Constants
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Possible value for the "SortBy" parameter; indicates that items
+     * within a feed should not be sorted (i.e., should be presented in
+     * feed order).
+     *
+     * @see #getSortBy
+     */
+    public static final int SORT_BY_NONE = 0;
+
+    /**
+     * Possible value for the "SortBy" parameter; indicates that items
+     * within a feed should be sorted by timestamp.
+     *
+     * @see #getSortBy
+     */
+    public static final int SORT_BY_TIME = 1;
+
+    /**
+     * Possible value for the "SortBy" parameter; indicates that items
+     * within a feed should be sorted by title.
+     *
+     * @see #getSortBy
+     */
+    public static final int SORT_BY_TITLE = 2;
+
+    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private boolean  pruneURLsFlag = false;
-    private boolean  summaryOnly   = false;
-    private boolean  enabled       = true;
-    private int      daysToCache   = 0;
-    private String   titleOverride = null;
-    private String   itemURLEditCmd= null;
-    private URL      siteURL       = null;
-    private File     saveAsFile    = null;
+    private boolean  pruneURLsFlag         = false;
+    private boolean  summaryOnly           = false;
+    private boolean  enabled               = true;
+    private int      daysToCache           = 0;
+    private String   titleOverride         = null;
+    private String   itemURLEditCmd        = null;
+    private URL      siteURL               = null;
+    private File     saveAsFile            = null;
+    private int      sortBy                = SORT_BY_NONE;
+    private boolean  ignoreDuplicateTitles = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Default constructor. Only accessible within this package.
+     * Default constructor.
      *
      * @param siteURL  the main URL for the site's RSS feed. This constructor
      *                 normalizes the URL.
      *
      * @see Util#normalizeURL
      */
-    FeedInfo (URL siteURL)
+    public FeedInfo (URL siteURL)
     {
         this.siteURL = Util.normalizeURL (siteURL);
     }
@@ -274,5 +305,85 @@ public class FeedInfo
     public void setSaveAsFile (File f)
     {
         this.saveAsFile = f;
+    }
+
+    /**
+     * Get the "sort by" value, indicating how items from this feed are to
+     * be sorted for presentation.
+     *
+     * @return one of:
+     *         <ul>
+     *           <li> {@link #SORT_BY_NONE}: don't sort the items
+     *           <li> {@link #SORT_BY_TITLE}: sort by title
+     *           <li> {@link #SORT_BY_TIME}: sort by timestamp
+     *         </ul>
+     *
+     * @see #setSortBy
+     */
+    public int getSortBy()
+    {
+        return sortBy;
+    }
+
+    /**
+     * Set the "sort by" value, indicating how items from this feed are to
+     * be sorted for presentation.
+     *
+     * @param val  The new value, which must be one of:
+     *             <ul>
+     *               <li> {@link #SORT_BY_NONE}: don't sort the items
+     *               <li> {@link #SORT_BY_TITLE}: sort by title
+     *               <li> {@link #SORT_BY_TIME}: sort by timestamp
+     *             </ul>
+     *
+     * @see #getSortBy
+     */
+    public void setSortBy (int val)
+    {
+        switch (val)
+        {
+            case SORT_BY_NONE:
+            case SORT_BY_TITLE:
+            case SORT_BY_TIME:
+                sortBy = val;
+                break;
+
+            default:
+                throw new IllegalArgumentException ("(BUG) Bad value "
+                                                  + String.valueOf (val)
+                                                  + " for setSortBy() "
+                                                  + "parameter.");
+        }
+    }
+
+    /**
+     * Determine whether items with duplicate titles should be ignored.
+     * This feature (hack, really) is useful for sites (like Yahoo! News)
+     * whose feeds often contain duplicate items that have different IDs
+     * and different URLs (and thus appear to be unique).
+     *
+     * @return <tt>true</tt> if items whose titles match other items
+     *         should be cached, but otherwise ignored, <tt>false</tt>
+     *         otherwise.
+     *
+     * @see #setIgnoreItemsWithDuplicateTitlesFlag
+     */
+    public boolean ignoreItemsWithDuplicateTitles()
+    {
+        return ignoreDuplicateTitles;
+    }
+
+    /**
+     * Set or clear the "ignore items with duplicate titles" flag.
+     *
+     * @param val <tt>true</tt> if items whose titles match other items
+     *            should be cached, but otherwise ignored, <tt>false</tt>
+     *            otherwise.
+     *
+     * @see #ignoreItemsWithDuplicateTitles
+     */
+    public void setIgnoreItemsWithDuplicateTitlesFlag (boolean val)
+    {
+        this.ignoreDuplicateTitles = val;
     }
 }

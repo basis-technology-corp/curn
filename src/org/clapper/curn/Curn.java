@@ -34,8 +34,13 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Comparator;
+import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -101,17 +106,59 @@ public class Curn
                               Private Classes
     \*----------------------------------------------------------------------*/
 
-    // Used to associate a parsed channel with its FeedInfo data
-
-    class ChannelFeedInfo
+    private class ItemComparator implements Comparator
     {
-        FeedInfo    feedInfo;
-        RSSChannel  channel;
+        private Date  now = new Date();
+        private int   sortBy;
 
-        ChannelFeedInfo (FeedInfo feedInfo, RSSChannel channel)
+        ItemComparator (int sortBy)
         {
-            this.feedInfo = feedInfo;
-            this.channel  = channel;
+            this.sortBy = sortBy;
+        }
+
+        public int compare (Object o1, Object o2)
+        {
+            int      cmp = 0;
+            RSSItem  i1  = (RSSItem) o1;
+            RSSItem  i2  = (RSSItem) o2;
+
+            switch (sortBy)
+            {
+                case FeedInfo.SORT_BY_TITLE:
+                    String title1 = i1.getTitle();
+                    if (title1 == null)
+                        title1 = "";
+
+                    String title2 = i2.getTitle();
+                    if (title2 == null)
+                        title2 = "";
+
+                    cmp = title1.compareToIgnoreCase (title2);
+                    break;
+
+                case FeedInfo.SORT_BY_TIME:
+                    Date time1 = i1.getPublicationDate();
+                    if (time1 == null)
+                        time1 = now;
+
+                    Date time2 = i2.getPublicationDate();
+                    if (time2 == null)
+                        time2 = now;
+
+                    cmp = time1.compareTo (time2);
+                    break;
+
+                default:
+                    cmp = -1;
+                    break;
+            }
+
+            return cmp;
+        }
+
+        public boolean equals (Object o)
+        {
+            return (o instanceof ItemComparator);
         }
     }
 
@@ -647,7 +694,7 @@ public class Curn
                      + editCmd);
         }
 
-        items = channel.getItems();
+        items = sortChannelItems (channel.getItems(), feedInfo);
 
         // First, weed out the ones we don't care about.
 
@@ -707,11 +754,7 @@ public class Curn
             }
         }
 
-        // Now, change the channel's items to the ones that are left.
-
-        channel.setItems (items);
-
-        // Finally, add all the items to the cache.
+        // Add all the items to the cache.
 
         if (items.size() > 0)
         {
@@ -728,6 +771,75 @@ public class Curn
                 }
             }
         }
+
+        // If we're to ignore items with duplicate titles, now is the time
+        // to do it. It must be done AFTER cacheing, to be sure we don't show
+        // the weeded-out duplicates during the next run.
+
+        if (feedInfo.ignoreItemsWithDuplicateTitles())
+            items = pruneDuplicateTitles (items);
+
+        // Change the channel's items to the ones that are left.
+
+        channel.setItems (items);
+    }
+
+    private Collection sortChannelItems (Collection items, FeedInfo feedInfo)
+    {
+        Collection result = items;
+        int        total  = items.size();
+
+        if (total > 0)
+        {
+            int sortBy = feedInfo.getSortBy();
+
+            switch (sortBy)
+            {
+                case FeedInfo.SORT_BY_NONE:
+                    break;
+
+                case FeedInfo.SORT_BY_TITLE:
+                case FeedInfo.SORT_BY_TIME:
+
+                    // Can't just use a TreeSet, with a Comparator, because
+                    // then items with the same title will be weeded out.
+
+                    Object[] array = items.toArray();
+                    Arrays.sort (array, new ItemComparator (sortBy));
+                    result = Arrays.asList (array);
+                break;
+
+            default:
+                throw new IllegalStateException ("Bad FeedInfo.getSortBy() "
+                                               + "value of "
+                                               + String.valueOf (sortBy));
+            }
+        }
+
+        return result;
+    }
+
+    private Collection pruneDuplicateTitles (Collection items)
+    {
+        Set         titlesSeen = new HashSet();
+        Collection  result     = new ArrayList();
+
+        for (Iterator it = items.iterator(); it.hasNext(); )
+        {
+            RSSItem item  = (RSSItem) it.next();
+            String  title = item.getTitle().toLowerCase();
+
+            if (title == null)
+                title = "";
+
+            if (! titlesSeen.contains (title))
+            {
+                result.add (item);
+                titlesSeen.add (title);
+            }
+        }
+
+        return result;
     }
 
     private void displayChannels (Collection channels)
@@ -753,7 +865,7 @@ public class Curn
                  itChannel.hasNext(); )
             {
                 ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
-                handler.displayChannel (cfi.channel, cfi.feedInfo);
+                handler.displayChannel (cfi.getChannel(), cfi.getFeedInfo());
             }
 
             handler.flush();

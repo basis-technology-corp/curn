@@ -94,8 +94,11 @@
 one representing an RSS feed, and summarizes the results. By default,
 <i>curn</i> keeps track of individual items within each RSS feed, using an
 on-disk cache; when using the cache, it will suppress displaying information
-for items it has already processed (though that behavior can be disabled).
-<i>curn</i> is intended to be run periodically from a scheduler such as
+for items it has already processed (though that behavior can be disabled).</p>
+
+<p>Unlike many RSS readers, <i>curn</i> does not use a graphical user
+interface. It is a command-line utility, intended to be run periodically in
+the background by a command scheduler such as 
 <a href="http://www.freebsd.org/cgi/man.cgi?query=cron&apropos=0&sektion=0&manpath=FreeBSD+5.2-RELEASE+and+Ports&format=html"><i>cron</i>(8)</a>
 (on Unix-like systems) or the Windows Scheduler Service (on Windows).</p>
 
@@ -872,22 +875,6 @@ in detail, below.</p>
         </tr>
 
 	<tr valign="top" class="evenrow">
-	  <td align="left" class="code"><a name="Cfg_NoCacheUpdate">NoCacheUpdate</a></td>
-          <td align="left">Boolean</td>
-	  <td align="left">If set to "true" (and if a cache file is specified),
-            this parameter tells curn to read the cache file and honor its
-	    contents, but not to save the modified in-memory cache back to
-	    disk.
-          </td>
-	  <td align="left">No</td>
-	  <td align="left" class="code">false</td>
-	  <td align="left">
-	    <a href="#Cfg_CacheFile" class="code">CacheFile</a><br>
-	    <a href="#--no-update" class="code">--no-update</a>
-          </td>
-        </tr>
-
-	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Curn_DaysToCache">DaysToCache</a></td>
           <td align="left">Integer</td>
 	  <td align="left">
@@ -906,88 +893,84 @@ in detail, below.</p>
 	  <td align="left"><a href="#Feed_DaysToCache" class="code">DaysToCache</a> for an individual feed</td>
         </tr>
 
-	<tr valign="top" class="evenrow">
-	  <td align="left" class="code"><a name="Cfg_Quiet">Quiet</a></td>
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_GetGzippedFeeds">GetGzippedFeeds</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
-	    Normally, if an RSS feed contains no new items, most
-	    <i>curn</i> output handlers display the site's name and URL,
-	    followed by something like "No new items." Similarly, if
-	    <i>curn</i> can't contact a feed site, or if the site's XML is
-	    unparseable, <i>curn</i> displays an error message. This option
-	    tells <i>curn</i> to silently ignore sites with no data or bad
-	    XML. Setting <span class="code">Quiet</span> to "true" tells
-	    <i>curn</i> to suppress both of the above displays.
+	    If set to "true", this parameter directs <i>curn</i> to use the
+	    "<span class="code">Accept-Encoding:&nbsp;gzip</span>"
+	    HTTP header when retrieving an RSS feed from an HTTP server.
+	    Since RSS feeds are XML, they typically compress well;
+	    retrieving gzipped data, rather than the uncompressed HTML, can
+	    save a significant amount of time and network bandwidth. (Note,
+	    however, that HTTP servers are not obligated to honor a request
+	    to <i>gzip</i> the feed.)
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">false</td>
+	  <td align="left" class="code">true</td>
 	  <td align="left">
-            <a href="#--quiet" class="code">--quiet</a><br>
-            <a href="#--no-quiet" class="code">--no-quiet</a>
+	    <a href="#--gzip" class="code">--gzip</a><br>
+	    <a href="#--no-gzip" class="code">--no-gzip</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_MailFrom">MailFrom</a></td>
+          <td align="left">String</td>
+	  <td align="left">
+	    The email address to use as the sender, when mailing output.
+	    The address can be a full RFC 2822-compliant address (e.g.,
+            "Joe&nbsp;Blow&nbsp;&lt;joe@example.org&gt;") or just a simple address
+	    (e.g., "joe@example.org"). This parameter is only
+	    used when <a href="#Param_EmailAddress">email addresses</a>
+	    are specified on <i>curn</i>'s command line.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">
+	    <i>curn</i> constructs its own "from" address from the user name
+	    associated with running process and the current host name.
+          </td>
+	  <td align="left">
+	    <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
+	    <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
+            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
           </td>
         </tr>
 
 	<tr valign="top" class="oddrow">
-	  <td align="left" class="code"><a name="Cfg_SummaryOnly">SummaryOnly</a></td>
-          <td align="left">Boolean</td>
+	  <td align="left" class="code"><a name="Cfg_MailSubject">MailSubject</a></td>
+          <td align="left">String</td>
 	  <td align="left">
-            Some RSS feeds provide a description for each item, in addition
-            to the (brief) title. Setting <span class="code">SummaryOnly</span>
-	    to "true" suppresses display of the description. This parameter
-            can be overridden on a per-site basis. This global value sets
-            the default value.
+	    The subject line to use when mailing output. This parameter is only
+	    used when <a href="#Param_EmailAddress">email addresses</a>
+	    are specified on <i>curn</i>'s command line.
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">false</span></td>
-	  <td align="left"></td>
-        </tr>
-
-	<tr valign="top" class="evenrow">
-	  <td align="left" class="code"><a name="Cfg_ShowAuthors">ShowAuthors</a></td>
-          <td align="left">Boolean</td>
+	  <td align="left"><span class="code">curn output</span></td>
 	  <td align="left">
-	    If set to "true", this configuration item instructs <i>curn</i>
-	    to display author version for each feed item, if available.
-          </td>
-	  <td align="left">No</td>
-	  <td align="left" class="code">false</span></td>
-	  <td align="left">
-	    <a href="#--no-authors" class="code">--no-authors</a><br>
-	    <a href="#--show-authors" class="code">--show-authors</a>
+	    <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
+	    <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
+            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
           </td>
         </tr>
 
 	<tr valign="top" class="evenrow">
-	  <td align="left" class="code"><a name="Cfg_ShowRSSVersion">ShowRSSVersion</a></td>
+	  <td align="left" class="code"><a name="Cfg_NoCacheUpdate">NoCacheUpdate</a></td>
           <td align="left">Boolean</td>
-	  <td align="left">Display the RSS version for each feed.</td>
-	  <td align="left">No</td>
-	  <td align="left" class="code">false</span></td>
-	  <td align="left">
-	    <a href="#--no-rss-version" class="code">--no-rss-version</a><br>
-	    <a href="#--rss-version" class="code">--rss-version</a>
-          </td>
-        </tr>
-
-	<tr valign="top" class="oddrow">
-	  <td align="left" class="code"><a name="Cfg_ShowDates">ShowDates</a></td>
-          <td align="left">Boolean</td>
-	  <td align="left">
-	    Some RSS feeds or the individual items within each feed
-	    contain dates (usually corresponding to the publication
-	    dates for the feed or item). If this option is set to "true",
-	    then <i>curn</i> will display the date for each item that
-	    provides a date.
+	  <td align="left">If set to "true" (and if a cache file is specified),
+            this parameter tells curn to read the cache file and honor its
+	    contents, but not to save the modified in-memory cache back to
+	    disk.
           </td>
 	  <td align="left">No</td>
 	  <td align="left" class="code">false</td>
 	  <td align="left">
-            <a href="#--no-dates" class="code">--no-dates</a><br>
-            <a href="#--show-dates" class="code">--show-dates</a>
+	    <a href="#Cfg_CacheFile" class="code">CacheFile</a><br>
+	    <a href="#--no-update" class="code">--no-update</a>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_ParserClass">ParserClass</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1031,32 +1014,93 @@ in detail, below.</p>
           </td>
 	  <td align="left">No</td>
 	  <td align="left" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</td>
-	  <td align="left"></td>
+	  <td align="left">&nbsp;</td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_Quiet">Quiet</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    Normally, if an RSS feed contains no new items, most
+	    <i>curn</i> output handlers display the site's name and URL,
+	    followed by something like "No new items." Similarly, if
+	    <i>curn</i> can't contact a feed site, or if the site's XML is
+	    unparseable, <i>curn</i> displays an error message. This option
+	    tells <i>curn</i> to silently ignore sites with no data or bad
+	    XML. Setting <span class="code">Quiet</span> to "true" tells
+	    <i>curn</i> to suppress both of the above displays.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	  <td align="left">
+            <a href="#--quiet" class="code">--quiet</a><br>
+            <a href="#--no-quiet" class="code">--no-quiet</a>
+          </td>
         </tr>
 
 	<tr valign="top" class="oddrow">
-	  <td align="left" class="code"><a name="Cfg_GetGzippedFeeds">GetGzippedFeeds</a></td>
+	  <td align="left" class="code"><a name="Cfg_ShowAuthors">ShowAuthors</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
-	    If set to "true", this parameter directs <i>curn</i> to use the
-	    "<span class="code">Accept-Encoding:&nbsp;gzip</span>"
-	    HTTP header when retrieving an RSS feed from an HTTP server.
-	    Since RSS feeds are XML, they typically compress well;
-	    retrieving gzipped data, rather than the uncompressed HTML, can
-	    save a significant amount of time and network bandwidth. (Note,
-	    however, that HTTP servers are not obligated to honor a request
-	    to <i>gzip</i> the feed.)
+	    If set to "true", this configuration item instructs <i>curn</i>
+	    to display author version for each feed item, if available.
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">true</td>
+	  <td align="left" class="code">false</span></td>
 	  <td align="left">
-	    <a href="#--gzip" class="code">--gzip</a><br>
-	    <a href="#--no-gzip" class="code">--no-gzip</a>
+	    <a href="#--no-authors" class="code">--no-authors</a><br>
+	    <a href="#--show-authors" class="code">--show-authors</a>
           </td>
         </tr>
 
 	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_ShowDates">ShowDates</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    Some RSS feeds or the individual items within each feed
+	    contain dates (usually corresponding to the publication
+	    dates for the feed or item). If this option is set to "true",
+	    then <i>curn</i> will display the date for each item that
+	    provides a date.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	  <td align="left">
+            <a href="#--no-dates" class="code">--no-dates</a><br>
+            <a href="#--show-dates" class="code">--show-dates</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_ShowRSSVersion">ShowRSSVersion</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">Display the RSS version for each feed.</td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</span></td>
+	  <td align="left">
+	    <a href="#--no-rss-version" class="code">--no-rss-version</a><br>
+	    <a href="#--rss-version" class="code">--rss-version</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_SummaryOnly">SummaryOnly</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+            Some RSS feeds provide a description for each item, in addition
+            to the (brief) title. Setting <span class="code">SummaryOnly</span>
+	    to "true" suppresses display of the description. This parameter
+            can be overridden on a per-site basis. This global value sets
+            the default value.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</span></td>
+	  <td align="left">&nbsp;</td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_SMTPHost">SMTPHost</a></td>
+          <td align="left">String</td>
 	  <td align="left">
 	    The SMTP host to use when mailing output. This parameter is only
 	    used when <a href="#Param_EmailAddress">email addresses</a>
@@ -1071,41 +1115,30 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
-	  <td align="left" class="code"><a name="Cfg_MailFrom">MailFrom</a></td>
-	  <td align="left">
-	    The email address to use as the sender, when mailing output.
-	    The address can be a full RFC 2822-compliant address (e.g.,
-            "Joe&nbsp;Blow&nbsp;&lt;joe@example.org&gt;") or just a simple address
-	    (e.g., "joe@example.org"). This parameter is only
-	    used when <a href="#Param_EmailAddress">email addresses</a>
-	    are specified on <i>curn</i>'s command line.
-          </td>
-	  <td align="left">No</td>
-	  <td align="left">
-	    <i>curn</i> constructs its own "from" address from the user name
-	    associated with running process and the current host name.
-          </td>
-	  <td align="left">
-	    <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
-	    <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
-            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
-          </td>
-        </tr>
-
 	<tr valign="top" class="evenrow">
-	  <td align="left" class="code"><a name="Cfg_MailSubject">MailSubject</a></td>
+	  <td align="left" class="code"><a name="Cfg_SortBy">SortBy</a></td>
+          <td align="left">String</td>
 	  <td align="left">
-	    The subject line to use when mailing output. This parameter is only
-	    used when <a href="#Param_EmailAddress">email addresses</a>
-	    are specified on <i>curn</i>'s command line.
+	    <p>Default method to use to sort items within each feed. This
+            parameter is used when the configuration section for a particular
+            site lacks its own <a href="#Feed_SortBy" class="code">SortBy</a>
+	    value. Legal values:</p>
+
+            <ul>
+	      <li><span class="code">time</span>: Sort by timestamp, if
+		  present. Current time is assumed for items that don't have
+		  timestamps.
+	      <li><span class="code">title</span>: Sort by item title, if
+		  present. Any item without a title is sorted as if its
+		  title were the empty string ("").
+	      <li><span class="code">none</span>: Don't sort (i.e., leave
+		  items in the order they appear in the XML).
+	    </ul>
           </td>
 	  <td align="left">No</td>
-	  <td align="left">"<span class="code">curn output</span>"</td>
+	  <td align="left" class="code">none</span></td>
 	  <td align="left">
-	    <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
-	    <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
-            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+	    Per-feed <a href="#Feed_SortBy" class="code">SortBy</a> parameter
           </td>
         </tr>
 
@@ -1166,7 +1199,7 @@ section names are all valid for RSS feed sections.</p>
 	    Maximum number of days to cache an already-read item for this
 	    feed. This value locally overrides the global
 	    <a href="#Curn_DaysToCache" class="code">DaysToCache</a> default
-	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section,
+	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
             Items older than this many days are tossed from the
             cache when it's read, which means <i>curn</i> forgets that it saw
             them before. A value of 0 renders the cache is essentially useless
@@ -1246,6 +1279,25 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
         <tr valign="top" class="oddrow">
+	  <td align="left" class="code">IgnoreDuplicateTitles</td>
+          <td align="left">Boolean</td>
+	  <td align="left"><p>If "true", curn will ignore any item whose title
+            matches the title of another item in the feed. It only compares
+	    titles within the feed itself; it does not compare against titles
+	    of cached items.) Titles are compared without regard to upper or
+            lower case.</p>
+
+	    <p>This feature (hack, really) is useful for sites
+	    whose feeds often contain duplicate items (with the same titles)
+	    that have different IDs and different URLs, and thus appear to be
+	    unique. (<a href="http://news.yahoo.com/">Yahoo! News</a> feeds
+	    sometimes exhibit this trait.)</p>
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code">PruneURLs</td>
           <td align="left">Boolean</td>
 	  <td align="left">Specifies a string to be used as the site's
@@ -1256,7 +1308,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
           <td align="left">File name or path name</td>
 	  <td align="left">If set, this parameter specifies the path to
@@ -1271,6 +1323,30 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">No</td>
 	  <td align="left">None</td>
 	</tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_SMTPHost">SortBy</a></td>
+          <td align="left">String</td>
+	  <td align="left">
+	    <p>How to sort items in this feed. This value locally overrides the
+	    global <a href="#Curn_SortBy" class="code">SortBy</a> parameter
+	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
+	    Legal values:</p>
+
+            <ul>
+	      <li><span class="code">time</span>: Sort by timestamp, if
+		  present. Current time is assumed for items that don't have
+		  timestamps.
+	      <li><span class="code">title</span>: Sort by item title, if
+		  present. Any item without a title is sorted as if its
+		  title were the empty string ("").
+	      <li><span class="code">none</span>: Don't sort (i.e., leave
+		  items in the order they appear in the XML).
+	    </ul>
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">none</span></td>
+        </tr>
 
         <tr valign="top" class="oddrow">
 	  <td align="left" class="code">TitleOverride</td>

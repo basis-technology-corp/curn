@@ -39,7 +39,7 @@ import org.clapper.util.config.ConfigurationException;
 public class ConfigFile extends Configuration
 {
     /*----------------------------------------------------------------------*\
-                                 Constants
+                             Private Constants
     \*----------------------------------------------------------------------*/
 
     /**
@@ -83,6 +83,22 @@ public class ConfigFile extends Configuration
     private static final String VAR_FEED_URL          = "URL";
     private static final String VAR_CLASS             = "Class";
     private static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
+    private static final String VAR_SORT_BY           = "SortBy";
+    private static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
+
+    /**
+     * Legal values
+     */
+    private static final Map LEGAL_SORT_BY_VALUES = new HashMap();
+    static
+    {
+        LEGAL_SORT_BY_VALUES.put ("none",
+                                  new Integer (FeedInfo.SORT_BY_NONE));
+        LEGAL_SORT_BY_VALUES.put ("time",
+                                  new Integer (FeedInfo.SORT_BY_TIME));
+        LEGAL_SORT_BY_VALUES.put ("title",
+                                  new Integer (FeedInfo.SORT_BY_TITLE));
+    }
 
     /**
      * Default values
@@ -102,6 +118,7 @@ public class ConfigFile extends Configuration
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
     private static final String  DEF_OUTPUT_CLASS =
                              "org.clapper.curn.TextOutputHandler";
+    private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -124,6 +141,7 @@ public class ConfigFile extends Configuration
     private String          emailSubject          = DEF_EMAIL_SUBJECT;
     private boolean         showAuthors           = false;
     private boolean         getGzippedFeeds       = true;
+    private int             defaultSortBy         = DEF_SORT_BY;
 
     /**
      * For log messages
@@ -662,7 +680,7 @@ public class ConfigFile extends Configuration
             String sectionName = (String) it.next();
 
             if (sectionName.startsWith (FEED_SECTION_PREFIX))
-                processSiteURLSection (sectionName);
+                processFeedSection (sectionName);
 
             else if (sectionName.startsWith (OUTPUT_HANDLER_PREFIX))
                 processOutputHandlerSection (sectionName);
@@ -738,6 +756,8 @@ public class ConfigFile extends Configuration
             getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
                                                        VAR_GET_GZIPPED_FEEDS,
                                                        DEF_GET_GZIPPED_FEEDS);
+
+            defaultSortBy = getSortByValue (MAIN_SECTION, DEF_SORT_BY);
         }
 
         catch (NoSuchVariableException ex)
@@ -752,13 +772,13 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Process a section that identifies a site's RSS URL.
+     * Process a section that identifies an RSS feed to be polled.
      *
      * @param sectionName  the section name
      *
      * @throws ConfigurationException  configuration error
      */
-    private void processSiteURLSection (String sectionName)
+    private void processFeedSection (String sectionName)
         throws ConfigurationException
     {
         FeedInfo  feedInfo = null;
@@ -795,6 +815,11 @@ public class ConfigFile extends Configuration
                                                           VAR_DISABLED,
                                                           false));
 
+        feedInfo.setIgnoreItemsWithDuplicateTitlesFlag
+                              (getOptionalBooleanValue (sectionName,
+                                                        VAR_IGNORE_DUP_TITLES,
+                                                        false));
+
         s = getOptionalStringValue (sectionName, VAR_TITLE_OVERRIDE, null);
         if (s != null)
             feedInfo.setTitleOverride (s);
@@ -806,6 +831,8 @@ public class ConfigFile extends Configuration
         s = getOptionalStringValue (sectionName, VAR_SAVE_FEED_AS, null);
         if (s != null)
             feedInfo.setSaveAsFile (new File (s));
+
+        feedInfo.setSortBy (getSortByValue (sectionName, defaultSortBy));
 
         feeds.add (feedInfo);
         feedMap.put (url.toString(), feedInfo);
@@ -853,5 +880,43 @@ public class ConfigFile extends Configuration
             outputHandlers.put (className, extraVariables);
             outputHandlerSections.put (className, sectionName);
         }
+    }
+
+    /**
+     * Get a "SortBy" value from the specified section, if available.
+     *
+     * @param sectionName   the section name
+     * @param defValue      default value to use
+     *
+     * @return the value, or the appropriate default
+     *
+     * @throws ConfigurationException bad value for config item
+     */
+    private int getSortByValue (String sectionName, int defValue)
+        throws ConfigurationException
+    {
+        int     result = defValue;
+        String  s;
+
+        s = getOptionalStringValue (sectionName, VAR_SORT_BY, null);
+        if (s != null)
+        {
+            Integer val = (Integer) LEGAL_SORT_BY_VALUES.get (s);
+
+            if (val == null)
+            {
+                throw new ConfigurationException ("Section ["
+                                                + sectionName
+                                                + "]: Bad value \""
+                                                + s
+                                                + "\" for \""
+                                                + VAR_SORT_BY
+                                                + "\" parameter.");
+            }
+
+            result = val.intValue();
+        }
+
+        return result;
     }
 }
