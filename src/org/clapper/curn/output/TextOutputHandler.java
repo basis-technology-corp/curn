@@ -86,7 +86,7 @@ public class TextOutputHandler implements RSSGetOutputHandler
                          "---------------------------------------");
 
             out.println (channel.getTitle());
-            out.println (channel.getURL().toString());
+            out.println (channel.getLink().toString());
 
             Date date = channel.getPublicationDate();
             if (date != null)
@@ -106,7 +106,7 @@ public class TextOutputHandler implements RSSGetOutputHandler
 
                 out.println ();
                 out.println (item.getTitle());
-                out.println (item.getURL().toString());
+                out.println (item.getLink().toString());
 
                 if (! config.summarizeOnly())
                 {

@@ -146,12 +146,16 @@ public class rssget implements VerboseMessagesHandler
             cache.loadCache();
         }
 
+        String parserClassName = config.getRSSParserClassName();
+        verbose (2, "Getting parser \"" + parserClassName + "\"");
+        RSSParser parser = RSSParserFactory.getRSSParser (parserClassName);
+
         for (Iterator itFeeds = config.getFeeds().iterator();
              itFeeds.hasNext(); )
         {
             RSSFeedInfo feed = (RSSFeedInfo) itFeeds.next();
 
-            processFeed (feed, outputHandler);
+            processFeed (feed, parser, outputHandler);
         }
 
         if ((cache != null) && config.mustUpdateCache())
@@ -365,14 +369,11 @@ public class rssget implements VerboseMessagesHandler
     }
 
     private void processFeed (RSSFeedInfo         feedInfo,
+                              RSSParser           parser,
                               RSSGetOutputHandler outputHandler)
         throws RSSParserException
     {
         URL url = feedInfo.getURL();
-
-        verbose (3, "Getting parser.");
-        String parserClassName = config.getRSSParserClassName();
-        RSSParser parser = RSSParserFactory.getRSSParser (parserClassName);
 
         try
         {
@@ -388,7 +389,7 @@ public class rssget implements VerboseMessagesHandler
             for (Iterator it = items.iterator(); it.hasNext(); )
             {
                 RSSItem item = (RSSItem) it.next();
-                URL itemURL = item.getURL();
+                URL itemURL = item.getLink();
 
                 if (itemURL == null)
                 {
@@ -416,7 +417,7 @@ public class rssget implements VerboseMessagesHandler
                 // Normalize the URL.
 
                 itemURL = Util.normalizeURL (itemURL);
-                item.setURL (itemURL);
+                item.setLink (itemURL);
 
                 // Skip it if it's cached.
 
@@ -448,10 +449,10 @@ public class rssget implements VerboseMessagesHandler
                 {
                     verbose (3,
                              "Cacheing URL \""
-                           + itemArray[i].getURL().toString()
+                           + itemArray[i].getLink().toString()
                            + "\"");
                     if (cache != null)
-                        cache.addToCache (itemArray[i].getURL(), feedInfo);
+                        cache.addToCache (itemArray[i].getLink(), feedInfo);
                 }
             }
         }
