@@ -30,7 +30,6 @@ import java.net.URL;
 import java.io.File;
 
 import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSChannel;
 
 /**
@@ -88,6 +87,7 @@ public class FeedInfo
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
+    private String[]    preparseEditCommands  = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -273,8 +273,10 @@ public class FeedInfo
      *
      * <pre>s/foo/bar/g</pre>
      *
-     * It's intended to be used with the Jakarta ORO <tt>Perl5Util</tt>
-     * class to edit the item URLs before displaying them.
+     * It's intended to be used with the
+     * <tt>org.clapper.util.regex.RegexUtil</tt> class's
+     * <tt>substitute()</tt> method to edit the item URLs before displaying
+     * them.
      *
      * @return the item URL edit command, or null if none
      */
@@ -284,13 +286,15 @@ public class FeedInfo
     }
 
     /**
-     * Get the item URL edit command for this feed. This command, if supplied,
+     * Set the item URL edit command for this feed. This command, if supplied,
      * is a Perl-style substitution command, e.g.:
      *
      * <pre>s/foo/bar/g</pre>
      *
-     * It's intended to be used with the Jakarta ORO <tt>Perl5Util</tt>
-     * class to edit the item URLs before displaying them.
+     * It's intended to be used with the
+     * <tt>org.clapper.util.regex.RegexUtil</tt> class's class's
+     * <tt>substitute()</tt> method to edit the item URLs before displaying
+     * them.
      *
      * @param cmd   the item URL edit command, or null if none
      */
@@ -300,9 +304,47 @@ public class FeedInfo
     }
 
     /**
+     * Get the list of edit commands to be applied to the downloaded XML
+     * before it is parsed. Each element in the returned array is a
+     * Perl-style substitution command, e.g.:
+     *
+     * <pre>s/foo/bar/g</pre>
+     *
+     * They're intended to be used with the
+     * <tt>org.clapper.util.regex.RegexUtil</tt>
+     * class's <tt>substitute()</tt> method to edit the XML before parsing it.
+     *
+     * @return an array of edit commands, or null if not specified in the
+     *         configuration for this feed
+     */
+    public String[] getPreparseEditCommands()
+    {
+        return preparseEditCommands;
+    }
+
+    /**
+     * Set the list of edit commands to be applied to the downloaded XML
+     * before it is parsed. Each element in the returned array is a
+     * Perl-style substitution command, e.g.:
+     *
+     * <pre>s/foo/bar/g</pre>
+     *
+     * They're intended to be used with the
+     * <tt>org.clapper.util.regex.RegexUtil</tt>
+     * class's <tt>substitute()</tt> method to edit the XML before parsing it.
+     *
+     * @param cmds an array of edit commands, or null if not specified in the
+     *             configuration for this feed
+     */
+    public void setPreparseEditCommands (String[] cmds)
+    {
+        preparseEditCommands = cmds;
+    }
+
+    /**
      * Determine whether this feed is enabled or not. A disabled feed will
      * not be fetched or displayed. (A feed is enabled by default.)
-
+     *
      * @return <tt>true</tt> if the feed is enabled in the configuration,
      *         <tt>false</tt> otherwise.
      *
