@@ -187,7 +187,9 @@ public class FeedCache implements Serializable
      *
      * @see Util#normalizeURL
      */
-    public void addToCache (String uniqueID, URL url, FeedInfo parentFeed)
+    public synchronized void addToCache (String   uniqueID,
+                                         URL      url,
+                                         FeedInfo parentFeed)
     {
         URL parentURL = parentFeed.getURL();
         FeedCacheEntry entry = new FeedCacheEntry (uniqueID,

@@ -35,15 +35,10 @@ import java.io.OutputStream;
 import java.io.FileOutputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Comparator;
-import java.util.TreeSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Collection;
-import java.util.zip.GZIPInputStream;
 
 import java.text.MessageFormat;
 
@@ -59,9 +54,9 @@ import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.misc.Logger;
+import org.clapper.util.misc.Semaphore;
+import org.clapper.util.misc.MultiIterator;
 import org.clapper.util.config.ConfigurationException;
-
-import org.apache.oro.text.perl.Perl5Util;
 
 /**
  * <p><i>curn</i>: Curiously Uncomplicated RSS Notifier.</p>
@@ -103,73 +98,16 @@ public class Curn
                               Private Classes
     \*----------------------------------------------------------------------*/
 
-    private class ItemComparator implements Comparator
-    {
-        private Date  now = new Date();
-        private int   sortBy;
-
-        ItemComparator (int sortBy)
-        {
-            this.sortBy = sortBy;
-        }
-
-        public int compare (Object o1, Object o2)
-        {
-            int      cmp = 0;
-            RSSItem  i1  = (RSSItem) o1;
-            RSSItem  i2  = (RSSItem) o2;
-
-            switch (sortBy)
-            {
-                case FeedInfo.SORT_BY_TITLE:
-                    String title1 = i1.getTitle();
-                    if (title1 == null)
-                        title1 = "";
-
-                    String title2 = i2.getTitle();
-                    if (title2 == null)
-                        title2 = "";
-
-                    cmp = title1.compareToIgnoreCase (title2);
-                    break;
-
-                case FeedInfo.SORT_BY_TIME:
-                    Date time1 = i1.getPublicationDate();
-                    if (time1 == null)
-                        time1 = now;
-
-                    Date time2 = i2.getPublicationDate();
-                    if (time2 == null)
-                        time2 = now;
-
-                    cmp = time1.compareTo (time2);
-                    break;
-
-                default:
-                    cmp = -1;
-                    break;
-            }
-
-            return cmp;
-        }
-
-        public boolean equals (Object o)
-        {
-            return (o instanceof ItemComparator);
-        }
-    }
-
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private ConfigFile      config           = null;
-    private boolean         useCache         = true;
-    private FeedCache       cache            = null;
-    private Date            currentTime      = new Date();
-    private Collection      outputHandlers   = new ArrayList();
-    private Collection      emailAddresses   = new ArrayList();
-    private Perl5Util       perl5Util        = new Perl5Util();
+    private ConfigFile  config           = null;
+    private boolean     useCache         = true;
+    private FeedCache   cache            = null;
+    private Date        currentTime      = new Date();
+    private Collection  outputHandlers   = new ArrayList();
+    private Collection  emailAddresses   = new ArrayList();
 
     /**
      * For log messages
@@ -227,9 +165,9 @@ public class Curn
     {
         Iterator            it;
         String              parserClassName;
-        RSSParser           parser = null;
         Collection          channels;
         OutputStreamWriter  out;
+        boolean             doParse = true;
 
         loadOutputHandlers (configuration, emailAddresses);
 
@@ -242,41 +180,22 @@ public class Curn
 
         if (outputHandlers.size() == 0)
         {
+            // No output handlers. No need to instantiate a parser.
+
             log.debug ("No output handlers. Skipping XML parse phase.");
+            doParse = false;
         }
-
-        else
-        {
-            // There are output handlers. We'll need a parser.
-
-            parserClassName = configuration.getRSSParserClassName();
-            log.info ("Getting parser \"" + parserClassName + "\"");
-            parser = RSSParserFactory.getRSSParser (parserClassName);
-        }
-
-        channels = new ArrayList();
 
         Collection feeds = configuration.getFeeds();
         if (feeds.size() == 0)
             throw new ConfigurationException ("No configured RSS feed URLs.");
 
-        for (it = configuration.getFeeds().iterator(); it.hasNext(); )
-        {
-            FeedInfo feedInfo = (FeedInfo) it.next();
-            if (! feedInfo.feedIsEnabled())
-            {
-                log.info ("Skipping disabled feed: " + feedInfo.getURL());
-            }
-
-            else
-            {
-                RSSChannel channel = checkFeed (feedInfo,
-                                                parser,
-                                                configuration);
-                if (channel != null)
-                    channels.add (new ChannelFeedInfo (feedInfo, channel));
-            }
-        }
+        if ((configuration.getMaxThreads() == 1) || (feeds.size() == 1))
+            channels = doSingleThreadedFeedDownload (doParse, cache,
+                                                     configuration);
+        else
+            channels = doMultithreadedFeedDownload (doParse, cache,
+                                                    configuration);
 
         if (channels.size() > 0)
             displayChannels (channels);
@@ -339,503 +258,283 @@ public class Curn
     }
 
     /**
-     * <p>Check and possibly process a feed. If XML parsing is disabled and
-     * the feed has no "save as" setting, this method just returns (since
-     * it's pointless to do anything if both of those conditions aren't
-     * met). Otherwise, this method will open a URL connection to the feed,
-     * determine whether the feed has changed, download it if it has, parse
-     * it (if required), and save it (if the feed has a "save as"
-     * setting).</p>
+     * Download the configured feeds sequentially. This method is called
+     * when the configured number of concurrent download threads is 1.
      *
-     * <p>If there are no output handlers, then there's no need to waste
-     * time parsing the feeds' XML; the caller is responsible for detecting
-     * that condition and passing a null <tt>parser</tt> parameter into
-     * this method in that case.</p>
+     * @param doParse       <tt>true</tt> if parsing is to be done,
+     *                      <tt>false</tt> otherwise
+     * @param feedCache     the loaded cache of feed data; may be modified
+     * @param configuration the parsed configuration
      *
-     * @param feedInfo      the info about the feed
-     * @param parser        the RSS parser to use, or null if parsing is to
-     *                      be skipped
-     * @param configuration the parsed configuration data
+     * @return a <tt>Collection</tt> of <tt>RSSChannel</tt> objects
      *
-     * @return the <tt>RSSChannel</tt> representing the parsed feed, if
-     *         parsing was enabled; otherwise, null.
-     *
-     * @throws RSSParserException parser error
+     * @throws RSSParserException error parsing feeds
      */
-    private RSSChannel checkFeed (FeedInfo   feedInfo,
-                                  RSSParser  parser,
-                                  ConfigFile configuration)
+    private Collection doSingleThreadedFeedDownload (boolean    doParse,
+                                                     FeedCache  feedCache,
+                                                     ConfigFile configuration)
         throws RSSParserException
     {
-        URL         feedURL = feedInfo.getURL();
-        RSSChannel  channel = null;
+        // Instantiate a single FeedDownloadThread object, but call it
+        // within this thread, instead of spawning another thread.
 
-        if ((parser == null) && (feedInfo.getSaveAsFile() == null))
+        Collection channels = new ArrayList();
+        FeedDownloadThread downloadThread;
+
+        log.info ("Doing single-threaded download of feeds.");
+
+        downloadThread = new FeedDownloadThread ("main",
+                                                 getRSSParser (configuration),
+                                                 feedCache,
+                                                 configuration,
+                                                 null);
+
+        for (Iterator it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
-            log.debug ("Feed "
-                     + feedURL.toString()
-                     + ": RSS parser is null and there's no save file. "
-                     + "There's no sense processing this feed.");
+            FeedInfo feedInfo = (FeedInfo) it.next();
+            if (! feedInfo.feedIsEnabled())
+            {
+                log.info ("Skipping disabled feed: " + feedInfo.getURL());
+                continue;
+            }
+
+            downloadThread.initializeNewFeed (feedInfo);
+            downloadThread.processFeed();
+            if (downloadThread.errorOccurred())
+            {
+                RSSParserException ex = downloadThread.getException();
+                throw new RSSParserException (ex);
+            }
+
+            RSSChannel channel = downloadThread.getParsedChannel();
+
+            if (channel != null)
+                channels.add (new ChannelFeedInfo (feedInfo, channel));
         }
 
-        else
-        {
-            channel = processFeed (feedInfo, parser, configuration);
-        }
-
-        return channel;
+        return channels;
     }
 
     /**
-     * Actually processes a feed. This method is called by checkFeed()
-     * after checkFeed() determines that there's a reason to try to download
-     * the feed (i.e., the feed has a "save as" setting, and/or parsing is
-     * desired.
-     * @param feedInfo      the info about the feed
-     * @param parser        the RSS parser to use, or null if parsing is to
-     *                      be skipped
-     * @param configuration the parsed configuration data
+     * Download the configured feeds using multiple simultaneous threads.
+     * This method is called when the configured number of concurrent
+     * download threads is greater than 1.
      *
-     * @return the <tt>RSSChannel</tt> representing the parsed feed, if
-     *         parsing was enabled; otherwise, null.
+     * @param doParse       <tt>true</tt> if parsing is to be done,
+     *                      <tt>false</tt> otherwise
+     * @param feedCache     the loaded cache of feed data; may be modified
+     * @param configuration the parsed configuration
      *
-     * @throws RSSParserException parser error
+     * @return a <tt>Collection</tt> of <tt>RSSChannel</tt> objects
+     *
+     * @throws RSSParserException error parsing feeds
      */
-    private RSSChannel processFeed (FeedInfo   feedInfo,
-                                    RSSParser  parser,
-                                    ConfigFile configuration)
+    private Collection doMultithreadedFeedDownload (boolean    doParse,
+                                                    FeedCache  feedCache,
+                                                    ConfigFile configuration)
         throws RSSParserException
     {
-        URL         feedURL = feedInfo.getURL();
-        String      feedURLString = feedURL.toString();
-        RSSChannel  channel = null;
+        int                 maxThreads     = configuration.getMaxThreads();
+        Collection          feeds          = configuration.getFeeds();
+        int                 totalFeeds     = feeds.size();
+        Collection          channels       = new ArrayList();
+        LinkedList          idleThreads    = new LinkedList();
+        LinkedList          activeThreads  = new LinkedList();
+        Semaphore           semaphore;
+        Iterator            it;
+        FeedDownloadThread  thread;
 
-        try
+        if (maxThreads > totalFeeds)
+            maxThreads = totalFeeds;
+
+        log.info ("Doing multithreaded download of feeds, using "
+                + maxThreads
+                + " threads.");
+
+        // Create the signalling semaphore, initialized to the number of
+        // idle threads.
+
+        semaphore = new Semaphore (maxThreads);
+
+        // Create the thread objects.
+
+        for (int i = 0; i < maxThreads; i++)
         {
-            log.info ("Checking for new data from RSS feed " + feedURLString);
+            thread = new FeedDownloadThread (String.valueOf (i),
+                                             getRSSParser (configuration),
+                                             feedCache,
+                                             configuration,
+                                             semaphore);
+            thread.start();
+            idleThreads.add (thread);
+        }
 
-            // Open the connection.
+        log.debug ("Main thread priority is "
+                 + Thread.currentThread().getPriority());
 
-            URLConnection conn = feedURL.openConnection();
+        for (it = feeds.iterator(); it.hasNext(); )
+        {
+            FeedInfo feedInfo = (FeedInfo) it.next();
 
-            // Don't download the channel if it hasn't been modified since
-            // we last checked it. We set the If-Modified-Since header, to
-            // tell the web server not to return the content if it's not
-            // newer than what we saw before. However, as a double-check
-            // (for web servers that ignore the header), we also check the
-            // Last-Modified header, if any, that's returned; if it's not
-            // newer, we don't bother to parse and process the returned
-            // XML.
-
-            setIfModifiedSinceHeader (conn, feedInfo);
-
-            // If the config allows us to transfer gzipped content, then
-            // set that header, too.
-
-            setGzipHeader (conn, configuration);
-
-            // If the feed has actually changed, process it.
-
-            if (! feedHasChanged (conn, feedInfo))
+            if (! feedInfo.feedIsEnabled())
             {
-                log.info ("Feed has not changed. Skipping it.");
-            }
-
-            else
-            {
-                log.debug ("Feed may have changed. "
-                         + "Downloading and processing it.");
-
-                if (cache != null)
-                {
-                    cache.addToCache (feedInfo.getCacheKey(),
-                                      feedURL,
-                                      feedInfo);
-                }
-
-                InputStream is = getURLInputStream (conn);
-
-                // Download the feed to a file. We'll parse the file.
-
-                File temp = File.createTempFile ("curn", "xml", null);
-                temp.deleteOnExit();
-
-                int totalBytes = downloadFeed (is, feedURLString, temp);
-                is.close();
-
-                if (totalBytes == 0)
-                {
-                    log.debug ("Feed \""
-                             + feedURLString
-                             + "\" returned no data.");
-                }
-
-                else
-                {
-                    File saveAsFile = feedInfo.getSaveAsFile();
-
-                    if (saveAsFile != null)
-                    {
-                        log.debug ("Copying temporary file \""
-                                 + temp.getPath()
-                                 + "\" to \""
-                                 + saveAsFile.getPath()
-                                 + "\"");
-                        FileUtil.copyFile (temp, saveAsFile);
-                    }
-
-                    if (parser == null)
-                        log.debug ("No RSS parser. Skipping XML parse phase.");
-                    else
-                    {
-                        log.debug ("Using RSS parser "
-                                 + parser.getClass().getName()
-                                 + " to parse the feed.");
-
-                        is = new FileInputStream (temp);
-                        channel = parser.parseRSSFeed (is);
-                        is.close();
-
-                        processChannelItems (channel, feedInfo);
-                        if (channel.getItems().size() == 0)
-                            channel = null;
-                    }
-                }
-
-                temp.delete();
-            }
-        }
-
-        catch (MalformedURLException ex)
-        {
-            log.error ("", ex);
-        }
-
-        catch (RSSParserException ex)
-        {
-            log.error ("RSS parse exception: ", ex); 
-        }
-
-        catch (IOException ex)
-        {
-            log.error ("", ex);
-        }
-
-        return channel;
-    }
-
-    private int downloadFeed (InputStream urlStream, String feedURL, File file)
-        throws IOException
-    {
-        int totalBytes = 0;
-
-        log.debug ("Downloading \""
-                 + feedURL
-                 + "\" to file \""
-                 + file.getPath());
-        OutputStream os = new FileOutputStream (file);
-        totalBytes = FileUtil.copyStream (urlStream, os);
-        os.close();
-
-        // It's possible for totalBytes to be zero if, for instance, the
-        // use of the If-Modified-Since header caused an HTTP server to
-        // return no content.
-
-        return totalBytes;
-    }
-
-    private InputStream getURLInputStream (URLConnection conn)
-        throws IOException
-    {
-        InputStream is = conn.getInputStream();
-        String ce = conn.getHeaderField ("content-encoding");
-
-        if (ce != null)
-        {
-            String urlString = conn.getURL().toString();
-
-            log.debug ("URL \""
-                     + urlString
-                     + "\" -> Content-Encoding: "
-                     + ce);
-            if (ce.indexOf ("gzip") != -1)
-            {
-                log.debug ("URL \""
-                         + urlString
-                         + "\" is compressed. Using GZIPInputStream.");
-                is = new GZIPInputStream (is);
-            }
-        }
-
-        return is;
-    }
-
-    private void setGzipHeader (URLConnection conn, ConfigFile configuration)
-    {
-        if (configuration.retrieveFeedsWithGzip())
-        {
-            log.debug ("Setting header \"Accept-Encoding\" to \"gzip\"");
-            conn.setRequestProperty ("Accept-Encoding", "gzip");
-        }
-    }
-
-    private void setIfModifiedSinceHeader (URLConnection conn,
-                                           FeedInfo      feedInfo)
-    {
-        long     lastSeen = 0;
-        boolean  hasChanged = false;
-        String   cacheKey = feedInfo.getCacheKey();
-        URL      feedURL = feedInfo.getURL();
-
-        if ((cache != null) && (cache.contains (cacheKey)))
-        {
-            FeedCacheEntry entry = (FeedCacheEntry) cache.getItem (cacheKey);
-            lastSeen = entry.getTimestamp();
-
-            if (lastSeen > 0)
-            {
-                if (log.isDebugEnabled())
-                {
-                    log.debug ("Setting If-Modified-Since header for feed \""
-                             + feedURL.toString()
-                             + "\" to: "
-                             + String.valueOf (lastSeen)
-                             + " ("
-                             + new Date (lastSeen).toString()
-                             + ")");
-                }
-
-                conn.setIfModifiedSince (lastSeen);
-            }
-        }
-    }
-
-    private boolean feedHasChanged (URLConnection conn, FeedInfo feedInfo)
-        throws IOException
-    {
-        long     lastSeen = 0;
-        long     lastModified = 0;
-        boolean  hasChanged = false;
-        String   cacheKey = feedInfo.getCacheKey();
-        URL      feedURL = feedInfo.getURL();
-
-        if ((cache != null) && (cache.contains (cacheKey)))
-        {
-            FeedCacheEntry entry = (FeedCacheEntry) cache.getItem (cacheKey);
-            lastSeen = entry.getTimestamp();
-        }
-
-        if (lastSeen == 0)
-        {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" has no recorded last-seen time.");
-            hasChanged = true;
-        }
-
-        else if ((lastModified = conn.getLastModified()) == 0)
-        {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" provides no last-modified time.");
-            hasChanged = true;
-        }
-
-        else if (lastSeen >= lastModified)
-        {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" has Last-Modified time of "
-                     + new Date (lastModified).toString()
-                     + ", which is not newer than last-seen time of "
-                     + new Date (lastSeen).toString()
-                     + ". Feed has no new data.");
-        }
-
-        else
-        {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" has Last-Modified time of "
-                     + new Date (lastModified).toString()
-                     + ", which is newer than last-seen time of "
-                     + new Date (lastSeen).toString()
-                     + ". Feed might have new data.");
-            hasChanged = true;
-        }
-
-        return hasChanged;
-    }
-
-    private void processChannelItems (RSSChannel  channel,
-                                      FeedInfo    feedInfo)
-        throws RSSParserException,
-               MalformedURLException
-    {
-        Collection  items;
-        Iterator    it;
-        String      titleOverride = feedInfo.getTitleOverride();
-        boolean     pruneURLs = feedInfo.pruneURLs();
-        String      editCmd = feedInfo.getItemURLEditCommand();
-        String      channelName = channel.getLink().toString();
-
-        if (titleOverride != null)
-            channel.setTitle (titleOverride);
-
-        if (editCmd != null)
-        {
-            log.debug ("Channel \""
-                     + channelName
-                     + "\": Edit command is: "
-                     + editCmd);
-        }
-
-        items = sortChannelItems (channel.getItems(), feedInfo);
-
-        // First, weed out the ones we don't care about.
-
-        log.info ("Channel \""
-                + channelName
-                + "\": "
-                + String.valueOf (items.size())
-                + " total items");
-        for (it = items.iterator(); it.hasNext(); )
-        {
-            RSSItem item = (RSSItem) it.next();
-            URL itemURL = item.getLink();
-
-            if (itemURL == null)
-            {
-                log.debug ("Skipping item with null URL.");
-                it.remove();
+                log.info ("Skipping disabled feed: "
+                        + feedInfo.getURL().toString());
                 continue;
             }
 
-            if (pruneURLs || (editCmd != null))
+            if ((! doParse) && (feedInfo.getSaveAsFile() == null))
             {
-                // Prune the URL of its parameters, if configured for this
-                // site. This must be done before checking the cache, because
-                // the pruned URLs are what end up in the cache.
-
-                String sURL = itemURL.toExternalForm();
-
-                if (pruneURLs)
-                {
-                    int i = sURL.indexOf ("?");
-
-                    if (i != -1)
-                        sURL = sURL.substring (0, i);
-                }
-
-                if (editCmd != null)
-                    sURL = perl5Util.substitute (editCmd, sURL);
-
-                itemURL = new URL (sURL);
-            }
-
-            // Normalize the URL and save it.
-
-            item.setLink (Util.normalizeURL (itemURL));
-
-            // Skip it if it's cached.
-
-            log.debug ("Item link: " + itemURL);
-            log.debug ("Item ID: " + item.getUniqueID());
-            log.debug ("Item key: " + item.getCacheKey());
-            if ((cache != null) && cache.contains (item.getCacheKey()))
-            {
-                log.debug ("Skipping cached URL: " + itemURL.toString());
-                it.remove();
+                log.debug ("Feed "
+                         + feedInfo.getURL().toString()
+                         + ": RSS parsing is disabled and there's no save "
+                         + "file. There's no sense processing this feed.");
                 continue;
             }
+
+            // Attempt to acquire the semaphore. When we get it, then there's
+            // an idle thread available for use in processing this feed.
+
+            log.debug ("Attempting to acquire signalling semaphore. "
+                     + "Semaphore count is "
+                     + semaphore.getValue());
+            semaphore.acquire();
+            log.debug ("Got semaphore.");
+
+            // First, find any threads that are finished processing their
+            // feeds, to ensure that recently finished threads are added
+            // back to the idleThreads list.
+
+            findIdleThreads (activeThreads, idleThreads);
+
+            int totalIdle = idleThreads.size();
+            log.debug ("Total idle threads: " + totalIdle);
+
+            if (totalIdle == 0)
+            {
+                throw new IllegalStateException ("(BUG) Got semaphore, but "
+                                               + "list of idle threads is "
+                                               + "empty.");
+            }
+
+            // Get the thread object.
+
+            thread = (FeedDownloadThread) idleThreads.removeFirst();
+            log.info ("Starting separate thread to process feed "
+                    + feedInfo.getURL().toString());
+
+            // Initialize it and start it. It will store parsed channel data
+            // in the FeedInfo object.
+
+            thread.initializeNewFeed (feedInfo);
+
+            // Add it to the list of running threads.
+
+            activeThreads.add (thread);
         }
 
-        // Add all the items to the cache.
+        log.debug ("All feeds have been parceled out to threads. Waiting for "
+                 + "threads to complete.");
 
-        if (items.size() > 0)
+        it = new MultiIterator (new Collection[] {idleThreads, activeThreads});
+        while (it.hasNext())
         {
-            for (it = items.iterator(); it.hasNext(); )
-            {
-                RSSItem item = (RSSItem) it.next();
+            thread = (FeedDownloadThread) it.next();
+            log.info ("Telling thread "
+                    + thread.getName()
+                    + " to stop when idle, and joining it.");
 
-                log.debug ("Cacheing URL: " + item.getLink().toString());
-                if (cache != null)
+            thread.stopWhenIdle();
+
+            try
+            {
+                thread.join();
+            }
+
+            catch (InterruptedException ex)
+            {
+                log.debug ("Interrupted during thread join: " + ex.toString());
+            }
+
+            log.info ("Joined thread " + thread.getName());
+        }
+
+        // Now, scan the list of feeds and find those with channel data.
+
+        for (it = feeds.iterator(); it.hasNext(); )
+        {
+            FeedInfo   feedInfo = (FeedInfo) it.next();
+            RSSChannel channel  = feedInfo.getParsedChannelData();
+
+            if (channel != null)
+                channels.add (new ChannelFeedInfo (feedInfo, channel));
+        }
+
+        return channels;
+    }
+
+    /**
+     * Get a new instance of an RSS parser.
+     *
+     * @param configuration the parsed configuration
+     *
+     * @return the RSSParser
+     *
+     * @throws RSSParserException error instantiating parser
+     */
+    private RSSParser getRSSParser (ConfigFile configuration)
+        throws RSSParserException
+    {
+        String parserClassName = configuration.getRSSParserClassName();
+        log.info ("Getting parser \"" + parserClassName + "\"");
+        return RSSParserFactory.getRSSParser (parserClassName);
+    }
+
+    /**
+     * Used solely by doMultithreadedFeedDownload(), makes one pass through
+     * a collection of presumed active threads, looking for ones that are
+     * finished processing their feeds. For each such thread, this method
+     * moves the Thread object into the supplied idleThreads list.
+     *
+     * @param activeThreads   list of running Thread objects
+     * @param idleThreads     list of idle Thread objects
+     */
+    private void findIdleThreads (LinkedList activeThreads,
+                                  LinkedList idleThreads)
+    {
+        for (Iterator it = activeThreads.iterator(); it.hasNext(); )
+        {
+            FeedDownloadThread thread = (FeedDownloadThread) it.next();
+
+            // NOTE: Must test the thread's "finishing" flag, instead of
+            // calling Thread.isAlive(). The thread has released the parent
+            // semaphore, which can cause a switch in context. The parent
+            // Curn object may be awakened, and the thread put to sleep,
+            // *before* the thread actually dies. We have to use a
+            // different mechanism to determine that the thread is finished
+            // and should be joined, since calling Thread.isAlive() will
+            // return true in that case.
+            
+            if (thread.isDoneProcessingFeed())
+            {
+                log.debug ("Thread " + thread.getName() + " is now idle.");
+
+                if (thread.errorOccurred())
                 {
-                    cache.addToCache (item.getCacheKey(),
-                                      item.getLink(),
-                                      feedInfo);
+                    log.error ("Thread "
+                             + thread.getName()
+                             + " encountered an exception condition.",
+                               thread.getException());
                 }
+
+                thread.clear();
+
+                // Move thread from active list to idle list.
+
+                it.remove();
+                idleThreads.add (thread);
             }
         }
-
-        // If we're to ignore items with duplicate titles, now is the time
-        // to do it. It must be done AFTER cacheing, to be sure we don't show
-        // the weeded-out duplicates during the next run.
-
-        if (feedInfo.ignoreItemsWithDuplicateTitles())
-            items = pruneDuplicateTitles (items);
-
-        // Change the channel's items to the ones that are left.
-
-        channel.setItems (items);
-    }
-
-    private Collection sortChannelItems (Collection items, FeedInfo feedInfo)
-    {
-        Collection result = items;
-        int        total  = items.size();
-
-        if (total > 0)
-        {
-            int sortBy = feedInfo.getSortBy();
-
-            switch (sortBy)
-            {
-                case FeedInfo.SORT_BY_NONE:
-                    break;
-
-                case FeedInfo.SORT_BY_TITLE:
-                case FeedInfo.SORT_BY_TIME:
-
-                    // Can't just use a TreeSet, with a Comparator, because
-                    // then items with the same title will be weeded out.
-
-                    Object[] array = items.toArray();
-                    Arrays.sort (array, new ItemComparator (sortBy));
-                    result = Arrays.asList (array);
-                break;
-
-            default:
-                throw new IllegalStateException ("Bad FeedInfo.getSortBy() "
-                                               + "value of "
-                                               + String.valueOf (sortBy));
-            }
-        }
-
-        return result;
-    }
-
-    private Collection pruneDuplicateTitles (Collection items)
-    {
-        Set         titlesSeen = new HashSet();
-        Collection  result     = new ArrayList();
-
-        for (Iterator it = items.iterator(); it.hasNext(); )
-        {
-            RSSItem item  = (RSSItem) it.next();
-            String  title = item.getTitle().toLowerCase();
-
-            if (title == null)
-                title = "";
-
-            if (! titlesSeen.contains (title))
-            {
-                result.add (item);
-                titlesSeen.add (title);
-            }
-        }
-
-        return result;
     }
 
     private void displayChannels (Collection channels)

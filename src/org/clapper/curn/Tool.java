@@ -123,6 +123,7 @@ public class Tool extends CommandLineUtility
     private Boolean     optQuiet         = null;
     private Boolean     optRSSVersion    = null;
     private Boolean     optUpdateCache   = null;
+    private int         maxThreads       = 0;
 
     /**
      * For log messages
@@ -246,6 +247,29 @@ public class Tool extends CommandLineUtility
                 currentTime = parseDateTime ((String) it.next());
                 break;
 
+            case 'T':           // --threads
+                String arg = (String) it.next();
+
+                try
+                {
+                    maxThreads = Integer.parseInt (arg);
+                    if (maxThreads < 1)
+                    {
+                        throw new CommandLineUsageException
+                            ("Value for -T or --threads option must be "
+                           + "greater than 0.");
+                    }
+                }
+
+                catch (NumberFormatException ex)
+                {
+                    throw new CommandLineUsageException ("Bad numeric value \""
+                                                       + arg
+                                                       + "for -T or --threads "
+                                                       + "option.");
+                }
+                break;
+
             case 'u':           // --no-update
                 optUpdateCache = Boolean.FALSE;
                 break;
@@ -355,6 +379,9 @@ public class Tool extends CommandLineUtility
                         "Show the RSS version each site uses.");
         info.addOption ('R', "no-rss-version",
                         "Don't show the RSS version each site uses.");
+        info.addOption ('T', "threads", "<n>",
+                        "Set the number of concurrent download threads to "
+                      + "<n>. <n> must be greater than 0.");
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
         info.addOption ('z', "gzip",
@@ -491,6 +518,9 @@ public class Tool extends CommandLineUtility
 
         if (optShowDates != null)
             config.setShowDatesFlag (true);
+
+        if (maxThreads > 0)
+            config.setMaxThreads (maxThreads);
     }
 
     private Date parseDateTime (String s)

@@ -7,8 +7,11 @@ package org.clapper.curn;
 import java.net.URL;
 import java.io.File;
 
+import org.clapper.curn.parser.RSSChannel;
+
 /**
- * <p>Contains configuration data for one feed (or site).</p>
+ * <p>Contains data for one feed (or site). Most, but not all, of the data
+ * comes from the configuration file.</p>
  *
  * @see ConfigFile
  *
@@ -49,16 +52,17 @@ public class FeedInfo
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private boolean  pruneURLsFlag         = false;
-    private boolean  summaryOnly           = false;
-    private boolean  enabled               = true;
-    private int      daysToCache           = 0;
-    private String   titleOverride         = null;
-    private String   itemURLEditCmd        = null;
-    private URL      siteURL               = null;
-    private File     saveAsFile            = null;
-    private int      sortBy                = SORT_BY_NONE;
-    private boolean  ignoreDuplicateTitles = false;
+    private boolean     pruneURLsFlag         = false;
+    private boolean     summaryOnly           = false;
+    private boolean     enabled               = true;
+    private int         daysToCache           = 0;
+    private String      titleOverride         = null;
+    private String      itemURLEditCmd        = null;
+    private URL         siteURL               = null;
+    private File        saveAsFile            = null;
+    private int         sortBy                = SORT_BY_NONE;
+    private boolean     ignoreDuplicateTitles = false;
+    private RSSChannel  parsedChannelData     = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -80,6 +84,16 @@ public class FeedInfo
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the hash code for this feed
+     *
+     * @return the hash code
+     */
+    public int hashCode()
+    {
+        return getCacheKey().hashCode();
+    }
 
     /**
      * Get the main RSS URL for the site.
@@ -385,5 +399,37 @@ public class FeedInfo
     public void setIgnoreItemsWithDuplicateTitlesFlag (boolean val)
     {
         this.ignoreDuplicateTitles = val;
+    }
+
+    /**
+     * Get the parsed channel data for this feed. This field is set by the
+     * main processing logic and does not come from the configuration.
+     *
+     * @return the <tt>RSSChannel</tt> object representing the current
+     *         parsed data from this feed, or null if not set
+     *
+     * @see #setParsedChannelData
+     * @see Curn
+     * @see RSSChannel
+     */
+    public RSSChannel getParsedChannelData()
+    {
+        return parsedChannelData;
+    } 
+
+    /**
+     * Set the parsed channel data for this feed. This field is set by the
+     * main processing logic and does not come from the configuration.
+     *
+     * @param channel the <tt>RSSChannel</tt> object representing the current
+     *                parsed data from this feed, or null if not set
+     *
+     * @see #getParsedChannelData
+     * @see Curn
+     * @see RSSChannel
+     */
+    public void setParsedChannelData (RSSChannel channel)
+    {
+        this.parsedChannelData = channel;
     }
 }

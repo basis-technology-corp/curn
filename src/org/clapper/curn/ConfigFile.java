@@ -82,6 +82,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_CLASS             = "Class";
     private static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
     private static final String VAR_SORT_BY           = "SortBy";
+    private static final String VAR_MAX_THREADS       = "MaxThreads";
     private static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
 
     /**
@@ -117,6 +118,7 @@ public class ConfigFile extends Configuration
     private static final String  DEF_OUTPUT_CLASS =
                              "org.clapper.curn.TextOutputHandler";
     private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
+    private static final int     DEF_MAX_THREADS       = 5;
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -140,6 +142,7 @@ public class ConfigFile extends Configuration
     private boolean         showAuthors           = false;
     private boolean         getGzippedFeeds       = true;
     private int             defaultSortBy         = DEF_SORT_BY;
+    private int             maxThreads            = DEF_MAX_THREADS;
 
     /**
      * For log messages
@@ -364,6 +367,32 @@ public class ConfigFile extends Configuration
     public boolean mustUpdateCache()
     {
         return updateCache;
+    }
+
+    /**
+     * Get the maximum number of concurrent threads to spawn when retrieving
+     * RSS feeds.
+     *
+     * @return the maximum number of threads
+     *
+     * @see #setMaxThreads
+     */
+    public int getMaxThreads()
+    {
+        return maxThreads;
+    }
+
+    /**
+     * Set the maximum number of concurrent threads to spawn when retrieving
+     * RSS feeds.
+     *
+     * @param newValue the maximum number of threads
+     *
+     * @see #getMaxThreads
+     */
+    public void setMaxThreads (int newValue)
+    {
+        this.maxThreads = newValue;
     }
 
     /**
@@ -756,6 +785,18 @@ public class ConfigFile extends Configuration
                                                        DEF_GET_GZIPPED_FEEDS);
 
             defaultSortBy = getSortByValue (MAIN_SECTION, DEF_SORT_BY);
+            maxThreads = getOptionalIntegerValue (MAIN_SECTION,
+                                                  VAR_MAX_THREADS,
+                                                  DEF_MAX_THREADS);
+            if (maxThreads <= 0)
+            {
+                throw new ConfigurationException ("Configuration parameter \""
+                                                + VAR_MAX_THREADS
+                                                + "\" is "
+                                                + String.valueOf (maxThreads)
+                                                + ". It must be a positive "
+                                                + "integer.");
+            }
         }
 
         catch (NoSuchVariableException ex)
