@@ -4,12 +4,7 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import org.clapper.util.text.*;
-import org.clapper.util.config.*;
-import org.clapper.util.io.*;
+import java.net.URL;
 
 /**
  * <p>Contains configuration data for one RSS feed (or site).</p>

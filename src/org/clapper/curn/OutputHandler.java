@@ -4,7 +4,10 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
+import java.io.IOException;
+
+import org.clapper.rssget.parser.RSSChannel;
+import org.clapper.rssget.parser.RSSItem;
 
 /**
  * This interface defines the methods that must be supported by a class

@@ -4,12 +4,8 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import org.clapper.util.text.*;
-import org.clapper.util.config.*;
-import org.clapper.util.io.*;
+import java.net.URL;
+import java.io.Serializable;
 
 /**
  * <p>Defines the contents of a cache entry. There is one cache entry

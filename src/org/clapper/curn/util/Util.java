@@ -4,8 +4,8 @@
 
 package org.clapper.rssget;
 
-import java.net.*;
-import java.util.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Miscellaneous utility methods that are shared among classes in this package,

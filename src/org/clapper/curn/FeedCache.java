@@ -4,9 +4,19 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+
+import java.net.URL;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Defines the in-memory format of the <i>rssget</i> cache, and provides

@@ -4,9 +4,16 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-import java.util.*;
-import org.clapper.util.io.*;
+import org.clapper.rssget.parser.RSSChannel;
+import org.clapper.rssget.parser.RSSItem;
+
+import org.clapper.util.io.WordWrapWriter;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.PrintStream;
+
+import java.util.Date;
 
 /**
  * Provides an output handler that produces plain text to a

@@ -4,11 +4,10 @@
 
 package org.clapper.rssget;
 
-import java.util.*;
-import java.text.*;
+import java.text.SimpleDateFormat;
 
 /**
- * Used when parsing dates
+ * Used by <i>rssget</i> when parsing dates.
  */
 class DateParseInfo
 {

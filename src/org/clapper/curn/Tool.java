@@ -4,14 +4,30 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import java.text.*;
-import org.clapper.util.io.*;
-import org.clapper.util.text.*;
-import org.clapper.util.misc.*;
-import org.clapper.util.config.*;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.Calendar;
+
+import java.text.ParseException;
+
+import java.net.URL;
+import java.net.MalformedURLException;
+
+import org.clapper.rssget.parser.RSSParserFactory;
+import org.clapper.rssget.parser.RSSParser;
+import org.clapper.rssget.parser.RSSParserException;
+import org.clapper.rssget.parser.RSSChannel;
+import org.clapper.rssget.parser.RSSItem;
+
+import org.clapper.util.misc.BadCommandLineException;
+
+import org.clapper.util.config.ConfigurationException;
 
 /**
 * <p>rssget - scan RSS feeds and display a textual summary, suitable for
@@ -38,7 +54,7 @@ public class rssget implements VerboseMessagesHandler
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VERSION = "0.2";
+    private static final String VERSION = "0.3";
 
     private static final DateParseInfo[] DATE_FORMATS = new DateParseInfo[]
     {

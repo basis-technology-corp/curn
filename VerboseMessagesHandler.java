@@ -4,8 +4,6 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-
 /**
  * This interface defines the methods required to be a verbose messages
  * handler.
