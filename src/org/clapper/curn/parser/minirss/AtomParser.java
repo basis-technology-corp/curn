@@ -22,7 +22,9 @@ import org.xml.sax.Attributes;
  *
  * <p>This parser doesn't store all the possible items. It stores those
  * items that the <i>rssget</i> utility requires (plus a few more), but
- * lacks support for others.</p>
+ * lacks support for others. Thus, it is unsuitable for use as a
+ * general-purpose Atom parser (though it's perfectly suited for use
+ * in <i>rssget</i>).</p>
  *
  * @version <tt>$Revision$</tt>
  *

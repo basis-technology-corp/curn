@@ -18,11 +18,13 @@ import org.xml.sax.Attributes;
  * It's intended to be invoked once a <tt>MiniRSSParser</tt> has determined
  * whether the XML feed represents version 1 RSS or not.</p>
  *
- * <p>This parser doesn't store all the possible RSS items. It stores
- * those items that the <i>rssget</i> utility requires (plus a few more),
- * but lacks support for others. For instance, it ignores <tt>image</tt>,
+ * <p>This parser doesn't store all the possible RSS items. It stores those
+ * items that the <i>rssget</i> utility requires (plus a few more), but
+ * lacks support for others. For instance, it ignores <tt>image</tt>,
  * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
- * has no interest in displaying.</p>
+ * has no interest in displaying. Thus, it is unsuitable for use as a
+ * general-purpose Atom parser (though it's perfectly suited for use in
+ * <i>rssget</i>).</p>
  *
  * @version <tt>$Revision$</tt>
  *

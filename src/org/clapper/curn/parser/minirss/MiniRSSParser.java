@@ -37,11 +37,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
  * However, it doesn't store all the possible RSS items. It stores those
  * items that the <i>rssget</i> utility requires (plus a few more), but
- * lacks support for others. For instance, it ignores <tt>image</tt>,
- * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
- * has no interest in displaying. As such, <tt>MiniRSSParser</tt> is not
- * suitable as a general-purpose RSS parser. However, it is very suitable
- * for use with <i>rssget</i>.</p>
+ * lacks support for others.  Thus, it is unsuitable for use as a
+ * general-purpose RSS parser (though it's perfectly suited for use
+ * in <i>rssget</i>).</p>
  *
  * <p><b>Notes:</b>
  *
@@ -52,8 +50,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  *    <li> If a specific XML parser class is not specified to the constructor,
  *         this class defaults to using the Apache Xerces XML parser class.
- *
- *    <li> This parser does <i>not</i> handle XML Atom feeds.
  * </ol>
  *
  * @version <tt>$Revision$</tt>
