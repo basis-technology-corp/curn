@@ -145,8 +145,19 @@ public abstract class RSSItem
      * Get the item's title
      *
      * @return the item's title, or null if there isn't one
+     *
+     * @see #setTitle
      */
     public abstract String getTitle();
+
+    /**
+     * Set the item's title
+     *
+     * @param newTitle  the item's title, or null if there isn't one
+     *
+     * @see #getTitle
+     */
+    public abstract void setTitle (String newTitle);
 
     /**
      * Get the item's published link (its URL).
@@ -167,15 +178,36 @@ public abstract class RSSItem
      * synopsis).
      *
      * @return the summary, or null if not available
+     *
+     * @see #setSummary
      */
     public abstract String getSummary();
+
+    /**
+     * Set the item's summary (also sometimes called the description or
+     * synopsis).
+     *
+     * @param newSummary the summary, or null if not available
+     *
+     * @see #getSummary
+     */
+    public abstract void setSummary (String newSummary);
 
     /**
      * Get the item's author.
      *
      * @return the author, or null if not available
+     *
+     * @see #setAuthor
      */
     public abstract String getAuthor();
+
+    /**
+     * Set the item's author.
+     *
+     * @param newAuthor the author, or null if not available
+     */
+    public abstract void setAuthor (String newAuthor);
 
     /**
      * Get the categories the item belongs to.

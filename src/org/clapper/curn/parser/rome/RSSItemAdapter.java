@@ -96,6 +96,8 @@ public class RSSItemAdapter extends RSSItem
      * Get the item's title
      *
      * @return the item's title, or null if there isn't one
+     *
+     * @see #setTitle
      */
     public String getTitle()
     {
@@ -106,6 +108,18 @@ public class RSSItemAdapter extends RSSItem
         // spaces.
 
         return ParserUtil.normalizeCharacterData (entry.getTitle());
+    }
+
+    /**
+     * Set the item's title
+     *
+     * @param newTitle  the item's title, or null if there isn't one
+     *
+     * @see #getTitle
+     */
+    public void setTitle (String newTitle)
+    {
+        entry.setTitle (newTitle);
     }
 
     /**
@@ -147,6 +161,8 @@ public class RSSItemAdapter extends RSSItem
      * Get the item's summary.
      *
      * @return the summary, or null if not available
+     *
+     * @see #setSummary
      */
     public String getSummary()
     {
@@ -166,13 +182,41 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
+     * Set the item's summary (also sometimes called the description or
+     * synopsis).
+     *
+     * @param newSummary the summary, or null if not available
+     *
+     * @see #getSummary
+     */
+    public void setSummary (String newSummary)
+    {
+        SyndContentI  content = entry.getDescription();
+
+        if (content != null)
+            content.setValue (newSummary);
+     }
+
+    /**
      * Get the item's author.
      *
      * @return the author, or null if not available
+     *
+     * @see #getAuthor
      */
     public String getAuthor()
     {
         return entry.getAuthor();
+    }
+
+    /**
+     * Set the item's author.
+     *
+     * @param newAuthor the author, or null if not available
+     */
+    public void setAuthor (String newAuthor)
+    {
+        entry.setAuthor (newAuthor);
     }
 
     /**
