@@ -214,8 +214,7 @@ public final class ParserUtil
                                                int          length,
                                                StringBuffer buf)
     {
-        // Setting lastWasNewline to true catches leading newlines.
-        boolean lastWasNewline = true;
+        boolean lastWasNewline = false;
 
         int end = start + length;
         while (start < end)
@@ -231,7 +230,7 @@ public final class ParserUtil
             // are meaningless within character data anyway, at least in
             // this context.
 
-            if ((c == '\n') || (c == '\r'))
+            if ((c == '\n') || (c == '\r') || (start == 0))
             {
                 if (! lastWasNewline)
                     buf.append (' ');
