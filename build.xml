@@ -34,14 +34,31 @@
 
   <patternset id="main.sources">
     <include name="*.java"/>
-    <exclude name="*/*.java"/>
+    <exclude name="parser/*/*.java"/>
+    <exclude name="parser/*.java"/>
+  </patternset>
+
+  <patternset id="parser.main">
+    <include name="parser/*.java"/>
+    <exclude name="parser/*/*.java"/>
   </patternset>
 
   <patternset id="parser.impls">
-    <include name="*/*.java"/>
+    <include name="parser/*/*.java"/>
   </patternset>
 
-  <target name="main" depends="init">
+  <target name="parser_main" depends="init">
+    <!-- Compile the java code from . into ${build} -->
+    <javac srcdir="." 
+	   depend="true"
+	   listfiles="${compile.listfiles}"
+	   destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="parser.main"/>
+    </javac>
+  </target>
+
+  <target name="main" depends="parser_main">
     <!-- Compile the java code from . into ${build} -->
     <javac srcdir="." 
 	   depend="true"
@@ -52,7 +69,7 @@
     </javac>
   </target>
 
-  <target name="parser_impls" depends="main">
+  <target name="parser_impls" depends="parser_main">
     <!-- Compile the java code from . into ${build} -->
     <javac srcdir="." 
 	   depend="true"
@@ -63,7 +80,7 @@
     </javac>
   </target>
 
-  <target name="rssget" depends="parser_impls"/>
+  <target name="rssget" depends="main, parser_impls"/>
 
   <target name="dist" depends="rssget"
           description="Generate the distribution">
