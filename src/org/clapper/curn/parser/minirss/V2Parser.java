@@ -294,11 +294,7 @@ public class V2Parser extends ParserCommon
                 item.setDescription (chars);
 
             else if (elementName.equals ("pubDate"))
-            {
-                Date date = parseRFC822Date (chars);
-                System.out.println ("*** setting item publication date to " + date);
                 item.setPublicationDate (parseRFC822Date (chars));
-            }
 
             else if (elementName.equals ("category"))
                 item.addCategory (chars);
