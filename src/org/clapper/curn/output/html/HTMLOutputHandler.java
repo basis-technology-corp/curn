@@ -13,6 +13,8 @@ import org.clapper.rssget.RSSGetConfiguration;
 import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
 
+import org.clapper.util.text.Unicode;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -25,10 +27,11 @@ import java.text.SimpleDateFormat;
 
 import java.net.URL;
 
-import org.enhydra.xml.xmlc.html.*;
-import org.enhydra.xml.xmlc.XMLCUtil;
-import org.w3c.dom.*;
-import org.w3c.dom.html.*;
+import org.w3c.dom.Node;
+
+import org.w3c.dom.html.HTMLTableRowElement;
+import org.w3c.dom.html.HTMLTableCellElement;
+import org.w3c.dom.html.HTMLAnchorElement;
 
 /**
  * Provides an output handler that produces HTML output.
@@ -180,7 +183,9 @@ public class HTMLOutputHandler implements OutputHandler
 
             doc.setTextItemTitle ((title == null) ? "(No Title)" : title);
 
-            doc.setTextItemDescription ((desc == null) ? "" : desc);
+            if (desc == null)
+                desc = String.valueOf (Unicode.NBSP);
+            doc.setTextItemDescription (desc);
             itemAnchor.setHref (item.getLink().toExternalForm());
 
             date = null;
