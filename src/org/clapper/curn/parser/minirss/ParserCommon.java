@@ -26,28 +26,15 @@
 
 package org.clapper.curn.parser.minirss;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import org.clapper.curn.parser.ParserUtil;
+
 import java.util.Date;
 import java.util.Stack;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
 
 import java.text.NumberFormat;
-import java.text.DateFormat;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import org.apache.oro.text.regex.PatternCompiler;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
 
 /**
  * <p>Common logic and data shared between <tt>V1Parser</tt> and
@@ -60,34 +47,6 @@ class ParserCommon extends DefaultHandler
     /*----------------------------------------------------------------------*\
 			     Private Constants
     \*----------------------------------------------------------------------*/
-
-    /**
-     * A date format for parsing RFC 822-style dates.
-     */
-    private static DateFormat[] RFC822_DATE_FORMATS;
-
-    /**
-     * Patterns for the more common W3C date/time formats.
-     */
-    private static DateFormat[] W3C_DATE_FORMATS;
-
-    static
-    {
-        W3C_DATE_FORMATS = new SimpleDateFormat[]
-        {
-            new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss"),
-            new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm"),
-            new SimpleDateFormat ("yyyy-MM-dd"),
-            new SimpleDateFormat ("yyyy-MM"),
-            new SimpleDateFormat ("yyyy")
-        };
-
-        RFC822_DATE_FORMATS = new SimpleDateFormat[]
-        {
-            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss z"),
-            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss")
-        };
-    };
 
     /*----------------------------------------------------------------------*\
                           Protected Instance Data
@@ -192,7 +151,7 @@ class ParserCommon extends DefaultHandler
      */
     protected Date parseRFC822Date (String sDate)
     {
-        return parseDate (sDate, RFC822_DATE_FORMATS, TimeZone.getDefault());
+        return ParserUtil.parseRFC822Date (sDate);
     }
 
     /**
@@ -204,119 +163,6 @@ class ParserCommon extends DefaultHandler
      */
     protected Date parseW3CDate (String sDate)
     {
-        TimeZone       timeZone = TimeZone.getDefault();
-        int            tzIndex;
-
-        // First, extract the time zone, if present.
-
-        if (((tzIndex = sDate.lastIndexOf ('Z')) != -1) ||
-            ((tzIndex = sDate.lastIndexOf ('-')) != -1) ||
-            ((tzIndex = sDate.lastIndexOf ('+')) != -1))
-        {
-            timeZone = parseW3CTimeZone (sDate.substring (tzIndex));
-        }
-
-        // Now, parse the date.
-
-        return parseDate (sDate, W3C_DATE_FORMATS, timeZone);
-    }
-
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Parse a date/time using an array of DateFormat objects
-     *
-     * @param sDate    the date string
-     * @param formats  the array of DateFormat objects to try, one by one
-     * @param timeZone time zone to use
-     *
-     * @return the parsed date, or null if not parseable
-     */
-    private Date parseDate (String        sDate,
-                            DateFormat[]  formats,
-                            TimeZone      timeZone)
-    {
-        Date result = null;
-
-        for (int i = 0; i < formats.length; i++)
-        {
-            formats[i].setTimeZone (timeZone);
-            try
-            {
-                result = formats[i].parse (sDate, new ParsePosition (0));
-            }
-
-            catch (NumberFormatException ex)
-            {
-                result = null;
-            }
-
-            if (result != null)
-                break;
-        }
-
-        return result;
-    }
-
-    /**
-     * Parse a string into a W3C time zone. Returns the default time zone
-     * if the string doesn't parse.
-     *
-     * @param tz  the alleged time zone string
-     *
-     * @return a TimeZone
-     */
-    private TimeZone parseW3CTimeZone (String tz)
-    {
-        TimeZone timeZone = null;
-
-        // Do we have a time zone?
-
-        switch (tz.charAt (0))
-        {
-            case 'Z':
-                timeZone = TimeZone.getTimeZone ("GMT");
-                break;
-
-            case '-':
-            case '+':
-                // +hh:mm -hh:mm
-
-                Perl5Compiler reCompiler = new Perl5Compiler();
-                Perl5Matcher reMatcher = new Perl5Matcher();
-                Pattern re = null;
-
-                try
-                {
-                    re = reCompiler.compile ("^[+-][0-9][0-9]:[0-9][0-9]$");
-                }
-
-                catch (MalformedPatternException ex)
-                {
-                    // Shouldn't happen.
-
-                    throw new IllegalStateException (ex.toString());
-                }
-
-                if (reMatcher.contains (tz, re))
-                    timeZone = TimeZone.getTimeZone ("GMT" + tz);
-
-                if (timeZone == null)
-                    timeZone = TimeZone.getDefault();
-
-                break;
-
-            default:
-                // Whatever it is, it's not a time zone. Assume
-                // local time zone.
-
-                timeZone = TimeZone.getDefault();
-                break;
-                        
-        }
-
-        return timeZone;
+        return ParserUtil.parseW3CDate (sDate);
     }
 }
