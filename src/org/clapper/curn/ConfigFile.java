@@ -67,6 +67,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
     private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
     private static final String VAR_DISABLE_FEED      = "Disabled";
+    private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
 
     /**
      * Default values
@@ -79,6 +80,7 @@ public class ConfigFile extends Configuration
     private static final boolean DEF_SUMMARY_ONLY      = false;
     private static final boolean DEF_SHOW_RSS_VERSION  = false;
     private static final boolean DEF_SHOW_DATES        = false;
+    private static final boolean DEF_SHOW_AUTHORS      = false;
     private static final String  DEF_SMTP_HOST         = "localhost";
     private static final String  DEF_EMAIL_SUBJECT     = "RSS Feeds";
     private static final String  DEF_PARSER_CLASS_NAME =
@@ -105,6 +107,7 @@ public class ConfigFile extends Configuration
     private String      smtpHost         = DEF_SMTP_HOST;
     private String      emailSender      = null;
     private String      emailSubject     = DEF_EMAIL_SUBJECT;
+    private boolean     showAuthors      = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -272,6 +275,34 @@ public class ConfigFile extends Configuration
     public void setQuietFlag (boolean val)
     {
         this.quiet = val;
+    }
+
+    /**
+     * Return the value of the "show authors" flag. This flag controls whether
+     * to display the authors associated with each item, if available.
+     *
+     * @return <tt>true</tt> if "show authors" flag is set, <tt>false</tt>
+     *         otherwise
+     *
+     * @see #setShowAuthorsFlag
+     */
+    public boolean showAuthors()
+    {
+        return showAuthors;
+    }
+
+    /**
+     * Set the value of the "show authors" flag. This flag controls whether
+     * to display the authors associated with each item, if available.
+     *
+     * @param val <tt>true</tt> to set the "show authors" flag, <tt>false</tt>
+     *            to clear it
+     *
+     * @see #showAuthors
+     */
+    public void setShowAuthorsFlag (boolean val)
+    {
+        this.showAuthors = val;
     }
 
     /**
@@ -596,6 +627,9 @@ public class ConfigFile extends Configuration
             emailSubject = getOptionalStringValue (MAIN_SECTION,
                                                    VAR_EMAIL_SUBJECT,
                                                    DEF_EMAIL_SUBJECT);
+            showAuthors = getOptionalBooleanValue (MAIN_SECTION,
+                                                   VAR_SHOW_AUTHORS,
+                                                   DEF_SHOW_AUTHORS);
         }
 
         catch (NoSuchVariableException ex)

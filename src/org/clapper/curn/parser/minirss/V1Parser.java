@@ -319,7 +319,7 @@ public class V1Parser extends ParserCommon
             setItemLink (item, chars);
 
         else if (elementName.equals ("description"))
-            item.setDescription (chars);
+            item.setSummary (chars);
 
         else if (elementName.equals ("dc:date"))
             item.setPublicationDate (parseW3CDate (chars));

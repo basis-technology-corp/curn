@@ -56,7 +56,7 @@ public class tester
             System.out.println ("Item title: " + item.getTitle());
             System.out.println ("Item link:  " + item.getLink());
 
-            String s = item.getDescription();
+            String s = item.getSummary();
             if (s != null)
                 System.out.println ("Item desc:  " + s);
 

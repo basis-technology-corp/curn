@@ -234,6 +234,9 @@ public class V2Parser extends ParserCommon
 
             else if (elementName.equals ("copyright"))
                 channel.setCopyright (chars);
+
+            else if (elementName.equals ("author"))
+                channel.setAuthor (chars);
         }
 
         catch (MalformedURLException ex)
@@ -293,13 +296,19 @@ public class V2Parser extends ParserCommon
                 item.setLink (new URL (chars));
 
             else if (elementName.equals ("description"))
-                item.setDescription (chars);
+                item.setSummary (chars);
 
             else if (elementName.equals ("pubDate"))
                 item.setPublicationDate (parseRFC822Date (chars));
 
             else if (elementName.equals ("category"))
                 item.addCategory (chars);
+
+            else if (elementName.equals ("author"))
+                item.setAuthor (chars);
+
+            else if (elementName.equals ("guid"))
+                item.setUniqueID (chars);
         }
 
         catch (MalformedURLException ex)

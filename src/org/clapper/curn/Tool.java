@@ -398,6 +398,12 @@ public class curn implements VerboseMessagesHandler
                 else if (s.equals ("-d") || s.equals ("--show-dates"))
                     opts.put ("d", "");
 
+                else if (s.equals ("-a") || s.equals ("--show-authors"))
+                    opts.put ("a", "");
+
+                else if (s.equals ("-A") || s.equals ("--no-authors"))
+                    opts.put ("A", "");
+
                 else if (s.equals ("-D") || s.equals ("--no-dates"))
                     opts.put ("D", "");
 
@@ -426,6 +432,14 @@ public class curn implements VerboseMessagesHandler
 
                 switch (c)
                 {
+                    case 'a':   // --show-authors
+                        config.setShowAuthorsFlag (true);
+                        break;
+
+                    case 'A':   // --no-authors
+                        config.setShowAuthorsFlag (false);
+                        break;
+
                     case 'u':   // --noupdate
                         config.setMustUpdateCacheFlag (false);
                         break;
@@ -548,6 +562,8 @@ public class curn implements VerboseMessagesHandler
 "Usage: " + curn.class.getName() + " [options] configFile [email_addr ...]",
 "",
 "OPTIONS",
+"-a, --show-authors   Show the authors for each item, if available",
+"-A, --no-authors     Don't show the authors for each item",
 "-B, --build-info     Show full build information",
 "-C, --no-cache       Don't use a cache file at all.",
 "-d, --show-dates     Show dates on feeds and feed items, if available",

@@ -14,6 +14,7 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.text.Unicode;
+import org.clapper.util.text.TextUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -176,16 +177,43 @@ public class HTMLOutputHandler implements OutputHandler
                 itemAnchor.setHref ("");
             }
 
-            String desc  = item.getDescription();
-            if (feedInfo.summarizeOnly())
-                desc = "";
             String title = item.getTitle();
-
             doc.setTextItemTitle ((title == null) ? "(No Title)" : title);
+
+            String desc = null;
+            if (! feedInfo.summarizeOnly())
+            {
+                desc = item.getSummary();
+                if (TextUtils.stringIsEmpty (desc))
+                {
+                    // Hack for feeds that have no summary but have
+                    // content. If the content is small enough, use it as
+                    // the summary.
+
+                    desc = item.getFirstContentOfType (new String[]
+                                                       {
+                                                           "text/plain",
+                                                           "text/html"
+                                                       });
+                    if (! TextUtils.stringIsEmpty (desc))
+                    {
+                        desc = desc.trim();
+                        if (desc.length() > CONTENT_AS_SUMMARY_MAXSIZE)
+                            desc = null;
+                    }
+                }
+            }
+
+            else
+            {
+                desc = desc.trim();
+            }
 
             if (desc == null)
                 desc = String.valueOf (Unicode.NBSP);
+
             doc.setTextItemDescription (desc);
+
             itemAnchor.setHref (item.getLink().toExternalForm());
 
             date = null;

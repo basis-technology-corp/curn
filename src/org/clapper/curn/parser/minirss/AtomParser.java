@@ -4,6 +4,8 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.parser.RSSItem;
+
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Date;
@@ -38,13 +40,50 @@ public class AtomParser extends ParserCommon
                                Inner Classes
     \*----------------------------------------------------------------------*/
 
-    class Author
+    interface Author
+    {
+        void setAuthorName (String name);
+    }
+
+    class ChannelAuthor implements Author
     {
         Channel parentChannel = null;
 
-        Author (Channel parentChannel)
+        ChannelAuthor (Channel parentChannel)
         {
             this.parentChannel = parentChannel;
+        }
+
+        public void setAuthorName (String name)
+        {
+            parentChannel.setAuthor (name);
+        }
+    }
+
+    class ItemAuthor implements Author
+    {
+        Item parentItem = null;
+
+        ItemAuthor (Item parentItem)
+        {
+            this.parentItem = parentItem;
+        }
+
+        public void setAuthorName (String name)
+        {
+            parentItem.setAuthor (name);
+        }
+    }
+
+    class ItemContent
+    {
+        String mimeType = null;
+        Item   parentItem = null;
+
+        ItemContent (String mimeType, Item parentItem)
+        {
+            this.mimeType = mimeType;
+            this.parentItem = parentItem;
         }
     }
 
@@ -156,6 +195,12 @@ public class AtomParser extends ParserCommon
 
             else if (container instanceof Item)
                 endItemElement (elementName, entry);
+
+            else if (container instanceof Author)
+                endAuthorElement (elementName, entry);
+
+            else if (container instanceof ItemContent)
+                endItemContentElement (elementName, entry);
         }
     }
 
@@ -207,11 +252,10 @@ public class AtomParser extends ParserCommon
 
         else if (elementName.equals ("author"))
         {
-            Author author = new Author (channel);
+            Author author = new ChannelAuthor (channel);
 
             elementStack.push (new ElementStackEntry (elementName, author));
         }
-
 
         else if (elementName.equals ("link"))
         {
@@ -313,7 +357,7 @@ public class AtomParser extends ParserCommon
             chars = null;
 
         if (elementName.equals ("name"))
-            author.parentChannel.setAuthor (chars);
+            author.setAuthorName (chars);
     }
 
     /**
@@ -349,6 +393,18 @@ public class AtomParser extends ParserCommon
             }
         }
 
+        else if (elementName.equals ("content"))
+        {
+            startItemContentElement (elementName, attributes, item);
+        }
+
+        else if (elementName.equals ("author"))
+        {
+            Author author = new ItemAuthor (item);
+
+            elementStack.push (new ElementStackEntry (elementName, author));
+        }
+
         else
         {
             elementStack.push (new ElementStackEntry (elementName, item));
@@ -380,12 +436,73 @@ public class AtomParser extends ParserCommon
             item.setTitle (chars);
 
         else if (elementName.equals ("summary"))
-            item.setDescription (chars);
+            item.setSummary (chars);
 
         else if (elementName.equals ("issued"))
             item.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("id"))
             item.setUniqueID (chars);
+
+        else if (elementName.equals ("entry"))
+        {
+            // End of item. Any cleanup goes here.
+        }
+    }
+
+    /**
+     * Handles the start of an item's nested content element.
+     *
+     * @param elementName  the element name, which is pushed onto the
+     *                     stack along with the <tt>Item</tt> object
+     * @param attributes   the attributes
+     * @param item         the parent Item
+     *
+     * @throws SAXException on error
+     */
+    private void startItemContentElement (String     elementName,
+                                          Attributes attributes,
+                                          Item       item)
+        throws SAXException
+    {
+        String      mimeType = attributes.getValue ("type");
+        ItemContent content;
+
+        if ((mimeType != null) && (mimeType.trim().length() == 0))
+            mimeType = null;
+
+        if (mimeType == null)
+            mimeType = "text/plain";
+
+        content = new ItemContent (mimeType, item);
+        elementStack.push (new ElementStackEntry (elementName, content));
+    }
+
+
+    /**
+     * Handles the end of an item's nested content element.
+     *
+     * @param elementName  the name of the element being ended
+     * @param stackEntry   the associated (popped) stack entry
+     *
+     * @throws SAXException on error
+     */
+    private void endItemContentElement (String            elementName,
+                                        ElementStackEntry stackEntry)
+        throws SAXException
+    {
+        ItemContent content   = (ItemContent) stackEntry.getContainer();
+        String      chars     = stackEntry.getCharBuffer().toString().trim();
+        boolean     isDefault = false;
+
+        content.parentItem.setContent (chars, content.mimeType);
+
+        if (content.mimeType.equals ("text/plain"))
+        {
+            // text/plain is the default
+
+            content.parentItem.setContent (chars,
+                                           RSSItem.DEFAULT_CONTENT_TYPE);
+        }
     }
 }

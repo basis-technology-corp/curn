@@ -8,6 +8,7 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.text.TextUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,9 +34,9 @@ public class TextOutputHandler implements OutputHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private WordWrapWriter       out         = null;
-    private int                  indentLevel = 0;
-    private ConfigFile  config      = null;
+    private WordWrapWriter  out         = null;
+    private int             indentLevel = 0;
+    private ConfigFile      config      = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -129,6 +130,14 @@ public class TextOutputHandler implements OutputHandler
 
                 s = item.getTitle();
                 out.println ((s == null) ? "(No Title)" : s);
+
+                if (config.showAuthors())
+                {
+                    s = item.getAuthor();
+                    if (s != null)
+                        out.println ("By " + s);
+                }
+
                 out.println (item.getLink().toString());
 
                 if (config.showDates())
@@ -140,8 +149,32 @@ public class TextOutputHandler implements OutputHandler
 
                 if (! feedInfo.summarizeOnly())
                 {
-                    s = item.getDescription();
-                    if ((s != null) && (s.trim().length() > 0))
+                    s = item.getSummary();
+                    if (TextUtils.stringIsEmpty (s))
+                    {
+                        // Hack for feeds that have no summary but have
+                        // content. If the content is small enough, use it
+                        // as the summary.
+
+                        s = item.getFirstContentOfType (new String[]
+                                                        {
+                                                            "text/plain",
+                                                            "text/html"
+                                                        });
+                        if (! TextUtils.stringIsEmpty (s))
+                        {
+                            s = s.trim();
+                            if (s.length() > CONTENT_AS_SUMMARY_MAXSIZE)
+                                s = null;
+                        }
+                    }
+
+                    else
+                    {
+                        s = s.trim();
+                    }
+
+                    if (s != null)
                     {
                         out.println();
                         setIndent (++indentLevel);

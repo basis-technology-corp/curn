@@ -31,7 +31,7 @@ import java.util.Iterator;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSItemAdapter implements RSSItem
+public class RSSItemAdapter extends RSSItem
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
@@ -92,11 +92,11 @@ public class RSSItemAdapter implements RSSItem
     }
 
     /**
-     * Get the item's description.
+     * Get the item's summary.
      *
-     * @return the description, or null if not available
+     * @return the summary, or null if not available
      */
-    public String getDescription()
+    public String getSummary()
     {
         return this.item.getDescription();
     }

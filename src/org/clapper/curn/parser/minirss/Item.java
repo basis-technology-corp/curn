@@ -21,20 +21,20 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-public class Item implements RSSItem
+public class Item extends RSSItem
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private String      title       = null;
-    private URL         url         = null;
-    private String      description = null;
-    private Date        pubDate     = null;
-    private Collection  categories  = null;
-    private String      author      = null;
-    private Channel     channel     = null;
-    private String      uniqueID    = null;
+    private String      title          = null;
+    private URL         url            = null;
+    private String      summary        = null;
+    private Date        pubDate        = null;
+    private Collection  categories     = null;
+    private String      author         = null;
+    private Channel     channel        = null;
+    private String      uniqueID       = null;
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -96,23 +96,23 @@ public class Item implements RSSItem
     }
 
     /**
-     * Get the item's description.
+     * Get the item's summary.
      *
-     * @return the description, or null if not available
+     * @return the summary, or null if not available
      */
-    public String getDescription()
+    public String getSummary()
     {
-        return description;
+        return summary;
     }
 
     /**
-     * Set the item's description.
+     * Set the item's summary.
      *
-     * @param desc the description, or null if not available
+     * @param desc the summary, or null if not available
      */
-    public void setDescription (String desc)
+    public void setSummary (String desc)
     {
-        this.description = desc;
+        this.summary = desc;
     }
 
     /**
