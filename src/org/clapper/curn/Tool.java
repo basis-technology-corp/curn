@@ -40,8 +40,6 @@ import java.util.NoSuchElementException;
 
 import java.text.ParseException;
 
-import org.clapper.curn.parser.RSSParserException;
-
 import org.clapper.util.misc.Logger;
 import org.clapper.util.config.ConfigurationException;
 
@@ -457,11 +455,6 @@ public class Tool extends CommandLineUtility
         }
 
         catch (CurnException ex)
-        {
-            throw new CommandLineException (ex);
-        }
-
-        catch (RSSParserException ex)
         {
             throw new CommandLineException (ex);
         }
