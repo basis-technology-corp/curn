@@ -26,7 +26,7 @@
 
 package org.clapper.curn.parser.informa;
 
-import org.clapper.curn.Util;
+import org.clapper.curn.util.Util;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;

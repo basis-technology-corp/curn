@@ -28,7 +28,7 @@ package org.clapper.curn.htmloutput;
 
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.CurnException;
-import org.clapper.curn.Util;
+import org.clapper.curn.util.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.ConfigFile;
