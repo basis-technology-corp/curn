@@ -132,8 +132,12 @@ format (0.3) and RSS formats
 <a href="http://backend.userland.com/rss091">0.91</a>, 0.92,
 <a href="http://web.resource.org/rss/1.0/">1.0</a> and
 <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>. <i>curn</i>
-also comes with a built-in adapter for the
-<a href="http://informa.sourceforge.net/">Informa</a> RSS parser.
+also comes with built-in adapters for the
+<a href="http://informa.sourceforge.net/">Informa</a> RSS parser and the
+<a href="http://rsslib4j.sourceforge.net/">rsslib4j</a> RSS parser.
+(However, as of the date this document was last update, neither of those
+parser libraries support the Atom format, whereas <tt>MiniRSSParser</tt>
+does.)
 See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
 item for information on how to specify which parser <i>curn</i> should use.
 See the section entitled
@@ -1183,7 +1187,7 @@ in detail, below.</p>
             it can be nothing more than an adapter for a third party
             RSS parser class.</p>
 
-            <p>Two parsers are bundled with <i>curn</i>:</p>
+            <p>Three parsers are bundled with <i>curn</i>:</p>
 
             <dl>
 	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
@@ -1207,6 +1211,14 @@ in detail, below.</p>
 		  work with <i>curn</i>.
 		  (The Informa adapter is only available if the appropriate
 		  Informa jar files are in <i>curn</i>'s class path.)
+
+	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rsslib4j/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rsslib4j.RSSParserAdapter</a>
+		  
+	      <dd>An adapter class that makes the
+		  <a href="http://rsslib4j.sourceforge.net/">rsslib4j RSS parser</a>
+		  work with <i>curn</i>.
+		  (The rsslib4j adapter is only available if the appropriate
+		  rsslib4j jar files are in <i>curn</i>'s class path.)
 
 	    </dl>
 
@@ -2108,7 +2120,8 @@ RSS parser.</p>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
 instead of 
-<a href="http://informa.sourceforge.net/">Informa</a> or
+<a href="http://informa.sourceforge.net/">Informa</a>,
+<a href="http://rsslib4j.sourceforge.net/">rsslib4j</a>, or
 <i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
 (Perhaps it's faster than <i>curn</i>'s built-in parser, or perhaps it
 supports some new RSS syntax that <i>curn</i>'s parser does not support.)

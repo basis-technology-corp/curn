@@ -99,6 +99,10 @@ source and documentation packages.
     <include name="parser/informa/*.java"/>
   </patternset>
 
+  <patternset id="parser.rsslib4j">
+    <include name="parser/rsslib4j/*.java"/>
+  </patternset>
+
   <patternset id="parser.testers">
     <include name="parser/tester.java"/>
   </patternset>
@@ -130,14 +134,14 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			       Code Targets
+			       Meta-Targets
   ***************************************************************************
   -->
 
   <target name="all" depends="curn"/>
 
   <target name="curn" 
-          depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info,parser.testers"
+          depends="main,parser.builtin,parser.informa,parser.rsslib4j,htmloutput,email,-build.info,parser.testers"
           description="Compiles the source"/>
 
   <target name="util" depends="init">
@@ -178,6 +182,28 @@ source and documentation packages.
     </copy>
   </target>
 
+  <!--
+  ***************************************************************************
+			 RSS Parser Tester Target
+  ***************************************************************************
+  -->
+
+  <target name="parser.testers">
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="parser.testers"/>
+    </javac>
+  </target>
+
+  <!--
+  ***************************************************************************
+			   MiniRSSParser Target
+  ***************************************************************************
+  -->
+
   <target name="parser.builtin" depends="parser.main">
     <javac srcdir="${src.dir}"
            depend="true"
@@ -192,6 +218,12 @@ source and documentation packages.
     <available classname="de.nava.informa.parsers.FeedParser"
                property="informa.exists" value="true"/>
   </target>
+
+  <!--
+  ***************************************************************************
+			  Informa Parser Targets
+  ***************************************************************************
+  -->
 
   <target name="-check.informa" 
           depends="-check.informa.exists"
@@ -219,19 +251,51 @@ source and documentation packages.
 
   <target name="informa" depends="parser.informa"/>
 
-  <target name="-check.xmlc.exists">
-    <available classname="org.enhydra.xml.xmlc.taskdef.Xmlc"
-               property="xmlc.exists" value="true"/>
+  <!--
+  ***************************************************************************
+			  Rsslib4j Parser Targets
+  ***************************************************************************
+  -->
+
+  <target name="-check.rsslib4j.exists">
+    <available classname="org.gnu.stealthp.rsslib.RSSParser"
+               property="rsslib4j.exists" value="true"/>
   </target>
 
-  <target name="parser.testers">
+  <target name="-check.rsslib4j" 
+          depends="-check.rsslib4j.exists"
+          unless="rsslib4j.exists">
+    <echo>
+*** The rsslib4j parser is not currently available in the build environment.
+*** Because rsslib4j is missing, all targets that require it will be skipped. 
+*** To enable these targets, download and install rsslib4j from
+*** http://rsslib4j.sourceforge.net/.
+    </echo>
+  </target>
+
+  <target name="parser.rsslib4j" 
+          depends="-check.rsslib4j,parser.main"
+	  if="informa.exists">
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.testers"/>
+      <patternset refid="parser.rsslib4j"/>
     </javac>
+  </target>
+
+  <target name="rsslib4j" depends="parser.rsslib4j"/>
+
+  <!--
+  ***************************************************************************
+			       XMLC Targets
+  ***************************************************************************
+  -->
+
+  <target name="-check.xmlc.exists">
+    <available classname="org.enhydra.xml.xmlc.taskdef.Xmlc"
+               property="xmlc.exists" value="true"/>
   </target>
 
   <target name="-check.xmlc" depends="-check.xmlc.exists" unless="xmlc.exists">
@@ -243,6 +307,12 @@ source and documentation packages.
 *** http://xmlc.objectweb.org/
     </echo>
   </target>
+
+  <!--
+  ***************************************************************************
+			HTML Output Handler Targets
+  ***************************************************************************
+  -->
 
   <target name="htmloutput" depends="main,-check.xmlc" if="xmlc.exists">
 
@@ -285,6 +355,12 @@ source and documentation packages.
     </javac>
   </target>
 
+  <!--
+  ***************************************************************************
+		       Email Output Handler Targets
+  ***************************************************************************
+  -->
+
   <target name="-check.email.exists">
     <available classname="org.clapper.util.mail.EmailMessage"
                property="email.exists" value="true"/>
@@ -309,6 +385,12 @@ source and documentation packages.
       <patternset refid="email"/>
     </javac>
   </target>
+
+  <!--
+  ***************************************************************************
+		      Version and Build-info Targets
+  ***************************************************************************
+  -->
 
   <!-- Load the API version from the org.clapper.curn.Util class -->
 
