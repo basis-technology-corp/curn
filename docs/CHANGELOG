@@ -4,6 +4,15 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.5.4 (20 October, 2004)
+
+- In the org.clapper.util API, org.clapper.util.misc.Logger is now in the
+  org.clapper.util.logging package and is now uses the java.util.logging
+  API directly, instead of using Jakarta Commons Logging. This eliminates
+  another third-party library dependency, but required modifications
+  various "import" statement in curn classes.
+
+
 Version 1.5.3 (16 October, 2004)
 
 - curn now sets an appropriate "User-Agent" HTTP header on HTTP requests,
