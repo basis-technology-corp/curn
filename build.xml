@@ -496,7 +496,7 @@ source and documentation packages.
   <!-- Load the API version from the appropriate resource bundle -->
 
   <target name="-get.version" description="Get the version stamp">
-    <property file="${build}/org/clapper/util/misc/Bundle.properties"/>
+    <property file="${build}/org/clapper/curn/Curn.properties"/>
     <echo>Version: ${curn.version}</echo>
   </target>
 
