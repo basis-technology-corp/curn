@@ -164,7 +164,7 @@ public class Item extends RSSItem
      */
     public Date getPublicationDate()
     {
-        return (pubDate != null) ? pubDate : channel.getPublicationDate();
+        return pubDate;
     }
 
     /**
