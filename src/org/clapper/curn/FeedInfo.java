@@ -79,6 +79,14 @@ public class FeedInfo
      */
     public static final String DEFAULT_SAVE_AS_ENCODING = "utf-8";
 
+    /**
+     * Default value for the maximum summary size. Indicates "no maximum."
+     *
+     * @see #getMaxSummarySize
+     * @see #setMaxSummarySize
+     */
+    public static final int NO_MAX_SUMMARY_SIZE = 0;
+
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
@@ -103,6 +111,7 @@ public class FeedInfo
     private String      forcedEncoding        = null;
     private String[]    preparseEditCommands  = null;
     private String      userAgent             = null;
+    private int         maxSummarySize        = NO_MAX_SUMMARY_SIZE;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -382,6 +391,32 @@ public class FeedInfo
     public void setEnabledFlag (boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Get the maximum summary size.
+     *
+     * @return the maximum summary size, in characters, or 0 for no limit.
+     *
+     * @see #setMaxSummarySize
+     */
+    public int getMaxSummarySize()
+    {
+        return maxSummarySize;
+    }
+
+    /**
+     * Set the maximum summary size.
+     *
+     * @param newSize the new maximum summary size, in characters, or 0 for
+     *                no limit. Value must be non-negative.
+     *
+     * @see #getMaxSummarySize
+     */
+    public void setMaxSummarySize (int newSize)
+    {
+        assert (newSize >= 0);
+        this.maxSummarySize = newSize;
     }
 
     /**

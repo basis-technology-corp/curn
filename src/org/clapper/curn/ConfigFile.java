@@ -84,6 +84,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_CACHE_FILE        = "CacheFile";
     private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
+    private static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
     private static final String VAR_SMTPHOST          = "SMTPHost";
     private static final String VAR_DEFAULT_MAIL_FROM = "DefaultMailFrom";
     private static final String VAR_MAIL_SUBJECT      = "Subject";
@@ -134,6 +135,8 @@ public class ConfigFile extends Configuration
     private static final boolean DEF_PRUNE_URLS        = false;
     private static final boolean DEF_NO_CACHE_UPDATE   = false;
     private static final boolean DEF_SUMMARY_ONLY      = false;
+    private static final int     DEF_MAX_SUMMARY_SIZE  =
+                                                 FeedInfo.NO_MAX_SUMMARY_SIZE;
     private static final boolean DEF_SHOW_RSS_VERSION  = false;
     private static final boolean DEF_SHOW_DATES        = false;
     private static final boolean DEF_SHOW_AUTHORS      = false;
@@ -169,6 +172,7 @@ public class ConfigFile extends Configuration
     private int         defaultSortBy         = DEF_SORT_BY;
     private int         maxThreads            = DEF_MAX_THREADS;
     private String      defaultUserAgent      = null;
+    private int         maxSummarySize        = DEF_MAX_SUMMARY_SIZE;
 
     /**
      * For log messages
@@ -358,6 +362,32 @@ public class ConfigFile extends Configuration
         }
 
         this.maxThreads = newValue;
+    }
+
+    /**
+     * Get the maximum summary size.
+     *
+     * @return the maximum summary size, in characters, or 0 for no limit.
+     *
+     * @see #setMaxSummarySize
+     */
+    public int getMaxSummarySize()
+    {
+        return maxSummarySize;
+    }
+
+    /**
+     * Set the maximum summary size.
+     *
+     * @param newSize the new maximum summary size, in characters, or 0 for
+     *                no limit. Value must be non-negative.
+     *
+     * @see #getMaxSummarySize
+     */
+    public void setMaxSummarySize (int newSize)
+    {
+        assert (newSize >= 0);
+        this.maxSummarySize = newSize;
     }
 
     /**
@@ -694,15 +724,18 @@ public class ConfigFile extends Configuration
                 }
             }
 
-            defaultCacheDays = getOptionalIntegerValue (MAIN_SECTION,
-                                                        VAR_DAYS_TO_CACHE,
-                                                        DEF_DAYS_TO_CACHE);
+            defaultCacheDays = getOptionalCardinalValue (MAIN_SECTION,
+                                                         VAR_DAYS_TO_CACHE,
+                                                         DEF_DAYS_TO_CACHE);
             updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_NO_CACHE_UPDATE,
                                                      DEF_NO_CACHE_UPDATE));
             summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
                                                    VAR_SUMMARY_ONLY,
                                                    DEF_SUMMARY_ONLY);
+            maxSummarySize = getOptionalCardinalValue (MAIN_SECTION,
+                                                       VAR_MAX_SUMMARY_SIZE,
+                                                       DEF_MAX_SUMMARY_SIZE);
             showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_SHOW_RSS_VERSION,
                                                      DEF_SHOW_RSS_VERSION);
@@ -732,9 +765,9 @@ public class ConfigFile extends Configuration
             defaultSortBy = (s == null) ? DEF_SORT_BY
                                         : parseSortByValue (MAIN_SECTION, s);
 
-            setMaxThreads (getOptionalIntegerValue (MAIN_SECTION,
-                                                    VAR_MAX_THREADS,
-                                                    DEF_MAX_THREADS));
+            setMaxThreads (getOptionalCardinalValue (MAIN_SECTION,
+                                                     VAR_MAX_THREADS,
+                                                     DEF_MAX_THREADS));
 
             defaultUserAgent = getOptionalStringValue (MAIN_SECTION,
                                                        VAR_USER_AGENT,
@@ -821,6 +854,7 @@ public class ConfigFile extends Configuration
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
         feedInfo.setSortBy (defaultSortBy);
         feedInfo.setUserAgent (defaultUserAgent);
+        feedInfo.setMaxSummarySize (maxSummarySize);
 
         for (Iterator it = varNames.iterator(); it.hasNext(); )
         {
@@ -829,7 +863,8 @@ public class ConfigFile extends Configuration
             if (varName.equals (VAR_DAYS_TO_CACHE))
             {
                 feedInfo.setDaysToCache
-                    (getRequiredIntegerValue (sectionName, VAR_DAYS_TO_CACHE));
+                               (getRequiredCardinalValue (sectionName,
+                                                          VAR_DAYS_TO_CACHE));
             }
 
             else if (varName.equals (VAR_PRUNE_URLS))
@@ -842,6 +877,13 @@ public class ConfigFile extends Configuration
             {
                 feedInfo.setSummarizeOnlyFlag
                     (getRequiredBooleanValue (sectionName, VAR_SUMMARY_ONLY));
+            }
+
+            else if (varName.equals (VAR_MAX_SUMMARY_SIZE))
+            {
+                feedInfo.setMaxSummarySize
+                             (getRequiredCardinalValue (sectionName,
+                                                        VAR_MAX_SUMMARY_SIZE));
             }
 
             else if (varName.equals (VAR_DISABLED))
