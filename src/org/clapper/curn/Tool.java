@@ -95,9 +95,7 @@ public class Tool extends CommandLineUtility
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm a", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd", false));
         DATE_FORMATS.add (new DateParseInfo ("yy/MM/dd", false));
         DATE_FORMATS.add (new DateParseInfo ("hh:mm:ss a", true));
@@ -297,10 +295,16 @@ public class Tool extends CommandLineUtility
         throws CommandLineUsageException,
                NoSuchElementException
     {
-        configPath = (String) it.next();
+        // If we're showing build information, forget about the remainder
+        // of the command line.
 
-        while (it.hasNext())
-            emailAddresses.add ((String) it.next());
+        if (! showBuildInfo)
+        {
+            configPath = (String) it.next();
+
+            while (it.hasNext())
+                emailAddresses.add ((String) it.next());
+        }
     }
 
     /**
@@ -334,7 +338,7 @@ public class Tool extends CommandLineUtility
     {
         info.addOption ('a', "show-authors",
                         "Show the authors for each item, if available.");
-        info.addOption ('A', "show-authors",
+        info.addOption ('A', "no-authors",
                         "Don't the authors for each item, if available.");
         info.addOption ('B', "build-info",
                         "Show full build information.");
@@ -399,17 +403,20 @@ public class Tool extends CommandLineUtility
     {
         try
         {
-            loadConfig();
-
-            Curn curn = new Curn (config);
-
             if (showBuildInfo)
                 Version.showBuildInfo();
 
-            curn.setCurrentTime (currentTime);
-            curn.processRSSFeeds (this.config,
-                                  this.emailAddresses,
-                                  this.useCache);
+            else
+            {
+                loadConfig();
+
+                Curn curn = new Curn (config);
+
+                curn.setCurrentTime (currentTime);
+                curn.processRSSFeeds (this.config,
+                                      this.emailAddresses,
+                                      this.useCache);
+            }
         }
 
         catch (ConfigurationException ex)
