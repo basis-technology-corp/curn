@@ -165,6 +165,7 @@ public class TextOutputHandler extends FileOutputHandler
         throws CurnException
     {
         Collection items = channel.getItems();
+        String     s;
 
         indentLevel = setIndent (0);
 
@@ -186,14 +187,16 @@ public class TextOutputHandler extends FileOutputHandler
             }
 
             if (config.showRSSVersion())
-                out.println ("(Format: " + channel.getRSSFormat() + ")");
+            {
+                s = channel.getRSSFormat();
+                if (s != null)
+                    out.println ("(Format: " + s + ")");
+            }
         }
 
         if (items.size() != 0)
         {
             // Now, process each item.
-
-            String s;
 
             for (Iterator it = items.iterator(); it.hasNext(); )
             {
