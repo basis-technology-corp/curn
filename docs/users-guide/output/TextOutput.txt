@@ -9,8 +9,8 @@ http://irrelevant.clapper.org/
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
     Wed Jul 28 00:00:00 EDT 2004
 
-        During rush hour this morning, on the city's busy Schuylkill 
-        Expressway, Philadelphia police stopped fifteen motorists and cited 
+        During rush hour this morning, on the city's busy Schuylkill
+        Expressway, Philadelphia police stopped fifteen motorists and cited
         them under Philadelphia's new, controversial "stupid driver" ordinance.
 
     Joe Sixpack to retire
@@ -18,7 +18,7 @@ http://irrelevant.clapper.org/
     Wed Jul 28 02:12:07 EDT 2004
 
         Joe Sixpack, whose name is frequently used to represent an average guy,
-        is retiring at the end of July. "After that, they're just gonna hafta 
+        is retiring at the end of July. "After that, they're just gonna hafta
         use someone else's name," Sixpack said, grinning, "'less they wanna pay
         me royalties or somethin'."
 
@@ -26,12 +26,12 @@ http://irrelevant.clapper.org/
     http://irrelevant.clapper.org/2004/06/13/televangelist.html
     Wed Jul 28 02:13:29 EDT 2004
 
-        Police, responding to neighbors' reports of disturbing sounds from 
-        televangelist Gerard Tripwell's home, found his garage door open and 
-        the door to his home ajar. Upon entering, police encountered Tripwell 
-        and a young woman having sex on the kitchen table. The woman has been 
-        identified as Tripwell's secretary. Tripwell is married, but his wife, 
-        Trudy, had left an hour earlier to catch a plane to Little Rock, 
+        Police, responding to neighbors' reports of disturbing sounds from
+        televangelist Gerard Tripwell's home, found his garage door open and
+        the door to his home ajar. Upon entering, police encountered Tripwell
+        and a young woman having sex on the kitchen table. The woman has been
+        identified as Tripwell's secretary. Tripwell is married, but his wife,
+        Trudy, had left an hour earlier to catch a plane to Little Rock,
         Arkansas, to visit her dying father.
 
 ------------------------------------------------------------------------------
@@ -44,10 +44,10 @@ http://bites.clapper.org/
     http://bites.clapper.org/manbitesdog.html
     Wed Jul 28 01:30:00 EDT 2004
 
-        Repeatedly attacked by a small, but persistent, neighborhood Chihuahua 
-        name Juan, jogger John "Choppers" McNabb finally got fed up and took 
-        action: He bit Juan back. Now Juan's owners are suing McNabb for 
-        veterinary bills. McNabb has countersued, seeking to recover the costs 
+        Repeatedly attacked by a small, but persistent, neighborhood Chihuahua
+        name Juan, jogger John "Choppers" McNabb finally got fed up and took
+        action: He bit Juan back. Now Juan's owners are suing McNabb for
+        veterinary bills. McNabb has countersued, seeking to recover the costs
         of treatment for multiple bite wounds.
 
     President Falls
@@ -55,7 +55,7 @@ http://bites.clapper.org/
     http://bites.clapper.org/prezfall.html
     Wed Jul 28 00:31:00 EDT 2004
 
-        While stepping off Air Force One, the President tripped, fell onto the 
+        While stepping off Air Force One, the President tripped, fell onto the
         tarmac, and bruised his right pinky. ...
 
 ------------------------------------------------------------------------------
@@ -80,5 +80,5 @@ http://justthefactsmaam.clapper.org/
     Wed Jul 28 02:32:27 EDT 2004
 
 ------------------------------------------------------------------------------
-curn, version 1.3.2
-Generated Wed Sep 15 16:28:32 EDT 2004
+curn, version 1.4
+Generated Wed Sep 22 16:16:26 EDT 2004
