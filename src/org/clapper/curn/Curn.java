@@ -57,7 +57,7 @@ import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
-import org.clapper.util.io.FileUtils;
+import org.clapper.util.io.FileUtil;
 import org.clapper.util.misc.Logger;
 import org.clapper.util.config.ConfigurationException;
 
@@ -481,7 +481,7 @@ public class Curn
                                  + "\" to \""
                                  + saveAsFile.getPath()
                                  + "\"");
-                        FileUtils.copyFile (temp, saveAsFile);
+                        FileUtil.copyFile (temp, saveAsFile);
                     }
 
                     if (parser == null)
@@ -534,7 +534,7 @@ public class Curn
                  + "\" to file \""
                  + file.getPath());
         OutputStream os = new FileOutputStream (file);
-        totalBytes = FileUtils.copyStream (urlStream, os);
+        totalBytes = FileUtil.copyStream (urlStream, os);
         os.close();
 
         // It's possible for totalBytes to be zero if, for instance, the
@@ -884,7 +884,7 @@ public class Curn
 
                 try
                 {
-                    FileUtils.copyStream (output, System.out);
+                    FileUtil.copyStream (output, System.out);
                     output.close();
                 }
 
