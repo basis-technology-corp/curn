@@ -11,7 +11,7 @@ import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.ConfigFile;
-import org.clapper.curn.FeedException;
+import org.clapper.curn.CurnException;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -24,10 +24,10 @@ import org.clapper.util.mail.EmailException;
 import org.clapper.util.config.ConfigurationException;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -71,24 +71,21 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>OutputStreamWriter</tt> where the handler
-     *                should send output. Not used here.
      * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws ConfigurationException  configuration error
-     * @throws FeedException           some other initialization error
+     * @throws CurnException           some other initialization error
      */
-    public void init (OutputStreamWriter writer, ConfigFile config)
+    public void init (ConfigFile config)
         throws ConfigurationException,
-               FeedException
+               CurnException
     {
         this.config = config;
 
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            OutputHandlerContainer entry = (OutputHandlerContainer) it.next();
-
-            entry.init (config);
+            OutputHandler handler = (OutputHandler) it.next();
+            handler.init (config);
         }
     }
 
@@ -102,17 +99,15 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *                 not be seen.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
                                 FeedInfo    feedInfo)
-        throws FeedException
+        throws CurnException
     {
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            OutputHandlerContainer entry = (OutputHandlerContainer) it.next();
-            OutputHandler handler = entry.getOutputHandler();
-
+            OutputHandler handler = (OutputHandler) it.next();
             handler.displayChannel (channel, feedInfo);
         }
     }
@@ -121,18 +116,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      * Flush any buffered-up output. <i>curn</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
-    public void flush() throws FeedException
+    public void flush() throws CurnException
     {
         for (Iterator it = handlers.iterator(); it.hasNext(); )
-        {
-            OutputHandlerContainer entry = (OutputHandlerContainer) it.next();
-            OutputHandler handler = entry.getOutputHandler();
-
-            handler.flush();
-            entry.close();
-        }
+            ((OutputHandler) it.next()).flush();
 
         emailOutput();
     }
@@ -157,12 +146,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param handler  the handler to add
      *
-     * @throws FeedException error opening a temporary file for the output
+     * @throws CurnException error opening a temporary file for the output
      */
     public void addOutputHandler (OutputHandler handler)
-	throws FeedException
+	throws CurnException
     {
-	handlers.add (new OutputHandlerContainer (handler));
+	handlers.add (handler);
     }
 
     /**
@@ -171,10 +160,10 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param emailAddress  email address to add
      *
-     * @throws FeedException  bad email address
+     * @throws CurnException  bad email address
      */
     public void addRecipient (String emailAddress)
-        throws FeedException
+        throws CurnException
     {
         try
         {
@@ -183,26 +172,40 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
         catch (EmailException ex)
         {
-            throw new FeedException (ex);
+            throw new CurnException (ex);
         }
     }
 
     /**
-     * Determine whether this <tt>OutputHandler</tt> wants a file for its
-     * output or not. For example, a handler that produces text output
-     * wants a file, or something similar, to receive the text; such a
-     * handler would return <tt>true</tt> when this method is called. By
-     * contrast, a handler that swallows its output, or a handler that
-     * writes to a network connection, does not want a file to receive
-     * output.
+     * Get an <tt>InputStream</tt> that can be used to read the output data
+     * produced by the handler, if applicable.
      *
-     * @return <tt>true</tt> if the handler wants a file or file-like object
-     *         for its output, and <tt>false</tt> otherwise
+     * @return an open input stream, or null if no suitable output was produced
+     *
+     * @throws CurnException an error occurred
+     *
+     * @see #hasGeneratedOutput
+     * @see #getContentType
      */
-    public boolean wantsOutputFile()
+    public InputStream getGeneratedOutput()
+        throws CurnException
     {
-        // Not really applicable
+        return null;
+    }
 
+    /**
+     * Determine whether this handler has produced any actual output (i.e.,
+     * whether {@link #getGeneratedOutput()} will return a non-null
+     * <tt>InputStream</tt> if called).
+     *
+     * @return <tt>true</tt> if the handler has produced output,
+     *         <tt>false</tt> if not
+     *
+     * @see #getGeneratedOutput
+     * @see #getContentType
+     */
+    public boolean hasGeneratedOutput()
+    {
         return false;
     }
 
@@ -215,30 +218,27 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param recipients  collection of email addresses, as strings.
      *
-     * @throws FeedException  on error
+     * @throws CurnException  on error
      */
     private void emailOutput()
-        throws FeedException
+        throws CurnException
     {
         try
         {
-            Iterator               it;
-            OutputHandlerContainer entry;
-            OutputHandlerContainer firstEntryWithOutput = null;
-            OutputHandler          handler;
-            int                    totalAttachments = 0;
+            Iterator       it;
+            OutputHandler  firstHandlerWithOutput = null;
+            OutputHandler  handler;
+            int            totalAttachments = 0;
 
             // First, figure out whether we have any attachments or not.
 
             for (it = handlers.iterator(); it.hasNext(); )
             {
-                entry = (OutputHandlerContainer) it.next();
-                File tempFile = entry.getTempFile();
-
-                if ((tempFile != null) && (tempFile.length() > 0))
+                handler = (OutputHandler) it.next();
+                if (handler.hasGeneratedOutput())
                 {
                     totalAttachments++;
-                    firstEntryWithOutput = entry;
+                    firstHandlerWithOutput = handler;
                 }
             }
 
@@ -276,16 +276,14 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
                 if (totalAttachments == 1)
                 {
-                    entry = firstEntryWithOutput;
-                    handler = entry.getOutputHandler();
+                    handler = firstHandlerWithOutput;
                     String contentType = handler.getContentType();
-
-                    File tempFile = entry.getTempFile();
+                    InputStream is = handler.getGeneratedOutput();
                     message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
                     if (contentType.startsWith ("text/"))
-                        message.setText (tempFile, contentType);
+                        message.setText (is, contentType);
                     else
-                        message.addAttachment (tempFile, contentType);
+                        message.addAttachment (is, contentType);
                 }
 
                 else
@@ -295,12 +293,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
                     for (it = handlers.iterator(); it.hasNext(); )
                     {
-                        entry = (OutputHandlerContainer) it.next();
-                        handler = entry.getOutputHandler();
+                        handler = (OutputHandler) it.next();
 
-                        if (entry.hasOutput())
+                        InputStream is = handler.getGeneratedOutput();
+                        if (is != null)
                         {
-                            message.addAttachment (entry.getTempFile(),
+                            message.addAttachment (is,
                                                    handler.getContentType());
                         }
                     }
@@ -312,7 +310,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
         catch (EmailException ex)
         {
-            throw new FeedException (ex);
+            throw new CurnException (ex);
         }
     }
 }

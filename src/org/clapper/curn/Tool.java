@@ -184,7 +184,7 @@ public class curn
             System.exit (1);
         }
 
-        catch (FeedException ex)
+        catch (CurnException ex)
         {
             System.err.println (ex.getMessages());
             System.exit (1);
@@ -233,12 +233,12 @@ public class curn
      * @throws ConfigurationException   error in configuration file
      * @throws RSSParserException       error parsing XML feed(s)
      * @throws BadCommandLineException  command-line error
-     * @throws FeedException          any other error
+     * @throws CurnException          any other error
      *
      * @see #processRSSFeeds
      */
     public void runProgram (String[] args)
-        throws FeedException,
+        throws CurnException,
                IOException,
                ConfigurationException,
                RSSParserException,
@@ -264,14 +264,14 @@ public class curn
      * @throws IOException              unable to open or read a required file
      * @throws ConfigurationException   error in configuration file
      * @throws RSSParserException       error parsing XML feed(s)
-     * @throws FeedException          any other error
+     * @throws CurnException          any other error
      */
     public void processRSSFeeds (ConfigFile configuration,
                                  Collection emailAddresses)
         throws IOException,
                ConfigurationException,
                RSSParserException,
-               FeedException
+               CurnException
     {
         Iterator            it;
         String              parserClassName;
@@ -556,7 +556,7 @@ public class curn
     private void loadOutputHandlers (ConfigFile configuration,
                                      Collection          emailAddresses)
         throws ConfigurationException,
-               FeedException
+               CurnException
     {
         String         className;
         OutputHandler  handler;
@@ -567,7 +567,7 @@ public class curn
         {
             className = (String) it.next();
             handler   = OutputHandlerFactory.getOutputHandler (className);
-            outputHandlers.add (new OutputHandlerContainer (handler));
+            outputHandlers.add (handler);
         }
 
         // If there were no output handlers, then just use a default
@@ -578,7 +578,7 @@ public class curn
             log.info ("No configured output handlers. Installing default.");
             handler = OutputHandlerFactory.getOutputHandler
                                                    (TextOutputHandler.class);
-            outputHandlers.add (new OutputHandlerContainer (handler));
+            outputHandlers.add (handler);
         }
 
         // If there are email addresses, then attempt to load that handler,
@@ -595,10 +595,7 @@ public class curn
             // Place all the other handlers inside the EmailOutputHandler
 
             for (it = outputHandlers.iterator(); it.hasNext(); )
-            {
-                OutputHandlerContainer c = (OutputHandlerContainer) it.next();
-                emailHandler.addOutputHandler (c.getOutputHandler());
-            }
+                emailHandler.addOutputHandler ((OutputHandler) it.next());
 
             // Add the email addresses to the handler
 
@@ -609,7 +606,7 @@ public class curn
             // with the email handler.
 
             outputHandlers.clear();
-            outputHandlers.add (new OutputHandlerContainer (emailHandler));
+            outputHandlers.add (emailHandler);
         }
     }
 
@@ -871,25 +868,23 @@ public class curn
     }
 
     private void displayChannels (Collection channels)
-        throws FeedException,
+        throws CurnException,
                ConfigurationException
     {
-        OutputHandlerContainer firstOutput = null;
+        OutputHandler firstOutput = null;
 
         // Dump the output to each output handler
 
         for (Iterator itHandler = outputHandlers.iterator();
              itHandler.hasNext(); )
         {
-            OutputHandlerContainer  container;
-            OutputHandler           handler;
+            OutputHandler handler;
 
-            container = (OutputHandlerContainer) itHandler.next();
-            handler = container.getOutputHandler();
+            handler = (OutputHandler) itHandler.next();
 
             log.info ("Initializing output handler "
                     + handler.getClass().getName());
-            container.init (config);
+            handler.init (config);
 
             for (Iterator itChannel = channels.iterator();
                  itChannel.hasNext(); )
@@ -899,10 +894,9 @@ public class curn
             }
 
             handler.flush();
-            container.close();
 
-            if ((firstOutput == null) && (container.hasOutput()))
-                firstOutput = container;
+            if ((firstOutput == null) && (handler.hasGeneratedOutput()))
+                firstOutput = handler;
         }
 
         // If we're not emailing the output, then dump the output from the
@@ -915,24 +909,20 @@ public class curn
 
             else
             {
-                File tempFile = firstOutput.getTempFile();
+                InputStream output = firstOutput.getGeneratedOutput();
 
                 try
                 {
-                    log.debug ("Copying \""
-                             + tempFile.getPath()
-                             + "\" to standard output."); 
-
-                    InputStream is = new FileInputStream (tempFile);
-                    FileUtils.copyStream (is, System.out);
-                    is.close();
+                    FileUtils.copyStream (output, System.out);
+                    output.close();
                 }
 
                 catch (IOException ex)
                 {
-                    throw new FeedException ("Failed to copy \""
-                                           + tempFile.getPath()
-                                           + "\" to standard output.",
+                    throw new CurnException ("Failed to copy output from "
+                                           + "handler "
+                                           + firstOutput.getClass().getName()
+                                           + " to standard output.",
                                              ex);
                 }
             }

@@ -11,7 +11,7 @@ import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.text.TextUtils;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
 
 import java.util.Date;
 import java.util.Collection;
@@ -55,14 +55,12 @@ public class NullOutputHandler implements OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>OutputStreamWWriter</tt> where the handler
-     *                should send output
      * @param config  the parsed <i>curn</i> configuration data
      *
-     * @throws FeedException  initialization error
+     * @throws CurnException  initialization error
      */
-    public void init (OutputStreamWriter writer, ConfigFile config)
-        throws FeedException
+    public void init (ConfigFile config)
+        throws CurnException
     {
     }
 
@@ -74,11 +72,11 @@ public class NullOutputHandler implements OutputHandler
      * @param channel  The channel containing the items to emit.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
                                 FeedInfo    feedInfo)
-        throws FeedException
+        throws CurnException
     {
     }
 
@@ -86,9 +84,9 @@ public class NullOutputHandler implements OutputHandler
      * Flush any buffered-up output. <i>curn</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
-    public void flush() throws FeedException
+    public void flush() throws CurnException
     {
     }
     
@@ -104,18 +102,28 @@ public class NullOutputHandler implements OutputHandler
     }
 
     /**
-     * Determine whether this <tt>OutputHandler</tt> wants a file for its
-     * output or not. For example, a handler that produces text output
-     * wants a file, or something similar, to receive the text; such a
-     * handler would return <tt>true</tt> when this method is called. By
-     * contrast, a handler that swallows its output, or a handler that
-     * writes to a network connection, does not want a file to receive
-     * output.
+     * Get an <tt>InputStream</tt> that can be used to read the output data
+     * produced by the handler, if applicable.
      *
-     * @return <tt>true</tt> if the handler wants a file or file-like object
-     *         for its output, and <tt>false</tt> otherwise
+     * @return an open input stream, or null if no suitable output was produced
      */
-    public boolean wantsOutputFile()
+    public InputStream getGeneratedOutput()
+    {
+        return null;
+    }
+
+    /**
+     * Determine whether this handler has produced any actual output (i.e.,
+     * whether {@link #getGeneratedOutput()} will return a non-null
+     * <tt>InputStream</tt> if called).
+     *
+     * @return <tt>true</tt> if the handler has produced output,
+     *         <tt>false</tt> if not
+     *
+     * @see #getGeneratedOutput
+     * @see #getContentType
+     */
+    public boolean hasGeneratedOutput()
     {
         return false;
     }

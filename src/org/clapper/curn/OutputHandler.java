@@ -5,7 +5,7 @@
 package org.clapper.curn;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -47,23 +47,20 @@ public interface OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>OutputStreamWriter</tt> where the handler
-     *                should send output, if applicable.
      * @param config  the parsed <i>curn</i> configuration data. The
      *                output handler is responsible for retrieving its
      *                own parameters from the configuration, by calling
      *                <tt>config.getOutputHandlerSpecificVariables()</tt>
      *
      * @throws ConfigurationException configuration error
-     * @throws FeedException          some other initialization error
+     * @throws CurnException          some other initialization error
      *
      * @see ConfigFile#getOutputHandlerSpecificVariables(Class)
      * @see ConfigFile#getOutputHandlerSpecificVariables(String)
      */
-    public void init (OutputStreamWriter writer,
-                      ConfigFile         config)
+    public void init (ConfigFile config)
         throws ConfigurationException,
-               FeedException;
+               CurnException;
 
     /**
      * Display the list of <tt>RSSItem</tt> news items to whatever output
@@ -76,11 +73,11 @@ public interface OutputHandler
      *                 not be seen.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
                                 FeedInfo    feedInfo)
-        throws FeedException;
+        throws CurnException;
 
     /**
      * Flush any buffered-up output, but do NOT close the underlying output
@@ -89,30 +86,46 @@ public interface OutputHandler
      * handler doesn't need to flush any output, it can simply return
      * without doing anything.
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
     public void flush()
-        throws FeedException;
+        throws CurnException;
 
     /**
      * Get the content (i.e., MIME) type for output produced by this output
      * handler.
      *
      * @return the content type
+     *
+     * @see #hasGeneratedOutput
+     * @see #getGeneratedOutput
      */
     public String getContentType();
 
     /**
-     * Determine whether this <tt>OutputHandler</tt> wants a file for its
-     * output or not. For example, a handler that produces text output
-     * wants a file, or something similar, to receive the text; such a
-     * handler would return <tt>true</tt> when this method is called. By
-     * contrast, a handler that swallows its output, or a handler that
-     * writes to a network connection, does not want a file to receive
-     * output.
+     * Get an <tt>InputStream</tt> that can be used to read the output data
+     * produced by the handler, if applicable.
      *
-     * @return <tt>true</tt> if the handler wants a file or file-like object
-     *         for its output, and <tt>false</tt> otherwise
+     * @return an open input stream, or null if no suitable output was produced
+     *
+     * @throws CurnException an error occurred
+     *
+     * @see #hasGeneratedOutput
+     * @see #getContentType
      */
-    public boolean wantsOutputFile();
+    public InputStream getGeneratedOutput()
+        throws CurnException;
+
+    /**
+     * Determine whether this handler has produced any actual output (i.e.,
+     * whether {@link #getGeneratedOutput()} will return a non-null
+     * <tt>InputStream</tt> if called).
+     *
+     * @return <tt>true</tt> if the handler has produced output,
+     *         <tt>false</tt> if not
+     *
+     * @see #getGeneratedOutput
+     * @see #getContentType
+     */
+    public boolean hasGeneratedOutput();
 }

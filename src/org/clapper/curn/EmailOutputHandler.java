@@ -29,12 +29,12 @@ public interface EmailOutputHandler extends OutputHandler
      * @param outputHandler  the <tt>OutputHandler</tt> to wrap inside this
      *                       handler
      *
-     * @throws FeedException error adding handler
+     * @throws CurnException error adding handler
      *
      * @see OutputHandler#init
      */
     public void addOutputHandler (OutputHandler outputHandler)
-        throws FeedException;
+        throws CurnException;
 
     /**
      * Add one or more email addresses to the output handler. The
@@ -42,8 +42,8 @@ public interface EmailOutputHandler extends OutputHandler
      *
      * @param emailAddress  email address to add
      *
-     * @throws FeedException  bad email address
+     * @throws CurnException  bad email address
      */
     public void addRecipient (String emailAddress)
-        throws FeedException;
+        throws CurnException;
 }

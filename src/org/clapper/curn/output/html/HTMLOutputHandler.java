@@ -5,7 +5,7 @@
 package org.clapper.curn.htmloutput;
 
 import org.clapper.curn.OutputHandler;
-import org.clapper.curn.FeedException;
+import org.clapper.curn.CurnException;
 import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
@@ -22,9 +22,12 @@ import org.clapper.util.text.TextUtils;
 import org.clapper.util.misc.Logger;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import java.util.Date;
 import java.util.Collection;
@@ -63,8 +66,8 @@ public class HTMLOutputHandler implements OutputHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private PrintWriter           curnOut             = null;
-    private PrintWriter           saveAsOut           = null;
+    private PrintWriter           out                 = null;
+    private File                  outputFile          = null;
     private RSSOutputHTML         doc                 = null;
     private String                oddItemRowClass     = null;
     private String                oddChannelClass     = null;
@@ -103,18 +106,14 @@ public class HTMLOutputHandler implements OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>OutputStreamWWriter</tt> where the handler
-     *                should send output, if applicable. Ignored if the
-     *                "SaveOnly" parameter is set in this handler's
-     *                configuration section
      * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws ConfigurationException  configuration error
-     * @throws FeedException           some other initialization error
+     * @throws CurnException           some other initialization error
      */
-    public void init (OutputStreamWriter writer, ConfigFile config)
+    public void init (ConfigFile config)
         throws ConfigurationException,
-               FeedException
+               CurnException
     {
         this.doc                 = new RSSOutputHTML();
         this.config              = config;
@@ -159,28 +158,36 @@ public class HTMLOutputHandler implements OutputHandler
             throw new ConfigurationException (ex);
         }
 
-        log.debug ("SaveAs=" + ((saveAs == null) ? "null" : saveAs));
-        log.debug ("SaveOnly=" + String.valueOf (saveOnly));
-
         if (saveAs != null)
-        {
+            outputFile = new File (saveAs);
 
+        else
+        {
             try
             {
-                this.saveAsOut = new PrintWriter (new FileWriter (saveAs));
+                outputFile = File.createTempFile ("curn", "txt");
+                outputFile.deleteOnExit();
             }
 
             catch (IOException ex)
             {
-                throw new FeedException ("Can't open file \""
-                                       + saveAs
-                                       + "\" for output",
-                                         ex);
+                throw new CurnException ("Can't create temporary file.");
             }
         }
 
-        if (! saveOnly)
-            this.curnOut = new PrintWriter (writer);
+        try
+        {
+            log.debug ("Opening output file \"" + outputFile + "\"");
+            this.out = new PrintWriter (new FileWriter (outputFile));
+        }
+
+        catch (IOException ex)
+        {
+            throw new CurnException ("Can't open file \""
+                                   + outputFile
+                                   + "\" for output",
+                                     ex);
+        }
     }
 
     /**
@@ -193,11 +200,11 @@ public class HTMLOutputHandler implements OutputHandler
      *                 not be seen.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
                                 FeedInfo    feedInfo)
-        throws FeedException
+        throws CurnException
     {
         Collection items = channel.getItems();
 
@@ -326,9 +333,9 @@ public class HTMLOutputHandler implements OutputHandler
     /**
      * Flush any buffered-up output.
      *
-     * @throws FeedException  unable to write output
+     * @throws CurnException  unable to write output
      */
-    public void flush() throws FeedException
+    public void flush() throws CurnException
     {
         // Remove the cloneable row.
 
@@ -346,26 +353,10 @@ public class HTMLOutputHandler implements OutputHandler
 
         // Write the document.
 
-        if ((curnOut != null) || (saveAsOut != null))
-        {
-            log.debug ("Generating HTML");
+        log.debug ("Generating HTML");
 
-            String html = doc.toDocument();
-
-            if (curnOut != null)
-            {
-                log.debug ("Writing HTML to curn-specified output.");
-                curnOut.print (html);
-                curnOut.flush();
-            }
-
-            if (saveAsOut != null)
-            {
-                log.debug ("Writing HTML to save-as file.");
-                saveAsOut.print (html);
-                saveAsOut.flush();
-            }
-        }
+        out.print (doc.toDocument());
+        out.flush();
 
         // Kill the document.
 
@@ -384,22 +375,53 @@ public class HTMLOutputHandler implements OutputHandler
     }
 
     /**
-     * Determine whether this <tt>OutputHandler</tt> wants a file for its
-     * output or not. For example, a handler that produces text output
-     * wants a file, or something similar, to receive the text; such a
-     * handler would return <tt>true</tt> when this method is called. By
-     * contrast, a handler that swallows its output, or a handler that
-     * writes to a network connection, does not want a file to receive
-     * output.
+     * Get an <tt>InputStream</tt> that can be used to read the output data
+     * produced by the handler, if applicable.
      *
-     * @return <tt>true</tt> if the handler wants a file or file-like object
-     *         for its output, and <tt>false</tt> otherwise
+     * @return an open input stream, or null if no suitable output was produced
+     *
+     * @throws CurnException an error occurred
      */
-    public boolean wantsOutputFile()
+    public InputStream getGeneratedOutput()
+        throws CurnException
     {
-        // We only want an output file from curn if "SaveOnly" is not set.
+        InputStream result = null;
 
-        return (! saveOnly);
+        if (hasGeneratedOutput())
+        {
+            try
+            {
+                result = new FileInputStream (outputFile);
+            }
+
+            catch (FileNotFoundException ex)
+            {
+                throw new CurnException ("Can't re-open file \""
+                                       + outputFile
+                                       + "\"",
+                                         ex);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Determine whether this handler has produced any actual output (i.e.,
+     * whether {@link #getGeneratedOutput()} will return a non-null
+     * <tt>InputStream</tt> if called).
+     *
+     * @return <tt>true</tt> if the handler has produced output,
+     *         <tt>false</tt> if not
+     *
+     * @see #getGeneratedOutput
+     * @see #getContentType
+     */
+    public boolean hasGeneratedOutput()
+    {
+        return (! saveOnly) &&
+               (outputFile != null) &&
+               (outputFile.length() > 0);
     }
 
     /*----------------------------------------------------------------------*\
