@@ -61,15 +61,22 @@ public final class Version
     \*----------------------------------------------------------------------*/
 
     /**
+     * Display version information only
+     */
+    public static void showVersion()
+    {
+        System.out.println ("curn, version " + VERSION);
+    }
+
+    /**
      * Display build information
      */
     public static void showBuildInfo()
     {
         BuildInfo buildInfo = new BuildInfo (BUNDLE_NAME);
 
-        System.out.println ("curn, version " +
-                            VERSION);
         System.out.println ();
+        showVersion();
         System.out.println ("Build date:     " +
                             buildInfo.getBuildDate());
         System.out.println ("Built by:       " +

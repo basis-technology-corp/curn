@@ -117,7 +117,8 @@ public class Tool extends CommandLineUtility
     private boolean     useCache         = true;
     private Date        currentTime      = new Date();
     private Collection  emailAddresses   = new ArrayList();
-    private boolean     showBuildInfo    = false;
+    private boolean     optShowBuildInfo = false;
+    private boolean     optShowVersion   = false;
     private Boolean     optShowDates     = null;
     private Boolean     optShowAuthors   = null;
     private Boolean     optQuiet         = null;
@@ -213,8 +214,9 @@ public class Tool extends CommandLineUtility
                 break;
 
             case 'B':           // --build-info
-                showBuildInfo = true;
+                optShowBuildInfo = true;
                 break;
+
             case 'C':           // --no-cache
                 useCache = false;
                 break;
@@ -274,6 +276,10 @@ public class Tool extends CommandLineUtility
                 optUpdateCache = Boolean.FALSE;
                 break;
 
+            case 'v':
+                optShowVersion = true;
+                break;
+
             case 'z':           // --gzip
                 config.setRetrieveFeedsWithGzipFlag (true);
                 break;
@@ -319,10 +325,10 @@ public class Tool extends CommandLineUtility
         throws CommandLineUsageException,
                NoSuchElementException
     {
-        // If we're showing build information, forget about the remainder
-        // of the command line.
+        // If we're showing build information or the version, forget about
+        // the remainder of the command line.
 
-        if (! showBuildInfo)
+        if (! (optShowBuildInfo || optShowVersion))
         {
             configPath = (String) it.next();
 
@@ -365,7 +371,9 @@ public class Tool extends CommandLineUtility
         info.addOption ('A', "no-authors",
                         "Don't the authors for each item, if available.");
         info.addOption ('B', "build-info",
-                        "Show full build information.");
+                        "Show full build information, then exit. "
+                      + "This option shows a bit more information than the "
+                      + "--version option");
         info.addOption ('C', "no-cache", "Don't use a cache file at all.");
         info.addOption ('d', "show-dates",
                         "Show dates on feeds and feed items, if available.");
@@ -384,6 +392,8 @@ public class Tool extends CommandLineUtility
                       + "<n>. <n> must be greater than 0.");
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
+        info.addOption ('v', "version",
+                        "Show version information, then exit.");
         info.addOption ('z', "gzip",
                         "Ask remote HTTP servers to gzip content before "
                       + "sending it.");
@@ -431,8 +441,11 @@ public class Tool extends CommandLineUtility
     {
         try
         {
-            if (showBuildInfo)
+            if (optShowBuildInfo)
                 Version.showBuildInfo();
+
+            else if (optShowVersion)
+                Version.showVersion();
 
             else
             {

@@ -179,7 +179,8 @@ OPTIONS:
 
 -A, --no-authors     Don't the authors for each item, if available.
 -a, --show-authors   Show the authors for each item, if available.
--B, --build-info     Show full build information.
+-B, --build-info     Show full build information, then exit. This option shows 
+                     a bit more information than the --version option
 -C, --no-cache       Don't use a cache file at all.
 -D, --no-dates       Don't show dates on feeds and feed items.
 -d, --show-dates     Show dates on feeds and feed items, if available.
@@ -212,6 +213,7 @@ OPTIONS:
                          09 AM
                          9 AM
 -u, --no-update      Read the cache, but don't update it.
+-v, --version        Show version information, then exit.
 -Z, --no-gzip        Don't ask remote HTTP servers to gzip content before 
                      sending it.
 -z, --gzip           Ask remote HTTP servers to gzip content before sending it. 
@@ -273,7 +275,7 @@ Each option and argument is discussed in more detail, below.</p>
 
 	<tr valign="top" class="oddRow">
 	  <td align="left" class="code">-B</td>
-	  <td align="left" class="code">--build-info</td>
+	  <td align="left" class="code"><a name="--build-info">--build-info</a></td>
           <td>Display detailed information about how and when <i>curn</i>
 	      was built, then exit without doing anything. Useful primarily
 	      when debugging or submitting problem reports. For instance,
@@ -289,6 +291,8 @@ Build Java VM:  Classic VM 1.3.1-p9-bmc-040715-11:49 (Sun Microsystems Inc.)
 Build compiler: jikes
 Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 </blockquote>
+	      <p>For a simple one-line version display, use the
+	      <a href="#--version" class="code">--version</a> option.</p>
 	  </td>
         </tr>
 
@@ -452,6 +456,16 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	</tr>
 
 	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-v</td>
+	  <td align="left" class="code"><a name="--version">--version</a></td>
+          <td>Show just the one-line version information, then exit. For
+	      more detailed <i>curn</i> build and version information, use
+	      the <a href="#--build-info" class="code">--build-info</a>
+	      option.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
 	  <td align="left" class="code">-Z</td>
 	  <td align="left" class="code"><a name="--no-gzip">--no-gzip</a></td>
           <td>Do not ask remote HTTP servers to <i>gzip</i> their content
@@ -472,7 +486,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	  </td>
 	</tr>
 
-	<tr valign="top" class="evenRow">
+	<tr valign="top" class="oddRow">
 	  <td align="left" class="code">-z</td>
 	  <td align="left" class="code"><a name="--gzip">--gzip</a></td>
           <td>Ask remote HTTP servers to <i>gzip</i> their content before
