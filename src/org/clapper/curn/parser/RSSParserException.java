@@ -2,9 +2,9 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.rssget.parser;
 
-import org.clapper.util.misc.*;
+import org.clapper.util.misc.NestedException;
 
 /**
  * A <tt>RSSParserException</tt> is thrown by the

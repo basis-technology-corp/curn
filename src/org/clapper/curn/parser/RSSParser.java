@@ -2,10 +2,10 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.rssget.parser;
 
-import java.net.*;
-import java.io.*;
+import java.net.URL;
+import java.io.IOException;
 
 /**
  * This interface defines a simplified view of an RSS channel, providing

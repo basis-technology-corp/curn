@@ -2,9 +2,10 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.rssget.parser;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * This class provides a factory for retrieving a specific RSS parser

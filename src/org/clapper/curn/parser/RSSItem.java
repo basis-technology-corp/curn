@@ -2,10 +2,13 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.rssget.parser;
 
-import java.net.*;
-import java.util.*;
+import java.net.URL;
+import java.net.MalformedURLException;
+
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * This interface defines a simplified view of an RSS item, providing only
