@@ -66,13 +66,13 @@ public final class Version
     /**
      * Get the full program version string, which contains the program name
      * and the version number. This is the string that the
-     * {@link showVersion()} method displays.
+     * {@link #showVersion()} method displays.
      *
      * @return the full version string
      *
      * @see #showVersion()
      * @see #showVersion(PrintWriter)
-     * @see #showVersion(PrintOutputStream)
+     * @see #showVersion(PrintStream)
      */
     public static String getFullVersion()
     {

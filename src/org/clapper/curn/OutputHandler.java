@@ -81,8 +81,8 @@ public interface OutputHandler
      * @throws ConfigurationException configuration error
      * @throws CurnException          some other initialization error
      *
-     * @see ConfigFile#getOutputHandlerSpecificVariables(Class)
-     * @see ConfigFile#getOutputHandlerSpecificVariables(String)
+     * @see ConfigFile
+     * @see ConfiguredOutputHandler
      */
     public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
