@@ -138,7 +138,6 @@
 
   <target name="main" depends="parser.main">
     <!-- Compile the java code from . into ${build} -->
-    <echo>src.dir=${src.dir}</echo>
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
@@ -316,7 +315,7 @@
     <mkdir dir="${docs_api_dir}"/>
     <javadoc
              destdir="${docs_api_dir}"
-             sourcepath="../../.."
+             sourcepath="${src.top}"
              author="true"
              version="true"
              splitindex="true"
