@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# This is what I use on my FreeBSD system to run curn.
+# ---------------------------------------------------------------------------
 
 : ${JAVA_ROOT:=/usr/local/java}
 JAVA_HOME=$JAVA_ROOT/jdk
@@ -21,19 +24,21 @@ do
 done
 
 exec $JAVA_HOME/bin/java \
+-client \
 $vm_opts \
 -classpath \
 $UNPKG_JAVA_CLASS_DIR/ocutil.jar:\
 $UNPKG_JAVA_CLASS_DIR/informa.jar:\
+$UNPKG_JAVA_CLASS_DIR/rome.jar:\
 $PKG_JAVA_CLASS_DIR/commons-logging.jar:\
 $PKG_JAVA_CLASS_DIR/jdom.jar:\
 $PKG_JAVA_CLASS_DIR/xerces.jar:\
-$PKG_JAVA_CLASS_DIR/jakarta-oro.jar:\
+$UNPKG_JAVA_CLASS_DIR/jakarta-oro.jar:\
 $PKG_JAVA_CLASS_DIR/activation.jar:\
 $PKG_JAVA_CLASS_DIR/mail.jar:\
+$UNPKG_JAVA_CLASS_DIR/bsf.jar:\
 $UNPKG_JAVA_CLASS_DIR/xmlc-all-runtime.jar:\
 $UNPKG_JAVA_CLASS_DIR/xml-apis.jar:\
 $UNPKG_JAVA_CLASS_DIR/jtidy.jar:\
 $UNPKG_JAVA_CLASS_DIR/curn.jar \
 org.clapper.curn.Tool "${@}"
-
