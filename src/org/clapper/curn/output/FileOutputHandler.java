@@ -269,7 +269,8 @@ public abstract class FileOutputHandler implements OutputHandler
 
     /**
      * Convert certain Unicode characters in a string to plain text
-     * sequences. Useful primarily for handlers that produce plain text.
+     * sequences. Also strips embedded HTML tags from the string. Useful
+     * primarily for handlers that produce plain text.
      *
      * @param s  the string to convert
      *
@@ -313,6 +314,6 @@ public abstract class FileOutputHandler implements OutputHandler
             }
         }
 
-        return buf.toString();
+        return Util.stripHTMLTags (buf.toString());
     }
 }
