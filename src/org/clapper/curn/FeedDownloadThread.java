@@ -87,9 +87,9 @@ class FeedDownloadThread extends Thread
     private ConfigFile     configuration   = null;
     private RSSParser      rssParser       = null;
     private FeedCache      cache           = null;
-    private CurnException  exception       = null;  
     private RegexUtil      regexUtil       = new RegexUtil();
     private List           feedQueue       = null;
+    private FeedException  exception       = null;
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -260,9 +260,12 @@ class FeedDownloadThread extends Thread
      * running in non-threaded mode. Once this method returns, use the
      * {@link #errorOccurred} method to determine whether a feed-processing
      * error occurred, and the {@link #getException} method to receive the
-     * exception if an error did occur.
+     * exception if an error did occur. (If an error does occur, this method
+     * logs it regardless.)
      *
      * @param feed  The <tt>FeedInfo</tt> object for the feed to be processed
+     *
+     * @throws FeedException error processing feed
      *
      * @see #errorOccurred
      * @see #getException
@@ -279,14 +282,10 @@ class FeedDownloadThread extends Thread
                                                    configuration));
         }
 
-        catch (RSSParserException ex)
+        catch (FeedException ex)
         {
+            log.error ("", ex);
             this.exception = ex;
-        }
-
-        catch (RegexException ex)
-        {
-            this.exception = new CurnException (ex);
         }
     }
 
@@ -316,7 +315,7 @@ class FeedDownloadThread extends Thread
      * @see #processFeed
      * @see #errorOccurred
      */
-    CurnException getException()
+    FeedException getException()
     {
         return this.exception;
     }
@@ -338,14 +337,12 @@ class FeedDownloadThread extends Thread
      * @return the <tt>RSSChannel</tt> representing the parsed feed, if
      *         parsing was enabled; otherwise, null.
      *
-     * @throws RSSParserException parser error
-     * @throws RegexException     substitution error
+     * @throws FeedException  error
      */
     private RSSChannel handleFeed (FeedInfo   feedInfo,
                                    RSSParser  parser,
                                    ConfigFile configuration)
-        throws RSSParserException,
-               RegexException
+        throws FeedException
     {
         URL         feedURL = feedInfo.getURL();
         String      feedURLString = feedURL.toString();
@@ -450,19 +447,24 @@ class FeedDownloadThread extends Thread
             }
         }
 
+        catch (RegexException ex)
+        {
+            throw new FeedException (feedInfo, ex);
+        }
+
         catch (MalformedURLException ex)
         {
-            log.error ("", ex);
+            throw new FeedException (feedInfo, ex);
         }
 
         catch (RSSParserException ex)
         {
-            log.error ("RSS parse exception: ", ex); 
+            throw new FeedException (feedInfo, ex);
         }
 
         catch (IOException ex)
         {
-            log.error ("", ex);
+            throw new FeedException (feedInfo, ex);
         }
 
         return channel;
@@ -541,6 +543,7 @@ class FeedDownloadThread extends Thread
         }
         
         totalBytes = FileUtil.copyReader (reader, writer);
+        log.debug ("Total bytes downloaded: " + totalBytes);
         writer.close();
         urlStream.close();
 
