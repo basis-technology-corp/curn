@@ -4,6 +4,14 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.5.2 (12 October, 2004)
+
+- Simplified loading of API version, in build.xml. Instead of loading
+  version from Version.class, it now loads the version from a properties
+  file. The Version class uses the same properties file, as a resource
+  bundle.
+
+
 Version 1.5.1 (10 October, 2004)
 
 - Fixed bug with PreparseEdit per-feed configuration directive (introduced
