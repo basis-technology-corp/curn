@@ -4,6 +4,19 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.5.6 (...)
+
+- Added new MaxSummarySize configuration parameter. If a summary exceeds
+  the specified size, it is truncated. See the User's Guide and the sample
+  configuration file for details.
+
+- Abstract org.clapper.curn.parser.RSSItem class now contains a
+  getSummaryForDisplay() utility method, which handles stripping HTML tags,
+  optionally using the description if the summary is not defined,
+  and applying the MaxSummarySize constraint (if applicable). Modified
+  existing output handlers to use this new method.
+
+
 Version 1.5.5 (10 November, 2004)
 
 - NOTE: You MUST have version 1.1.4 (or better) of the org.clapper.util

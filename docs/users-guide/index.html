@@ -1063,7 +1063,7 @@ in detail, below.</p>
 
 	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_DaysToCache">DaysToCache</a></td>
-          <td align="left">Integer</td>
+          <td align="left">Positive integer</td>
 	  <td align="left">
 	    Default maximum number of days to cache an already-read item.
             This parameter is used when the configuration section for a
@@ -1142,8 +1142,26 @@ in detail, below.</p>
         </tr>
 
 	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_MaxSummarySize">MaxSummarySize</a></td>
+          <td align="left">Positive integer</td>
+	  <td align="left">
+            If you're displaying the summary (see the
+	    <a href="#Cfg_SummaryOnly" class="code">SummaryOnly</a> parameter),
+	    you can optionally set a maximum size for the summary. If a summary
+	    exceeds the maximum size, <i>curn</i> will truncate it and add
+	    a trailing ellipsis ("...") to indicate the truncation. A value of
+	    0 effectively disables this option. This parameter can be
+            <a href="#Feed_MaxSummarySize">overridden on a per-feed basis</a>.
+	    This global value sets the default value.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">0 (i.e., no limit on summary size)</td>
+	  <td align="left">&nbsp;</td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_MaxThreads">MaxThreads</a></td>
-          <td align="left">Integer</td>
+          <td align="left">Positive integer</td>
 	  <td align="left">Defines the number of concurrent download threads.
 	      If this value is greater than 1, then <i>curn</i> will spawn
 	      that many worker threads to handle the downloading and parsing of
@@ -1160,7 +1178,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_NoCacheUpdate">NoCacheUpdate</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">If set to "true" (and if a cache file is specified),
@@ -1176,7 +1194,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_ParserClass">ParserClass</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1232,7 +1250,7 @@ in detail, below.</p>
 	  <td align="left">&nbsp;</td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_Quiet">Quiet</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1253,7 +1271,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_ShowAuthors">ShowAuthors</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1268,7 +1286,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_ShowDates">ShowDates</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1286,7 +1304,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_ShowRSSVersion">ShowRSSVersion</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">Display the RSS version for each feed.</td>
@@ -1298,22 +1316,22 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_SummaryOnly">SummaryOnly</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
             Some RSS feeds provide a description for each item, in addition
             to the (brief) title. Setting <span class="code">SummaryOnly</span>
 	    to "true" suppresses display of the description. This parameter
-            can be overridden on a per-site basis. This global value sets
-            the default value.
+            can be <a href="#Feed_SummaryOnly">overridden on a per-feed basis</a>.
+	    This global value sets the default value.
           </td>
 	  <td align="left">No</td>
 	  <td align="left" class="code">false</td>
 	  <td align="left">&nbsp;</td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_SMTPHost">SMTPHost</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1330,7 +1348,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1357,7 +1375,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_UserAgent">UserAgent</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1428,7 +1446,7 @@ section names are all valid for RSS feed sections.</p>
 
 	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_DaysToCache">DaysToCache</a></td>
-          <td align="left">Integer</td>
+          <td align="left">Positive integer</td>
 	  <td align="left">
 	    Maximum number of days to cache an already-read item for this
 	    feed. This value locally overrides the global
@@ -1608,7 +1626,25 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">false</td>
 	</tr>
 
-        <tr valign="top" class="oddrow">
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Feed_MaxSummarySize">MaxSummarySize</a></td>
+          <td align="left">Positive integer</td>
+	  <td align="left">
+            If you're displaying the summary for the feed (see the
+	    <a href="#Feed_SummaryOnly" class="code">SummaryOnly</a> parameter),
+	    you can optionally set a maximum size for the summary. If a summary
+	    exceeds the maximum size, <i>curn</i> will truncate it and add a
+	    trailing ellipsis ("...") to indicate the truncation. A value of 0
+	    effectively disables this option. This parameter overrides the global
+            <a href="#Cfg_MaxSummarySize" class="code">MaxSummarySize</a>
+	    parameter.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">0 (i.e., no limit on summary size)</td>
+	  <td align="left">&nbsp;</td>
+        </tr>
+
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_PreparseEdit">PreparseEdit<i>suffix</i></a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1706,7 +1742,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code">PruneURLs</td>
           <td align="left">Boolean</td>
 	  <td align="left">Specifies a string to be used as the site's
@@ -1717,7 +1753,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-        <tr valign="top" class="oddrow">
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
           <td align="left">File name or path name</td>
 	  <td align="left"><p>If set, this parameter specifies the path to
@@ -1745,7 +1781,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SaveAsEncoding">SaveAsEncoding</a></td>
           <td align="left">String</td>
 	  <td align="left">If set, and if
@@ -1764,7 +1800,7 @@ section names are all valid for RSS feed sections.</p>
             parse.</td>
 	</tr>
 
-        <tr valign="top" class="oddrow">
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_SaveOnly">SaveOnly</a></td>
           <td align="left">Boolean</td>
 	  <td align="left"><p>If set, and if
@@ -1776,7 +1812,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">false</td>
 	</tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1801,6 +1837,23 @@ section names are all valid for RSS feed sections.</p>
 	    The value of the global
 	    <a href="#Cfg_SortBy" class="code">SortBy</a>
 	    parameter in the <span class="code">[curn]</span> section.</td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Feed_SummaryOnly">SummaryOnly</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+            Some RSS feeds provide a description for each item, in addition
+            to the (brief) title. Setting <span class="code">SummaryOnly</span>
+	    to "true" suppresses display of the description. This parameter
+            overrides the global
+	    <a href="#Cfg_SummaryOnly" class="code">SummaryOnly</a> parameter.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">The value of the global
+	    <a href="#Cfg_SummaryOnly" class="code">SummaryOnly</a> parameter.
+	  </td>
+	  <td align="left">&nbsp;</td>
         </tr>
 
         <tr valign="top" class="oddrow">
