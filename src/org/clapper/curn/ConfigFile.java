@@ -98,6 +98,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_SHOW_DATES        = "ShowDates";
     private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
     private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
+    private static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
     private static final String VAR_DISABLED          = "Disabled";
     private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     private static final String VAR_SAVE_FEED_AS      = "SaveAs";
@@ -710,7 +711,10 @@ public class ConfigFile extends Configuration
                                                        VAR_GET_GZIPPED_FEEDS,
                                                        DEF_GET_GZIPPED_FEEDS);
 
-            defaultSortBy = getSortByValue (MAIN_SECTION, DEF_SORT_BY);
+            s = getOptionalStringValue (MAIN_SECTION, VAR_SORT_BY, null);
+            defaultSortBy = (s == null) ? DEF_SORT_BY
+                                        : parseSortByValue (MAIN_SECTION, s);
+
             setMaxThreads (getOptionalIntegerValue (MAIN_SECTION,
                                                     VAR_MAX_THREADS,
                                                     DEF_MAX_THREADS));
@@ -737,11 +741,14 @@ public class ConfigFile extends Configuration
     private void processFeedSection (String sectionName)
         throws ConfigurationException
     {
-        FeedInfo  feedInfo = null;
-        String    feedURLString = getConfigurationValue (sectionName,
-                                                         VAR_FEED_URL);
-        String    s;
-        URL       url = null;
+        FeedInfo    feedInfo = null;
+        String      feedURLString = null;
+        Collection  varNames = getVariableNames (sectionName, new ArrayList());
+        Collection  preparseEditCommands = new ArrayList();
+        String      s;
+        URL         url = null;
+
+        feedURLString = getConfigurationValue (sectionName, VAR_FEED_URL);
 
         try
         {
@@ -757,43 +764,99 @@ public class ConfigFile extends Configuration
                                             + "\"");
         }
 
-        feedInfo.setDaysToCache (getOptionalIntegerValue (sectionName,
-                                                          VAR_DAYS_TO_CACHE,
-                                                          defaultCacheDays));
-        feedInfo.setPruneURLsFlag (getOptionalBooleanValue (sectionName,
-                                                            VAR_PRUNE_URLS,
-                                                            DEF_PRUNE_URLS));
-        feedInfo.setSummarizeOnlyFlag
-                              (getOptionalBooleanValue (sectionName,
-                                                        VAR_SUMMARY_ONLY,
-                                                        summaryOnly));
-        feedInfo.setEnabledFlag
-                              (! getOptionalBooleanValue (sectionName,
-                                                          VAR_DISABLED,
-                                                          false));
+        feedInfo.setPruneURLsFlag (DEF_PRUNE_URLS);
+        feedInfo.setDaysToCache (defaultCacheDays);
+        feedInfo.setSummarizeOnlyFlag (summaryOnly);
+        feedInfo.setSortBy (defaultSortBy);
 
-        feedInfo.setIgnoreItemsWithDuplicateTitlesFlag
-                              (getOptionalBooleanValue (sectionName,
-                                                        VAR_IGNORE_DUP_TITLES,
-                                                        false));
+        for (Iterator it = varNames.iterator(); it.hasNext(); )
+        {
+            String varName = (String) it.next();
 
-        s = getOptionalStringValue (sectionName, VAR_TITLE_OVERRIDE, null);
-        if (s != null)
-            feedInfo.setTitleOverride (s);
+            if (varName.equals (VAR_DAYS_TO_CACHE))
+            {
+                feedInfo.setDaysToCache
+                    (getRequiredIntegerValue (sectionName, VAR_DAYS_TO_CACHE));
+            }
 
-        s = getOptionalStringValue (sectionName, VAR_EDIT_ITEM_URL, null);
-        if (s != null)
-            feedInfo.setItemURLEditCommand (s);
+            else if (varName.equals (VAR_PRUNE_URLS))
+            {
+                feedInfo.setPruneURLsFlag
+                    (getRequiredBooleanValue (sectionName, VAR_PRUNE_URLS));
+            }
 
-        s = getOptionalStringValue (sectionName, VAR_SAVE_FEED_AS, null);
-        if (s != null)
-            feedInfo.setSaveAsFile (new File (s));
+            else if (varName.equals (VAR_SUMMARY_ONLY))
+            {
+                feedInfo.setSummarizeOnlyFlag
+                    (getRequiredBooleanValue (sectionName, VAR_SUMMARY_ONLY));
+            }
 
-        s = getOptionalStringValue (sectionName, VAR_FORCE_ENCODING, null);
-        if (s != null)
-            feedInfo.setForcedCharacterEncoding (s);
+            else if (varName.equals (VAR_DISABLED))
+            {
+                feedInfo.setEnabledFlag
+                    (! getRequiredBooleanValue (sectionName, VAR_DISABLED));
+            }
 
-        feedInfo.setSortBy (getSortByValue (sectionName, defaultSortBy));
+            else if (varName.equals (VAR_IGNORE_DUP_TITLES))
+            {
+                feedInfo.setIgnoreItemsWithDuplicateTitlesFlag
+                    (getRequiredBooleanValue (sectionName,
+                                              VAR_IGNORE_DUP_TITLES));
+            }
+
+            else if (varName.equals (VAR_TITLE_OVERRIDE))
+            {
+                feedInfo.setTitleOverride
+                    (getConfigurationValue (sectionName, VAR_TITLE_OVERRIDE));
+            }
+
+            else if (varName.equals (VAR_EDIT_ITEM_URL))
+            {
+                feedInfo.setItemURLEditCommand
+                    (getConfigurationValue (sectionName, VAR_EDIT_ITEM_URL));
+            }
+
+            else if (varName.equals (VAR_SAVE_FEED_AS))
+            {
+                s = getConfigurationValue (sectionName, VAR_SAVE_FEED_AS);
+                feedInfo.setSaveAsFile (new File (s));
+            }
+
+            else if (varName.equals (VAR_FORCE_ENCODING))
+            {
+                feedInfo.setForcedCharacterEncoding
+                    (getConfigurationValue (sectionName, VAR_FORCE_ENCODING));
+            }
+
+            else if (varName.equals (VAR_SORT_BY))
+            {
+                s = getConfigurationValue (sectionName, VAR_SORT_BY);
+                feedInfo.setSortBy (parseSortByValue (sectionName, s));
+            }
+
+            else if (varName.startsWith (VAR_PREPARSE_EDIT))
+            {
+                s = getConfigurationValue (sectionName, varName);
+                preparseEditCommands.add (s);
+            }
+        }
+
+        if (preparseEditCommands.size() > 0)
+        {
+            String[] cmds = new String[preparseEditCommands.size()];
+            cmds = (String[]) preparseEditCommands.toArray (cmds);
+            feedInfo.setPreparseEditCommands (cmds);
+        }
+
+        if (url == null)
+        {
+            throw new ConfigurationException ("Section ["
+                                            + sectionName
+                                            + "]: Missing value for "
+                                            + "required \""
+                                            + VAR_FEED_URL
+                                            + "\" parameter.");
+        }
 
         feeds.add (feedInfo);
         feedMap.put (url.toString(), feedInfo);
@@ -852,40 +915,31 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Get a "SortBy" value from the specified section, if available.
+     * Parse a "SortBy" value.
      *
-     * @param sectionName   the section name
-     * @param defValue      default value to use
+     * @param sectionName section name (for error messages)
+     * @param value       the value from the config
      *
      * @return the value, or the appropriate default
      *
      * @throws ConfigurationException bad value for config item
      */
-    private int getSortByValue (String sectionName, int defValue)
+    private int parseSortByValue (String sectionName, String value)
         throws ConfigurationException
     {
-        int     result = defValue;
-        String  s;
+        Integer val = (Integer) LEGAL_SORT_BY_VALUES.get (value);
 
-        s = getOptionalStringValue (sectionName, VAR_SORT_BY, null);
-        if (s != null)
+        if (val == null)
         {
-            Integer val = (Integer) LEGAL_SORT_BY_VALUES.get (s);
-
-            if (val == null)
-            {
-                throw new ConfigurationException ("Section ["
-                                                + sectionName
-                                                + "]: Bad value \""
-                                                + s
-                                                + "\" for \""
-                                                + VAR_SORT_BY
-                                                + "\" parameter.");
-            }
-
-            result = val.intValue();
+            throw new ConfigurationException ("Section ["
+                                            + sectionName
+                                            + "]: Bad value \""
+                                            + value
+                                            + "\" for \""
+                                            + VAR_SORT_BY
+                                            + "\" parameter.");
         }
 
-        return result;
+        return val.intValue();
     }
 }
