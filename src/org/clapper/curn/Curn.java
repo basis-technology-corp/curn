@@ -43,7 +43,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
-import java.util.ResourceBundle;
 import java.util.zip.GZIPInputStream;
 
 import java.text.MessageFormat;
@@ -99,8 +98,6 @@ public class Curn
 
     private static final String EMAIL_HANDLER_CLASS =
                             "org.clapper.curn.email.EmailOutputHandlerImpl";
-
-    private static final String BUNDLE_NAME = "org.clapper.curn.Curn";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -173,7 +170,6 @@ public class Curn
     private Collection      outputHandlers   = new ArrayList();
     private Collection      emailAddresses   = new ArrayList();
     private Perl5Util       perl5Util        = new Perl5Util();
-    private ResourceBundle  bundle           = null;
 
     /**
      * For log messages
