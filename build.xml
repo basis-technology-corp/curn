@@ -250,7 +250,7 @@
           unless="email.exists">
     <echo>
 *** The email classes from the org.clapper.util.mail package are not
-*** currently available in the build environment. Rssget will build without
+*** currently available in the build environment. Curn will build without
 *** internal email support.
     </echo>
   </target>
