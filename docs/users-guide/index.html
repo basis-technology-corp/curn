@@ -1432,7 +1432,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">
 	    Maximum number of days to cache an already-read item for this
 	    feed. This value locally overrides the global
-	    <a href="#Cft_DaysToCache" class="code">DaysToCache</a> default
+	    <a href="#Cfg_DaysToCache" class="code">DaysToCache</a> default
 	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
             Items older than this many days are tossed from the
             cache when it's read, which means <i>curn</i> forgets that it saw
@@ -1729,6 +1729,20 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
         <tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Feed_SaveAsEncoding">SaveAsEncoding</a></td>
+          <td align="left">String</td>
+	  <td align="left">If set, and if
+	    <a href="#Feed_SaveAs" class="code">SaveAs</a> parameter is also
+	    set, then this parameter specifies the character
+	    encoding to use when saving the feed to the file.
+            If <span class="code">SaveAs</span> is not set for the feed,
+	    then any <span class="code">SaveAsEncoding</span> parameter is
+	    ignored.</p>
+	  <td align="left">No</td>
+	  <td align="left">"utf-8"</td>
+	</tr>
+
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SaveOnly">SaveOnly</a></td>
           <td align="left">Boolean</td>
 	  <td align="left"><p>If set, and if
@@ -1740,7 +1754,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">false</td>
 	</tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1767,7 +1781,7 @@ section names are all valid for RSS feed sections.</p>
 	    parameter in the <span class="code">[curn]</span> section.</td>
         </tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code">TitleOverride</td>
           <td align="left">String</td>
 	  <td align="left">Specifies a string to be used as the site's
@@ -1778,7 +1792,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_UserAgent">UserAgent</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1981,7 +1995,7 @@ section.</p>
 	      <tr valign="top">
 		<td align="left" class="code">HTMLEncoding</td>
 	        <td align="left">String</td>
-	        <td align="left">Specify the character set encoding to use
+	        <td align="left">Specify the character encoding to use
 	        when writing the HTML. The encoding will be stored in an
 	        HTML &lt;META&gt; tag, and it will be used by the Java runtime
 	        when opening the output file (to ensure proper translation of
