@@ -199,6 +199,7 @@ public class curn extends CommandLineUtility
         catch (CommandLineException ex)
         {
             System.err.println (ex.getMessage());
+            ex.printStackTrace();
             System.exit (1);
         }
 
@@ -304,56 +305,79 @@ public class curn extends CommandLineUtility
      * <tt>Iterator</tt> (which returns <tt>String</tt> objects). This
      * default method simply throws an exception.
      *
-     * @param option   the option, including the leading '-'
-     * @param it       the <tt>Iterator</tt> for the remainder of the
-     *                 command line
+     * @param shortOption  the short option character, or
+     *                     {@link UsageInfo#NO_SHORT_OPTION} if there isn't
+     *                     one (i.e., if this is a long-only option).
+     * @param longOption   the long option string, without any leading
+     *                     "-" characters, or null if this is a short-only
+     *                     option
+     * @param it           the <tt>Iterator</tt> for the remainder of the
+     *                     command line, for extracting parameters.
      *
      * @throws CommandLineUsageException  on error
      * @throws NoSuchElementException     overran the iterator (i.e., missing
      *                                    parameter) 
      */
-    protected void parseCustomOption (String option, Iterator it)
+    protected void parseCustomOption (char     shortOption,
+                                      String   longOption,
+                                      Iterator it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
-        if (option.equals ("-a") || option.equals ("--show-authors"))
-            optShowAuthors = Boolean.TRUE;
+        switch (shortOption)
+        {
+            case 'a':           // --authors
+                optShowAuthors = Boolean.TRUE;
+                break;
 
-        else if (option.equals ("-A") || option.equals ("--no-authors"))
-            optShowAuthors = Boolean.FALSE;
+            case 'A':           // --no-authors
+                optShowAuthors = Boolean.FALSE;
+                break;
 
-        else if (option.equals ("-B") || option.equals ("--build-info"))
-            showBuildInfo = true;
+            case 'B':           // --build-info
+                showBuildInfo = true;
+                break;
+            case 'C':           // --no-cache
+                useCache = false;
+                break;
 
-        else if (option.equals ("-C") || option.equals ("--no-cache"))
-            useCache = false;
+            case 'd':          // --show-dates
+                optShowDates = Boolean.TRUE;
+                break;
 
-        else if (option.equals ("-d") || option.equals ("--show-dates"))
-            optShowDates = Boolean.TRUE;
+            case 'D':          // --no-dates
+                optShowDates = Boolean.FALSE;
+                break;
 
-        else if (option.equals ("-D") || option.equals ("--no-dates"))
-            optShowDates = Boolean.FALSE;
+            case 'Q':          // --no-quiet
+                optQuiet = Boolean.FALSE;
+                break;
 
-        else if (option.equals ("-Q") || option.equals ("--no-quiet"))
-            optQuiet = Boolean.FALSE;
+            case 'q':          // --quiet
+                optQuiet = Boolean.TRUE;
+                break;
 
-        else if (option.equals ("-q") || option.equals ("--quiet"))
-            optQuiet = Boolean.TRUE;
+            case 'r':          // --rss-version
+                optRSSVersion = Boolean.TRUE;
+                break;
 
-        else if (option.equals ("-r") || option.equals ("--rss-version"))
-            optRSSVersion = Boolean.TRUE;
+            case 'R':          // --no-rss-version
+                optRSSVersion = Boolean.FALSE;
+                break;
 
-        else if (option.equals ("-R") || option.equals ("--no-rss-version"))
-            optRSSVersion = Boolean.FALSE;
+            case 't':          // --time
+                currentTime = parseDateTime ((String) it.next());
+                break;
 
-        else if (option.equals ("-t") || option.equals ("--time"))
-            currentTime = parseDateTime ((String) it.next());
+            case 'u':          // --no-update
+                optUpdateCache = Boolean.FALSE;
+                break;
 
-        else if (option.equals ("-u") || option.equals ("--no-update"))
-            optUpdateCache = Boolean.FALSE;
-
-        else
-            throw new CommandLineUsageException ("Unknown option: " + option);
+            default:
+                // Should not happen.
+                throw new IllegalStateException ("(BUG) Unknown option. "
+                                               + "Why am I here?");
+        }
     }
 
     /**
@@ -421,26 +445,26 @@ public class curn extends CommandLineUtility
      */
     protected void getCustomUsageInfo (UsageInfo info)
     {
-        info.addOption ("-a, --show-authors",
+        info.addOption ('a', "show-authors",
                         "Show the authors for each item, if available.");
-        info.addOption ("-A, --show-authors",
+        info.addOption ('A', "show-authors",
                         "Don't the authors for each item, if available.");
-        info.addOption ("-B, --build-info",
+        info.addOption ('B', "build-info",
                         "Show full build information.");
-        info.addOption ("-C, --no-cache", "Don't use a cache file at all.");
-        info.addOption ("-d, --show-dates",
+        info.addOption ('C', "no-cache", "Don't use a cache file at all.");
+        info.addOption ('d', "show-dates",
                         "Show dates on feeds and feed items, if available.");
-        info.addOption ("-D, --no-dates",
+        info.addOption ('D', "no-dates",
                         "Don't show dates on feeds and feed items.");
-        info.addOption ("-Q, --no-quiet",
+        info.addOption ('Q', "no-quiet",
                         "Emit messages about sites with no new items.");
-        info.addOption ("-q, --quiet",
+        info.addOption ('q', "quiet",
                         "Be quiet about sites with no new items.");
-        info.addOption ("-r, --rss-version",
+        info.addOption ('r', "rss-version",
                         "Show the RSS version each site uses.");
-        info.addOption ("-R, --no-rss-version",
+        info.addOption ('R', "no-rss-version",
                         "Don't show the RSS version each site uses.");
-        info.addOption ("-u, --no-update",
+        info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
 
         StringWriter sw  = new StringWriter();
@@ -454,7 +478,7 @@ public class curn extends CommandLineUtility
             pw.print ("    " + dpi.formatDate (now));
         }
 
-        info.addOption ("-t <time>, --time <time>",
+        info.addOption ('t', "time", "<time>",
                         "For the purposes of cache expiration, pretend the "
                       + "current time is <time>. <time> may be in one of the "
                       + "following formats."
