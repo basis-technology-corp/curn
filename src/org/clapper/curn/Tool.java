@@ -373,7 +373,8 @@ public class Tool extends CommandLineUtility
         info.addOption ('B', "build-info",
                         "Show full build information, then exit. "
                       + "This option shows a bit more information than the "
-                      + "--version option");
+                      + UsageInfo.LONG_OPTION_PREFIX
+                      + "version option");
         info.addOption ('C', "no-cache", "Don't use a cache file at all.");
         info.addOption ('d', "show-dates",
                         "Show dates on feeds and feed items, if available.");
