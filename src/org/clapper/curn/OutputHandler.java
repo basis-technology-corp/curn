@@ -54,12 +54,6 @@ public interface OutputHandler
                                  Constants
     \*----------------------------------------------------------------------*/
 
-    /**
-     * If there's no item summary, use an appropriate content field, as
-     * long as it's no larger than this many characters.
-     */
-    public static final int CONTENT_AS_SUMMARY_MAXSIZE = 1000;
-
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
