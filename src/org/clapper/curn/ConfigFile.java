@@ -398,7 +398,7 @@ public class ConfigFile extends Configuration
      * @param val <tt>true</tt> if Gzip is to be used, <tt>false</tt>
      *            otherwise
      *
-     * @see #retrieveFeedsWithGzipFlag
+     * @see #retrieveFeedsWithGzip
      */
     public void setRetrieveFeedsWithGzipFlag (boolean val)
     {

@@ -40,7 +40,7 @@ import java.io.FileNotFoundException;
  * </ul>
  *
  * @see OutputHandler
- * @see curn
+ * @see Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>

@@ -12,7 +12,7 @@ import java.util.Collection;
  * exists is to permit conditional building of the actual implementing
  * class, which depends on third-party APIs that might not be present.
  *
- * @see curn
+ * @see Curn
  *
  * @version <tt>$Revision$</tt>
  */

@@ -26,7 +26,7 @@ import org.clapper.util.misc.Logger;
  * Defines the in-memory format of the <i>curn</i> cache, and provides
  * methods for saving and restoring the cache.
  *
- * @see curn
+ * @see Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>

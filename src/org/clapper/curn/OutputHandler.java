@@ -21,7 +21,7 @@ import org.clapper.util.config.ConfigurationException;
  * to the output handler. <i>curn</i> models output in this manner to make
  * it simpler to substitute different kinds of output handlers.
  *
- * @see curn
+ * @see Curn
  * @see OutputHandlerFactory
  * @see org.clapper.curn.parser.RSSChannel
  * @see org.clapper.curn.parser.RSSItem

@@ -37,7 +37,7 @@ import java.util.ArrayList;
  * sends an email message, using the contents of the real handlers.
  *
  * @see OutputHandler
- * @see org.clapper.curn.curn
+ * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>

@@ -390,9 +390,10 @@ public class Tool extends CommandLineUtility
     }
 
     /**
-     * Run the curn tool. Parses the command line arguments, storing the
-     * results in an internal configuration; then, calls the
-     * {@link #processRSSFeeds} method.
+     * Run the curn tool. This method parses the command line arguments,
+     * storing the results in an internal configuration; then, it
+     * instantiates a {@link Curn} object and calls its
+     * {@link Curn#processRSSFeeds processRSSFeeds()} method.
      *
      * @param args  the command-line parameters
      *

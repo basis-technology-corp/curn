@@ -24,7 +24,7 @@ import java.util.Iterator;
  *
  * @see OutputHandler
  * @see TextOutputHandler
- * @see curn
+ * @see Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>

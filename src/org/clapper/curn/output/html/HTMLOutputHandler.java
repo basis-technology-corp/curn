@@ -49,7 +49,7 @@ import org.w3c.dom.html.HTMLAnchorElement;
  * Provides an output handler that produces HTML output.
  *
  * @see OutputHandler
- * @see org.clapper.curn.curn
+ * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
