@@ -186,7 +186,7 @@ public class MiniRSSParser
      * @throws RSSParserException error parsing the XML
      *
      * @see #parse(URL)
-     * @see #parseRSSFeed(InputStream)
+     * @see #parseRSSFeed(InputStream,String)
      * @see #parse(File,String)
      * @see #parse(Reader)
      * @see Channel
@@ -212,7 +212,7 @@ public class MiniRSSParser
      * @throws RSSParserException error parsing the XML
      *
      * @see #parse(URL)
-     * @see #parseRSSFeed(InputStream)
+     * @see #parseRSSFeed(InputStream,String)
      * @see #parse(File,String)
      * @see #parse(Reader)
      * @see Channel
@@ -244,7 +244,7 @@ public class MiniRSSParser
      * @throws IOException        error opening or reading from the URL
      * @throws RSSParserException error parsing the XML
      *
-     * @see #parseRSSFeed(InputStream)
+     * @see #parseRSSFeed(InputStream,String)
      * @see #parse(File)
      * @see #parse(File,String)
      * @see #parse(Reader)
@@ -269,7 +269,7 @@ public class MiniRSSParser
      * @throws IOException        error opening or reading from the URL
      * @throws RSSParserException error parsing the XML
      *
-     * @see #parseRSSFeed(InputStream)
+     * @see #parseRSSFeed(InputStream,String)
      * @see #parse(File)
      * @see #parse(File,String)
      * @see #parse(URL)
