@@ -538,6 +538,8 @@ source and documentation packages.
     <javadoc
              destdir="${javadocs_api_dir}"
              sourcepath="${src.top}"
+	     source="1.4"
+	     breakiterator="true"
              author="true"
              version="true"
              splitindex="true"
