@@ -10,6 +10,7 @@ import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.ConfigFile;
+import org.clapper.curn.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -53,7 +54,7 @@ import org.w3c.dom.html.HTMLAnchorElement;
  *
  * @version <tt>$Revision$</tt>
  */
-public class HTMLOutputHandler implements OutputHandler
+public class HTMLOutputHandler extends FileOutputHandler
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -67,7 +68,6 @@ public class HTMLOutputHandler implements OutputHandler
     \*----------------------------------------------------------------------*/
 
     private PrintWriter           out                 = null;
-    private File                  outputFile          = null;
     private RSSOutputHTML         doc                 = null;
     private String                oddItemRowClass     = null;
     private String                oddChannelClass     = null;
@@ -81,7 +81,6 @@ public class HTMLOutputHandler implements OutputHandler
     private HTMLTableCellElement  itemTitleTD         = null;
     private HTMLTableCellElement  itemDescTD          = null;
     private HTMLTableCellElement  channelTD           = null;
-    private boolean               saveOnly            = false;
 
     /**
      * For logging
@@ -111,7 +110,7 @@ public class HTMLOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile config)
+    public void initOutputHandler (ConfigFile config)
         throws ConfigurationException,
                CurnException
     {
@@ -127,53 +126,7 @@ public class HTMLOutputHandler implements OutputHandler
         this.itemDescTD          = doc.getElementItemDescTD();
         this.channelTD           = doc.getElementChannelTD();
 
-        String saveAs = null;
-
-        try
-        {
-            String sectionName;
-
-            sectionName = config.getOutputHandlerSectionName (this.getClass());
-            if (sectionName != null)
-            {
-                saveAs = config.getOptionalStringValue (sectionName,
-                                                        "SaveAs",
-                                                        null);
-                saveOnly = config.getOptionalBooleanValue (sectionName,
-                                                           "SaveOnly",
-                                                           false);
-
-                if (saveOnly && (saveAs == null))
-                {
-                    throw new ConfigurationException (sectionName,
-                                                      "SaveOnly can only be "
-                                                    + "specified if SaveAs "
-                                                    + "is defined.");
-                }
-            }
-        }
-
-        catch (NoSuchSectionException ex)
-        {
-            throw new ConfigurationException (ex);
-        }
-
-        if (saveAs != null)
-            outputFile = new File (saveAs);
-
-        else
-        {
-            try
-            {
-                outputFile = File.createTempFile ("curn", "txt");
-                outputFile.deleteOnExit();
-            }
-
-            catch (IOException ex)
-            {
-                throw new CurnException ("Can't create temporary file.");
-            }
-        }
+        File outputFile = super.getOutputFile();
 
         try
         {
@@ -372,56 +325,6 @@ public class HTMLOutputHandler implements OutputHandler
     public String getContentType()
     {
         return "text/html";
-    }
-
-    /**
-     * Get an <tt>InputStream</tt> that can be used to read the output data
-     * produced by the handler, if applicable.
-     *
-     * @return an open input stream, or null if no suitable output was produced
-     *
-     * @throws CurnException an error occurred
-     */
-    public InputStream getGeneratedOutput()
-        throws CurnException
-    {
-        InputStream result = null;
-
-        if (hasGeneratedOutput())
-        {
-            try
-            {
-                result = new FileInputStream (outputFile);
-            }
-
-            catch (FileNotFoundException ex)
-            {
-                throw new CurnException ("Can't re-open file \""
-                                       + outputFile
-                                       + "\"",
-                                         ex);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Determine whether this handler has produced any actual output (i.e.,
-     * whether {@link #getGeneratedOutput()} will return a non-null
-     * <tt>InputStream</tt> if called).
-     *
-     * @return <tt>true</tt> if the handler has produced output,
-     *         <tt>false</tt> if not
-     *
-     * @see #getGeneratedOutput
-     * @see #getContentType
-     */
-    public boolean hasGeneratedOutput()
-    {
-        return (! saveOnly) &&
-               (outputFile != null) &&
-               (outputFile.length() > 0);
     }
 
     /*----------------------------------------------------------------------*\

@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Provides an output handler that produces plain text to an
- * <tt>OutputStreamWriter</tt>.
+ * Provides an output handler that produces plain text to a file.
  *
  * @see OutputHandler
  * @see curn
@@ -37,18 +36,16 @@ import java.util.Iterator;
  *
  * @version <tt>$Revision$</tt>
  */
-public class TextOutputHandler implements OutputHandler
+public class TextOutputHandler extends FileOutputHandler
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private File            outputFile  = null;
     private WordWrapWriter  out         = null;
     private int             indentLevel = 0;
     private ConfigFile      config      = null;
     private StringBuffer    scratch     = new StringBuffer();
-    private boolean         saveOnly    = false;
 
     /**
      * For logging
@@ -78,60 +75,13 @@ public class TextOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile config)
+    public void initOutputHandler (ConfigFile config)
         throws ConfigurationException,
                CurnException
     {
-        String saveAs = null;
-
         this.config = config;
 
-        try
-        {
-            String sectionName;
-            sectionName = config.getOutputHandlerSectionName (this.getClass());
-
-            if (sectionName != null)
-            {
-                saveAs = config.getOptionalStringValue (sectionName,
-                                                        "SaveAs",
-                                                        null);
-                saveOnly = config.getOptionalBooleanValue (sectionName,
-                                                           "SaveOnly",
-                                                           false);
-
-                if (saveOnly && (saveAs == null))
-                {
-                    throw new ConfigurationException (sectionName,
-                                                      "SaveOnly can only be "
-                                                    + "specified if SaveAs "
-                                                    + "is defined.");
-                }
-            }
-        }
-
-        catch (NoSuchSectionException ex)
-        {
-            throw new ConfigurationException (ex);
-        }
-
-        if (saveAs != null)
-            outputFile = new File (saveAs);
-
-        else
-        {
-            try
-            {
-                outputFile = File.createTempFile ("curn", "txt");
-                outputFile.deleteOnExit();
-            }
-
-            catch (IOException ex)
-            {
-                throw new CurnException ("Can't create temporary file.");
-            }
-        }
-
+        File outputFile = super.getOutputFile();
         try
         {
             log.debug ("Opening output file \"" + outputFile + "\"");
@@ -298,56 +248,6 @@ public class TextOutputHandler implements OutputHandler
     public String getContentType()
     {
         return "text/plain";
-    }
-
-    /**
-     * Get an <tt>InputStream</tt> that can be used to read the output data
-     * produced by the handler, if applicable.
-     *
-     * @return an open input stream, or null if no suitable output was produced
-     *
-     * @throws CurnException an error occurred
-     */
-    public InputStream getGeneratedOutput()
-        throws CurnException
-    {
-        InputStream result = null;
-
-        if (hasGeneratedOutput())
-        {
-            try
-            {
-                result = new FileInputStream (outputFile);
-            }
-
-            catch (FileNotFoundException ex)
-            {
-                throw new CurnException ("Can't re-open file \""
-                                       + outputFile
-                                       + "\"",
-                                         ex);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Determine whether this handler has produced any actual output (i.e.,
-     * whether {@link #getGeneratedOutput()} will return a non-null
-     * <tt>InputStream</tt> if called).
-     *
-     * @return <tt>true</tt> if the handler has produced output,
-     *         <tt>false</tt> if not
-     *
-     * @see #getGeneratedOutput
-     * @see #getContentType
-     */
-    public boolean hasGeneratedOutput()
-    {
-        return (! saveOnly) &&
-               (outputFile != null) &&
-               (outputFile.length() > 0);
     }
 
     /*----------------------------------------------------------------------*\
