@@ -1,0 +1,15 @@
+$Id$
+---------------------------------------------------------------------------
+
+Version 1.3:
+
+- When cacheing an item, the cache key is now computed from both the item's
+  URL and the item's ID, instead of just the ID (If the XML for the item
+  provides no ID, then the URL is used exclusively, as before.) This change
+  fixes cacheing for (broken) RSS feeds that provide different IDs for the
+  same URL.
+
+
+Version 1.2:
+
+- First version of curn posted to the web.
