@@ -71,8 +71,8 @@ class FeedDownloadThread extends Thread
                              Private Constants
     \*----------------------------------------------------------------------*/ 
     
-    private final static String HTTP_CONTENT_TYPE_CHARSET_FIELD = "charset=";
-    private final static int    HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN =
+    private static final String HTTP_CONTENT_TYPE_CHARSET_FIELD = "charset=";
+    private static final int    HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN =
                                       HTTP_CONTENT_TYPE_CHARSET_FIELD.length();
 
     /*----------------------------------------------------------------------*\
