@@ -96,11 +96,7 @@ public class Curn
                         "org.clapper.curn.output.email.EmailOutputHandlerImpl";
 
     /*----------------------------------------------------------------------*\
-                              Private Classes
-    \*----------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private ConfigFile  config           = null;
@@ -232,6 +228,10 @@ public class Curn
 
                 // Ensure that the output handler can be instantiated.
 
+                log.debug ("Instantiating output handler \""
+                         + cfgHandler.getName()
+                         + "\", of type "
+                         + cfgHandler.getClassName());
                 cfgHandler.getOutputHandler();
 
                 // Save it.
@@ -244,20 +244,23 @@ public class Curn
 
             if ((emailAddresses != null) && (emailAddresses.size() > 0))
             {
-                cfgHandler = new ConfiguredOutputHandler ("*email*",
-                                                          EMAIL_HANDLER_CLASS);
-                EmailOutputHandler emailHandler;
+                ConfiguredOutputHandler emailHandlerWrapper;
+                EmailOutputHandler      emailHandler;
 
+                log.debug ("There are email addresses.");
+                emailHandlerWrapper = new ConfiguredOutputHandler
+                                                        ("*email*",
+                                                         null,
+                                                          EMAIL_HANDLER_CLASS);
                 emailHandler = (EmailOutputHandler)
-                                                 cfgHandler.getOutputHandler();
+                                       emailHandlerWrapper.getOutputHandler();
 
                 // Place all the other handlers inside the EmailOutputHandler
 
                 for (it = outputHandlers.iterator(); it.hasNext(); )
                 {
                     cfgHandler = (ConfiguredOutputHandler) it.next();
-                    handler = cfgHandler.getOutputHandler();
-                    emailHandler.addOutputHandler (handler);
+                    emailHandler.addOutputHandler (cfgHandler);
                 }
 
                 // Add the email addresses to the handler
@@ -270,7 +273,7 @@ public class Curn
                 // ConfiguredOutputHandler objects, not OutputHandler objects.
 
                 outputHandlers.clear();
-                outputHandlers.add (cfgHandler);
+                outputHandlers.add (emailHandlerWrapper);
             }
         }
     }
@@ -516,7 +519,7 @@ public class Curn
             cfgHandler = (ConfiguredOutputHandler) itHandler.next();
 
             log.info ("Initializing output handler \""
-                    + cfgHandler.getSectionName()
+                    + cfgHandler.getName()
                     + "\", of type "
                     + cfgHandler.getClassName());
 

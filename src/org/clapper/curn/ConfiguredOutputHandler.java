@@ -29,7 +29,7 @@ package org.clapper.curn;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.misc.Logger;
 
 /**
  * Contains parsed configuration information for an output handler,
@@ -49,8 +49,14 @@ public class ConfiguredOutputHandler implements Comparable
 
     private String        sectionName;
     private String        className;
+    private String        name;
     private OutputHandler handler = null;
     private Map           extraVariables = new HashMap();
+
+    /**
+     * For log messages
+     */
+    private static Logger log = new Logger (ConfiguredOutputHandler.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -59,14 +65,20 @@ public class ConfiguredOutputHandler implements Comparable
     /**
      * Construct a new <tt>ConfiguredOutputHandler</tt> object.
      *
+     * @param name         a unique name for the handler
      * @param sectionName  the name of the configuration file section
-     *                     where the output handler was defined
+     *                     where the output handler was defined, or null
+     *                     if the handler has no corresponding section
      * @param className    the output handler's class name
      */
-    public ConfiguredOutputHandler (String sectionName, String className)
+    public ConfiguredOutputHandler (String name,
+                                    String sectionName,
+                                    String className)
     {
+        log.debug ("section=" + ((sectionName == null) ? "null" : sectionName));
         this.sectionName = sectionName;
         this.className   = className;
+        this.name        = name;
     }
 
     /*----------------------------------------------------------------------*\
@@ -87,11 +99,21 @@ public class ConfiguredOutputHandler implements Comparable
      * Get the configuration file section name where this output handler
      * was defined
      *
-     * @return the section name
+     * @return the section name, or null for none
      */
     public String getSectionName()
     {
         return sectionName;
+    }
+
+    /**
+     * Get the unique name for this handler
+     *
+     * @return the unique name. Should never be null.
+     */
+    public String getName()
+    {
+        return name;
     }
 
     /**
@@ -100,10 +122,10 @@ public class ConfiguredOutputHandler implements Comparable
      *
      * @return the <tt>OutputHandler</tt> object
      *
-     * @throws ConfigurationException on error
+     * @throws CurnException on error
      */
     public synchronized OutputHandler getOutputHandler()
-        throws ConfigurationException
+        throws CurnException
     {
         if (handler == null)
             handler = OutputHandlerFactory.getOutputHandler (className);

@@ -137,8 +137,6 @@ public class ConfigFile extends Configuration
     private static final String  DEF_EMAIL_SUBJECT     = "curn output";
     private static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
-    private static final String  DEF_OUTPUT_CLASS =
-                             "org.clapper.curn.TextOutputHandler";
     private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
     private static final int     DEF_MAX_THREADS       = 5;
 
@@ -812,7 +810,9 @@ public class ConfigFile extends Configuration
         ConfiguredOutputHandler  handlerWrapper;
 
         className = getConfigurationValue (sectionName, VAR_CLASS);
-        handlerWrapper = new ConfiguredOutputHandler (sectionName, className);
+        handlerWrapper = new ConfiguredOutputHandler (sectionName,
+                                                      sectionName,
+                                                      className);
 
         // Only process the rest if it's not disabled.
 
@@ -838,6 +838,10 @@ public class ConfigFile extends Configuration
                 handlerWrapper.addExtraVariable (variableName, value);
             }
 
+            log.debug ("Saving output handler \""
+                     + handlerWrapper.getName()
+                     + "\" of type "
+                     + handlerWrapper.getClassName());
             outputHandlers.add (handlerWrapper);
         }
     }
