@@ -801,13 +801,18 @@ class FeedDownloadThread extends Thread
                 lineNumber++;
                 for (int i = 0; i < editCommands.length; i++)
                 {
-                    log.debug ("Applying edit command \""
-                             + editCommands[i]
-                             + "\" to XML file, line "
-                             + lineNumber);
+                    if (log.isDebugEnabled() && (lineNumber == 1))
+                    {
+                        log.debug ("Applying edit command \""
+                                 + editCommands[i]
+                                 + "\" to XML file, line "
+                                 + lineNumber);
+                    }
+
                     line = regexUtil.substitute (editCommands[i], line);
-                    out.println (line);
                 }
+
+                out.println (line);
             }
 
             out.flush();
