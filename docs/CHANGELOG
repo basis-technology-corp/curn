@@ -14,7 +14,15 @@ Version 1.5 (---)
     using java.util.regexp, instead of Jakarta ORO, removes a third-party
     library dependency.
 
-- Converted code that used Jakarta ORO to use the 1.4 java.util.regexp
+- Added new PreparseEdit configuration file entry, supported in the Feed
+  section. Permits applying perl-like s/// edits to the downloaded XML file
+  before it is parsed. Useful for feeds that serve XML files that don't
+  parse properly. (One site I read insists on serving a channel that
+  contains unescaped "&" characters in the text.) See the User's Guide
+  and the sample configuration for details on this new configuration
+  parameter.
+
+- Converted code that used Jakarta ORO to use the JDK 1.4 java.util.regexp
   classes.
 
 - Overhauled build.xml to make compilations more efficient. Requires a
@@ -112,11 +120,11 @@ Version 1.3.1 (13 September, 2004):
 
 Version 1.3 (09 September, 2004):
 
-- Fixed some cacheing bugs and problems. First, cache lookups are now
+- Fixed some caching bugs and problems. First, cache lookups are now
   consistent. Second, the cache now supports lookups by item ID and item
   URL, not just ID, and curn will check for the URL if the item isn't
   cached by ID. (Some RSS feeds provide a unique ID for each item. Some
-  don't.) This change fixes cacheing for (broken) RSS feeds that provide
+  don't.) This change fixes caching for (broken) RSS feeds that provide
   different IDs for the same URL. I've seen at least one site where the
   ID for a given item changes daily, even though the item and its link do
   not.
