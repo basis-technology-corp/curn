@@ -38,7 +38,6 @@ import org.clapper.curn.parser.RSSItem;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.logging.Logger;
-import org.clapper.util.text.TextUtil;
 
 import java.io.IOException;
 import java.io.FileWriter;
@@ -215,40 +214,18 @@ public class TextOutputHandler extends FileOutputHandler
                         out.println (date.toString());
                 }
 
-                if (! feedInfo.summarizeOnly())
+                s = item.getSummaryToDisplay (feedInfo,
+                                              new String[]
+                                              {
+                                                  "text/plain",
+                                                  "text/html"
+                                              });
+                if (s != null)
                 {
-                    s = item.getSummary();
-                    if (TextUtil.stringIsEmpty (s))
-                    {
-                        // Hack for feeds that have no summary but have
-                        // content. If the content is small enough, use it
-                        // as the summary.
-
-                        s = item.getFirstContentOfType (new String[]
-                                                        {
-                                                            "text/plain",
-                                                            "text/html"
-                                                        });
-                        if (! TextUtil.stringIsEmpty (s))
-                        {
-                            s = s.trim();
-                            if (s.length() > CONTENT_AS_SUMMARY_MAXSIZE)
-                                s = null;
-                        }
-                    }
-
-                    else
-                    {
-                        s = s.trim();
-                    }
-
-                    if (s != null)
-                    {
-                        out.println();
-                        setIndent (++indentLevel);
-                        out.println (convert (s));
-                        setIndent (--indentLevel);
-                    }
+                    out.println();
+                    setIndent (++indentLevel);
+                    out.println (convert (s));
+                    setIndent (--indentLevel);
                 }
 
                 setIndent (--indentLevel);

@@ -40,7 +40,6 @@ import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.HTMLUtil;
-import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.Unicode;
 
 import java.io.File;
@@ -292,38 +291,12 @@ public class HTMLOutputHandler extends FileOutputHandler
             dom.setTextItemTitle ((channelTitle == null) ? "(No Title)"
                                                          : channelTitle);
 
-            String desc = null;
-            if (! feedInfo.summarizeOnly())
-            {
-                desc = item.getSummary();
-                if (TextUtil.stringIsEmpty (desc))
-                {
-                    // Hack for feeds that have no summary but have
-                    // content. If the content is small enough, use it as
-                    // the summary.
-
-                    desc = item.getFirstContentOfType (new String[]
-                                                       {
-                                                           "text/plain",
-                                                           "text/html"
-                                                       });
-                    if (! TextUtil.stringIsEmpty (desc))
-                    {
-                        desc = desc.trim();
-                        if (desc.length() > CONTENT_AS_SUMMARY_MAXSIZE)
-                            desc = null;
-                    }
-                }
-            }
-
-            else
-            {
-                if (TextUtil.stringIsEmpty (desc))
-                    desc = null;
-                else
-                    desc = desc.trim();
-            }
-
+            String desc = item.getSummaryToDisplay (feedInfo,
+                                                    new String[]
+                                                    {
+                                                        "text/plain",
+                                                        "text/html"
+                                                    });
             if (desc == null)
                 desc = String.valueOf (Unicode.NBSP);
 

@@ -26,7 +26,10 @@
 
 package org.clapper.curn.parser;
 
+import org.clapper.curn.FeedInfo;
+
 import org.clapper.util.text.TextUtil;
+import org.clapper.util.text.HTMLUtil;
 
 import java.net.URL;
 
@@ -136,6 +139,77 @@ public abstract class RSSItem
         contentMap.put (mimeType, content);
     }   
 
+    /**
+     * Utility method to get the summary to display for an
+     * <tt>RSSItem</tt>. Consults the configuration data in the specified
+     * {@link FeedInfo} object to determine whether to truncate the
+     * summary, use the description (i.e., content) if the summary isn't
+     * available, etc. Strips HTML by default. (Use the
+     * {@link #getItemSummary(FeedInfo,boolean) alternate version} of
+     * this method to control the HTML-stripping behavior.
+     *
+     * @param feedInfo  the corresponding feed's <tt>FeedInfo</tt> object
+     * @param mimeTypes desired MIME types; used only if no summary is
+     *                  available, and the content field should be used
+     *
+     * @return the summary string to use, or null if unavailable
+     *
+     * @see #getSummary
+     * @see #getFirstContentOfType
+     */
+    public String getSummaryToDisplay (FeedInfo feedInfo,
+                                       String[] mimeTypes)
+    {
+        return getSummaryToDisplay (feedInfo, mimeTypes, true);
+    }
+
+    /**
+     * Utility method to get the summary to display for an
+     * <tt>RSSItem</tt>. Consults the configuration data in the specified
+     * {@link FeedInfo} object to determine whether to truncate the
+     * summary, use the description if the summary isn't available, etc.
+     * Optionally strips HTML from the resulting string.
+     *
+     * @param feedInfo  the corresponding feed's <tt>FeedInfo</tt> object
+     * @param mimeTypes desired MIME types; used only if no summary is
+     *                  available, and the content field should be used
+     * @param stripHTML whether or not to strip HTML from the string
+     *
+     * @return the summary string to use, or null if unavailable
+     *
+     * @see #getSummary
+     * @see #getFirstContentOfType
+     */
+    public String getSummaryToDisplay (FeedInfo feedInfo,
+                                       String[] mimeTypes,
+                                       boolean  stripHTML)
+    {
+        String summary = getSummary();
+
+        if (TextUtil.stringIsEmpty (summary))
+            summary = null;
+
+        if ((summary == null) && (! feedInfo.summarizeOnly()))
+        {
+            assert (mimeTypes != null);
+            summary = getFirstContentOfType (mimeTypes);
+            if (TextUtil.stringIsEmpty (summary))
+                summary = null;
+        }
+
+        if (summary != null)
+        {
+            if (stripHTML)
+                summary = HTMLUtil.textFromHTML (summary);
+
+            int maxSize = feedInfo.getMaxSummarySize();
+            if (maxSize != FeedInfo.NO_MAX_SUMMARY_SIZE)
+                summary = truncateSummary (summary, maxSize);
+        }
+
+        return summary;
+    }
+
     /*----------------------------------------------------------------------*\
                           Public Abstract Methods
     \*----------------------------------------------------------------------*/
@@ -179,6 +253,7 @@ public abstract class RSSItem
      * @return the summary, or null if not available
      *
      * @see #setSummary
+     * @see #getSummaryToDisplay
      */
     public abstract String getSummary();
 
@@ -229,4 +304,59 @@ public abstract class RSSItem
      * @return the ID field, or null if not set
      */
     public abstract String getID();
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Truncate an RSS item's summary to a specified size. Truncates on
+     * word boundary, if possible.
+     *
+     * @param summary  the summary to truncate
+     * @param maxSize  the maximum size
+     *
+     * @return the truncated summary
+     */
+    private String truncateSummary (String summary, int maxSize)
+    {
+        summary = summary.trim();
+
+        if (summary.length() > maxSize)
+        {
+            // Allow for ellipsis
+
+            if (maxSize < 4)
+                maxSize = 4;
+
+            maxSize -= 4;
+
+            int last = maxSize;
+            char[] ch = summary.toCharArray();
+            int i = last;
+
+            // If we're in the middle of a word, find the first hunk of
+            // white space.
+
+            while ((! Character.isWhitespace (ch[i])) && (i-- >= 0))
+                continue;
+
+            // Next, get rid of trailing white space.
+
+            while ((Character.isWhitespace (ch[i])) && (i-- >= 0))
+                continue;
+
+            // Handle underflow.
+
+            if (i >= 0)
+                last = i;
+
+            StringBuffer buf = new StringBuffer (summary.substring (0,
+                                                                    last + 1));
+            buf.append (" ...");
+            summary = buf.toString();
+        }
+
+        return summary;
+    }
 }
