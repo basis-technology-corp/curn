@@ -11,8 +11,8 @@ import java.io.Serializable;
  * <p>Defines the contents of a cache entry. There is one cache entry
  * per feed item.</p>
  *
- * @see RSSGetConfiguration
- * @see RSSFeedInfo
+ * @see ConfigFile
+ * @see FeedInfo
  *
  * @version <tt>$Revision$</tt>
  */

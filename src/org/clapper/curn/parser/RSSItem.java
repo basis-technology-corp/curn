@@ -85,6 +85,13 @@ public interface RSSItem
     public Date getPublicationDate();
 
     /**
+     * Get the item's unique ID, if any.
+     *
+     * @return the unique ID, or null if not set
+     */
+    public String getUniqueID();
+
+    /**
      * Get a unique string that can be used to store this item in the
      * cache and retrieve it later. Possibilities for this value include
      * (but are not limited to):

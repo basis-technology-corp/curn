@@ -41,7 +41,7 @@ public class RSSGetCache implements Serializable
     /**
      * The configuration
      */
-    private RSSGetConfiguration config;
+    private ConfigFile config;
 
     /**
      * The actual cache
@@ -69,7 +69,7 @@ public class RSSGetCache implements Serializable
      * @param config          the <i>rssget</i> configuration
      */
     RSSGetCache (VerboseMessagesHandler vh,
-                 RSSGetConfiguration    config)
+                 ConfigFile    config)
     {
         this.vh     = vh;
         this.config = config;
@@ -188,7 +188,7 @@ public class RSSGetCache implements Serializable
      *
      * @see Util#normalizeURL
      */
-    public void addToCache (String uniqueID, URL url, RSSFeedInfo parentFeed)
+    public void addToCache (String uniqueID, URL url, FeedInfo parentFeed)
     {
         URL parentURL = parentFeed.getURL();
         RSSCacheEntry entry = new RSSCacheEntry (uniqueID,
@@ -202,7 +202,7 @@ public class RSSGetCache implements Serializable
                   + "\". Channel URL: \""
                   + entry.getChannelURL().toExternalForm()
                   + "\"");
-        cacheMap.put (url.toExternalForm(), entry);
+        cacheMap.put (uniqueID, entry);
         modified = true;
     }
 
@@ -242,7 +242,7 @@ public class RSSGetCache implements Serializable
             vh.verbose (3, "Checking cached URL \"" + itemUrlString + "\"");
             vh.verbose (3, "    Channel URL: " + channelURL.toString());
 
-            RSSFeedInfo feedInfo = config.getFeedInfoFor (channelURL);
+            FeedInfo feedInfo = config.getFeedInfoFor (channelURL);
 
             if (feedInfo == null)
             {
@@ -280,9 +280,10 @@ public class RSSGetCache implements Serializable
                                 "Cache time for URL \""
                               + itemUrlString
                               + "\" is in the future, relative to cache's "
-                              + "notion of current time. Deleting cache "
-                              + "entry.");
-                    itKeys.remove();
+                              + "notion of current time. Setting its "
+                              + "timestamp to the current time.");
+                    entry.setTimestamp (currentTime);
+                    modified = true;
                 }
 
                 else if (expires < currentTime)
@@ -292,6 +293,7 @@ public class RSSGetCache implements Serializable
                               + itemUrlString
                               + "\" has expired. Deleting cache entry.");
                     itKeys.remove();
+                    modified = true;
                 }
             }
         }

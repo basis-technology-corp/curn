@@ -35,7 +35,7 @@ public class TextOutputHandler implements OutputHandler
 
     private WordWrapWriter       out         = null;
     private int                  indentLevel = 0;
-    private RSSGetConfiguration  config      = null;
+    private ConfigFile  config      = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -59,11 +59,11 @@ public class TextOutputHandler implements OutputHandler
      *                output
      * @param config  the parsed <i>rssget</i> configuration data
      *
-     * @throws RSSGetException  initialization error
+     * @throws FeedException  initialization error
      */
     public void init (PrintWriter         writer,
-                      RSSGetConfiguration config)
-        throws RSSGetException
+                      ConfigFile config)
+        throws FeedException
     {
         this.out    = new WordWrapWriter (writer, 79);
         this.config = config;
@@ -81,11 +81,11 @@ public class TextOutputHandler implements OutputHandler
      *                 not be seen.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws RSSGetException  unable to write output
+     * @throws FeedException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
-                                RSSFeedInfo feedInfo)
-        throws RSSGetException
+                                FeedInfo    feedInfo)
+        throws FeedException
     {
         Collection items = channel.getItems();
 
@@ -172,9 +172,9 @@ public class TextOutputHandler implements OutputHandler
      * Flush any buffered-up output. <i>rssget</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
-     * @throws RSSGetException  unable to write output
+     * @throws FeedException  unable to write output
      */
-    public void flush() throws RSSGetException
+    public void flush() throws FeedException
     {
         out.flush();
         out = null;

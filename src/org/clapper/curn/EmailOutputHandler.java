@@ -29,12 +29,12 @@ public interface EmailOutputHandler extends OutputHandler
      * @param outputHandler  the <tt>OutputHandler</tt> to wrap inside this
      *                       handler
      *
-     * @throws RSSGetException error adding handler
+     * @throws FeedException error adding handler
      *
      * @see OutputHandler#init
      */
     public void addOutputHandler (OutputHandler outputHandler)
-        throws RSSGetException;
+        throws FeedException;
 
     /**
      * Add one or more email addresses to the output handler. The
@@ -42,8 +42,8 @@ public interface EmailOutputHandler extends OutputHandler
      *
      * @param emailAddress  email address to add
      *
-     * @throws RSSGetException  bad email address
+     * @throws FeedException  bad email address
      */
     public void addRecipient (String emailAddress)
-        throws RSSGetException;
+        throws FeedException;
 }

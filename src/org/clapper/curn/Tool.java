@@ -93,14 +93,14 @@ public class rssget implements VerboseMessagesHandler
                               Private Classes
     \*----------------------------------------------------------------------*/
 
-    // Used to associate a parsed channel with its RSSFeedInfo data
+    // Used to associate a parsed channel with its FeedInfo data
 
     class ChannelFeedInfo
     {
-        RSSFeedInfo feedInfo;
+        FeedInfo    feedInfo;
         RSSChannel  channel;
 
-        ChannelFeedInfo (RSSFeedInfo feedInfo, RSSChannel channel)
+        ChannelFeedInfo (FeedInfo feedInfo, RSSChannel channel)
         {
             this.feedInfo = feedInfo;
             this.channel  = channel;
@@ -111,7 +111,7 @@ public class rssget implements VerboseMessagesHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private RSSGetConfiguration config         = null;
+    private ConfigFile config         = null;
     private boolean             useCache       = true;
     private RSSGetCache         cache          = null;
     private Date                currentTime    = new Date();
@@ -146,7 +146,7 @@ public class rssget implements VerboseMessagesHandler
             System.exit (1);
         }
 
-        catch (RSSGetException ex)
+        catch (FeedException ex)
         {
             System.err.println (ex.getMessages());
             System.exit (1);
@@ -207,12 +207,12 @@ public class rssget implements VerboseMessagesHandler
      * @throws ConfigurationException   error in configuration file
      * @throws RSSParserException       error parsing XML feed(s)
      * @throws BadCommandLineException  command-line error
-     * @throws RSSGetException          any other error
+     * @throws FeedException          any other error
      *
      * @see #processRSSFeeds
      */
     public void runProgram (String[] args)
-        throws RSSGetException,
+        throws FeedException,
                IOException,
                ConfigurationException,
                RSSParserException,
@@ -238,14 +238,14 @@ public class rssget implements VerboseMessagesHandler
      * @throws IOException              unable to open or read a required file
      * @throws ConfigurationException   error in configuration file
      * @throws RSSParserException       error parsing XML feed(s)
-     * @throws RSSGetException          any other error
+     * @throws FeedException          any other error
      */
-    public void processRSSFeeds (RSSGetConfiguration configuration,
+    public void processRSSFeeds (ConfigFile configuration,
                                  Collection          emailAddresses)
         throws IOException,
                ConfigurationException,
                RSSParserException,
-               RSSGetException
+               FeedException
     {
         Iterator     it;
         String       parserClassName;
@@ -272,7 +272,7 @@ public class rssget implements VerboseMessagesHandler
 
         for (it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
-            RSSFeedInfo feedInfo = (RSSFeedInfo) it.next();
+            FeedInfo feedInfo = (FeedInfo) it.next();
             if (! feedInfo.feedIsEnabled())
             {
                 verbose (1,
@@ -382,7 +382,7 @@ public class rssget implements VerboseMessagesHandler
                 i++;
             }
 
-            config = new RSSGetConfiguration (args[i++]);
+            config = new ConfigFile (args[i++]);
 
             if ((args.length - i) > 0)
             {
@@ -543,10 +543,10 @@ public class rssget implements VerboseMessagesHandler
             System.err.println (USAGE[i]);
     }
 
-    private void loadOutputHandlers (RSSGetConfiguration configuration,
+    private void loadOutputHandlers (ConfigFile configuration,
                                      Collection          emailAddresses)
         throws ConfigurationException,
-               RSSGetException
+               FeedException
     {
         String         className;
         OutputHandler  handler;
@@ -603,9 +603,9 @@ public class rssget implements VerboseMessagesHandler
         }
     }
 
-    private RSSChannel processFeed (RSSFeedInfo         feedInfo,
+    private RSSChannel processFeed (FeedInfo            feedInfo,
                                     RSSParser           parser,
-                                    RSSGetConfiguration configuration)
+                                    ConfigFile configuration)
         throws RSSParserException
     {
         URL         feedURL = feedInfo.getURL();
@@ -661,7 +661,7 @@ public class rssget implements VerboseMessagesHandler
         return channel;
     }
 
-    private boolean feedHasChanged (URLConnection conn, RSSFeedInfo feedInfo)
+    private boolean feedHasChanged (URLConnection conn, FeedInfo feedInfo)
         throws IOException
     {
         long     lastSeen = 0;
@@ -723,7 +723,7 @@ public class rssget implements VerboseMessagesHandler
     }
 
     private void processChannelItems (RSSChannel  channel,
-                                      RSSFeedInfo feedInfo)
+                                      FeedInfo    feedInfo)
         throws RSSParserException,
                MalformedURLException
     {
@@ -790,6 +790,9 @@ public class rssget implements VerboseMessagesHandler
 
             // Skip it if it's cached.
 
+            verbose (2, "Item link: " + itemURL);
+            verbose (2, "Item ID: " + item.getUniqueID());
+            verbose (2, "Item key: " + item.getCacheKey());
             if ((cache != null) && cache.contains (item.getCacheKey()))
             {
                 verbose (3,

@@ -7,14 +7,12 @@ package org.clapper.rssget;
 import org.clapper.util.misc.NestedException;
 
 /**
- * <p><tt>RSSGetException</tt> defines a special <tt>Exception</tt> class
- * that permits exceptions to wrap other exceptions. While
- * <tt>RSSGetException</tt> can be used directly, it is most useful as a
- * base class for other exception classes.</p>
+ * <tt>FeedException</tt> is the base class for all exceptions thrown
+ * by this tool.
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSGetException extends NestedException
+public class FeedException extends NestedException
 {
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -24,7 +22,7 @@ public class RSSGetException extends NestedException
      * Default constructor, for an exception with no nested exception and
      * no message.
      */
-    public RSSGetException()
+    public FeedException()
     {
 	super();
     }
@@ -35,7 +33,7 @@ public class RSSGetException extends NestedException
      *
      * @param exception  the exception to contain
      */
-    public RSSGetException (Throwable exception)
+    public FeedException (Throwable exception)
     {
 	super (exception);
     }
@@ -46,7 +44,7 @@ public class RSSGetException extends NestedException
      *
      * @param message  the message to associate with this exception
      */
-    public RSSGetException (String message)
+    public FeedException (String message)
     {
         super (message);
     }
@@ -57,7 +55,7 @@ public class RSSGetException extends NestedException
      * @param message    the message to associate with this exception
      * @param exception  the exception to contain
      */
-    public RSSGetException (String message, Throwable exception)
+    public FeedException (String message, Throwable exception)
     {
 	super (message, exception);
     }

@@ -201,12 +201,22 @@ public class Item implements RSSItem
      */
     public String getCacheKey()
     {
-        String result = uniqueID;
+        String result = this.uniqueID;
 
         if (result == null)
             result = Util.normalizeURL (getLink()).toExternalForm();
 
         return result;
+    }
+
+    /**
+     * Get the item's unique ID, if any.
+     *
+     * @return the unique ID, or null if not set
+     */
+    public String getUniqueID()
+    {
+        return this.uniqueID;
     }
 
     /*----------------------------------------------------------------------*\

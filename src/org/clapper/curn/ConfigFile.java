@@ -26,14 +26,14 @@ import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
 
 /**
- * <p><tt>RSSGetConfiguration</tt> uses the <tt>Configuration</tt>
+ * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt>
  * class (part of the <i>clapper.org</i> Java Utility library) to parse
  * and validate the <i>rssget</i> configuration file, holding the results
  * in memory for easy access.</p>
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSGetConfiguration extends Configuration
+public class ConfigFile extends Configuration
 {
     /*----------------------------------------------------------------------*\
                                  Constants
@@ -111,7 +111,7 @@ public class RSSGetConfiguration extends Configuration
     \*----------------------------------------------------------------------*/
 
     /**
-     * Construct an <tt>RSSGetConfiguration</tt> object that parses data
+     * Construct an <tt>ConfigFile</tt> object that parses data
      * from the specified file.
      *
      * @param f  The <tt>File</tt> to open and parse
@@ -119,7 +119,7 @@ public class RSSGetConfiguration extends Configuration
      * @throws IOException             can't open or read file
      * @throws ConfigurationException  error in configuration data
      */
-    RSSGetConfiguration (File f)
+    ConfigFile (File f)
         throws IOException,
                ConfigurationException
     {
@@ -128,7 +128,7 @@ public class RSSGetConfiguration extends Configuration
     }
 
     /**
-     * Construct an <tt>RSSGetConfiguration</tt> object that parses data
+     * Construct an <tt>ConfigFile</tt> object that parses data
      * from the specified file.
      *
      * @param path  the path to the file to parse
@@ -137,7 +137,7 @@ public class RSSGetConfiguration extends Configuration
      * @throws IOException             can't open or read file
      * @throws ConfigurationException  error in configuration data
      */
-    RSSGetConfiguration (String path)
+    ConfigFile (String path)
         throws FileNotFoundException,
                IOException,
                ConfigurationException
@@ -147,7 +147,7 @@ public class RSSGetConfiguration extends Configuration
     }
 
     /**
-     * Construct an <tt>RSSGetConfiguration</tt> object that parses data
+     * Construct an <tt>ConfigFile</tt> object that parses data
      * from the specified URL.
      *
      * @param url  the URL to open and parse
@@ -155,7 +155,7 @@ public class RSSGetConfiguration extends Configuration
      * @throws IOException             can't open or read URL
      * @throws ConfigurationException  error in configuration data
      */
-    RSSGetConfiguration (URL url)
+    ConfigFile (URL url)
         throws IOException,
                ConfigurationException
     {
@@ -164,7 +164,7 @@ public class RSSGetConfiguration extends Configuration
     }
 
     /**
-     * Construct an <tt>RSSGetConfiguration</tt> object that parses data
+     * Construct an <tt>ConfigFile</tt> object that parses data
      * from the specified <tt>InputStream</tt>.
      *
      * @param iStream  the <tt>InputStream</tt>
@@ -172,7 +172,7 @@ public class RSSGetConfiguration extends Configuration
      * @throws IOException             can't open or read URL
      * @throws ConfigurationException  error in configuration data
      */
-    RSSGetConfiguration (InputStream iStream)
+    ConfigFile (InputStream iStream)
         throws IOException,
                ConfigurationException
     {
@@ -426,7 +426,7 @@ public class RSSGetConfiguration extends Configuration
     /**
      * Get the configured RSS feeds.
      *
-     * @return a <tt>Collection</tt> of <tt>RSSFeedInfo</tt> objects.
+     * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects.
      *
      * @see #hasFeed
      * @see #getFeedInfoFor(String)
@@ -465,10 +465,11 @@ public class RSSGetConfiguration extends Configuration
      * @see #getFeeds
      * @see #hasFeed
      * @see #getFeedInfoFor(String)
+     * @see FeedInfo
      */
-    public RSSFeedInfo getFeedInfoFor (URL url)
+    public FeedInfo getFeedInfoFor (URL url)
     {
-        return (RSSFeedInfo) rssFeedMap.get (url);
+        return (FeedInfo) rssFeedMap.get (url);
     }
 
     /**
@@ -476,18 +477,19 @@ public class RSSGetConfiguration extends Configuration
      *
      * @param url   the URL, as a string
      *
-     * @return the corresponding <tt>RSSFeedInfo</tt> object, or null
+     * @return the corresponding <tt>FeedInfo</tt> object, or null
      *         if not found
      *
      * @see #getFeeds
      * @see #hasFeed
      * @see #getFeedInfoFor(URL)
+     * @see FeedInfo
      */
-    public RSSFeedInfo getFeedInfoFor (String url)
+    public FeedInfo getFeedInfoFor (String url)
     {
         try
         {
-            return (RSSFeedInfo) rssFeedMap.get (new URL (url));
+            return (FeedInfo) rssFeedMap.get (new URL (url));
         }
 
         catch (MalformedURLException ex)
@@ -622,7 +624,7 @@ public class RSSGetConfiguration extends Configuration
             URL url = new URL (sectionName);
             url = Util.normalizeURL (url);
 
-            RSSFeedInfo feedInfo = new RSSFeedInfo (url);
+            FeedInfo feedInfo = new FeedInfo (url);
 
             feedInfo.setDaysToCache
                               (getOptionalIntegerValue (sectionName,

@@ -8,9 +8,9 @@ import org.clapper.rssget.OutputHandler;
 import org.clapper.rssget.EmailOutputHandler;
 import org.clapper.rssget.Util;
 import org.clapper.rssget.Version;
-import org.clapper.rssget.RSSFeedInfo;
-import org.clapper.rssget.RSSGetConfiguration;
-import org.clapper.rssget.RSSGetException;
+import org.clapper.rssget.FeedInfo;
+import org.clapper.rssget.ConfigFile;
+import org.clapper.rssget.FeedException;
 import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
 
@@ -55,7 +55,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
         FileWriter    fileOut;
 
 	HandlerTableEntry (OutputHandler handler)
-	    throws RSSGetException
+	    throws FeedException
 	{
             try
             {
@@ -69,12 +69,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
             catch (IOException ex)
             {
-                throw new RSSGetException ("Can't initialize handler", ex);
+                throw new FeedException ("Can't initialize handler", ex);
             }   
 	}
 
-        void init (RSSGetConfiguration config)
-            throws RSSGetException
+        void init (ConfigFile config)
+            throws FeedException
         {
             handler.init (new PrintWriter (fileOut), config);
         }
@@ -86,7 +86,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
     private Collection           handlers   = new ArrayList();
     private Collection           recipients = new ArrayList();
-    private RSSGetConfiguration  config     = null;
+    private ConfigFile  config     = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -110,11 +110,11 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *                output. Not used here.
      * @param config  the parsed <i>rssget</i> configuration data
      *
-     * @throws RSSGetException initialization error
+     * @throws FeedException initialization error
      */
     public void init (PrintWriter         writer,
-                      RSSGetConfiguration config)
-        throws RSSGetException
+                      ConfigFile config)
+        throws FeedException
     {
         this.config = config;
 
@@ -136,11 +136,11 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *                 not be seen.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws RSSGetException  unable to write output
+     * @throws FeedException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
-                                RSSFeedInfo feedInfo)
-        throws RSSGetException
+                                FeedInfo    feedInfo)
+        throws FeedException
     {
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
@@ -154,9 +154,9 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      * Flush any buffered-up output. <i>rssget</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
-     * @throws RSSGetException  unable to write output
+     * @throws FeedException  unable to write output
      */
-    public void flush() throws RSSGetException
+    public void flush() throws FeedException
     {
         try
         {
@@ -173,7 +173,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
         catch (IOException ex)
         {
-            throw new RSSGetException (ex);
+            throw new FeedException (ex);
         }
     }
 
@@ -197,10 +197,10 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param handler  the handler to add
      *
-     * @throws RSSGetException error opening a temporary file for the output
+     * @throws FeedException error opening a temporary file for the output
      */
     public void addOutputHandler (OutputHandler handler)
-	throws RSSGetException
+	throws FeedException
     {
 	handlers.add (new HandlerTableEntry (handler));
     }
@@ -211,10 +211,10 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param emailAddress  email address to add
      *
-     * @throws RSSGetException  bad email address
+     * @throws FeedException  bad email address
      */
     public void addRecipient (String emailAddress)
-        throws RSSGetException
+        throws FeedException
     {
         try
         {
@@ -223,7 +223,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
         catch (EmailException ex)
         {
-            throw new RSSGetException (ex);
+            throw new FeedException (ex);
         }
     }
 
@@ -236,10 +236,10 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param recipients  collection of email addresses, as strings.
      *
-     * @throws RSSGetException  on error
+     * @throws FeedException  on error
      */
     private void emailOutput()
-        throws RSSGetException
+        throws FeedException
     {
         try
         {
@@ -293,7 +293,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
         catch (EmailException ex)
         {
-            throw new RSSGetException (ex);
+            throw new FeedException (ex);
         }
     }
 }

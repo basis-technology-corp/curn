@@ -5,11 +5,11 @@
 package org.clapper.rssget.htmloutput;
 
 import org.clapper.rssget.OutputHandler;
-import org.clapper.rssget.RSSGetException;
+import org.clapper.rssget.FeedException;
 import org.clapper.rssget.Util;
 import org.clapper.rssget.Version;
-import org.clapper.rssget.RSSFeedInfo;
-import org.clapper.rssget.RSSGetConfiguration;
+import org.clapper.rssget.FeedInfo;
+import org.clapper.rssget.ConfigFile;
 import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
 
@@ -61,7 +61,7 @@ public class HTMLOutputHandler implements OutputHandler
     private String                oddChannelClass     = null;
     private int                   rowCount            = 0;
     private int                   channelCount        = 0;
-    private RSSGetConfiguration   config              = null;
+    private ConfigFile   config              = null;
     private HTMLTableRowElement   channelRow          = null;
     private HTMLTableRowElement   channelSeparatorRow = null;
     private Node                  channelRowParent    = null;
@@ -92,11 +92,11 @@ public class HTMLOutputHandler implements OutputHandler
      *                output
      * @param config  the parsed <i>rssget</i> configuration data
      *
-     * @throws RSSGetException  initialization error
+     * @throws FeedException  initialization error
      */
     public void init (PrintWriter         writer,
-                      RSSGetConfiguration config)
-        throws RSSGetException
+                      ConfigFile config)
+        throws FeedException
     {
         this.doc                 = new RSSOutputHTML();
         this.config              = config;
@@ -122,11 +122,11 @@ public class HTMLOutputHandler implements OutputHandler
      *                 not be seen.
      * @param feedInfo Information about the feed, from the configuration
      *
-     * @throws RSSGetException  unable to write output
+     * @throws FeedException  unable to write output
      */
     public void displayChannel (RSSChannel  channel,
-                                RSSFeedInfo feedInfo)
-        throws RSSGetException
+                                FeedInfo    feedInfo)
+        throws FeedException
     {
         Collection items = channel.getItems();
 
@@ -226,9 +226,9 @@ public class HTMLOutputHandler implements OutputHandler
      * Flush any buffered-up output. <i>rssget</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
-     * @throws RSSGetException  unable to write output
+     * @throws FeedException  unable to write output
      */
-    public void flush() throws RSSGetException
+    public void flush() throws FeedException
     {
         // Remove the cloneable row.
 

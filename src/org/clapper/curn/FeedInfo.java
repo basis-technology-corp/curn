@@ -7,13 +7,13 @@ package org.clapper.rssget;
 import java.net.URL;
 
 /**
- * <p>Contains configuration data for one RSS feed (or site).</p>
+ * <p>Contains configuration data for one feed (or site).</p>
  *
- * @see RSSGetConfiguration
+ * @see ConfigFile
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSFeedInfo
+public class FeedInfo
 {
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -39,7 +39,7 @@ public class RSSFeedInfo
      *
      * @see Util#normalizeURL
      */
-    RSSFeedInfo (URL siteURL)
+    FeedInfo (URL siteURL)
     {
         this.siteURL = Util.normalizeURL (siteURL);
     }

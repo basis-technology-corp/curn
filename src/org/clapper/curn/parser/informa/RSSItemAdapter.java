@@ -176,6 +176,16 @@ public class RSSItemAdapter implements RSSItem
         return Util.normalizeURL (getLink()).toExternalForm();
     }
 
+    /**
+     * Get the item's unique ID, if any.
+     *
+     * @return the unique ID, or null if not set
+     */
+    public String getUniqueID()
+    {
+        return null;
+    }
+
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
     \*----------------------------------------------------------------------*/
