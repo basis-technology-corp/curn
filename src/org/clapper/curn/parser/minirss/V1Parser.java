@@ -291,21 +291,62 @@ public class V1Parser extends ParserCommon
         if (chars.length() == 0)
             chars = null;
 
+        if (elementName.equals ("title"))
+            item.setTitle (chars);
+
+        else if (elementName.equals ("link"))
+            setItemLink (item, chars);
+
+        else if (elementName.equals ("description"))
+            item.setDescription (chars);
+    }
+
+    /**
+     * Some sites (notably, O'Reilly's Meerket) specify links with
+     * additional cruft in them, e.g., "13027@http://www.gizmodo.com/".
+     * This method is a hack that strips such things out before storing the
+     * link in the item.
+     *
+     * @param item the item
+     * @param url  the string containing the URL
+     *
+     * @throws SAXException on error
+     */
+    private void setItemLink (Item item, String url)
+        throws SAXException
+    {
         try
         {
-            if (elementName.equals ("title"))
-                item.setTitle (chars);
-
-            else if (elementName.equals ("link"))
-                item.setLink (new URL (chars));
-
-            else if (elementName.equals ("description"))
-                item.setDescription (chars);
+            item.setLink (new URL (url));
         }
 
         catch (MalformedURLException ex)
         {
-            throw new SAXException (ex.toString());
+            // Scan forward, character by character, looking for a valid
+            // protocol. Abort if (a) there's no ":" anywhere in the
+            // string, or (b) we reach the ":" without finding a valid URL.
+
+            int iColon = url.indexOf (":");
+            if (iColon == -1)
+                throw new SAXException (ex.toString());
+
+            boolean ok = false;
+            for (int i = 1; i < iColon; i++)
+            {
+                try
+                {
+                    item.setLink (new URL (url.substring (i)));
+                    ok = true;
+                    break;
+                }
+
+                catch (MalformedURLException ex2)
+                {
+                }
+            }
+
+            if (! ok)
+                throw new SAXException (ex);
         }
     }
 }
