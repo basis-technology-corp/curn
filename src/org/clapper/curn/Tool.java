@@ -754,20 +754,43 @@ public class curn extends CommandLineUtility
                 File saveAsFile = feedInfo.getSaveAsFile();
                 InputStream is = getURLInputStream (conn);
 
-                if (saveAsFile != null)
-                {
-                    // Copy the contents of the feed to the file first, then
-                    // parse the downloaded file, instead.
+                // Download the feed to a file. We'll parse the file.
 
-                    downloadFeed (is, feedURLString, saveAsFile);
-                    log.debug ("Reopening \"" + saveAsFile.getPath() + "\".");
-                    is = new FileInputStream (saveAsFile);
+                File temp = File.createTempFile ("curn", "xml", null);
+                temp.deleteOnExit();
+
+                int totalBytes = downloadFeed (is, feedURLString, temp);
+                is.close();
+
+                if (totalBytes == 0)
+                {
+                    log.debug ("Feed \""
+                             + feedURLString
+                             + "\" returned no data.");
                 }
 
-                channel = parser.parseRSSFeed (is);
-                processChannelItems (channel, feedInfo);
-                if (channel.getItems().size() == 0)
-                    channel = null;
+                else
+                {
+                    if (saveAsFile != null)
+                    {
+                        log.debug ("Copying temporary file \""
+                                 + temp.getPath()
+                                 + "\" to \""
+                                 + saveAsFile.getPath()
+                                 + "\"");
+                        FileUtils.copyFile (temp, saveAsFile);
+                    }
+
+                    is = new FileInputStream (temp);
+                    channel = parser.parseRSSFeed (is);
+                    is.close();
+
+                    processChannelItems (channel, feedInfo);
+                    if (channel.getItems().size() == 0)
+                        channel = null;
+                }
+
+                temp.delete();
             }
         }
 
@@ -789,43 +812,24 @@ public class curn extends CommandLineUtility
         return channel;
     }
 
-    private void downloadFeed (InputStream urlStream,
-                               String      feedURL,
-                               File        saveAsFile)
+    private int downloadFeed (InputStream urlStream, String feedURL, File file)
         throws IOException
     {
-        File temp = File.createTempFile ("curn", "xml", null);
-        temp.deleteOnExit();
+        int totalBytes = 0;
 
-        try
-        {
-            log.debug ("Downloading \""
-                     + feedURL
-                     + "\" to temporary file \""
-                     + temp.getPath());
-            OutputStream os = new FileOutputStream (temp);
-            int totalBytes = FileUtils.copyStream (urlStream, os);
-            os.close();
+        log.debug ("Downloading \""
+                 + feedURL
+                 + "\" to file \""
+                 + file.getPath());
+        OutputStream os = new FileOutputStream (file);
+        totalBytes = FileUtils.copyStream (urlStream, os);
+        os.close();
 
-            // It's possible for totalBytes to be zero if, for instance,
-            // the use of the If-Modified-Since header caused an HTTP server
-            // to return no content.
+        // It's possible for totalBytes to be zero if, for instance, the
+        // use of the If-Modified-Since header caused an HTTP server to
+        // return no content.
 
-            if (totalBytes > 0)
-            {
-                log.debug ("Copying temporary file \""
-                         + temp.getPath()
-                         + "\" to \""
-                         + saveAsFile.getPath()
-                         + "\"");
-                FileUtils.copyFile (temp, saveAsFile);
-            }
-        }
-
-        finally
-        {
-            temp.delete();
-        }
+        return totalBytes;
     }
 
     private InputStream getURLInputStream (URLConnection conn)
