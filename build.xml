@@ -130,6 +130,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
 
@@ -197,6 +199,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
 
@@ -245,6 +249,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
 
@@ -276,6 +282,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
 
@@ -331,7 +339,7 @@ source and documentation packages.
 
     <!--
     Specifying "packagename" forces <xmlc> to create the generated Java source
-    files a subdirectory. And, even then, the package name is wrong.
+    files in a subdirectory. But, even then, the package name is wrong.
     Specifying just "packagedir" causes it to create a bad "package"
     line, but the file is at least local. Then, we edit it. (Yuck.)
      -->
@@ -360,7 +368,6 @@ source and documentation packages.
     The XMLC-generated Java sources contain various anomalies (including
     identifiers with "$" characters) that cause Jikes to complain. Compile
     them separately, with various Jikes warnings disabled.
-
     -->
 
     <javac srcdir="${javac.src.dir}"
@@ -388,6 +395,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
       <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
@@ -427,6 +436,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
 
@@ -484,6 +495,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
+      <compilerarg compiler="jikes" value="+Pserial"/>
 
       <classpath refid="project.class.path"/>
 
