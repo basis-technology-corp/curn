@@ -325,7 +325,10 @@ public class MiniRSSParser
 
         else
         {
-            throw new SAXException ("First element is not <rss> or <rdf>");
+            throw new SAXException ("Unknown or unsupported RSS type. "
+                                  + "First XML element is <"
+                                  + elementName
+                                  + ">");
         }
     }
 }
