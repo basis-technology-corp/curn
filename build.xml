@@ -33,12 +33,12 @@
   </target>
 
   <patternset id="main.sources">
-    <include name="src/*.java"/>
-    <exclude name="src/*/*.java"/>
+    <include name="*.java"/>
+    <exclude name="*/*.java"/>
   </patternset>
 
   <patternset id="parser.impls">
-    <include name="src/*/*.java"/>
+    <include name="*/*.java"/>
   </patternset>
 
   <target name="main" depends="init">
