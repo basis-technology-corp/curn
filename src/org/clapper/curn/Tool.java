@@ -19,6 +19,8 @@ import org.clapper.util.config.*;
 * 
 * <p><i>rssget</i> requires the <i>Informa</i> parsing library, which is
 * available at {@link <a href="http://orchard.sourceforge.net/">}.</p>
+*
+* @version <tt>$Revision$</tt>
 */
 public class rssget implements VerboseMessagesHandler
 {
@@ -59,7 +61,6 @@ public class rssget implements VerboseMessagesHandler
 
         catch (RSSParserException ex)
         {
-            System.err.println ("BOO");
             ex.printStackTrace (System.err);
             System.exit (1);
         }
@@ -265,13 +266,14 @@ public class rssget implements VerboseMessagesHandler
                               RSSGetOutputHandler outputHandler)
         throws RSSParserException
     {
+        URL url = feedInfo.getURL();
+
+        verbose (3, "Getting parser.");
+        String parserClassName = config.getRSSParserClassName();
+        RSSParser parser = RSSParserFactory.getRSSParser (parserClassName);
+
         try
         {
-            URL url = feedInfo.getURL();
-
-            verbose (3, "Getting parser.");
-            RSSParser parser = RSSParserFactory.getRSSParser ("org.clapper.rssget.informa.RSSParserImpl");
-
             verbose (3, "Parsing feed at " + url.toString());
             RSSChannel channel = parser.parseRSSFeed (url);
             Collection items = channel.getItems();

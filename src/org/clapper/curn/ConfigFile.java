@@ -36,13 +36,12 @@ class RSSGetConfiguration extends Configuration
     private static final String VAR_DEFAULT_MAIL_FROM  = "DefaultMailFrom";
     private static final String VAR_MAIL_SUBJECT       = "Subject";
     private static final String VAR_DAYS_TO_CACHE      = "DaysToCache";
+    private static final String VAR_PARSER_CLASS       = "ParserClass";
 
     private static final int    DEFAULT_DAYS_TO_CACHE  = 5;
     private static final int    DEFAULT_VERBOSITY_LEVEL= 0;
-
-    /*----------------------------------------------------------------------*\
-                                  Classes
-    \*----------------------------------------------------------------------*/
+    private static final String DEFAULT_PARSER_CLASS   =
+                                  "org.clapper.rssget.informa.RSSParserImpl";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -56,6 +55,7 @@ class RSSGetConfiguration extends Configuration
     private int         verboseness      = 0;
     private Collection  rssFeeds         = new ArrayList();
     private Map         rssFeedMap       = new HashMap();
+    private String      parserClassName  = DEFAULT_PARSER_CLASS;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -134,6 +134,16 @@ class RSSGetConfiguration extends Configuration
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the name of the RSS parser class to use.
+     *
+     * @return the full class name
+     */
+    String getRSSParserClassName()
+    {
+        return parserClassName;
+    }
 
     /**
      * Get the configured cache file.
@@ -358,6 +368,9 @@ class RSSGetConfiguration extends Configuration
             summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
                                                    VAR_SUMMARY_ONLY,
                                                    false);
+            parserClassName = getOptionalStringValue (MAIN_SECTION,
+                                                      VAR_PARSER_CLASS,
+                                                      DEFAULT_PARSER_CLASS);
         }
 
         catch (NoSuchVariableException ex)
