@@ -58,7 +58,7 @@ public interface OutputHandler
     /**
      * Display the list of <tt>RSSItem</tt> news items to whatever output
      * is defined for the underlying class. Output should be written to the
-     * <tt>PrintWriter</tt> that was passed to the {@ #init init()} method.
+     * <tt>PrintWriter</tt> that was passed to the {@link #init init()} method.
      *
      * @param channel  The channel containing the items to emit. The method
      *                 should emit all the items in the channel; the caller

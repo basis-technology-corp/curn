@@ -220,7 +220,7 @@ public class MiniRSSParser
     /**
      * Parses an RSS feed from an already-open <tt>Reader</tt> object.
      *
-     * @param reader  the <tt>Reader</tt> that will produce the RSS XML
+     * @param r  the <tt>Reader</tt> that will produce the RSS XML
      *
      * @return the <tt>Channel</tt> object containing the parsed RSS data
      *

@@ -66,14 +66,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * <p><i>curn</i> - Curiously Uncomplicated RSS Notifier</p>
+ * <p><i>curn</i>: Curiously Uncomplicated RSS Notifier.</p>
  *
- * <p><i>curn</i> scans a configured set of URLs, each one representing an
- * RSS feed, and summarizes the results in an easy-to-read text format.
- * <i>curn</i> keeps track of URLs it's seen before, using an on-disk
- * cache; when using the cache, it will suppress displaying URLs it has
- * already reported (though that behavior can be disabled). <i>curn</i> can
- * be extended to use any RSS parser; its built-in RSS parser, the
+ * <p><i>curn</i> is an RSS reader. It scans a configured set of URLs, each
+ * one representing an RSS feed, and summarizes the results in an
+ * easy-to-read text format. <i>curn</i> keeps track of URLs it's seen
+ * before, using an on-disk cache; when using the cache, it will suppress
+ * displaying URLs it has already reported (though that behavior can be
+ * disabled). <i>curn</i> can be extended to use any RSS parser; its
+ * built-in RSS parser, the
  * {@link org.clapper.curn.parser.minirss.MiniRSSParser MiniRSSParser}
  * class, can handle files in
  * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
