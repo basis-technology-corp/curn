@@ -31,15 +31,19 @@ import java.io.FileNotFoundException;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import java.util.Date;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
+import org.clapper.util.misc.BuildInfo;
 import org.clapper.util.misc.Logger;
 import org.clapper.util.config.ConfigurationException;
 
@@ -102,6 +106,12 @@ public class Tool extends CommandLineUtility
         DATE_FORMATS.add (new DateParseInfo ("h:mm", true));
         DATE_FORMATS.add (new DateParseInfo ("hh a", true));
         DATE_FORMATS.add (new DateParseInfo ("h a", true));
+        DATE_FORMATS.add (new DateParseInfo ("HH:mm:ss a", true));
+        DATE_FORMATS.add (new DateParseInfo ("HH:mm:ss", true));
+        DATE_FORMATS.add (new DateParseInfo ("HH:mm a", true));
+        DATE_FORMATS.add (new DateParseInfo ("HH:mm", true));
+        DATE_FORMATS.add (new DateParseInfo ("H:mm a", true));
+        DATE_FORMATS.add (new DateParseInfo ("H:mm", true));
     };
 
     /*----------------------------------------------------------------------*\
@@ -385,15 +395,41 @@ public class Tool extends CommandLineUtility
                         "Don't ask remote HTTP servers to gzip content before "
                       + "sending it.");
 
-        StringWriter sw  = new StringWriter();
-        PrintWriter  pw  = new PrintWriter (sw);
-        Date         now = new Date();
+        StringWriter      sw  = new StringWriter();
+        PrintWriter       pw  = new PrintWriter (sw);
+        Date              sampleDate;
+        BuildInfo         buildInfo = Version.getBuildInfo(); 
+        SimpleDateFormat  dateFormat;
+        String            dateString = buildInfo.getBuildDate();
 
+        try
+        {
+            dateFormat = new SimpleDateFormat (BuildInfo.DATE_FORMAT_STRING);
+            sampleDate = dateFormat.parse (dateString);
+        }
+
+        catch (Exception ex)
+        {
+            log.error ("Can't parse build date string \""
+                     + dateString
+                     + "\" using format \""
+                     + BuildInfo.DATE_FORMAT_STRING
+                     + "\"",
+                       ex);
+            sampleDate = new Date();
+        }
+
+        Set printed = new HashSet();
         for (Iterator it = DATE_FORMATS.iterator(); it.hasNext(); )
         {
-            pw.println();
             DateParseInfo dpi = (DateParseInfo) it.next();
-            pw.print ("    " + dpi.formatDate (now));
+            String s = dpi.formatDate (sampleDate);
+            if (! printed.contains (s))
+            {
+                pw.println();
+                pw.print (s);
+                printed.add (s);
+            }
         }
 
         info.addOption ('t', "time", "<time>",
