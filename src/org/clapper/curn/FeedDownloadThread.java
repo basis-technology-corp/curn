@@ -344,6 +344,7 @@ class FeedDownloadThread extends Thread
         URL         feedURL = feedInfo.getURL();
         String      feedURLString = feedURL.toString();
         RSSChannel  channel = null;
+        String      s;
 
         try
         {
@@ -403,15 +404,23 @@ class FeedDownloadThread extends Thread
 
                     if (saveAsFile != null)
                     {
+                        s = ((tempFile.encoding == null) ? "default"
+                                                         : tempFile.encoding);
+
+                        String saveAsEncoding = feedInfo.getSaveAsEncoding();
                         log.debug ("Copying temporary file \""
                                  + tempFile.file.getPath()
-                                 + "\" to \""
+                                 + "\" (encoding="
+                                 + s
+                                 + ") to \""
                                  + saveAsFile.getPath()
-                                 + "\"");
+                                 + "\" (encoding="
+                                 + saveAsEncoding
+                                 + ")");
                         FileUtil.copyTextFile (tempFile.file,
                                                tempFile.encoding,
                                                saveAsFile,
-                                               null);
+                                               saveAsEncoding);
                     }
 
                     if (parser == null)

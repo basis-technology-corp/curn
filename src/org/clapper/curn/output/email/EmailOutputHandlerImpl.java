@@ -44,6 +44,7 @@ import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
 
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -180,6 +181,19 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     public String getContentType()
     {
 	// Not really applicable.
+
+        return null;
+    }
+
+    /**
+     * Get a file name extension suitable for the content. This is useful
+     * primarily for setting the file name in generated email.
+     *
+     * @return a suitable extension, with the leading "."
+     */
+    public String getFilenameExtension()
+    {
+        // Not really applicable
 
         return null;
     }
@@ -329,16 +343,25 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                 // multipart-alternative message with separate attachments
                 // for each output.
 
+                DecimalFormat fmt  = new DecimalFormat ("##000");
+                StringBuffer  name = new StringBuffer();
+
                 if (totalAttachments == 1)
                 {
                     handler = firstHandlerWithOutput;
                     String contentType = handler.getContentType();
                     InputStream is = handler.getGeneratedOutput();
                     message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
+
+                    name.append (fmt.format (1));
+                    name.append (handler.getFilenameExtension());
+
                     if (contentType.startsWith ("text/"))
-                        message.setText (is, contentType);
+                        message.setText (is, name.toString(), contentType);
                     else
-                        message.addAttachment (is, contentType);
+                        message.addAttachment (is,
+                                               name.toString(),
+                                               contentType);
                 }
 
                 else
@@ -346,6 +369,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                     message.setMultipartSubtype
                                           (EmailMessage.MULTIPART_ALTERNATIVE);
 
+                    int i = 1;
                     for (it = handlers.iterator(); it.hasNext(); )
                     {
                         handlerWrapper = (ConfiguredOutputHandler) it.next();
@@ -354,7 +378,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                         InputStream is = handler.getGeneratedOutput();
                         if (is != null)
                         {
+                            name.setLength (0);
+                            name.append (fmt.format (i));
+                            name.append (handler.getFilenameExtension());
+                            i++;
                             message.addAttachment (is,
+                                                   name.toString(),
                                                    handler.getContentType());
                         }
                     }

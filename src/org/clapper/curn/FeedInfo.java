@@ -71,6 +71,18 @@ public class FeedInfo
      */
     public static final int SORT_BY_TITLE = 2;
 
+    /**
+     * Default encoding for "save as" file.
+     *
+     * @see #getSaveAsFile
+     * @see #setSaveAsEncoding
+     */
+    public static final String DEFAULT_SAVE_AS_ENCODING = "utf-8";
+
+    /*----------------------------------------------------------------------*\
+                             Private Constants
+    \*----------------------------------------------------------------------*/
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -84,6 +96,7 @@ public class FeedInfo
     private String      itemURLEditCmd        = null;
     private URL         siteURL               = null;
     private File        saveAsFile            = null;
+    private String      saveAsEncoding        = DEFAULT_SAVE_AS_ENCODING;
     private int         sortBy                = SORT_BY_NONE;
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
@@ -397,6 +410,38 @@ public class FeedInfo
     public void setSaveAsFile (File f)
     {
         this.saveAsFile = f;
+    }
+
+    /**
+     * Get the encoding to use when saving the downloaded file. Only applicable
+     * if the "save as" file is also defined.
+     *
+     * @return the encoding
+     *
+     * @see #setSaveAsEncoding
+     * @see #getSaveAsFile
+     */
+    public String getSaveAsEncoding()
+    {
+        return saveAsEncoding;
+    }
+
+    /**
+     * Set the encoding to use when saving the downloaded file. Only applicable
+     * if the "save as" file is also defined.
+     *
+     * @param encoding the encoding to use, or null to reset to the default
+     *                 <i>curn</i> encoding of "utf-8"
+     *
+     * @see #getSaveAsEncoding
+     * @see #setSaveAsFile
+     */
+    public void setSaveAsEncoding (String encoding)
+    {
+        if (encoding == null)
+            encoding = "utf-8";
+
+        this.saveAsEncoding = encoding;
     }
 
     /**

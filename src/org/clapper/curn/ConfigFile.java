@@ -101,6 +101,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_DISABLED          = "Disabled";
     private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     private static final String VAR_SAVE_FEED_AS      = "SaveAs";
+    private static final String VAR_SAVE_AS_ENCODING  = "SaveAsEncoding";
     private static final String VAR_SAVE_ONLY         = "SaveOnly";
     private static final String VAR_FEED_URL          = "URL";
     private static final String VAR_CLASS             = "Class";
@@ -871,6 +872,12 @@ public class ConfigFile extends Configuration
             {
                 saveAs = getConfigurationValue (sectionName, VAR_SAVE_FEED_AS);
                 feedInfo.setSaveAsFile (new File (saveAs));
+            }
+
+            else if (varName.equals (VAR_SAVE_AS_ENCODING))
+            {
+                s = getConfigurationValue (sectionName, VAR_SAVE_AS_ENCODING);
+                feedInfo.setSaveAsEncoding (s);
             }
 
             else if (varName.equals (VAR_SAVE_ONLY))

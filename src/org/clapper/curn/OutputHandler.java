@@ -127,6 +127,14 @@ public interface OutputHandler
     public String getContentType();
 
     /**
+     * Get a file name extension suitable for the content. This is useful
+     * primarily for setting the file name in generated email.
+     *
+     * @return a suitable extension, with the leading "."
+     */
+    public String getFilenameExtension();
+
+    /**
      * Get an <tt>InputStream</tt> that can be used to read the output data
      * produced by the handler, if applicable.
      *

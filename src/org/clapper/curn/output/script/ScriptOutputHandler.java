@@ -543,6 +543,17 @@ public class ScriptOutputHandler extends FileOutputHandler
     }
 
     /**
+     * Get a file name extension suitable for the content. This is useful
+     * primarily for setting the file name in generated email.
+     *
+     * @return a suitable extension, with the leading "."
+     */
+    public String getFilenameExtension()
+    {
+        return ".txt"; // for now
+    }
+
+    /**
      * Register additional scripting language engines that are not
      * supported by this class. By default, this method does nothing.
      * Subclasses that wish to register additional BSF scripting engine
