@@ -117,6 +117,7 @@ source and documentation packages.
   <target name="main">
     <javac srcdir="${src.dir}"
            sourcepath="${src.top}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -182,6 +183,7 @@ source and documentation packages.
           depends="-check.informa"
 	  if="informa.exists">
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -228,6 +230,7 @@ source and documentation packages.
           depends="-check.rome"
 	  if="rome.exists">
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -258,6 +261,7 @@ source and documentation packages.
       First the local targets.
     -->
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -353,6 +357,7 @@ source and documentation packages.
     -->
 
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -368,6 +373,7 @@ source and documentation packages.
     </javac>
 
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -406,6 +412,7 @@ source and documentation packages.
   <target name="output.script" depends="-check.bsf" if="bsf.exists">
 
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -462,6 +469,7 @@ source and documentation packages.
   <target name="email" depends="-check.email" if="email.exists">
 
     <javac srcdir="${src.dir}"
+	   source="1.4"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
