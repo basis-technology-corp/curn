@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Provides an output handler that produces plain text to a file.
@@ -39,7 +41,8 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
     private WordWrapWriter  out              = null;
     private ConfigFile      config           = null;
     private String          message          = null;
-    private boolean         messageDisplayed = false;
+    private Collection      channels         = new ArrayList();
+    private int             totalItems       = 0;
 
     /**
      * For logging
@@ -83,8 +86,6 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                                                      null);
         }
 
-        messageDisplayed = false;
-
         File outputFile = super.getOutputFile();
         try
         {
@@ -99,6 +100,9 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                                    + "\" for output",
                                      ex);
         }
+
+        channels.clear();
+        totalItems = 0;
     }
 
     /**
@@ -119,34 +123,13 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                                 FeedInfo    feedInfo)
         throws CurnException
     {
-        Collection items      = channel.getItems();
-        int        totalItems = items.size();
+        Collection items        = channel.getItems();
+        int        channelItems = items.size();
 
-        if (totalItems != 0)
+        if (channelItems != 0)
         {
-            if (! messageDisplayed)
-            {
-                out.println ("Some or all configured feeds have new items. "
-                           + "A summary follows.");
-                out.println ();
-                if (message != null)
-                {
-                    out.println (message);
-                    out.println ();
-                }
-
-                messageDisplayed = true;
-            }
-
-            out.setPrefix ("    ");
-            out.println (convert (channel.getTitle()));
-            out.println (channel.getLink().toString());
-
-            out.setPrefix ("        ");
-            out.println (String.valueOf (totalItems) + " items");
-
-            out.setPrefix ("");
-            out.println ();
+            totalItems += channelItems;
+            channels.add (channel);
         }
     }
 
@@ -157,6 +140,36 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
      */
     public void flush() throws CurnException
     {
+        if (totalItems > 0)
+        {
+            out.println ("Some or all configured feeds have new items.");
+            out.println ("Total new items for all channels: "
+                       + String.valueOf (totalItems));
+            out.println ();
+            if (message != null)
+            {
+                out.println (message);
+                out.println ();
+            }
+
+            out.println ("A summary follows.");
+            out.println ();
+
+            for (Iterator it = channels.iterator(); it.hasNext(); )
+            {
+                RSSChannel channel = (RSSChannel) it.next();
+
+                out.setPrefix ("    ");
+                out.println (convert (channel.getTitle()));
+                out.println (channel.getLink().toString());
+
+                out.setPrefix ("        ");
+                out.println (String.valueOf (channel.getItems().size())
+                           + " items");
+                out.println ();
+            }
+        }
+
         out.flush();
         out = null;
     }
