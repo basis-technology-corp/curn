@@ -154,6 +154,99 @@ public final class ParserUtil
         return parseDate (sDate, W3C_DATE_FORMATS, timeZone);
     }
 
+    /**
+     * Used to process the characters found between two XML elements, this
+     * method removes any leading and trailing white space, including
+     * newlines. Embedded newlines are mapped to spaces.
+     *
+     * @param ch      the array of characters to process
+     * @param start   the start position in the array
+     * @param length  the number of characters to read from the array
+     *
+     * @return the resulting string
+     *
+     * @see #normalizeCharacterData(char[],int,int,StringBuffer)
+     * @see #normalizeCharacterData(String)
+     */
+    public static String normalizeCharacterData (char[] ch,
+                                                 int    start,
+                                                 int    length)
+    {
+        StringBuffer buf = new StringBuffer();
+
+        normalizeCharacterData (ch, start, length, buf);
+
+        return buf.toString();
+    }
+
+    /**
+     * Used to process the characters found between two XML elements, this
+     * method removes any leading and trailing white space, including
+     * newlines. Embedded newlines are mapped to spaces.
+     *
+     * @param s   the string to process
+     *
+     * @return the resulting string
+     *
+     * @see #normalizeCharacterData(char[],int,int,StringBuffer)
+     * @see #normalizeCharacterData(String)
+     */
+    public static String normalizeCharacterData (String s)
+    {
+        return normalizeCharacterData (s.toCharArray(), 0, s.length());
+    }
+
+    /**
+     * Used to process the characters found between two XML elements, this
+     * method removes any leading and trailing white space, including
+     * newlines. Embedded newlines are mapped to spaces.
+     *
+     * @param ch      the array of characters to process
+     * @param start   the start position in the array
+     * @param length  the number of characters to read from the array
+     * @param buf     where to append the resulting characters
+     *
+     * @see #normalizeCharacterData(char[],int,int)
+     * @see #normalizeCharacterData(String)
+     */
+    public static void normalizeCharacterData (char[]       ch,
+                                               int          start,
+                                               int          length,
+                                               StringBuffer buf)
+    {
+        // Setting lastWasNewline to true catches leading newlines.
+        boolean lastWasNewline = true;
+
+        int end = start + length;
+        while (start < end)
+        {
+            char c = ch[start++];
+
+            // Substitute a space for each newline sequence. Be sure to
+            // handle all combinations of newline sequences (e.g., \n, \r,
+            // \r\n, \n\r). We want just one space to replace a given
+            // newline sequence. The easiest solution is to replace all
+            // consecutive newline (\n or \r) characters with one space.
+            // This has the effect of nuking blank lines, but blank lines
+            // are meaningless within character data anyway, at least in
+            // this context.
+
+            if ((c == '\n') || (c == '\r'))
+            {
+                if (! lastWasNewline)
+                    buf.append (' ');
+                lastWasNewline = true;
+            }
+
+            else
+            {
+                lastWasNewline = false;
+                if (! Character.isISOControl (c))
+                    buf.append (c);
+            }
+        }
+    }
+
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
