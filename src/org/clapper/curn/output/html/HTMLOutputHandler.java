@@ -59,6 +59,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.net.URL;
+import java.net.InetAddress;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -386,6 +387,26 @@ public class HTMLOutputHandler extends FileOutputHandler
             XMLCUtil.getFirstText (dom.getElementTitle()).setData (title);
             dom.setTextTitleHeading (title);
         }
+
+        // Add time stamp and machine.
+
+        Date now = new Date();
+        dom.setTextGenerationDate (OUTPUT_DATE_FORMAT.format (now));
+
+        String thisHost = "unknown host";
+
+        try
+        {
+            InetAddress addr = InetAddress.getLocalHost();
+            thisHost = addr.getHostName();
+        }
+
+        catch (Exception ex)
+        {
+            log.error ("Can't get name of local host: " + ex.toString());
+        }
+
+        dom.setTextGeneratedOnHost (thisHost);
 
         // Add configuration info, if available.
 
