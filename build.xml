@@ -50,7 +50,7 @@ source and documentation packages.
   <property name="dist"  location="dist"/>
   <property name="build.compiler" value="jikes"/>
   <property name="build.compiler.emacs" value="true"/>
-  <property name="build.info.file" 
+  <property name="build.info.file"
             value="${build}/${pkg.path}/BuildInfoBundle.properties"/>
   <property name="compile.listfiles" value="no"/>
   <property name="code_jar_name" value="curn"/>
@@ -99,8 +99,8 @@ source and documentation packages.
     <include name="parser/informa/*.java"/>
   </patternset>
 
-  <patternset id="parser.rsslib4j">
-    <include name="parser/rsslib4j/*.java"/>
+  <patternset id="parser.rome">
+    <include name="parser/rome/*.java"/>
   </patternset>
 
   <patternset id="parser.testers">
@@ -140,8 +140,8 @@ source and documentation packages.
 
   <target name="all" depends="curn"/>
 
-  <target name="curn" 
-          depends="main,parser.builtin,parser.informa,parser.rsslib4j,htmloutput,email,-build.info,parser.testers"
+  <target name="curn"
+          depends="main,parsers,htmloutput,email,-build.info,parser.testers"
           description="Compiles the source"/>
 
   <target name="util" depends="init">
@@ -153,6 +153,9 @@ source and documentation packages.
       <patternset refid="util"/>
     </javac>
   </target>
+
+  <target name="parsers"
+          depends="parser.builtin,parser.informa,parser.rome"/>
 
   <target name="parser.main" depends="util">
     <javac srcdir="${src.dir}"
@@ -214,30 +217,30 @@ source and documentation packages.
     </javac>
   </target>
 
-  <target name="-check.informa.exists">
-    <available classname="de.nava.informa.parsers.FeedParser"
-               property="informa.exists" value="true"/>
-  </target>
-
   <!--
   ***************************************************************************
 			  Informa Parser Targets
   ***************************************************************************
   -->
 
-  <target name="-check.informa" 
+  <target name="-check.informa.exists">
+    <available classname="de.nava.informa.parsers.FeedParser"
+               property="informa.exists" value="true"/>
+  </target>
+
+  <target name="-check.informa"
           depends="-check.informa.exists"
           unless="informa.exists">
     <echo>
 *** The Informa parser is not currently available in the build environment.
-*** Because Informa is missing, all targets that require it will be skipped. 
+*** Because Informa is missing, all targets that require it will be skipped.
 *** To enable these targets, download Informa from
-*** http://informa.sourceforge.net/ and follow the instructions in curn's 
+*** http://informa.sourceforge.net/ and follow the instructions in curn's
 *** docs/BUILDING.txt file.
     </echo>
   </target>
 
-  <target name="parser.informa" 
+  <target name="parser.informa"
           depends="-check.informa,parser.main"
 	  if="informa.exists">
     <javac srcdir="${src.dir}"
@@ -253,39 +256,39 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			  Rsslib4j Parser Targets
+			    Rome Parser Targets
   ***************************************************************************
   -->
 
-  <target name="-check.rsslib4j.exists">
-    <available classname="org.gnu.stealthp.rsslib.RSSParser"
-               property="rsslib4j.exists" value="true"/>
+  <target name="-check.rome.exists">
+    <available classname="com.sun.syndication.io.SyndFeedInput"
+               property="rome.exists" value="true"/>
   </target>
 
-  <target name="-check.rsslib4j" 
-          depends="-check.rsslib4j.exists"
-          unless="rsslib4j.exists">
+  <target name="-check.rome"
+          depends="-check.rome.exists"
+          unless="rome.exists">
     <echo>
-*** The rsslib4j parser is not currently available in the build environment.
-*** Because rsslib4j is missing, all targets that require it will be skipped. 
-*** To enable these targets, download and install rsslib4j from
-*** http://rsslib4j.sourceforge.net/.
+*** The Rome parser is not currently available in the build environment.
+*** Because Informa is missing, all targets that require it will be skipped.
+*** To enable these targets, download Rome from  https://rome.dev.java.net/
+*** and install it according to the instructions.
     </echo>
   </target>
 
-  <target name="parser.rsslib4j" 
-          depends="-check.rsslib4j,parser.main"
-	  if="informa.exists">
+  <target name="parser.rome"
+          depends="-check.rome,parser.main"
+	  if="rome.exists">
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.rsslib4j"/>
+      <patternset refid="parser.rome"/>
     </javac>
   </target>
 
-  <target name="rsslib4j" depends="parser.rsslib4j"/>
+  <target name="rome" depends="parser.rome"/>
 
   <!--
   ***************************************************************************
@@ -303,7 +306,7 @@ source and documentation packages.
 *** XMLC is not currently available in the build environment. Because of
 *** this, all targets that require XMLC will be skipped. To enable these
 *** targets, place a copy of xmlc-taskdef.jar and the XMLC runtime jars
-*** in ANT_HOME/lib or in the CLASSPATH. XMLC is available at 
+*** in ANT_HOME/lib or in the CLASSPATH. XMLC is available at
 *** http://xmlc.objectweb.org/
     </echo>
   </target>
@@ -337,9 +340,9 @@ source and documentation packages.
       <arg value="mockup"/>
     </xmlc>
 
-    <replaceregexp match="^package.*;" 
-                   replace="package org.clapper.curn.htmloutput;" 
-                   flags="g" 
+    <replaceregexp match="^package.*;"
+                   replace="package org.clapper.curn.htmloutput;"
+                   flags="g"
                    byline="true">
       <fileset dir="${src.dir}" includes="htmloutput/*.java">
         <contains text="XMLC GENERATED" casesensitive="yes"/>
@@ -366,7 +369,7 @@ source and documentation packages.
                property="email.exists" value="true"/>
   </target>
 
-  <target name="-check.email" depends="-check.email.exists" 
+  <target name="-check.email" depends="-check.email.exists"
           unless="email.exists">
     <echo>
 *** The email classes from the org.clapper.util.mail package are not
@@ -408,7 +411,7 @@ source and documentation packages.
 
   <target name="-build.info" depends="-get.version">
 
-    <taskdef name="make_build_info" 
+    <taskdef name="make_build_info"
              classname="org.clapper.util.ant.MakeBuildInfoTask"/>
 
     <condition property="compiler" value="${build.compiler}">
@@ -421,7 +424,7 @@ source and documentation packages.
       </not>
     </condition>
 
-    <make_build_info file="${build.info.file}" 
+    <make_build_info file="${build.info.file}"
                      antversion="${ant.version}"
                      compiler="${compiler}"/>
   </target>
@@ -463,13 +466,13 @@ source and documentation packages.
     <property name="versioned_src_zipfile"
               value="src-${VERSION}.zip"/>
 
-    <property name="versioned_code_jar_file" 
+    <property name="versioned_code_jar_file"
               value="${code_jar_name}-${VERSION}.jar"/>
 
-    <property name="versioned_docs_zipfile" 
+    <property name="versioned_docs_zipfile"
               value="docs-${VERSION}.zip"/>
 
-    <property name="versioned_javadocs_zipfile" 
+    <property name="versioned_javadocs_zipfile"
               value="javadocs-${VERSION}.zip"/>
   </target>
 
@@ -479,7 +482,7 @@ source and documentation packages.
     <jar jarfile="${code_jar_path}" basedir="${build}"/>
   </target>
 
-  <target name="dist" depends="code.jar" 
+  <target name="dist" depends="code.jar"
           description="Synonym for code.jar"/>
 
   <target name="javadoczip" depends="javadocs"
@@ -504,7 +507,7 @@ source and documentation packages.
           description="Generate the source zip">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_src_zipfile}">
-      <zipfileset dir="." 
+      <zipfileset dir="."
                   prefix="${zip_dir_prefix}" casesensitive="yes">
         <exclude name="${dist}/**"/>
         <exclude name="${build}"/>
@@ -517,10 +520,10 @@ source and documentation packages.
     </zip>
   </target>
 
-  <target name="fulldist" 
+  <target name="fulldist"
           depends="dist,-set.version.properties,srczip,doczip,javadoczip"
           description="Generate the distribution and source jars">
-    <copy file="${code_jar_path}" 
+    <copy file="${code_jar_path}"
           tofile="${release_dir}/${versioned_code_jar_file}"/>
   </target>
 
