@@ -176,14 +176,15 @@ produced output, and displays it on standard output.</p>
 
 <br><br>
 <table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
-       align="center" width="70%">
+       align="center"
   <tr>
     <td>
       <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
              width="100%">
         <tr valign="top">
           <td align="left">
-<pre>Usage: java org.clapper.curn.Tool [options] config [emailAddress ...]
+<blockquote><pre>
+Usage: java org.clapper.curn.Tool [options] config [emailAddress ...]
 
 OPTIONS:
 
@@ -231,7 +232,7 @@ PARAMETERS:
 
 config               Path to configuration file
 emailAddress ...     One or more email addresses to receive the output
-</pre>
+</pre></blockquote>
           </td>
         </tr>
       </table>
@@ -603,6 +604,14 @@ a name surrounded by brackets. Each section contains variable assignments;
 the variable assignment syntax is similar to that of a Java properties file.
 For example:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>
 [curn]
 CacheFile: /home/bmc/.curn/cache
@@ -610,6 +619,12 @@ DaysToCache: 30
 ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
 ...
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <h4><a name="CfgSectionNameSyntax">Section Name Syntax</a></h4>
 
@@ -641,6 +656,14 @@ line is treated as a logical continuation of the first line; however, any
 leading whitespace is removed from continued lines. For example, the
 following four variable assignments all have the same value:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>
 [test]
 a: one two three
@@ -651,6 +674,12 @@ d:        one \
 two \
 three
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p>Because leading whitespace is skipped, all four variables have the
 value "one two three".</p>
@@ -896,6 +925,14 @@ properties file. A blank line is a line containing no content, or one
 containing only whitespace. Blank lines and comments are ignored. For
 example:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>
 [curn]
 
@@ -920,7 +957,12 @@ example:</p>
 
 CacheFile: test.cache
 </pre></blockquote>
-
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <h3><a name="CurnConfigFile">Overview of <i>curn's</i> Configuration File</a></h3>
 
@@ -1598,12 +1640,9 @@ variables common to all output handlers are described below.</p>
   </tr>
 </table>
 
-
-<p>For example:</p>
-
-<blockquote><pre>[OutputHandler]
-Class: org.clapper.curn.htmloutput.HTMLOutputHandler
-Disabled: false</pre></blockquote>
+<p>There are some output handler
+<a href="#CfgOutputHandlerExamples">examples</a> following the next
+section.</p>
 
 <h4><a name="CfgPredefinedOutputHandlers">Predefined Output Handlers</a></h4>
 
@@ -1805,9 +1844,24 @@ produces HTML output. If <i>curn</i> is called with email addresses, the
 HTML output will be mailed to the specified email addresses. The HTML
 output is not saved anywhere.</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>[OutputHandler]
 Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+Disabled: false
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p><a name="CfgOutputHandlerExample2"><span class="exampleHeader">Example 2</span></a>:
 The output handler sections from a <i>curn</i> configuration file that
@@ -1816,18 +1870,40 @@ email addresses, the text output and the HTML output will be mailed to the
 specified email addresses as "multipart/alternative" attachments. The
 output is not saved anywhere.</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>[OutputHandlerText]
 Class: org.clapper.curn.TextOutputHandler
 
 [OutputHandlerHTML]
 Class: org.clapper.curn.htmloutput.HTMLOutputHandler
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p><a name="CfgOutputHandlerExample3"><span class="exampleHeader">Example 3</span></a>:
 The output handler sections from a <i>curn</i> configuration file that
 produces HTML output to a file (but not to the user), and displays (or emails)
 the user a text summary that contains a link to the HTML file.</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>[OutputHandlerSummary]
 Class: org.clapper.curn.SimpleSummaryOutputHandler
 # Message assumes that generated HTML is available via the web server running
@@ -1840,6 +1916,12 @@ Class: org.clapper.curn.htmloutput.HTMLOutputHandler
 SaveAs: /usr/local/www/htdocs/rss/news.html
 SaveOnly: true
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p><a name="CfgOutputHandlerExample4"><span class="exampleHeader">Example 4</span></a>:
 The feed and output handler sections from a <i>curn</i> configuration file that
@@ -1848,6 +1930,14 @@ displaying them. (See
 <a href="#Bandwidth">Being Bandwidth Friendly</a> for reasons why you might
 want to do this.)</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>[vars]
 feedDir: ${system:user.home}/.curn/feeds
 
@@ -1866,6 +1956,12 @@ SaveAs: ${vars:feedDir}/yahoo_top_stories.xml
 URL: http://csociety.purdue.org/~jacoby/XML/CNN_TOP_STORIES.xml
 SaveAs: ${vars:feedDir}/CNN_TOP_STORIES.xml
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <!--------------------------------------------------------------------------->
 <h2><a name="SchedulingCurn">Having <i>curn</i> Run on a Schedule</a></h2>
@@ -1884,8 +1980,22 @@ personal crontab, rather than the system-wide
 <span class="path">/etc/crontab</span> file.
 Here's a sample crontab entry that does this:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>0 8,12,16 * * 1-5  java org.clapper.curn.Tool my_address@example.com
 0 16 * * 0,6  java org.clapper.curn.Tool my_address@example.com</pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p>Note the inclusion of an email address on the <i>curn</i> command line.
 A seasoned <i>cron</i> user will wonder why this is necessary. After all,
@@ -2070,6 +2180,14 @@ comments and documentation and also implements a common base class.)</p>
 <p>First, let's look at the top of the class and the required
 <span class="code">init()</span> method:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.CurnException;
@@ -2190,6 +2308,12 @@ public class MyOutputHandler
         totalItems = 0;
     }
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p><i>curn</i> calls the <span class="code">init()</span> method right
 after instantiating the output handler class. One of the
@@ -2224,6 +2348,14 @@ interface:</p>
 
 <p>Here's the code for those methods:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>
     public void displayChannel (RSSChannel  channel,
                                 FeedInfo    feedInfo)
@@ -2363,6 +2495,12 @@ interface:</p>
         out = null;
     }
 </pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
 
 <p>This particular output handler's
 <span class="code">displayChannel()</span> method summarizes the channel
@@ -2390,6 +2528,14 @@ and item data, writing it to the output file that the
 
 <p>Here's the code:</p>
 
+<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
 <blockquote><pre>
     public String getContentType()
     {
@@ -2427,7 +2573,13 @@ and item data, writing it to the output file that the
                (outputFile.length() > 0);
     }
 </pre></blockquote>
-    
+              </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table></p>
+
 <p>With this model, it's possible to create output handlers that produce
 all kinds of output, including (for instance):</p>
 
