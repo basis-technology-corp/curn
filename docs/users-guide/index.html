@@ -9,6 +9,9 @@
    p.author        { text-align: center; }
    h2              { color: #990000; font-family: sans-serif; }
    h3              { color: #000000; font-family: sans-serif; }
+   h4              { color: #000000; font-family: sans-serif; }
+   h5              { color: #000000; font-family: serif;
+                     font-style: italic; }
    .toc            { font-weight: bold; }
    .oddrow         { background-color: #ffffff; }
    .evenrow        { background-color: #c9c9c9; }
@@ -25,7 +28,7 @@
 <h1 class="title"><i>curn</i>: Curiously Uncomplicated RSS Notifier<br>User's Guide</h1>
 <p class="author">Brian M. Clapper<br>
 <i>bmc<!--spamfoil--> @ <!--spamfoil-->clapper<!--spamfoil--> . <!--spamfoil-->org</i><br>
-<tt>$Id$</tt>
+<span class="code">$Id$</span>
 </p>
 <hr>
 
@@ -50,7 +53,14 @@
               <li><a href="#CfgSectionNameSyntax" class="toc">Section Name Syntax</a></li>
               <li><a href="#CfgVariableNameSyntax" class="toc">Variable Name Syntax</a></li>
               <li><a href="#CfgContinuationLines" class="toc">Continuation Lines</a></li>
-              <li><a href="#CfgVariableSubst" class="toc">Variable Substitution</a></li>
+
+              <li><a href="#CfgExpansions" class="toc">Expansions of Variable Values</a></li>
+		  <ul type="disc">
+                    <li><a href="#CfgMetacharacters" class="toc">Metacharacter Expansion</a></li>
+                    <li><a href="#CfgVariableSubst" class="toc">Variable Substitution</a></li>
+                    <li><a href="#CfgRawValues" class="toc">Suppressing Metacharacter Expansion and Variable Substitution</a></li>
+		  </ul>
+
               <li><a href="#CfgIncludes" class="toc">Includes</a></li>
               <li><a href="#CfgComments" class="toc">Comments and Blank Lines</a></li>
 	    </ul>
@@ -151,7 +161,7 @@ follow <a href="HTMLOutputHandler_sample.html">this link</a>.</p>
 <p>In addition, <i>curn</i> supports emailing its output. If email
 addresses are specified <a href="#CommandLine">on the command line</a>,
 then <i>curn</i> creates a MIME multipart/alternative email
-message<a href="#Note1">[1]</a>, using
+message&nbsp;<a href="#Note1">[1]</a>, using
 the output of each output handler as one of the alternative attachments. If
 no email addresses are specified on the command line, then <i>curn</i>
 retrieves the output from the first configured output handler that actually
@@ -542,7 +552,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	      This parameter is optional and may be specified multiple times.
 	      If any email addresses are present on the command line, then
 	      <i>curn</i> constructs a MIME multipart/alternative email
-	      message<a href="#Note1">[1]</a>, attaching the output from
+	      message&nbsp;<a href="#Note1">[1]</a>, attaching the output from
 	      each configured output handler as a separate
 	      multipart/alternative attachment. (<i>curn</i> assumes that
 	      each output handler is generating an alternate form of the
@@ -586,7 +596,7 @@ describes each <i>curn</i> configuration item in detail.</p>
 a standard Java properties file, but it is broken into individual sections,
 each of which has its own variable namespace. At a glance, the configuration
 file is reminiscent of a Windows .INI file, but there are quite a few
-differences.<a href="#Note2">[2]</a>.</p>
+differences.&nbsp;<a href="#Note2">[2]</a>.</p>
 
 <p>Like a .INI file, each section in the configuration file consists of
 a name surrounded by brackets. Each section contains variable assignments;
@@ -649,7 +659,17 @@ value "one two three".</p>
 lines, comment lines (see below) and include directives (see below)
 cannot span multiple lines.</p>
 
-<h4><a name="CfgMetacharacters">Metacharacter Expansion</a></h4>
+
+<h4><a name="CfgExpansions">Expansions of Variable Values</a></h4>
+
+<p>The configuration parser preprocesses each variable's value, replacing
+embedded metacharacter sequences and substituting variable references. You
+can use backslashes to escape the special characters that the parser uses
+to recognize metacharacter and variable sequences; you can also use single
+quotes. See <a href="#CfgRawValues">Suppressing Metacharacter Expansion and
+Variable Substitution</a>, below, for more details.</p>
+
+<h5><a name="CfgMetacharacters">Metacharacter Expansion</a></h5>
 
 <p>Within a variable's value, Java-style ASCII escape sequences
 <span class="code">\t</span>, <span class="code">\n</span>,
@@ -660,7 +680,7 @@ cannot span multiple lines.</p>
 single characters. Note that metacharacter expansion is performed
 <i>before</i> variable substitution.</p>
 
-<h4><a name="CfgVariableSubst">Variable Substitution</a></h4>
+<h5><a name="CfgVariableSubst">Variable Substitution</a></h5>
 
 <p>A variable value can interpolate the values of other variables, using a
 variable substitution syntax. The general form of a variable reference is
@@ -668,8 +688,12 @@ variable substitution syntax. The general form of a variable reference is
 <span class="code">sectionName</span> is the name of the section containing the
 variable to substitute; if omitted, it defaults to the current section.
 <span class="code">varName</span> is the name of the variable to
-substitute. If the variable doesn't exist, or has no value, an empty string
-is substituted.</p>
+substitute. If the variable has an empty value, an empty string is
+substituted. If the variable (or the referenced section) does not exist,
+the configuration parser throws an exception. If a variable reference
+specifies a section name, the referenced section must precede the current
+section. It is not possible to substitute the value of a variable in a
+section that occurs later in the file.</p>
 
 <p>The special section "system" is reserved. It doesn't actually exist in
 the configuration; however, you can refer to it during variable
@@ -678,7 +702,7 @@ substitution to pull in values from Java's
 
 <p>The special section "program" is also reserved. Like "system", "program"
 doesn't really exist. It's a placeholder for various special variables
-provided by the <tt>Configuration</tt> class at runtime. Those variables
+provided by the <span class="code">Configuration</span> class at runtime. Those variables
 are:</p>
 
 <table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
@@ -720,7 +744,7 @@ are:</p>
 	<tr class="oddrow" valign="top">
 	  <td align="left" class="code">now</td>
 	  <td align="left">The current time, formatted by calling
-          <tt>java.util.Date.toString()</tt> with the default locale.
+          <span class="code">java.util.Date.toString()</span> with the default locale.
 	    The program's current working directory. For example,
 	    <span class="code">${program:now}</span> would produce something
 	    like "Fri Aug 20 15:18:56 EDT 2004" on a machine with a default
@@ -729,7 +753,7 @@ are:</p>
         </tr>
 
         <tr class="evenrow" valign="top">
-          <td align="left">now</tt>&nbsp;<i>delim</i>&nbsp;<i>fmt</i>&nbsp;[<i>delim</i>&nbsp;<i>lang&nbsp;delim&nbsp;country</i>]]</td>
+          <td align="left">now</span>&nbsp;<i>delim</i>&nbsp;<i>fmt</i>&nbsp;[<i>delim</i>&nbsp;<i>lang&nbsp;delim&nbsp;country</i>]]</td>
           <td align="left">
 	    The current date/time, formatted with the specified
             <span class="code">java.text.SimpleDateFormat</span>
@@ -818,6 +842,23 @@ CacheFile = <b>${myCurnDir}</b>/cache</pre>
     </td>
   </tr>
 </table>
+
+<h5><a name="CfgRawValues">Suppressing Metacharacter Expansion and Variable Substitution</a></h5>
+
+<p>To prevent the parser from interpreting metacharacter sequences,
+variable substitutions and other special characters, enclose part or
+all of the value in single quotes. (See <a href="#Note3">[3]</a> for additional
+comments.) For example, suppose you want to set variable "prompt" to the
+literal value "Enter value. To specify a newline, use \n." The following
+configuration file line will do the trick:</p>
+
+<blockquote><pre>prompt: 'Enter value. To specify a newline, use \n'</pre></blockquote>
+
+<p>Similarly, to set variable "abc" to the literal string "${foo}"
+suppressing the parser's attempts to expand "${foo}" as a variable
+reference, you could use:</p>
+
+<blockquote><pre>abc: '${foo}'</pre></blockquote>
 
 <h4><a name="CfgIncludes">Includes</a></h4>
 
@@ -1354,22 +1395,17 @@ section names are all valid for RSS feed sections.</p>
 
 	      <blockquote><pre>s/^([a-z]+)foo(.*)$/\$1bar\$2/</pre></blockquote>
 
-              <p>You'll also have to escape any backslashes in the string.
-              Because of double-parsing (by the configuration file parser
-              and the Perl 5 regular expression engine), if you want a
-              literal backslash in your expression, you must supply 4
-              of them (i.e., double-escape it). e.g., To get the equivalent
+              <p>If there are backslashes in the string, you must escape
+	      them, preferably by single-quoting the value. See
+	      <a href="#CfgRawValues">Suppressing Metacharacter Expansion and Variable Substitution</a>
+	      for more details. To get the equivalent
               of Perl 5 expression.</p>
 
 	      <blockquote><pre>s/^\*.*$//</pre></blockquote>
 
               <p>you must specify</p>
 
-	      <blockquote><pre>s/^\\\\*.*\$//</pre></blockquote>
-
-	      <p>(Yes, I know this is ugly. I'm working on a way around it.
-	      The quadruple-backslash requirement may be changed in a future
-	      release of <i>curn</i>.)</p>
+	      <blockquote><pre>'s/^\*.*\$//'</pre></blockquote>
 
               <p>Hint: When <a href="#--logging">logging is enabled</a>,
 	      <i>curn</i> will log the parsed expression at the "debug"
@@ -1908,36 +1944,37 @@ details...)
 a different RSS parser, or even writing a new command-line or GUI front-end
 to <i>curn</i>'s main logic.</p>
 
-<p><i>curn's</i> processing is split into three phases:</p>
+<p>Roughly speaking, <i>curn's</i> processing is divided into the following
+phases:</p>
 
-<p>
-<table border="0" width="100%" align="left">
-  <tr valign="top"><td>
-    <table border="0" width="75%" align="left">
-      <tr valign="top">
-        <td nowrap align="right"><b>initialization and configuration</b></td>
-        <td>Read the configuration file (which includes the set RSS feeds,
-	    the output handlers to use, the RSS parser to use, various
-	    cache-control values, and other things), load the on-disk cache
-	    into memory, and initialize various data structures.</td>
-      </tr>
+<ol>
+  <li><b>configuration</b>: Read the configuration file (which includes the
+      set RSS feeds, the output handlers to use, the RSS parser to use,
+      various cache-control values, and other things), load the on-disk
+      cache into memory, and initialize various data structures.
 
-      <tr valign="top">
-        <td nowrap align="right"><b>feed parsing</b></td>
-	<td>Download and parse the various RSS feeds, distill the
-	    information into in-memory data structures, and decide which
-	    ones to display, based on information from the cache.</td>
-      </tr>
+  <li><b>feed download</b>: Download the configured RSS feeds, assuming they
+      have changed.
 
-      <tr valign="top">
-        <td nowrap align="right"><b>output</b></td>
-	<td>Pass the distilled feed data to the configured output handlers.
-	</td>
-      </tr>
-    </table>
-  </td></tr>
-</table>
-</p>
+  <li><b>feed parsing</b>: Parse the downloaded RSS feeds, assuming (a) a
+      <a href="#Cfg_ParserClass">parser class</a> and at least one
+      <a href="#CfgOutputHandlers">output handler</a> have been configured.
+      (If there's no parser, or no output handlers, then <i>curn</i> is
+      running in download-only mode, and there's no need to waste time parsing
+      the XML.)
+
+  <li><b>output</b>: Pass the parsed feed data to the configured output
+      handlers
+
+  <li><b>email</b>: Email the results, if email addresses were passed on the
+      command line.
+
+</ol>
+
+<p>Since <i>curn</i> permits you to specify the parsing and output handler
+classes in its configuration file, you can easily extend <i>curn's</i>
+capabilities by writing your output handler or integrating a different
+RSS parser.</p>
 
 <h3><a name="DifferentParser">Using a Different RSS Parser</a></h3>
 
@@ -1945,11 +1982,70 @@ to <i>curn</i>'s main logic.</p>
 instead of 
 <a href="http://informa.sourceforge.net/">Informa</a> or
 <i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
+(Perhaps it's faster than <i>curn</i>'s built-in parser, or perhaps it
+supports some new RSS syntax that <i>curn</i>'s parser does not support.)
 Integrating that parser with <i>curn</i> requires writing some adapter classes
 that implement some interfaces and extend some classes provided with the
 <i>curn</i> software. Those classes are:</p>
 
-<p></p>
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="90%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="8" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Type</th>
+	  <th class="thvis" align="left">Abstract Class or Interface?</th>
+	  <th class="thvis" align="left">Description</th>
+        </tr>
+
+	<tr valign="top">
+	  <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
+	  <td align="left">Interface</td>
+	  <td align="left">
+            Defines a simplified view of an RSS parser. Classes implementing
+	    this interface must provide a default public constructor and
+	    a <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
+          </td>
+        </tr>
+
+	<tr valign="top">
+	  <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
+	  <td align="left">Interface</td>
+	  <td align="left">
+            Defines a simplified view of an RSS channel (a.k.a., a parsed
+	    feed). <span class="code">RSSParser.parseRSSFeed()</span>
+	    must return an object that implements this
+	    <span class="code">RSSChannel</span> interface.
+          </td>
+        </tr>
+
+	<tr valign="top">
+	  <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
+	  <td align="left">Abstract class</td>
+	  <td align="left">
+            Defines a simplified view of an RSS item (a.k.a., one of the items
+	    within a parsed feed). The <span class="code">RSSChannel</span>
+	    class's <span class="code">getItems()</span> method returns a
+	    collection of objects that extend the
+	    <span class="code">RSSItem</span> class.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<p>Typically, integrating a new parser means writing a set of
+<a href="http://c2.com/cgi/wiki?AdapterPattern">adapter</a> classes that
+implement the above interfaces or extend the above classes, and map the
+necessary calls onto methods in the real underlying parser. For a sample
+integration, see the classes in the <i>curn</i> source code package
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
+<a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
 
 <h3><a name="NewOutputHandler">Writing Your Own Output Handler</a></h3>
 
@@ -1965,7 +2061,382 @@ that implement some interfaces and extend some classes provided with the
       <a href="#ConfigFile">configuration file</a>.
 </ul>
 
-<p><i>[more to come]</i></p>
+<p>To illustrate the concept, let's look at an output handler that simply
+writes each channel and its items as plain text. (As it turns out,
+this example is a stripped down version of the existing
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/TextOutputHandler.html" class="code">org.clapper.curn.TextOutputHandler</a> class. The real source code has more
+comments and documentation and also implements a common base class.)</p>
+
+<p>First, let's look at the top of the class and the required
+<span class="code">init()</span> method:</p>
+
+<blockquote><pre>
+import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnException;
+import org.clapper.curn.FeedInfo;
+
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
+
+import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.text.TextUtil;
+import org.clapper.util.text.Unicode;
+import org.clapper.util.misc.Logger;
+
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.config.NoSuchSectionException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+public class MyOutputHandler
+{
+    private static final String HORIZONTAL_RULE =
+                      "---------------------------------------"
+                    + "---------------------------------------";
+
+    private WordWrapWriter  out         = null;
+    private ConfigFile      config      = null;
+    private String          message     = null;
+    private Collection      channels    = new ArrayList();
+    private int             totalItems  = 0;
+    private File            outputFile  = null;
+    private boolean         saveOnly    = false;
+
+    private static Logger log = new Logger (SimpleSummaryOutputHandler.class);
+
+    public MyOutputHandler()
+    {
+    }
+
+    public void init (ConfigFile config)
+        throws ConfigurationException,
+               CurnException
+    {
+        String sectionName = config.getOutputHandlerSectionName (getClass());
+        String saveAs      = null;
+
+        this.config = config;
+
+        try
+        {
+            if (sectionName != null)
+            {
+                saveAs = config.getOptionalStringValue (sectionName,
+                                                        "SaveAs",
+                                                        null);
+                saveOnly = config.getOptionalBooleanValue (sectionName,
+                                                           "SaveOnly",
+                                                           false);
+                message = config.getOptionalStringValue (sectionName,
+                                                         "Message",
+                                                         null);
+                if (saveOnly && (saveAs == null))
+                {
+                    throw new ConfigurationException (sectionName,
+                                                      "SaveOnly can only be "
+                                                    + "specified if SaveAs "
+                                                    + "is defined.");
+                }
+            }
+        }
+
+        catch (NoSuchSectionException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+
+        if (saveAs != null)
+            outputFile = new File (saveAs);
+
+        else
+        {
+            try
+            {
+                outputFile = File.createTempFile ("curn", null);
+                outputFile.deleteOnExit();
+            }
+
+            catch (IOException ex)
+            {
+                throw new CurnException ("Can't create temporary file.");
+            }
+        }
+
+        try
+        {
+            log.debug ("Opening output file \"" + outputFile + "\"");
+            out = new WordWrapWriter (new FileWriter (outputFile));
+        }
+
+        catch (IOException ex)
+        {
+            throw new CurnException ("Can't open file \""
+                                   + outputFile.getPath()
+                                   + "\" for output",
+                                     ex);
+        }
+
+        channels.clear();
+        totalItems = 0;
+    }
+</pre></blockquote>
+
+<p><i>curn</i> calls the <span class="code">init()</span> method right
+after instantiating the output handler class. One of the
+<span class="code">init()</span> method's primary responsibilities is to
+handle any special handler-specific configuration variables. It does so by:</p>
+
+<ol>
+  <li>asking the <span class="code">ConfigFile</span> object for the section
+      name that's associated with the output handler class
+  <li>requesting the specific configuration variable values from that
+      section
+  <li>processing the results, if any
+</ol>
+
+<p>The <span class="code">init()</span> method also performs any other
+initialization required by the output handler class.</p>
+
+<p>Next, let's look at the output methods. There are two output-generating
+methods that are required by the <span class="code">OutputHandler</span>
+interface:</p>
+
+<ul>
+  <li><span class="code">displayChannel</span>: Displays the output for
+      a parsed channel. This method takes the parsed
+      <span class="code">RSSChannel</span> object and a special
+      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
+      object that contains the configuration information about the feed
+      (i.e., its URL, its title, etc.).
+  <li><span class="code">flush</span>: Flushes the output and closes the
+      output files
+</ul>
+
+<p>Here's the code for those methods:</p>
+
+<blockquote><pre>
+    public void displayChannel (RSSChannel  channel,
+                                FeedInfo    feedInfo)
+        throws CurnException
+    {
+        Collection items = channel.getItems();
+
+        indentLevel = setIndent (0);
+
+        if ((items.size() != 0) || (! config.beQuiet()))
+        {
+            // Emit a site (channel) header.
+
+            out.println();
+            out.println (HORIZONTAL_RULE);
+
+            out.println (convert (channel.getTitle()));
+            out.println (channel.getLink().toString());
+
+            if (config.showDates())
+            {
+                Date date = channel.getPublicationDate();
+                if (date != null)
+                    out.println (date.toString());
+            }
+
+            if (config.showRSSVersion())
+                out.println ("(Format: " + channel.getRSSFormat() + ")");
+        }
+
+        if (items.size() != 0)
+        {
+            // Now, process each item.
+
+            String s;
+
+            for (Iterator it = items.iterator(); it.hasNext(); )
+            {
+                RSSItem item = (RSSItem) it.next();
+
+                setIndent (++indentLevel);
+
+                out.println ();
+
+                s = item.getTitle();
+                out.println ((s == null) ? "(No Title)" : convert (s));
+
+                if (config.showAuthors())
+                {
+                    s = item.getAuthor();
+                    if (s != null)
+                        out.println ("By " + convert (s));
+                }
+
+                out.println (item.getLink().toString());
+
+                if (config.showDates())
+                {
+                    Date date = item.getPublicationDate();
+                    if (date != null)
+                        out.println (date.toString());
+                }
+
+                if (! feedInfo.summarizeOnly())
+                {
+                    s = item.getSummary();
+                    if (TextUtil.stringIsEmpty (s))
+                    {
+                        // Hack for feeds that have no summary but have
+                        // content. If the content is small enough, use it
+                        // as the summary.
+
+                        s = item.getFirstContentOfType (new String[]
+                                                        {
+                                                            "text/plain",
+                                                            "text/html"
+                                                        });
+                        if (! TextUtil.stringIsEmpty (s))
+                        {
+                            s = s.trim();
+                            if (s.length() > CONTENT_AS_SUMMARY_MAXSIZE)
+                                s = null;
+                        }
+                    }
+
+                    else
+                    {
+                        s = s.trim();
+                    }
+
+                    if (s != null)
+                    {
+                        out.println();
+                        setIndent (++indentLevel);
+                        out.println (convert (s));
+                        setIndent (--indentLevel);
+                    }
+                }
+
+                setIndent (--indentLevel);
+            }
+        }
+
+        else
+        {
+            if (! config.beQuiet())
+            {
+                setIndent (++indentLevel);
+                out.println ();
+                out.println ("No new items");
+                setIndent (--indentLevel);
+            }
+        }
+
+        setIndent (0);
+    }
+
+    private int setIndent (int level)
+    {
+        StringBuffer buf = new StringBuffer();
+
+        for (int i = 0; i < level; i++)
+            buf.append ("    ");
+
+        out.setPrefix (buf.toString());
+
+        return level;
+    }
+
+    public void flush() throws CurnException
+    {
+        out.println ();
+        out.println (HORIZONTAL_RULE);
+        out.println ("curn, version " + Version.VERSION);
+        out.println ("Generated " + new Date().toString());
+        out.flush();
+        out = null;
+    }
+</pre></blockquote>
+
+<p>This particular output handler's
+<span class="code">displayChannel()</span> method summarizes the channel
+and item data, writing it to the output file that the
+<span class="code">init()</span> method opened. The 
+<span class="code">flush()</span> method simply finishes the display.</p>
+
+<p>The remaining required methods are:</p>
+
+<ul>
+  <li><span class="code">getContentType()</span>: returns the MIME type
+      for the generated output
+  <li><span class="code">hasGeneratedOutput()</span>: returns
+      <span class="code">true</span> if the handler generated output that
+      the user should see, <span class="code">false</span> otherwise.
+      In this handler's case, <span class="code">hasGeneratedOutput()</span>
+      returns true unless the <span class="code">saveOnly</span> configuration
+      parameter has been set. (That parameter says that the generated output
+      should only be saved, not displayed.)
+  <li><span class="code">getGeneratedOutput()</span>: Returns an
+      <span class="code">InputStream</span> for reading the generated output
+      (if <span class="code">hasGeneratedOutput()</span> returns
+      <span class="code">true</span>) or null otherwise.
+</ul>
+
+<p>Here's the code:</p>
+
+<blockquote><pre>
+    public String getContentType()
+    {
+        return "text/plain";
+    }
+
+    public InputStream getGeneratedOutput()
+        throws CurnException
+    {
+        InputStream result = null;
+
+        if (hasGeneratedOutput())
+        {
+            try
+            {
+                result = new FileInputStream (outputFile);
+            }
+
+            catch (FileNotFoundException ex)
+            {
+                throw new CurnException ("Can't re-open file \""
+                                       + outputFile
+                                       + "\"",
+                                         ex);
+            }
+        }
+
+        return result;
+    }
+
+    public boolean hasGeneratedOutput()
+    {
+        return (! saveOnly) &&
+               (outputFile != null) &&
+               (outputFile.length() > 0);
+    }
+</pre></blockquote>
+    
+<p>With this model, it's possible to create output handlers that produce
+all kinds of output, including (for instance):</p>
+
+<ul>
+  <li>HTML
+  <li>XML (e.g., for converting all incoming RSS feeds to one type of RSS feed)
+  <li>data sent over a network connection
+  <li>etc.
+</ul>
 
 <!--------------------------------------------------------------------------->
 <h2><a name="AppendixA">Appendix A: Similar Products and Tools</a></h2>
@@ -2020,11 +2491,41 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
   </tr>
 
   <tr valign="top">
-    <td align="left">[2]</td>
+    <td align="left"><a name="Note2">[2]</a></td>
     <td align="left"><i>curn</i>'s configuration file is parsed by a subclass
       of the
       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
       class, so it implicitly supports all the features provided by that class.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Note3">[3]</a></td>
+    <td align="left">
+       It's also possible, though hairy, to escape the special meaning
+       of special characters via the backslash character. For instance,
+       you can escape the variable substitution lead-in character, '$', with a
+       backslash. e.g., "\$". This technique is not recommended, however,
+       because you have to double-escape any backslash characters that you want
+       to be preserved literally. For instance, to get "\t", you must specify
+       "\\\\t". To get a literal backslash, specify "\\\\". (Yes, that's
+       four backslashes, just to get a single unescaped one.) This
+       double-escaping is a regrettable side effect of how the
+       configuration file parses variable values: It makes two separate
+       passes over the value, one for metacharacter expansion and another
+       for variable expansion. Each of those passes honors and processes
+       backslash escapes. This problem would go away if the configuration
+       file parser parsed both metacharacter sequences and variable
+       substitutions itself, in one pass. It doesn't currently do that,
+       because I wanted to make use of the existing
+       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html" class="code">org.clapper.util.text.XStringBuffer</a>
+       class's 
+       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html#decodeMetacharacters()" class="code">decodeMetacharacters()</a>
+       method and the
+       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/UnixShellVariableSubstituter.html" class="code">org.clapper.util.text.UnixShellVariableSubstituter</a>
+       class. In general, you're better off just sticking with single quotes.
+       I may eventually fix this problem, but single quotes work now and will
+       continue to work regardless.
     </td>
   </tr>
 
