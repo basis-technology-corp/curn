@@ -35,5 +35,5 @@ $UNPKG_JAVA_CLASS_DIR/xmlc-all-runtime.jar:\
 $UNPKG_JAVA_CLASS_DIR/xml-apis.jar:\
 $UNPKG_JAVA_CLASS_DIR/jtidy.jar:\
 $UNPKG_JAVA_CLASS_DIR/curn.jar \
-org.clapper.curn.curn "${@}"
+org.clapper.curn.Tool "${@}"
 
