@@ -7,7 +7,7 @@ package org.clapper.curn;
 import org.clapper.util.misc.NestedException;
 
 /**
- * <tt>FeedException</tt> is the base class for all exceptions thrown
+ * <tt>CurnException</tt> is the base class for all exceptions thrown
  * by this tool.
  *
  * @version <tt>$Revision$</tt>
