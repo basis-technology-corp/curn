@@ -56,7 +56,7 @@ public class Item extends RSSItem
     private Collection  categories     = null;
     private String      author         = null;
     private Channel     channel        = null;
-    private String      uniqueID       = null;
+    private String      id             = null;
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -202,43 +202,13 @@ public class Item extends RSSItem
     }
 
     /**
-     * Get a unique string that can be used to store this item in the
-     * cache and retrieve it later. Possibilities for this value include
-     * (but are not limited to):
+     * Get the item's ID field, if any.
      *
-     * <ul>
-     *   <li> Unique ID. Some RSS formats support a unique per-item
-     *        ID. For instance,
-     *        {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
-     *        supports an optional <tt>&lt;id&gt;</tt> element nested within
-     *        its <tt>&lt;entry&gt;</tt> element. (The <tt>&lt;entry&gt;</tt>
-     *        element represent an item in Atom.)
-     *   <li> The URI for the item. This value can be less reliable than a
-     *        unique ID, because there's no guarantee that it won't change.
-     *        However, sometimes it's all that's available.
-     *   <li> A calculated hash string of some kind.
-     * </ul>
-     *
-     * @return the cache key
+     * @return the ID field, or null if not set
      */
-    public String getCacheKey()
+    public String getID()
     {
-        String result = this.uniqueID;
-
-        if (result == null)
-            result = Util.normalizeURL (getLink()).toExternalForm();
-
-        return result;
-    }
-
-    /**
-     * Get the item's unique ID, if any.
-     *
-     * @return the unique ID, or null if not set
-     */
-    public String getUniqueID()
-    {
-        return this.uniqueID;
+        return this.id;
     }
 
     /*----------------------------------------------------------------------*\
@@ -246,12 +216,12 @@ public class Item extends RSSItem
     \*----------------------------------------------------------------------*/
 
     /**
-     * Set the unique ID for this item.
+     * Set the ID field for this item.
      *
-     * @param id  the unique ID
+     * @param id  the ID
      */
     void setUniqueID (String id)
     {
-        this.uniqueID = id;
+        this.id = id;
     }
 }

@@ -197,6 +197,9 @@ public class Curn
                                                     cache,
                                                     configuration);
 
+        log.debug ("After downloading, total (parsed) channels = "
+                 + channels.size());
+
         if (channels.size() > 0)
             displayChannels (channels);
 

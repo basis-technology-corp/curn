@@ -26,6 +26,8 @@
 
 package org.clapper.curn.parser;
 
+import org.clapper.curn.Util;
+
 import org.clapper.util.text.TextUtil;
 
 import java.net.URL;
@@ -193,31 +195,35 @@ public abstract class RSSItem
     public abstract Date getPublicationDate();
 
     /**
-     * Get the item's unique ID, if any.
+     * Get the item's ID field, if any.
      *
-     * @return the unique ID, or null if not set
+     * @return the ID field, or null if not set
      */
-    public abstract String getUniqueID();
+    public abstract String getID();
 
     /**
-     * Get a unique string that can be used to store this item in the
-     * cache and retrieve it later. Possibilities for this value include
-     * (but are not limited to):
+     * Get the unique ID for this item. The unique ID might be just the
+     * URL (for feeds that don't support an ID field), or it might be a
+     * combination of the URL and the ID field. (Combining the two fields
+     * is necessary to handle broken sites that produce different IDs for
+     * the same feed item.) This unique ID is intended to be used as the
+     * cache identifier for the item.
      *
-     * <ul>
-     *   <li> Unique ID. Some RSS formats support a unique per-item
-     *        ID. For instance,
-     *        {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
-     *        supports an optional <tt>&lt;id&gt;</tt> element nested within
-     *        its <tt>&lt;entry&gt;</tt> element. (The <tt>&lt;entry&gt;</tt>
-     *        element represent an item in Atom.)
-     *   <li> The URI for the item. This value can be less reliable than a
-     *        unique ID, because there's no guarantee that it won't change.
-     *        However, sometimes it's all that's available.
-     *   <li> A calculated hash string of some kind.
-     * </ul>
-     *
-     * @return the cache key
+     * @return the unique ID string
      */
-    public abstract String getCacheKey();
+    public final String getUniqueID()
+    {
+        StringBuffer uniqueID = new StringBuffer();
+        String       idField  = getID();
+
+        if (idField != null)
+        {
+            uniqueID.append (idField);
+            uniqueID.append (" ");
+        }
+
+        uniqueID.append (Util.normalizeURL (getLink()).toExternalForm());
+
+        return uniqueID.toString();
+    }
 }

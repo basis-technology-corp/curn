@@ -581,10 +581,10 @@ class FeedDownloadThread extends Thread
 
             // Skip it if it's cached.
 
+            String cacheKey = item.getUniqueID();
             log.debug ("Item link: " + itemURL);
-            log.debug ("Item ID: " + item.getUniqueID());
-            log.debug ("Item key: " + item.getCacheKey());
-            if ((cache != null) && cache.contains (item.getCacheKey()))
+            log.debug ("Item ID: " + cacheKey);
+            if ((cache != null) && cache.contains (cacheKey))
             {
                 log.debug ("Skipping cached URL: " + itemURL.toString());
                 it.remove();
@@ -601,7 +601,7 @@ class FeedDownloadThread extends Thread
                 RSSItem item = (RSSItem) it.next();
 
                 log.debug ("Cacheing URL: " + item.getLink().toString());
-                cache.addToCache (item.getCacheKey(),
+                cache.addToCache (item.getUniqueID(),
                                   item.getLink(),
                                   feedInfo);
             }

@@ -221,7 +221,9 @@ public class FeedCache implements Serializable
 
         log.debug ("Adding cache entry for URL \""
                   + entry.getEntryURL().toExternalForm()
-                  + "\". Channel URL: \""
+                  + "\". ID=\""
+                  + uniqueID
+                  + "\", channel URL: \""
                   + entry.getChannelURL().toExternalForm()
                   + "\"");
         cacheMap.put (uniqueID, entry);

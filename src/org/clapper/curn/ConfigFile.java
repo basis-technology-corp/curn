@@ -848,7 +848,8 @@ public class ConfigFile extends Configuration
         throws ConfigurationException
     {
         FeedInfo  feedInfo = null;
-        String    feedURLString = getVariableValue (sectionName, VAR_FEED_URL);
+        String    feedURLString = getConfigurationValue (sectionName,
+                                                         VAR_FEED_URL);
         String    s;
         URL       url = null;
 
@@ -916,7 +917,7 @@ public class ConfigFile extends Configuration
     {
         // Get the required class name.
 
-        String className = getVariableValue (sectionName, VAR_CLASS);
+        String className = getConfigurationValue (sectionName, VAR_CLASS);
 
         // Only process the rest if it's not disabled.
 
@@ -939,8 +940,8 @@ public class ConfigFile extends Configuration
                     continue;
 
                 extraVariables.put (variableName,
-                                    getVariableValue (sectionName,
-                                                      variableName));
+                                    getConfigurationValue (sectionName,
+                                                           variableName));
             }
 
             outputHandlers.put (className, extraVariables);
