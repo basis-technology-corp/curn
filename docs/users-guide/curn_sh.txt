@@ -24,6 +24,7 @@ do
 done
 
 exec $JAVA_HOME/bin/java \
+-ea \
 -client \
 $vm_opts \
 -classpath \
