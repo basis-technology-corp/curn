@@ -190,7 +190,7 @@ public class Curn
 
         loadOutputHandlers (configuration, emailAddresses);
 
-        if (useCache)
+        if (useCache && (configuration.getCacheFile() != null))
         {
             cache = new FeedCache (configuration);
             cache.setCurrentTime (currentTime);
@@ -219,9 +219,9 @@ public class Curn
 
             else
             {
-                RSSChannel  channel  = processFeed (feedInfo,
-                                                    parser,
-                                                    configuration);
+                RSSChannel channel = processFeed (feedInfo,
+                                                  parser,
+                                                  configuration);
                 if (channel != null)
                     channels.add (new ChannelFeedInfo (feedInfo, channel));
             }
@@ -332,9 +332,11 @@ public class Curn
             if (feedHasChanged (conn, feedInfo))
             {
                 if (cache != null)
+                {
                     cache.addToCache (feedInfo.getCacheKey(),
                                       feedURL,
                                       feedInfo);
+                }
 
                 File saveAsFile = feedInfo.getSaveAsFile();
                 InputStream is = getURLInputStream (conn);

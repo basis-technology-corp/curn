@@ -97,7 +97,7 @@ public class ConfigFile extends Configuration
     private static final boolean DEF_SHOW_AUTHORS      = false;
     private static final boolean DEF_GET_GZIPPED_FEEDS = true;
     private static final String  DEF_SMTP_HOST         = "localhost";
-    private static final String  DEF_EMAIL_SUBJECT     = "RSS Feeds";
+    private static final String  DEF_EMAIL_SUBJECT     = "curn output";
     private static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
     private static final String  DEF_OUTPUT_CLASS =
@@ -676,13 +676,17 @@ public class ConfigFile extends Configuration
         {
             String s;
 
-            cacheFile = new File (getVariableValue (MAIN_SECTION,
-                                                    VAR_CACHE_FILE));
-            if (cacheFile.isDirectory())
+            s = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_FILE, null);
+            if (s != null)
             {
-                throw new ConfigurationException ("Specified cache file \""
-                                                + cacheFile.getPath()
-                                                + "\" is a directory.");
+                cacheFile = new File (s);
+
+                if (cacheFile.isDirectory())
+                {
+                    throw new ConfigurationException ("Specified cache file \""
+                                                    + cacheFile.getPath()
+                                                    + "\" is a directory.");
+                }
             }
 
             defaultCacheDays = getOptionalIntegerValue (MAIN_SECTION,
