@@ -5,6 +5,7 @@
 package org.clapper.curn;
 
 import java.net.URL;
+import java.io.File;
 
 /**
  * <p>Contains configuration data for one feed (or site).</p>
@@ -26,6 +27,7 @@ public class FeedInfo
     private String   titleOverride = null;
     private String   itemURLEditCmd= null;
     private URL      siteURL       = null;
+    private File     saveAsFile    = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -244,5 +246,33 @@ public class FeedInfo
     public void setEnabledFlag (boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Get the file to which the downloaded XML feed should be saved, if any.
+     *
+     * @return the file, or null if not specified. Note that this method
+     *         does not verify that the file can be opened, written to, or
+     *         otherwise accessed.
+     *
+     * @see #setSaveAsFile
+     */
+    public File getSaveAsFile()
+    {
+        return saveAsFile;
+    }
+
+    /**
+     * Set the file to which the downloaded XML feed should be saved, if any.
+     *
+     * @param f the file, or null to clear the field. Note that this method
+     *          does not verify that the file can be opened, written to, or
+     *          otherwise accessed.
+     *
+     * @see #getSaveAsFile
+     */
+    public void setSaveAsFile (File f)
+    {
+        this.saveAsFile = f;
     }
 }
