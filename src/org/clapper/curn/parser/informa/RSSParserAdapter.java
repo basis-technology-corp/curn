@@ -76,8 +76,8 @@ public class RSSParserAdapter implements RSSParser
             ChannelBuilder builder = new ChannelBuilder();
             ChannelIF      channel;
 
-            channel = de.nava.informa.parsers.RSSParser.parse (builder,
-                                                               stream);
+            channel = de.nava.informa.parsers.FeedParser.parse (builder,
+                                                                stream);
 
             return new RSSChannelAdapter (channel);
         }
