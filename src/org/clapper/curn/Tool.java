@@ -96,6 +96,9 @@ public class Tool extends CommandLineUtility
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh a", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h a", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd HH:mm:ss", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd HH:mm", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd H:mm", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd", false));
         DATE_FORMATS.add (new DateParseInfo ("yy/MM/dd", false));
         DATE_FORMATS.add (new DateParseInfo ("hh:mm:ss a", true));
