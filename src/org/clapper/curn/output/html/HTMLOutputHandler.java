@@ -17,8 +17,9 @@ import org.clapper.curn.parser.RSSItem;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
 
+import org.clapper.util.text.HTMLUtil;
+import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.Unicode;
-import org.clapper.util.text.TextUtils;
 
 import org.clapper.util.misc.Logger;
 
@@ -189,7 +190,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             {
                 // First row in channel has channel title and link.
 
-                String s = Util.htmlToText (channel.getTitle());
+                String s = HTMLUtil.textFromHTML (channel.getTitle());
                 doc.setTextChannelTitle (s);
 
                 date = null;
@@ -217,7 +218,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             if (! feedInfo.summarizeOnly())
             {
                 desc = item.getSummary();
-                if (TextUtils.stringIsEmpty (desc))
+                if (TextUtil.stringIsEmpty (desc))
                 {
                     // Hack for feeds that have no summary but have
                     // content. If the content is small enough, use it as
@@ -228,7 +229,7 @@ public class HTMLOutputHandler extends FileOutputHandler
                                                            "text/plain",
                                                            "text/html"
                                                        });
-                    if (! TextUtils.stringIsEmpty (desc))
+                    if (! TextUtil.stringIsEmpty (desc))
                     {
                         desc = desc.trim();
                         if (desc.length() > CONTENT_AS_SUMMARY_MAXSIZE)
@@ -239,7 +240,7 @@ public class HTMLOutputHandler extends FileOutputHandler
 
             else
             {
-                if (TextUtils.stringIsEmpty (desc))
+                if (TextUtil.stringIsEmpty (desc))
                     desc = null;
                 else
                     desc = desc.trim();
@@ -248,7 +249,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             if (desc == null)
                 desc = String.valueOf (Unicode.NBSP);
 
-            doc.setTextItemDescription (Util.htmlToText (desc));
+            doc.setTextItemDescription (HTMLUtil.textFromHTML (desc));
 
             itemAnchor.setHref (item.getLink().toExternalForm());
 

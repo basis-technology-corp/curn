@@ -8,7 +8,7 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
-import org.clapper.util.text.TextUtils;
+import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.Unicode;
 import org.clapper.util.misc.Logger;
 
@@ -190,7 +190,7 @@ public class TextOutputHandler extends FileOutputHandler
                 if (! feedInfo.summarizeOnly())
                 {
                     s = item.getSummary();
-                    if (TextUtils.stringIsEmpty (s))
+                    if (TextUtil.stringIsEmpty (s))
                     {
                         // Hack for feeds that have no summary but have
                         // content. If the content is small enough, use it
@@ -201,7 +201,7 @@ public class TextOutputHandler extends FileOutputHandler
                                                             "text/plain",
                                                             "text/html"
                                                         });
-                        if (! TextUtils.stringIsEmpty (s))
+                        if (! TextUtil.stringIsEmpty (s))
                         {
                             s = s.trim();
                             if (s.length() > CONTENT_AS_SUMMARY_MAXSIZE)

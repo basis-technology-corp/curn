@@ -8,6 +8,7 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.text.HTMLUtil;
 import org.clapper.util.text.Unicode;
 import org.clapper.util.misc.Logger;
 
@@ -281,7 +282,7 @@ public abstract class FileOutputHandler implements OutputHandler
         StringBuffer buf = new StringBuffer();
         char[]       ch;
 
-        s = Util.htmlToText (s);
+        s = HTMLUtil.textFromHTML (s);
         ch = s.toCharArray();
 
         buf.setLength (0);
