@@ -206,7 +206,10 @@ public class HTMLOutputHandler implements OutputHandler
 
             else
             {
-                desc = desc.trim();
+                if (TextUtils.stringIsEmpty (desc))
+                    desc = null;
+                else
+                    desc = desc.trim();
             }
 
             if (desc == null)
