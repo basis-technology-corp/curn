@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rdf:RDF
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns="http://purl.org/rss/1.0/"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/"
+ xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
+>
+
+<channel rdf:about="http://cnn.com//">
+<title>CNN Top Stories</title>
+<link>http://cnn.com//</link>
+<description>Cable News Network</description>
+<dc:language>en-us</dc:language>
+<items>
+ <rdf:Seq>
+  <rdf:li rdf:resource="http://cnn.com/2004/ALLPOLITICS/06/10/reagan.main/index.html" />
+  <rdf:li rdf:resource="http://cnn.com/2004/SHOWBIZ/Music/06/10/obit.charles/index.html" />
+  <rdf:li rdf:resource="http://cnn.com/2004/ALLPOLITICS/06/10/bush.torture/index.html" />
+  <rdf:li rdf:resource="http://cnn.com/2004/US/06/10/powell.terror.report.ap/index.html" />
+ </rdf:Seq>
+</items>
+</channel>
+
+<item rdf:about="http://cnn.com/2004/ALLPOLITICS/06/10/reagan.main/index.html">
+<title>Bush, thousands pay respects to Reagan</title>
+<link>http://cnn.com/2004/ALLPOLITICS/06/10/reagan.main/index.html</link>
+</item>
+
+<item rdf:about="http://cnn.com/2004/SHOWBIZ/Music/06/10/obit.charles/index.html">
+<title>Pop music legend Ray Charles dies at 73 </title>
+<link>http://cnn.com/2004/SHOWBIZ/Music/06/10/obit.charles/index.html</link>
+</item>
+
+<item rdf:about="http://cnn.com/2004/ALLPOLITICS/06/10/bush.torture/index.html">
+<title>Bush says he never approved illegal interrogations</title>
+<link>http://cnn.com/2004/ALLPOLITICS/06/10/bush.torture/index.html</link>
+</item>
+
+<item rdf:about="http://cnn.com/2004/US/06/10/powell.terror.report.ap/index.html">
+<title>State Department: Wrong in reporting terror down</title>
+<link>http://cnn.com/2004/US/06/10/powell.terror.report.ap/index.html</link>
+</item>
+
+</rdf:RDF>
