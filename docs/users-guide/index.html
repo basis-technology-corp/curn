@@ -195,6 +195,14 @@ produced output, and displays it on standard output.</p>
 <!-- ********************************************************************** -->
 <h2><a name="CommandLine"><i>curn</i> Command Line Syntax</a></h2>
 
+<p><i>curn</i> is invoked from the command line as follows:</p>
+
+<blockquote><pre>java org.clapper.curn.Tool</pre></blockquote>
+
+<p>(Here's a <a href="curn_sh.txt">sample shell script</a> that makes
+invoking <i>curn</i> a little easier. It's specific to FreeBSD systems,
+but can easily be customized.)</p>
+
 <p><i>curn</i>'s command line uses a Unix-like syntax. If you invoke
 <i>curn</i> without any parameters, you get the following usage display.
 
@@ -229,24 +237,28 @@ OPTIONS:
 -t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current 
                      time is &lt;time&gt;. &lt;time&gt; may be in one of the following 
                      formats.
-                         2004/07/22 09:37:29 AM
-                         2004/07/22 09:37:29
-                         2004/07/22 09:37 AM
-                         2004/07/22 09:37
-                         2004/07/22 9:37 AM
-                         2004/07/22 9:37
-                         2004/07/22 09 AM
-                         2004/07/22 9 AM
-                         2004/07/22
-                         04/07/22
-                         09:37:29 AM
-                         09:37:29
-                         09:37 AM
-                         09:37
-                         9:37 AM
-                         9:37
-                         09 AM
-                         9 AM
+                     2004/10/07 03:19:24 PM
+                     2004/10/07 03:19:24
+                     2004/10/07 03:19 PM
+                     2004/10/07 03:19
+                     2004/10/07 3:19 PM
+                     2004/10/07 3:19
+                     2004/10/07 03 PM
+                     2004/10/07 3 PM
+                     2004/10/07
+                     04/10/07
+                     03:19:24 PM
+                     03:19:24
+                     03:19 PM
+                     03:19
+                     3:19 PM
+                     3:19
+                     03 PM
+                     3 PM
+                     15:19:24 PM
+                     15:19:24
+                     15:19 PM
+                     15:19
 -u, --no-update      Read the cache, but don't update it.
 -v, --version        Show version information, then exit.
 -Z, --no-gzip        Don't ask remote HTTP servers to gzip content before 
