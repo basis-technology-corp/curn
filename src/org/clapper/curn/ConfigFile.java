@@ -109,7 +109,8 @@ public class ConfigFile extends Configuration
     private static final String VAR_SORT_BY           = "SortBy";
     private static final String VAR_MAX_THREADS       = "MaxThreads";
     private static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
-    private static final String VAR_FORCE_ENCODING    = "ForceCharacterEncoding";
+    private static final String VAR_FORCE_ENCODING    = "ForceEncoding";
+    private static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
     private static final String VAR_USER_AGENT        = "UserAgent";
 
     /**
@@ -887,10 +888,11 @@ public class ConfigFile extends Configuration
                 feedInfo.setSaveOnlyFlag (saveOnly);
             }
 
-            else if (varName.equals (VAR_FORCE_ENCODING))
+            else if (varName.equals (VAR_FORCE_ENCODING) ||
+                     varName.equals (VAR_FORCE_CHAR_ENCODING))
             {
                 feedInfo.setForcedCharacterEncoding
-                    (getConfigurationValue (sectionName, VAR_FORCE_ENCODING));
+                    (getConfigurationValue (sectionName, varName));
             }
 
             else if (varName.equals (VAR_SORT_BY))
