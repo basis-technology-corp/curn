@@ -4,7 +4,7 @@ $Id$
 PREREQUISITES:
 --------------
 
-Before building rssget, you'll need:
+Before building curn, you'll need:
 
 1. ant, version 1.5 or better, available at http://ant.apache.org/
 
@@ -21,7 +21,7 @@ BUILDING.
 ---------
 
 Type "ant dist" in the top-level directory. The code will be compiled to
-the "classes" subdirectory, and you'll get an "rssget.jar" in "dist/lib".
+the "classes" subdirectory, and you'll get an "curn.jar" in "dist/lib".
 
 
 OPTIONAL COMPONENTS:
@@ -29,40 +29,44 @@ OPTIONAL COMPONENTS:
 
 A. RSS Parsers
 
-Rssget comes with a built-in minimal RSS parser. However, it has support
+curn comes with a built-in minimal RSS parser. However, it has support
 for integrating other RSS parsers. The third-party Informa parser has also
-been integrated into rssget, via some adapter classes in the
+been integrated into curn, via some adapter classes in the
 "parsers/informa" directory. However, those adapter classes will not build
 unless you have installed the Informa parser. If you've installed Informa
-and made the appropriate jar files available in the CLASSPATH, the rssget
+and made the appropriate jar files available in the CLASSPATH, the curn
 Ant "build.xml" file will automatically detect Informa's presence and will
 build the adapter classes. To install Informa:
 
 - Download the Informa library, available at http://informa.sourceforge.net/
-  (Rssget has been tested with version 0.5.0.)
+  (curn has been tested with version 0.5.5.)
 
 - From the Informa distribution, locate informa.jar, jdom.jar and
   commons-logging.jar, and place them in your CLASSPATH.
-  (commons-logging.jar is the Apache Jakarta Commons Logging module. If
-  you already have a reasonably up-to-date version of Jakarta Commons Logging
-  in your CLASSPATH, you can skip the one shipped with Informa.)
+
+  + commons-logging.jar is the Apache Jakarta Commons Logging module. If
+    you already have a reasonably up-to-date version of Jakarta Commons
+    Logging in your CLASSPATH, you can skip the one shipped with Informa.
+  + Similarly, jdom.jar is the jdom.org Java Document Object Module
+    library. If you already have a reasonably up-to-date version in your
+    CLASSPATH, you can skip the one shipped with Informa.
 
 To use the Informa parser, instead of the built-in RSS parser, you must
-specify the Informa adapter class in your rssget configuration file.
-See the sample configuration file, sample.cfg, for a sample entry to
-enable use of the Informa parser.
+specify the Informa adapter class in your curn configuration file. See the
+sample configuration file, sample.cfg, for a sample entry to enable use of
+the Informa parser.
 
 
 B. Output Handlers
 
-By default, rssget builds with a simple text output handler. That output
-handler writes the parsed RSS information in plain text. Rssget also ships
+By default, curn builds with a simple text output handler. That output
+handler writes the parsed RSS information in plain text. curn also ships
 with an output handler that writes HTML output. However, the HTML output
 handler classes will not build unless you have installed the third-party
 XMLC component. If you've installed XMLC and made the appropriate jar files
-available in the CLASSPATH, the rssget Ant "build.xml" file will
-automatically detect XMLC's presence and will build the HTML output handler.
-To install XMLC: 
+available in the CLASSPATH, the curn Ant "build.xml" file will
+automatically detect XMLC's presence and will build the HTML output
+handler. To install XMLC:
 
 - Download and install XMLC, available at http://xmlc.objectweb.org/
 
@@ -77,7 +81,7 @@ enable use of the HTML output handler.
 
 C. Email support
 
-Rssget can email its output, rather than simply printing it on standard
+curn can email its output, rather than simply printing it on standard
 output. This is especially useful when multiple output handlers are used.
 In that case, the output of each handler is attached to the email message
 as a "multipart/alternative" attachment.
