@@ -1257,7 +1257,7 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
         <tr valign="top" class="evenrow">
-	  <td align="left" class="code">SaveAs</td>
+	  <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
           <td align="left">File name or path name</td>
 	  <td align="left">If set, this parameter specifies the path to
 	    a file where <i>curn</i> should save the raw XML contents of
@@ -1298,10 +1298,14 @@ new items into internal data structures. When it has finished processing
 the XML, it hands the parsed data structures to one or more output
 handlers. Output handlers are so called because they generally produce output
 that's to be displayed or emailed to the user&#8212;generally, but not
-always. An output handler may choose to do nothing; the
-<span class="code">NullOutputHandler</span> class does just that. (See
-below.) Or, the class may choose to convert the internal data structures to
-readable output, which it publishes somewhere (e.g., via a network
+always. An output handler may choose to save its output to a file, but not
+send the output back to <i>curn</i>; the
+<a href="#HTMLOutputHandler" class="code">HTMLOutputHandler</a> and
+<a href="#TextOutputHandler" class="code">TextOutputHandler</a>
+classes do exactly that if their <span class="code">SaveAs</span> and
+<span class="code">SaveOnly</span> configuration parameters are both specified.
+Or, the output handler may choose to convert the internal data structures to
+output that it publishes somewhere (e.g., via a network
 connection to an HTTP server).</p>
 
 <p>Each output handler is specified in its own section in the configuration
@@ -1318,6 +1322,18 @@ section names are all valid for output handler sections.</p>
   <li><span class="code">OutputHandler1</span>
   <li><span class="code">OutputHandler_asdf</span>
 </ul>
+
+<p> If no <span class="code">OutputHandler</span> sections are present in
+the configuration file, <i>curn</i> skips the RSS XML parsing phase.
+(There's not reason to parse the XML if there are no output handlers to
+process the parsed feed data.) If there are no output handlers, <i>curn</i>
+may or may not download individual feeds. If a given feed has no
+<a href="#Feed_SaveAs" class="code">SaveAs</a>
+setting, and there are no output handlers, then <i>curn</i> skips the feed
+entirely. After all, there's no sense wasting time downloading the feed, if
+the feed isn't being parsed or saved. However, if the feed does have a
+<span class="code">SaveAs</span> setting, <i>curn</i> will download
+and save the XML (assuming it has changed) even if XML parsing is disabled.</p>
 
 <p>All output handler sections take two variables. In addition, individual
 output handlers can require configuration items of their own. The two
@@ -1378,7 +1394,7 @@ Disabled: false</pre></blockquote>
 
 <h4><a name="CfgPredefinedOutputHandlers">Predefined Output Handlers</a></h4>
 
-<p><i>curn</i> comes bundled with 4 built-in output handlers.</p>
+<p><i>curn</i> comes bundled with the following built-in output handlers.</p>
 
 <table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center" width="90%">
@@ -1397,7 +1413,7 @@ Disabled: false</pre></blockquote>
 
         <tr valign="top" class="oddrow">
 	  <td align="left" class="code">
-	  org.clapper.curn.htmloutput.HTMLOutputHandler
+	  <a name="HTMLOutputHandler">org.clapper.curn.htmloutput.HTMLOutputHandler</a>
           </td>
 	  <td align="left">
 	  <p>Produces an HTML description of the new RSS items. You can find a
@@ -1445,7 +1461,7 @@ Disabled: false</pre></blockquote>
 
         <tr valign="top" class="evenrow">
 	  <td align="left" class="code">
-	  org.clapper.curn.TextOutputHandler
+	  <a name="TextOutputHandler">org.clapper.curn.TextOutputHandler</a>
           </td>
 	  <td align="left">
 	  <p>Produces a plain text description of the new RSS items. You can
@@ -1553,19 +1569,6 @@ Disabled: false</pre></blockquote>
 	  </td>
 	</tr>
 
-        <tr valign="top" class="evenrow">
-	  <td align="left" class="code">org.clapper.curn.NullOutputHandler
-          </td>
-	  <td align="left">Produces no output at all. This handler is useful
-	  when you simply want <i>curn</i> to update the cache, or when
-	  <i>curn</i> is being used to download new feeds but not convert
-	  them to readable text. (See
-          <a href="#CfgOutputHanderExample4">Example 4</a>, below, and
-          <a href="#Bandwidth">Being Bandwidth Friendly</a>.)
-	  </td>
-	  <td align="left">None</td>
-	</tr>
-
       </table>
     </td>
   </tr>
@@ -1627,9 +1630,6 @@ feedDir: ${system:user.home}/.curn/feeds
 
 [curn]
 ...
-
-[OutputHandlerNull]
-Class: org.clapper.curn.NullOutputHandler
 
 [FeedWired]
 URL: http://www.wired.com/news_drop/netcenter/netcenter.rdf

@@ -184,7 +184,7 @@ public class Curn
     {
         Iterator            it;
         String              parserClassName;
-        RSSParser           parser;
+        RSSParser           parser = null;
         Collection          channels;
         OutputStreamWriter  out;
 
@@ -197,11 +197,19 @@ public class Curn
             cache.loadCache();
         }
 
-        // Parse the RSS feeds
+        if (outputHandlers.size() == 0)
+        {
+            log.debug ("No output handlers. Skipping XML parse phase.");
+        }
 
-        parserClassName = configuration.getRSSParserClassName();
-        log.info ("Getting parser \"" + parserClassName + "\"");
-        parser = RSSParserFactory.getRSSParser (parserClassName);
+        else
+        {
+            // There are output handlers. We'll need a parser.
+
+            parserClassName = configuration.getRSSParserClassName();
+            log.info ("Getting parser \"" + parserClassName + "\"");
+            parser = RSSParserFactory.getRSSParser (parserClassName);
+        }
 
         channels = new ArrayList();
 
@@ -219,15 +227,16 @@ public class Curn
 
             else
             {
-                RSSChannel channel = processFeed (feedInfo,
-                                                  parser,
-                                                  configuration);
+                RSSChannel channel = checkFeed (feedInfo,
+                                                parser,
+                                                configuration);
                 if (channel != null)
                     channels.add (new ChannelFeedInfo (feedInfo, channel));
             }
         }
 
-        displayChannels (channels);
+        if (channels.size() > 0)
+            displayChannels (channels);
 
         if ((cache != null) && configuration.mustUpdateCache())
             cache.saveCache();
@@ -246,66 +255,121 @@ public class Curn
         OutputHandler  handler;
         Iterator       it;
 
-        for (it = configuration.getOutputHandlerClassNames().iterator();
-             it.hasNext(); )
+        if (configuration.totalOutputHandlers() > 0)
         {
-            className = (String) it.next();
-            handler   = OutputHandlerFactory.getOutputHandler (className);
-            outputHandlers.add (handler);
-        }
+            for (it = configuration.getOutputHandlerClassNames().iterator();
+                 it.hasNext(); )
+            {
+                className = (String) it.next();
+                handler   = OutputHandlerFactory.getOutputHandler (className);
+                outputHandlers.add (handler);
+            }
 
-        // If there were no output handlers, then just use a default
-        // TextOutputHandler.
+            // If there are email addresses, then attempt to load the email
+            // handler, and wrap the other output handlers inside it.
 
-        if (outputHandlers.size() == 0)
-        {
-            log.info ("No configured output handlers. Installing default.");
-            handler = OutputHandlerFactory.getOutputHandler
-                                                   (TextOutputHandler.class);
-            outputHandlers.add (handler);
-        }
+            if ((emailAddresses != null) && (emailAddresses.size() > 0))
+            {
+                EmailOutputHandler emailHandler;
 
-        // If there are email addresses, then attempt to load that handler,
-        // and wrap the other output handlers inside it.
+                emailHandler = (EmailOutputHandler)
+                                      OutputHandlerFactory.getOutputHandler
+                                                   (EMAIL_HANDLER_CLASS);
 
-        if ((emailAddresses != null) && (emailAddresses.size() > 0))
-        {
-            EmailOutputHandler emailHandler;
+                // Place all the other handlers inside the EmailOutputHandler
 
-            emailHandler = (EmailOutputHandler)
-                             OutputHandlerFactory.getOutputHandler
-                                          (EMAIL_HANDLER_CLASS);
+                for (it = outputHandlers.iterator(); it.hasNext(); )
+                    emailHandler.addOutputHandler ((OutputHandler) it.next());
 
-            // Place all the other handlers inside the EmailOutputHandler
+                // Add the email addresses to the handler
 
-            for (it = outputHandlers.iterator(); it.hasNext(); )
-                emailHandler.addOutputHandler ((OutputHandler) it.next());
+                for (it = emailAddresses.iterator(); it.hasNext(); )
+                    emailHandler.addRecipient ((String) it.next());
 
-            // Add the email addresses to the handler
+                // Clear the existing set of output handlers and replace it
+                // with the email handler.
 
-            for (it = emailAddresses.iterator(); it.hasNext(); )
-                emailHandler.addRecipient ((String) it.next());
-
-            // Clear the existing set of output handlers and replace it
-            // with the email handler.
-
-            outputHandlers.clear();
-            outputHandlers.add (emailHandler);
+                outputHandlers.clear();
+                outputHandlers.add (emailHandler);
+            }
         }
     }
 
+    /**
+     * <p>Check and possibly process a feed. If XML parsing is disabled and
+     * the feed has no "save as" setting, this method just returns (since
+     * it's pointless to do anything if both of those conditions aren't
+     * met). Otherwise, this method will open a URL connection to the feed,
+     * determine whether the feed has changed, download it if it has, parse
+     * it (if required), and save it (if the feed has a "save as"
+     * setting).</p>
+     *
+     * <p>If there are no output handlers, then there's no need to waste
+     * time parsing the feeds' XML; the caller is responsible for detecting
+     * that condition and passing a null <tt>parser</tt> parameter into
+     * this method in that case.</p>
+     *
+     * @param feedInfo      the info about the feed
+     * @param parser        the RSS parser to use, or null if parsing is to
+     *                      be skipped
+     * @param configuration the parsed configuration data
+     *
+     * @return the <tt>RSSChannel</tt> representing the parsed feed, if
+     *         parsing was enabled; otherwise, null.
+     *
+     * @throws RSSParserException parser error
+     */
+    private RSSChannel checkFeed (FeedInfo   feedInfo,
+                                  RSSParser  parser,
+                                  ConfigFile configuration)
+        throws RSSParserException
+    {
+        URL         feedURL = feedInfo.getURL();
+        RSSChannel  channel = null;
+
+        if ((parser == null) && (feedInfo.getSaveAsFile() == null))
+        {
+            log.debug ("Feed "
+                     + feedURL.toString()
+                     + ": RSS parser is null and there's no save file. "
+                     + "There's no sense processing this feed.");
+        }
+
+        else
+        {
+            channel = processFeed (feedInfo, parser, configuration);
+        }
+
+        return channel;
+    }
+
+    /**
+     * Actually processes a feed. This method is called by checkFeed()
+     * after checkFeed() determines that there's a reason to try to download
+     * the feed (i.e., the feed has a "save as" setting, and/or parsing is
+     * desired.
+     * @param feedInfo      the info about the feed
+     * @param parser        the RSS parser to use, or null if parsing is to
+     *                      be skipped
+     * @param configuration the parsed configuration data
+     *
+     * @return the <tt>RSSChannel</tt> representing the parsed feed, if
+     *         parsing was enabled; otherwise, null.
+     *
+     * @throws RSSParserException parser error
+     */
     private RSSChannel processFeed (FeedInfo   feedInfo,
                                     RSSParser  parser,
                                     ConfigFile configuration)
         throws RSSParserException
     {
         URL         feedURL = feedInfo.getURL();
+        String      feedURLString = feedURL.toString();
         RSSChannel  channel = null;
 
         try
         {
-            String feedURLString = feedURL.toString();
-            log.info ("Parsing feed at " + feedURLString);
+            log.info ("Checking for new data from RSS feed " + feedURLString);
 
             // Open the connection.
 
@@ -329,8 +393,16 @@ public class Curn
 
             // If the feed has actually changed, process it.
 
-            if (feedHasChanged (conn, feedInfo))
+            if (! feedHasChanged (conn, feedInfo))
             {
+                log.info ("Feed has not changed. Skipping it.");
+            }
+
+            else
+            {
+                log.debug ("Feed may have changed. "
+                         + "Downloading and processing it.");
+
                 if (cache != null)
                 {
                     cache.addToCache (feedInfo.getCacheKey(),
@@ -338,7 +410,6 @@ public class Curn
                                       feedInfo);
                 }
 
-                File saveAsFile = feedInfo.getSaveAsFile();
                 InputStream is = getURLInputStream (conn);
 
                 // Download the feed to a file. We'll parse the file.
@@ -358,6 +429,8 @@ public class Curn
 
                 else
                 {
+                    File saveAsFile = feedInfo.getSaveAsFile();
+
                     if (saveAsFile != null)
                     {
                         log.debug ("Copying temporary file \""
@@ -368,13 +441,22 @@ public class Curn
                         FileUtils.copyFile (temp, saveAsFile);
                     }
 
-                    is = new FileInputStream (temp);
-                    channel = parser.parseRSSFeed (is);
-                    is.close();
+                    if (parser == null)
+                        log.debug ("No RSS parser. Skipping XML parse phase.");
+                    else
+                    {
+                        log.debug ("Using RSS parser "
+                                 + parser.getClass().getName()
+                                 + " to parse the feed.");
 
-                    processChannelItems (channel, feedInfo);
-                    if (channel.getItems().size() == 0)
-                        channel = null;
+                        is = new FileInputStream (temp);
+                        channel = parser.parseRSSFeed (is);
+                        is.close();
+
+                        processChannelItems (channel, feedInfo);
+                        if (channel.getItems().size() == 0)
+                            channel = null;
+                    }
                 }
 
                 temp.delete();
