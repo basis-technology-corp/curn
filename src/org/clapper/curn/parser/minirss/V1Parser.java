@@ -287,28 +287,33 @@ public class V1Parser extends ParserCommon
         Channel theChannel = (Channel) stackEntry.getContainer();
         String  chars      = stackEntry.getCharacters().trim();
 
-        if (chars.length() == 0)
+        if (chars.trim().length() == 0)
             chars = null;
 
-        try
+        if (elementName.equals ("title"))
+            theChannel.setTitle (chars);
+
+        else if (elementName.equals ("link"))
         {
-            if (elementName.equals ("title"))
-                theChannel.setTitle (chars);
+            if (chars != null)
+            {
+                try
+                {
+                    theChannel.setLink (new URL (chars));
+                }
 
-            else if (elementName.equals ("link"))
-                theChannel.setLink (new URL (chars));
-
-            else if (elementName.equals ("description"))
-                theChannel.setDescription (chars);
-
-            else if (elementName.equals ("dc:date"))
-                theChannel.setPublicationDate (parseW3CDate (chars));
+                catch (MalformedURLException ex)
+                {
+                    throw new SAXException (ex.toString());
+                }
+            }
         }
 
-        catch (MalformedURLException ex)
-        {
-            throw new SAXException (ex.toString());
-        }
+        else if (elementName.equals ("description"))
+            theChannel.setDescription (chars);
+
+        else if (elementName.equals ("dc:date"))
+            theChannel.setPublicationDate (parseW3CDate (chars));
     }
 
     /**
@@ -329,14 +334,17 @@ public class V1Parser extends ParserCommon
         Item    item  = (Item) stackEntry.getContainer();
         String  chars   = stackEntry.getCharacters().trim();
 
-        if (chars.length() == 0)
+        if (chars.trim().length() == 0)
             chars = null;
 
         if (elementName.equals ("title"))
             item.setTitle (chars);
 
         else if (elementName.equals ("link"))
-            setItemLink (item, chars);
+        {
+            if (chars != null)
+                setItemLink (item, chars);
+        }
 
         else if (elementName.equals ("description"))
             item.setSummary (chars);

@@ -236,34 +236,39 @@ public class V2Parser extends ParserCommon
         Channel theChannel = (Channel) stackEntry.getContainer();
         String  chars      = stackEntry.getCharacters().trim();
 
-        if (chars.length() == 0)
+        if (chars.trim().length() == 0)
             chars = null;
 
-        try
+        if (elementName.equals ("title"))
+            theChannel.setTitle (chars);
+
+        else if (elementName.equals ("link"))
         {
-            if (elementName.equals ("title"))
-                theChannel.setTitle (chars);
+            if (chars != null)
+            {
+                try
+                {
+                    theChannel.setLink (new URL (chars));
+                }
 
-            else if (elementName.equals ("link"))
-                theChannel.setLink (new URL (chars));
-
-            else if (elementName.equals ("description"))
-                theChannel.setDescription (chars);
-
-            else if (elementName.equals ("pubDate"))
-                theChannel.setPublicationDate (parseRFC822Date (chars));
-
-            else if (elementName.equals ("copyright"))
-                theChannel.setCopyright (chars);
-
-            else if (elementName.equals ("author"))
-                theChannel.setAuthor (chars);
+                catch (MalformedURLException ex)
+                {
+                    throw new SAXException (ex.toString());
+                }
+            }
         }
 
-        catch (MalformedURLException ex)
-        {
-            throw new SAXException (ex.toString());
-        }
+        else if (elementName.equals ("description"))
+            theChannel.setDescription (chars);
+
+        else if (elementName.equals ("pubDate"))
+            theChannel.setPublicationDate (parseRFC822Date (chars));
+
+        else if (elementName.equals ("copyright"))
+            theChannel.setCopyright (chars);
+
+        else if (elementName.equals ("author"))
+            theChannel.setAuthor (chars);
     }
 
     /**
@@ -286,7 +291,6 @@ public class V2Parser extends ParserCommon
         elementStack.push (new ElementStackEntry (elementName, item));
     }
 
-
     /**
      * Handles the end of an item element. This includes the item
      * element itself and any nested item elements. This method should
@@ -305,36 +309,41 @@ public class V2Parser extends ParserCommon
         Item    item  = (Item) stackEntry.getContainer();
         String  chars   = stackEntry.getCharacters().trim();
 
-        if (chars.length() == 0)
+        if (chars.trim().length() == 0)
             chars = null;
 
-        try
+        if (elementName.equals ("title"))
+            item.setTitle (chars);
+
+        else if (elementName.equals ("link"))
         {
-            if (elementName.equals ("title"))
-                item.setTitle (chars);
+            if (chars != null)
+            {
+                try
+                {
+                    item.setLink (new URL (chars));
+                }
 
-            else if (elementName.equals ("link"))
-                item.setLink (new URL (chars));
-
-            else if (elementName.equals ("description"))
-                item.setSummary (chars);
-
-            else if (elementName.equals ("pubDate"))
-                item.setPublicationDate (parseRFC822Date (chars));
-
-            else if (elementName.equals ("category"))
-                item.addCategory (chars);
-
-            else if (elementName.equals ("author"))
-                item.setAuthor (chars);
-
-            else if (elementName.equals ("guid"))
-                item.setUniqueID (chars);
+                catch (MalformedURLException ex)
+                {
+                    throw new SAXException (ex.toString());
+                }
+            }
         }
 
-        catch (MalformedURLException ex)
-        {
-            throw new SAXException (ex.toString());
-        }
+        else if (elementName.equals ("description"))
+            item.setSummary (chars);
+
+        else if (elementName.equals ("pubDate"))
+            item.setPublicationDate (parseRFC822Date (chars));
+
+        else if (elementName.equals ("category"))
+            item.addCategory (chars);
+
+        else if (elementName.equals ("author"))
+            item.setAuthor (chars);
+
+        else if (elementName.equals ("guid"))
+            item.setUniqueID (chars);
     }
 }

@@ -277,16 +277,27 @@ public class AtomParser extends ParserCommon
 
         else if (elementName.equals ("link"))
         {
-            try
+            String s = attributes.getValue ("href");
+            if (s != null)
             {
-                theChannel.setLink (new URL (attributes.getValue ("href")));
-                elementStack.push (new ElementStackEntry (elementName,
-                                                          theChannel));
+                s = s.trim();
+                if (s.length() == 0)
+                    s = null;
             }
 
-            catch (MalformedURLException ex)
+            if (s != null)
             {
-                throw new SAXException (ex.toString());
+                try
+                {
+                    theChannel.setLink (new URL (s));
+                    elementStack.push (new ElementStackEntry (elementName,
+                                                              theChannel));
+                }
+
+                catch (MalformedURLException ex)
+                {
+                    throw new SAXException (ex.toString());
+                }
             }
         }
 
@@ -399,16 +410,27 @@ public class AtomParser extends ParserCommon
 
         if (elementName.equals ("link"))
         {
-            try
+            String s = attributes.getValue ("href");
+            if (s != null)
             {
-                item.setLink (new URL (attributes.getValue ("href")));
-                elementStack.push (new ElementStackEntry (elementName,
-                                                          channel));
+                s = s.trim();
+                if (s.length() == 0)
+                    s = null;
             }
 
-            catch (MalformedURLException ex)
+            if (s != null)
             {
-                throw new SAXException (ex.toString());
+                try
+                {
+                    item.setLink (new URL (attributes.getValue ("href")));
+                    elementStack.push (new ElementStackEntry (elementName,
+                                                              channel));
+                }
+
+                catch (MalformedURLException ex)
+                {
+                    throw new SAXException (ex.toString());
+                }
             }
         }
 
