@@ -812,6 +812,22 @@ are:</p>
               </tr>
 	    </table>
 	    </blockquote>
+
+	    <p>Note: <tt>SimpleDateFormat</tt> requires that literal strings
+	    (i.e., strings that should not be processed as part of the format)
+	    be enclosed in quotes. For instance:</p>
+
+	    <blockquote><pre>yyyy.MM.dd 'at' hh:mm:ss z</pre></blockquote>
+
+	    <p>Because single quotes are special characters in configuration
+	    files, it's important to escape them if you use them inside date
+	    formats. So, to include the above string in a configuration
+	    file's <tt>${program:now}</tt> reference, use the following:</p>
+
+	    <blockquote><pre>${program:now/yyyy.MM.dd \'at\' hh:mm:ss z}</pre></blockquote>
+
+	    <p>See <a href="#CfgRawValues">Suppressing Metacharacter Expansion
+	    and Variable Substitution</a>, below, for more details.</p>
 	  </td>
         </tr>
       </table>
@@ -889,6 +905,8 @@ reference, you could use:</p>
 
 <blockquote><pre>abc: '${foo}'</pre></blockquote>
 
+<p>To include a literal single quote, you must escape it with a backslash.</p>
+ 
 <h4><a name="CfgIncludes">Includes</a></h4>
 
 <p>A special <i>include</i> directive permits inline inclusion of another
