@@ -21,9 +21,10 @@ import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -50,9 +51,9 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      */
     private class HandlerTableEntry
     {
-	OutputHandler handler;
-	File          tempFile;
-        FileWriter    fileOut;
+	OutputHandler     handler;
+	File              tempFile;
+        FileOutputStream  fileOut;
 
 	HandlerTableEntry (OutputHandler handler)
 	    throws FeedException
@@ -64,7 +65,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                 tempFile = File.createTempFile ("curn", null);
                 tempFile.deleteOnExit();
 
-                fileOut = new FileWriter (tempFile);
+                fileOut = new FileOutputStream (tempFile);
             }
 
             catch (IOException ex)
@@ -76,7 +77,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
         void init (ConfigFile config)
             throws FeedException
         {
-            handler.init (new PrintWriter (fileOut), config);
+            handler.init (new OutputStreamWriter (fileOut), config);
         }
     }
 
@@ -106,14 +107,13 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>PrintWriter</tt> where the handler should send
-     *                output. Not used here.
+     * @param writer  the <tt>OutputStreamWriter</tt> where the handler
+     *                should send output. Not used here.
      * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException initialization error
      */
-    public void init (PrintWriter         writer,
-                      ConfigFile config)
+    public void init (OutputStreamWriter writer, ConfigFile config)
         throws FeedException
     {
         this.config = config;

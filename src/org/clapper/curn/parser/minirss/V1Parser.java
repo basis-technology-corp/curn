@@ -265,7 +265,7 @@ public class V1Parser extends ParserCommon
         throws SAXException
     {
         Channel channel = (Channel) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharBuffer().toString().trim();
+        String  chars   = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
@@ -307,7 +307,7 @@ public class V1Parser extends ParserCommon
         throws SAXException
     {
         Item    item  = (Item) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharBuffer().toString().trim();
+        String  chars   = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;

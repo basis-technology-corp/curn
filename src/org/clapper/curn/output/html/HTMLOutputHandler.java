@@ -17,6 +17,7 @@ import org.clapper.util.text.Unicode;
 import org.clapper.util.text.TextUtils;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import java.util.Date;
@@ -89,19 +90,18 @@ public class HTMLOutputHandler implements OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>PrintWriter</tt> where the handler should send
-     *                output
+     * @param writer  the <tt>OutputStreamWWriter</tt> where the handler
+     *                should send output
      * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException  initialization error
      */
-    public void init (PrintWriter         writer,
-                      ConfigFile config)
+    public void init (OutputStreamWriter writer, ConfigFile config)
         throws FeedException
     {
         this.doc                 = new RSSOutputHTML();
         this.config              = config;
-        this.out                 = writer;
+        this.out                 = new PrintWriter (writer);
         this.oddChannelClass     = doc.getElementChannelTD().getClassName();
         this.oddItemRowClass     = doc.getElementItemTitleTD().getClassName();
         this.channelRow          = doc.getElementChannelRow();

@@ -294,7 +294,7 @@ public class AtomParser extends ParserCommon
         throws SAXException
     {
         Channel channel = (Channel) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharBuffer().toString().trim();
+        String  chars   = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
@@ -351,7 +351,7 @@ public class AtomParser extends ParserCommon
         throws SAXException
     {
         Author  author  = (Author) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharBuffer().toString().trim();
+        String  chars   = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
@@ -427,7 +427,7 @@ public class AtomParser extends ParserCommon
         throws SAXException
     {
         Item    item  = (Item) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharBuffer().toString().trim();
+        String  chars   = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
@@ -492,7 +492,7 @@ public class AtomParser extends ParserCommon
         throws SAXException
     {
         ItemContent content   = (ItemContent) stackEntry.getContainer();
-        String      chars     = stackEntry.getCharBuffer().toString().trim();
+        String      chars     = stackEntry.getCharacters().trim();
         boolean     isDefault = false;
 
         content.parentItem.setContent (chars, content.mimeType);
