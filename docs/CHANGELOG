@@ -1,6 +1,21 @@
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.4.1:
+
+- Added ForceCharacterEncoding (per-feed) configuration parameter. If
+  specified, curn will use the supplied character encoding when parsing
+  the feed's XML, instead of the server-supplied or document-supplied
+  encoding. This is useful in the following cases:
+
+  * the remote HTTP server doesn't supply an HTTP Content-Encoding header, 
+    and the local (Java) default encoding doesn't match the document's 
+    encoding
+  * the remote HTTP server supplies the wrong encoding
+
+  See the Users Guide or the sample configuration file for more information.
+
+
 Version 1.4:
 
 - All output handlers have been moved under "org.clapper.output". It

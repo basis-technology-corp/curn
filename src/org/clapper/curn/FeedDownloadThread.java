@@ -378,7 +378,7 @@ class FeedDownloadThread extends Thread
 
                 // Download the feed to a file. We'll parse the file.
 
-                DownloadedTempFile tempFile = downloadFeed (conn, feedURL);
+                DownloadedTempFile tempFile = downloadFeed (conn, feedInfo);
 
                 if (tempFile.bytesDownloaded == 0)
                 {
@@ -447,15 +447,17 @@ class FeedDownloadThread extends Thread
     /**
      * Download a feed.
      *
-     * @param conn    the <tt>URLConnection</tt> for the feed
-     * @param feedURL the URL for the feed
+     * @param conn     the <tt>URLConnection</tt> for the feed
+     * @param feedInfo the <tt>FeedInfo</tt> object for the feed
      *
      * @return the <tt>DownloadedTempFile</tt> object that captures the
      *         details about the downloaded file
      */
-    private DownloadedTempFile downloadFeed (URLConnection conn, URL feedURL)
+    private DownloadedTempFile downloadFeed (URLConnection conn,
+                                             FeedInfo      feedInfo)
         throws IOException
     {
+        URL feedURL = feedInfo.getURL();
         int totalBytes = 0;
         File tempFile = File.createTempFile ("curn", ".xml", null);
         tempFile.deleteOnExit();
@@ -479,7 +481,19 @@ class FeedDownloadThread extends Thread
             String contentTypeHeader = conn.getContentType();
 
             if (contentTypeHeader != null)
+            {
                 encoding = contentTypeCharSet (contentTypeHeader);
+                log.debug ("HTTP server says document's encoding is \""
+                         + ((encoding == null) ? "<null>" : encoding)
+                         + "\"");
+            }
+        }
+
+        String forcedEncoding = feedInfo.getForcedCharacterEncoding();
+        if (forcedEncoding != null)
+        {
+            log.debug ("Forcing encoding to be \"" + forcedEncoding + "\"");
+            encoding = forcedEncoding;
         }
 
         if (encoding != null)

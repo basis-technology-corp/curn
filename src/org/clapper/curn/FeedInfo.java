@@ -87,6 +87,7 @@ public class FeedInfo
     private int         sortBy                = SORT_BY_NONE;
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
+    private String      forcedEncoding        = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -385,6 +386,27 @@ public class FeedInfo
     }
 
     /**
+     * Get the forced character set encoding for this feed. If this
+     * parameter is set, <i>curn</i> will ignore the character set encoding
+     * advertised by the remote server (if any), and use the character set
+     * specified by this configuration item instead. This is useful in the
+     * following cases:
+     *
+     * <ul>
+     *   <li>the remote HTTP server doesn't supply an HTTP Content-Encoding
+     *       header, and the local (Java) default encoding doesn't match
+     *       the document's encoding
+     *   <li>the remote HTTP server supplies the wrong encoding
+     * </ul>
+     *
+     * @return the forced character set encoding, or null if not configured
+     */
+    public String getForcedCharacterEncoding()
+    {
+        return forcedEncoding;
+    }
+     
+    /**
      * Determine whether items with duplicate titles should be ignored.
      * This feature (hack, really) is useful for sites (like Yahoo! News)
      * whose feeds often contain duplicate items that have different IDs
@@ -449,5 +471,16 @@ public class FeedInfo
     void setParsedChannelData (RSSChannel channel)
     {
         this.parsedChannelData = channel;
+    }
+    /*
+     * Set the forced character set encoding for this feed.
+     *
+     * @param encoding the encoding
+     *
+     * @see #getForcedCharacterEncoding
+     */
+    public void setForcedCharacterEncoding (String encoding)
+    {
+        this.forcedEncoding = encoding;
     }
 }

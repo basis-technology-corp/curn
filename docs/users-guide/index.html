@@ -1486,13 +1486,34 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
         <tr valign="top" class="oddrow">
+	  <td align="left" class="code">ForceCharacterEncoding</td>
+          <td align="left">String</td>
+	  <td align="left">Force <i>curn</i> to ignore the character set
+            encoding advertised by the remote server (if any), and use the
+            character set specified by this configuration item, instead.
+            This is useful in the following cases:
+
+            <ul>
+	      <li>the remote HTTP server doesn't supply an HTTP
+		  Content-Encoding header, and the local (Java) default
+		  encoding doesn't match the document's encoding
+	      <li>the remote HTTP server supplies the wrong encoding
+	    </ul>
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left">The server- or document-supplied
+	    character set encoding, if present; otherwise, the encoding of
+	    the Java VM that's running curn.</td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code">IgnoreDuplicateTitles</td>
           <td align="left">Boolean</td>
-	  <td align="left"><p>If "true", curn will ignore any item whose title
-            matches the title of another item in the feed. It only compares
-	    titles within the feed itself; it does not compare against titles
-	    of cached items.) Titles are compared without regard to upper or
-            lower case.</p>
+	  <td align="left"><p>If "true", <i>curn</i> will ignore any item
+            whose title matches the title of another item in the feed. It
+            only compares titles within the feed itself; it does not
+            compare against titles of cached items.) Titles are compared
+            without regard to upper or lower case.</p>
 
 	    <p>This feature (hack, really) is useful for sites
 	    whose feeds often contain duplicate items (with the same titles)
@@ -1504,7 +1525,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">false</td>
 	</tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code">PruneURLs</td>
           <td align="left">Boolean</td>
 	  <td align="left">Specifies a string to be used as the site's
@@ -1515,7 +1536,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-        <tr valign="top" class="oddrow">
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
           <td align="left">File name or path name</td>
 	  <td align="left"><p>If set, this parameter specifies the path to
@@ -1543,7 +1564,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1567,7 +1588,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">none</td>
         </tr>
 
-        <tr valign="top" class="oddrow">
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code">TitleOverride</td>
           <td align="left">String</td>
 	  <td align="left">Specifies a string to be used as the site's

@@ -107,6 +107,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_SORT_BY           = "SortBy";
     private static final String VAR_MAX_THREADS       = "MaxThreads";
     private static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
+    private static final String VAR_FORCE_ENCODING    = "ForceCharacterEncoding";
 
     /**
      * Legal values
@@ -787,6 +788,10 @@ public class ConfigFile extends Configuration
         s = getOptionalStringValue (sectionName, VAR_SAVE_FEED_AS, null);
         if (s != null)
             feedInfo.setSaveAsFile (new File (s));
+
+        s = getOptionalStringValue (sectionName, VAR_FORCE_ENCODING, null);
+        if (s != null)
+            feedInfo.setForcedCharacterEncoding (s);
 
         feedInfo.setSortBy (getSortByValue (sectionName, defaultSortBy));
 
