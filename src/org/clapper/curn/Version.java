@@ -28,6 +28,9 @@ package org.clapper.curn;
 
 import java.lang.System;
 
+import java.io.PrintWriter;
+import java.io.PrintStream;
+
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
@@ -48,7 +51,7 @@ public final class Version
                              Public Constants
     \*----------------------------------------------------------------------*/
 
-    public static final String VERSION = "1.3.3";
+    public static final String VERSION = "1.4";
 
     /**
      * The name of the resource bundle containing the build info.
@@ -61,33 +64,101 @@ public final class Version
     \*----------------------------------------------------------------------*/
 
     /**
-     * Display version information only
+     * Get the full program version string, which contains the program name
+     * and the version number. This is the string that the
+     * {@link showVersion()} method displays.
+     *
+     * @return the full version string
+     *
+     * @see #showVersion()
+     * @see #showVersion(PrintWriter)
+     * @see #showVersion(PrintOutputStream)
      */
-    public static void showVersion()
+    public static String getFullVersion()
     {
-        System.out.println ("curn, version " + VERSION);
+        return "curn, version " + VERSION;
     }
 
     /**
-     * Display build information
+     * Display version information only to standard output.
+     *
+     * @see #showVersion(PrintWriter)
+     * @see #showVersion(PrintStream)
+     */
+    public static void showVersion()
+    {
+        showVersion (System.out);
+    }
+
+    /**
+     * Display version information to the specified <tt>PrintWriter</tt>.
+     *
+     * @param out  where to write the version string
+     *
+     * @see #showVersion()
+     * @see #showVersion(PrintStream)
+     */
+    public static void showVersion (PrintWriter out)
+    {
+        out.println (getFullVersion());
+    }
+
+    /**
+     * Display version information to the specified <tt>PrintStream</tt>.
+     *
+     * @param out  where to write the version string
+     *
+     * @see #showVersion()
+     * @see #showVersion(PrintWriter)
+     */
+    public static void showVersion (PrintStream out)
+    {
+        out.println (getFullVersion());
+    }
+
+    /**
+     * Display build information to standard output.
+     *
+     * @see #showBuildInfo(PrintWriter)
+     * @see #showBuildInfo(PrintStream)
      */
     public static void showBuildInfo()
     {
+        showBuildInfo (System.out);
+    }
+
+    /**
+     * Display build information to the specified <tt>PrintStream</tt>.
+     *
+     * @param out  where to write the build information
+     *
+     * @see #showBuildInfo()
+     * @see #showBuildInfo(PrintWriter)
+     */
+    public static void showBuildInfo (PrintStream out)
+    {
+        showBuildInfo (new PrintWriter (out));
+    }
+
+    /**
+     * Display build information to the specified <tt>PrintWriter</tt>.
+     *
+     * @param out  where to write the build information
+     *
+     * @see #showBuildInfo()
+     * @see #showBuildInfo(PrintStream)
+     */
+    public static void showBuildInfo (PrintWriter out)
+    {
         BuildInfo buildInfo = new BuildInfo (BUNDLE_NAME);
 
-        System.out.println ();
-        showVersion();
-        System.out.println ("Build date:     " +
-                            buildInfo.getBuildDate());
-        System.out.println ("Built by:       " +
-                            buildInfo.getBuildUserID());
-        System.out.println ("Built on:       " +
-                            buildInfo.getBuildOperatingSystem());
-        System.out.println ("Build Java VM:  " +
-                            buildInfo.getBuildJavaVM());
-        System.out.println ("Build compiler: " +
-                            buildInfo.getBuildJavaCompiler());
-        System.out.println ("Ant version:    " +
-                            buildInfo.getBuildAntVersion());
+        out.println ();
+        showVersion (out);
+        out.println ("Build date:     " + buildInfo.getBuildDate());
+        out.println ("Built by:       " + buildInfo.getBuildUserID());
+        out.println ("Built on:       " + buildInfo.getBuildOperatingSystem());
+        out.println ("Build Java VM:  " + buildInfo.getBuildJavaVM());
+        out.println ("Build compiler: " + buildInfo.getBuildJavaCompiler());
+        out.println ("Ant version:    " + buildInfo.getBuildAntVersion());
     }
 }
