@@ -81,6 +81,10 @@ source and documentation packages.
     <exclude name="parser/*.java"/>
   </patternset>
 
+  <patternset id="util">
+    <include name="util/*.java"/>
+  </patternset>
+
   <patternset id="parser.main">
     <include name="parser/*.java"/>
     <exclude name="parser/*/*.java"/>
@@ -136,8 +140,17 @@ source and documentation packages.
           depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info,parser.testers"
           description="Compiles the source"/>
 
-  <target name="parser.main" depends="init">
-    <!-- Compile the java code from . into ${build} -->
+  <target name="util" depends="init">
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="util"/>
+    </javac>
+  </target>
+
+  <target name="parser.main" depends="util">
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
@@ -148,7 +161,6 @@ source and documentation packages.
   </target>
 
   <target name="main" depends="bundles,parser.main">
-    <!-- Compile the java code from . into ${build} -->
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
