@@ -312,10 +312,7 @@ public class Curn
 
             downloadThread.processFeed (feedInfo);
             if (downloadThread.errorOccurred())
-            {
-                RSSParserException ex = downloadThread.getException();
-                throw new RSSParserException (ex);
-            }
+                throw new CurnException (downloadThread.getException());
 
             RSSChannel channel = feedInfo.getParsedChannelData();
 
