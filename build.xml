@@ -41,11 +41,14 @@
   <!-- set global properties for this build -->
 
   <property name="build" location="classes"/>
+  <property name="pkg.path" value="org/clapper/curn"/>
+  <property name="src.top" location="src"/>
+  <property name="src.dir" location="${src.top}/${pkg.path}"/>
   <property name="dist"  location="dist"/>
   <property name="build.compiler" value="jikes"/>
   <property name="build.compiler.emacs" value="true"/>
   <property name="build.info.file" 
-            value="${build}/org/clapper/curn/BuildInfoBundle.properties"/>
+            value="${build}/${pkg.path}/BuildInfoBundle.properties"/>
   <property name="compile.listfiles" value="no"/>
   <property name="code_jar_name" value="curn"/>
   <property name="code_jar_file" value="${code_jar_name}.jar"/>
@@ -108,7 +111,7 @@
     </tstamp>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
-    <depend srcdir="." destdir="${build}"/>
+    <depend srcdir="${src.dir}" destdir="${build}"/>
   </target>
 
   <!--
@@ -124,7 +127,7 @@
 
   <target name="parser.main" depends="init">
     <!-- Compile the java code from . into ${build} -->
-    <javac srcdir="."
+    <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
@@ -135,7 +138,8 @@
 
   <target name="main" depends="parser.main">
     <!-- Compile the java code from . into ${build} -->
-    <javac srcdir="."
+    <echo>src.dir=${src.dir}</echo>
+    <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
@@ -145,7 +149,7 @@
   </target>
 
   <target name="parser.builtin" depends="parser.main">
-    <javac srcdir="."
+    <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
@@ -174,7 +178,7 @@
   <target name="parser.informa" 
           depends="-check.informa,parser.main"
 	  if="informa.exists">
-    <javac srcdir="."
+    <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
@@ -213,8 +217,8 @@
     line, but the file is at least local. Then, we edit it. (Yuck.)
      -->
 
-    <xmlc srcdir="htmloutput"
-          sourceout="htmloutput"
+    <xmlc srcdir="${src.dir}/htmloutput"
+          sourceout="${src.dir}/htmloutput"
           includes="*.html"
           keep="yes"
           verbose="no"
@@ -227,12 +231,12 @@
                    replace="package org.clapper.curn.htmloutput;" 
                    flags="g" 
                    byline="true">
-      <fileset dir="." includes="htmloutput/*.java">
+      <fileset dir="${src.dir}" includes="htmloutput/*.java">
         <contains text="XMLC GENERATED" casesensitive="yes"/>
       </fileset>
     </replaceregexp>
 
-    <javac srcdir="."
+    <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
@@ -257,7 +261,7 @@
 
   <target name="email" depends="main,-check.email" if="email.exists">
 
-    <javac srcdir="."
+    <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
