@@ -270,10 +270,15 @@ $Id$
   ***************************************************************************
   -->
 
-  <target name="dist" depends="rssget,doc"
+  <target name="dist" depends="rssget"
           description="Generate the distribution">
     <mkdir dir="${dist}"/>
     <jar destfile="${dist}/${code_jarfile}" basedir="${build}"/>
+  </target>
+
+  <target name="doczip" depends="doc"
+          description="Builds the javadocs zip file">
+    <mkdir dir="${dist}"/>
     <zip destfile="${dist}/${docs_zipfile}" basedir="${docs_top_dir}"/>
   </target>
 
@@ -285,7 +290,7 @@ $Id$
          excludes="**/CVS,${dist}/**,${build}/*"/>
   </target>
 
-  <target name="fulldist" depends="srcjar,dist"
+  <target name="fulldist" depends="srcjar,doczip,dist"
           description="Generate the distribution and source jars"/>
 
   <target name="clean"
