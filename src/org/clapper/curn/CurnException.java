@@ -12,7 +12,7 @@ import org.clapper.util.misc.NestedException;
  *
  * @version <tt>$Revision$</tt>
  */
-public class FeedException extends NestedException
+public class CurnException extends NestedException
 {
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -22,7 +22,7 @@ public class FeedException extends NestedException
      * Default constructor, for an exception with no nested exception and
      * no message.
      */
-    public FeedException()
+    public CurnException()
     {
 	super();
     }
@@ -33,7 +33,7 @@ public class FeedException extends NestedException
      *
      * @param exception  the exception to contain
      */
-    public FeedException (Throwable exception)
+    public CurnException (Throwable exception)
     {
 	super (exception);
     }
@@ -44,7 +44,7 @@ public class FeedException extends NestedException
      *
      * @param message  the message to associate with this exception
      */
-    public FeedException (String message)
+    public CurnException (String message)
     {
         super (message);
     }
@@ -55,7 +55,7 @@ public class FeedException extends NestedException
      * @param message    the message to associate with this exception
      * @param exception  the exception to contain
      */
-    public FeedException (String message, Throwable exception)
+    public CurnException (String message, Throwable exception)
     {
 	super (message, exception);
     }
