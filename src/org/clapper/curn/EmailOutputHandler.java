@@ -48,14 +48,14 @@ public interface EmailOutputHandler extends OutputHandler
      * Add a handler to the list of handlers that produce output to be attached
      * to the email message. THis method must be called after <tt>init()</tt>.
      *
-     * @param outputHandler  the <tt>OutputHandler</tt> to wrap inside this
-     *                       handler
+     * @param outputHandler  the <tt>ConfiguredOutputHandler</tt> to wrap
+     *                       inside this handler
      *
      * @throws CurnException error adding handler
      *
      * @see OutputHandler#init
      */
-    public void addOutputHandler (OutputHandler outputHandler)
+    public void addOutputHandler (ConfiguredOutputHandler outputHandler)
         throws CurnException;
 
     /**

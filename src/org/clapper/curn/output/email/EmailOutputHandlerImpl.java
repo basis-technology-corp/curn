@@ -45,6 +45,7 @@ import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
 
 import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.misc.Logger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -69,12 +70,17 @@ import java.util.ArrayList;
 public class EmailOutputHandlerImpl implements EmailOutputHandler
 {
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private Collection  handlers   = new ArrayList();
     private Collection  recipients = new ArrayList();
     private ConfigFile  config     = null;
+
+    /**
+     * For log messages
+     */
+    private static Logger log = new Logger (EmailOutputHandlerImpl.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -114,8 +120,13 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            OutputHandler handler = (OutputHandler) it.next();
-            handler.init (config, cfgHandler);
+            ConfiguredOutputHandler handlerWrapper;
+            OutputHandler           handler;
+
+            handlerWrapper = (ConfiguredOutputHandler) it.next();
+            handler        = handlerWrapper.getOutputHandler();
+
+            handler.init (config, handlerWrapper);
         }
     }
 
@@ -137,7 +148,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     {
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            OutputHandler handler = (OutputHandler) it.next();
+            ConfiguredOutputHandler handlerWrapper;
+            OutputHandler           handler;
+
+            handlerWrapper = (ConfiguredOutputHandler) it.next();
+            handler        = handlerWrapper.getOutputHandler();
+
             handler.displayChannel (channel, feedInfo);
         }
     }
@@ -151,7 +167,15 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     public void flush() throws CurnException
     {
         for (Iterator it = handlers.iterator(); it.hasNext(); )
-            ((OutputHandler) it.next()).flush();
+        {
+            ConfiguredOutputHandler handlerWrapper;
+            OutputHandler           handler;
+
+            handlerWrapper = (ConfiguredOutputHandler) it.next();
+            handler        = handlerWrapper.getOutputHandler();
+
+            handler.flush();
+        }
 
         emailOutput();
     }
@@ -170,15 +194,16 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     }
 
     /**
-     * Add an <tt>OutputHandler</tt> to this handler. The output handler
-     * will be used to generate output that is attached to the email message.
-     * This method must be called <i>after</i> <tt>init()</tt> is called.
+     * Add a <tt>ConfiguredOutputHandler</tt> to this handler. The output
+     * handler will be used to generate output that is attached to the
+     * email message. This method must be called <i>after</i>
+     * <tt>init()</tt> is called.
      *
      * @param handler  the handler to add
      *
      * @throws CurnException error opening a temporary file for the output
      */
-    public void addOutputHandler (OutputHandler handler)
+    public void addOutputHandler (ConfiguredOutputHandler handler)
 	throws CurnException
     {
 	handlers.add (handler);
@@ -255,20 +280,28 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     {
         try
         {
-            Iterator       it;
-            OutputHandler  firstHandlerWithOutput = null;
-            OutputHandler  handler;
-            int            totalAttachments = 0;
+            Iterator                 it;
+            OutputHandler            firstHandlerWithOutput = null;
+            OutputHandler            handler;
+            ConfiguredOutputHandler  handlerWrapper;
+            int                      totalAttachments = 0;
 
             // First, figure out whether we have any attachments or not.
 
             for (it = handlers.iterator(); it.hasNext(); )
             {
-                handler = (OutputHandler) it.next();
+                handlerWrapper = (ConfiguredOutputHandler) it.next();
+                handler        = handlerWrapper.getOutputHandler();
+
                 if (handler.hasGeneratedOutput())
                 {
                     totalAttachments++;
-                    firstHandlerWithOutput = handler;
+                    if (firstHandlerWithOutput == null)
+                    {
+                        log.debug ("First handler with output="
+                                 + handlerWrapper.getName());
+                        firstHandlerWithOutput = handler;
+                    }
                 }
             }
 
@@ -288,13 +321,14 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                 String smtpHost = config.getSMTPHost();
                 EmailTransport transport = new SMTPEmailTransport (smtpHost);
 
+                log.debug ("SMTP host = " + smtpHost);
+
                 // Fill 'er up.
 
                 for (it = recipients.iterator(); it.hasNext(); )
                     message.addTo ((EmailAddress) it.next());
 
-                message.addHeader ("X-Mailer",
-                                   "curn, version " + Version.VERSION);
+                message.addHeader ("X-Mailer", Version.getFullVersion());
                 message.setSubject (config.getEmailSubject());
 
                 // Add the output. If there's only one attachment, and its
@@ -323,7 +357,8 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
                     for (it = handlers.iterator(); it.hasNext(); )
                     {
-                        handler = (OutputHandler) it.next();
+                        handlerWrapper = (ConfiguredOutputHandler) it.next();
+                        handler        = handlerWrapper.getOutputHandler();
 
                         InputStream is = handler.getGeneratedOutput();
                         if (is != null)
@@ -334,6 +369,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                     }
                 }
 
+                log.debug ("Sending message.");
                 transport.send (message);
             }
         }
