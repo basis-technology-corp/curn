@@ -3,10 +3,10 @@ $Id$
 
 PREREQUISITES:
 
-Before running rssget, you'll need:
+Before running curn, you'll need:
 
 1. The Informa library, available at http://informa.sourceforge.net/
-   Rssget has been tested with version 0.5.0.
+   Curn has been tested with version 0.5.0.
 
 2. A version of the Jakarta Commons logging library. A version comes
    with Informa, and it works fine. The official distribution is here:
@@ -19,13 +19,13 @@ Before running rssget, you'll need:
 5. The clapper.org utility library, available at
    http://www.clapper.org/software/java/util/
 
-6. rssget.jar. (See BUILDING.txt)
+6. curn.jar. (See BUILDING.txt)
 
 Put these jars/classes somewhere, and make sure they're in your CLASSPATH.
 
-To run rssget:
+To run curn:
 
-	java org.clapper.rssget.rssget [options] configFile
+	java org.clapper.curn.curn [options] configFile
 
 Run with no arguments for a usage summary.
 
