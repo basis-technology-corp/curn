@@ -62,6 +62,9 @@ import org.clapper.util.config.ConfigurationException;
 
 import org.apache.oro.text.perl.Perl5Util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p><i>curn</i> - Curiously Uncomplicated RSS Notifier</p>
  *
@@ -82,7 +85,7 @@ import org.apache.oro.text.perl.Perl5Util;
  *
  * @version <tt>$Revision$</tt>
  */
-public class curn implements VerboseMessagesHandler
+public class curn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -152,6 +155,11 @@ public class curn implements VerboseMessagesHandler
     private boolean     showBuildInfo  = false;
     private Perl5Util   perl5Util      = new Perl5Util();
 
+    /**
+     * Commons logging: For log messages
+     */
+    private static Log log = LogFactory.getLog (curn.class);
+
     /*----------------------------------------------------------------------*\
                                Main Program
     \*----------------------------------------------------------------------*/
@@ -216,18 +224,6 @@ public class curn implements VerboseMessagesHandler
     \*----------------------------------------------------------------------*/
 
     /**
-     * Emit a verbose message.
-     *
-     * @param level  the verbosity level at which the message becomes visible
-     * @param msg    the message to emit
-     */
-    public void verbose (int level, String msg)
-    {
-        if (config.verbosityLevel() >= level)
-            System.out.println ("[V:" + level + "] " + msg);
-    }
-
-    /**
      * Run the curn tool. Parses the command line arguments, storing the
      * results in an internal configuration; then, calls the
      * {@link #processRSSFeeds} method.
@@ -288,7 +284,7 @@ public class curn implements VerboseMessagesHandler
 
         if (useCache)
         {
-            cache = new FeedCache (this, configuration);
+            cache = new FeedCache (configuration);
             cache.setCurrentTime (currentTime);
             cache.loadCache();
         }
@@ -296,7 +292,7 @@ public class curn implements VerboseMessagesHandler
         // Parse the RSS feeds
 
         parserClassName = configuration.getRSSParserClassName();
-        verbose (2, "Getting parser \"" + parserClassName + "\"");
+        log.debug ("Getting parser \"" + parserClassName + "\"");
         parser = RSSParserFactory.getRSSParser (parserClassName);
 
         channels = new ArrayList();
@@ -310,10 +306,7 @@ public class curn implements VerboseMessagesHandler
             FeedInfo feedInfo = (FeedInfo) it.next();
             if (! feedInfo.feedIsEnabled())
             {
-                verbose (1,
-                         "Skipping disabled feed \""
-                       + feedInfo.getURL()
-                       + "\".");
+                log.debug ("Skipping disabled feed: " + feedInfo.getURL());
             }
 
             else
@@ -401,9 +394,6 @@ public class curn implements VerboseMessagesHandler
                 else if (s.equals ("-t") || s.equals ("--time"))
                     opts.put ("t", args[++i]);
 
-                else if (s.equals ("-v") || s.equals ("--verbose"))
-                    opts.put ("v", args[++i]);
-
                 else if (s.equals ("-d") || s.equals ("--show-dates"))
                     opts.put ("d", "");
 
@@ -489,22 +479,6 @@ public class curn implements VerboseMessagesHandler
                         currentTime = parseDateTime ((String) opts.get (opt));
                         break;
 
-                    case 'v':   // --verbose
-                        String arg = (String) opts.get (opt);
-                        try
-                        {
-                            config.setVerbosityLevel (Integer.parseInt (arg));
-                        }
-
-                        catch (NumberFormatException ex)
-                        {
-                            throw new BadCommandLineException
-                                               ("Bad parameter \""
-                                              + arg
-                                              + "\" to --verbose (-v) option");
-                        }
-                        break;
-
                     default:
                         // Already handled.
                 }
@@ -586,8 +560,6 @@ public class curn implements VerboseMessagesHandler
 "--time datetime      For the purposes of cache expiration, pretend the",
 "                       current time is <datetime>. <datetime> may be in a ",
 "                       variety of forms.",
-"-v level             Set the verbosity (debug) level. Default: 0 (off)",
-"--verbose level"
         };
 
         for (int i = 0; i < USAGE.length; i++)
@@ -645,9 +617,8 @@ public class curn implements VerboseMessagesHandler
             // doesn't make sense to use multiple handlers when going to
             // standard output.
 
-            verbose (3,
-                     "No email addresses. Nuking all but the first "
-                   + "output handler.");
+            log.debug ("No email addresses. Nuking all but the first "
+                     + "output handler.");
             handler = (OutputHandler) outputHandlers.iterator().next();
             outputHandlers.clear();
             outputHandlers.add (handler);
@@ -665,7 +636,7 @@ public class curn implements VerboseMessagesHandler
         try
         {
             String feedURLString = feedURL.toString();
-            verbose (2, "Parsing feed at " + feedURLString);
+            log.debug ("Parsing feed at " + feedURLString);
 
             // Don't download the channel if it hasn't been modified since
             // we last checked it.
@@ -687,7 +658,7 @@ public class curn implements VerboseMessagesHandler
                     // parse the downloaded file, instead.
 
                     downloadFeed (is, feedURLString, saveAsFile);
-                    verbose (2, "Reopening \"" + saveAsFile.getPath() + "\".");
+                    log.debug ("Reopening \"" + saveAsFile.getPath() + "\".");
                     is = new FileInputStream (saveAsFile);
                 }
 
@@ -700,26 +671,17 @@ public class curn implements VerboseMessagesHandler
 
         catch (MalformedURLException ex)
         {
-            if (configuration.verbosityLevel() > 1)
-                ex.printStackTrace();
-            else
-                verbose (1, ex.getMessage());
+            log.debug ("", ex);
         }
 
         catch (RSSParserException ex)
         {
-            if (configuration.verbosityLevel() > 1)
-                ex.printStackTrace();
-            else
-                verbose (1, ex.getMessage());
+            log.debug ("RSS parse exception: ", ex); 
         }
 
         catch (IOException ex)
         {
-            if (configuration.verbosityLevel() > 1)
-                ex.printStackTrace();
-            else
-                verbose (1, ex.getMessage());
+            log.debug ("", ex);
         }
 
         return channel;
@@ -735,21 +697,19 @@ public class curn implements VerboseMessagesHandler
 
         try
         {
-            verbose (2,
-                     "Downloading \""
-                   + feedURL
-                   + "\" to temporary file \""
-                   + temp.getPath());
+            log.debug ("Downloading \""
+                     + feedURL
+                     + "\" to temporary file \""
+                     + temp.getPath());
             OutputStream os = new FileOutputStream (temp);
             FileUtils.copyStream (urlStream, os);
             os.close();
 
-            verbose (2,
-                     "Copying temporary file \""
-                   + temp.getPath()
-                   + "\" to \""
-                   + saveAsFile.getPath()
-                   + "\"");
+            log.debug ("Copying temporary file \""
+                     + temp.getPath()
+                     + "\" to \""
+                     + saveAsFile.getPath()
+                     + "\"");
             FileUtils.copyFile (temp, saveAsFile);
         }
 
@@ -776,44 +736,40 @@ public class curn implements VerboseMessagesHandler
 
         if (lastSeen == 0)
         {
-            verbose (2,
-                     "Feed \""
-                   + feedURL.toString()
-                   + "\" has no recorded last-seen time.");
+            log.debug ("Feed \""
+                     + feedURL.toString()
+                     + "\" has no recorded last-seen time.");
             hasChanged = true;
         }
 
         else if ((lastModified = conn.getLastModified()) == 0)
         {
-            verbose (2,
-                     "Feed \""
-                   + feedURL.toString()
-                   + "\" provides no last-modified time.");
+            log.debug ("Feed \""
+                     + feedURL.toString()
+                     + "\" provides no last-modified time.");
             hasChanged = true;
         }
 
         else if (lastSeen >= lastModified)
         {
-            verbose (2,
-                     "Feed \""
-                   + feedURL.toString()
-                   + "\" has Last-Modified time of "
-                   + new Date (lastModified).toString()
-                   + ", which is not newer than last-seen time of "
-                   + new Date (lastSeen).toString()
-                   + ". Feed has no new data.");
+            log.debug ("Feed \""
+                     + feedURL.toString()
+                     + "\" has Last-Modified time of "
+                     + new Date (lastModified).toString()
+                     + ", which is not newer than last-seen time of "
+                     + new Date (lastSeen).toString()
+                     + ". Feed has no new data.");
         }
 
         else
         {
-            verbose (2,
-                     "Feed \""
-                   + feedURL.toString()
-                   + "\" has Last-Modified time of "
-                   + new Date (lastModified).toString()
-                   + ", which is newer than last-seen time of "
-                   + new Date (lastSeen).toString()
-                   + ". Feed might have new data.");
+            log.debug ("Feed \""
+                     + feedURL.toString()
+                     + "\" has Last-Modified time of "
+                     + new Date (lastModified).toString()
+                     + ", which is newer than last-seen time of "
+                     + new Date (lastSeen).toString()
+                     + ". Feed might have new data.");
             hasChanged = true;
         }
 
@@ -836,18 +792,17 @@ public class curn implements VerboseMessagesHandler
 
         if (editCmd != null)
         {
-            verbose (1,
-                     "Channel \""
-                   + channel.getLink().toString()
-                   + "\": Edit command is: "
-                   + editCmd);
+            log.debug ("Channel \""
+                     + channel.getLink().toString()
+                     + "\": Edit command is: "
+                     + editCmd);
         }
 
         items = channel.getItems();
 
         // First, weed out the ones we don't care about.
 
-        verbose (2, String.valueOf (items.size()) + " total items");
+        log.debug (String.valueOf (items.size()) + " total items");
         for (it = items.iterator(); it.hasNext(); )
         {
             RSSItem item = (RSSItem) it.next();
@@ -855,7 +810,7 @@ public class curn implements VerboseMessagesHandler
 
             if (itemURL == null)
             {
-                verbose (2, "Skipping item with null URL.");
+                log.debug ("Skipping item with null URL.");
                 it.remove();
                 continue;
             }
@@ -888,13 +843,12 @@ public class curn implements VerboseMessagesHandler
 
             // Skip it if it's cached.
 
-            verbose (2, "Item link: " + itemURL);
-            verbose (2, "Item ID: " + item.getUniqueID());
-            verbose (2, "Item key: " + item.getCacheKey());
+            log.debug ("Item link: " + itemURL);
+            log.debug ("Item ID: " + item.getUniqueID());
+            log.debug ("Item key: " + item.getCacheKey());
             if ((cache != null) && cache.contains (item.getCacheKey()))
             {
-                verbose (3,
-                         "Skipping cached URL \"" + itemURL.toString() + "\"");
+                log.debug ("Skipping cached URL: " + itemURL.toString());
                 it.remove();
                 continue;
             }
@@ -912,10 +866,7 @@ public class curn implements VerboseMessagesHandler
             {
                 RSSItem item = (RSSItem) it.next();
 
-                verbose (3,
-                         "Cacheing URL \""
-                       + item.getLink().toString()
-                       + "\"");
+                log.debug ("Cacheing URL: " + item.getLink().toString());
                 if (cache != null)
                 {
                     cache.addToCache (item.getCacheKey(),
