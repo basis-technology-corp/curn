@@ -22,7 +22,7 @@ public class Util
     /**
      * The rssget version stamp
      */
-    private static final String VERSION = "0.4";
+    private static final String VERSION = "0.5";
 
     /*----------------------------------------------------------------------*\
                               Public Methods
