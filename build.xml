@@ -52,7 +52,7 @@ source and documentation packages.
   <property name="build.compiler.emacs" value="true"/>
   <property name="build.info.file"
             value="${build}/${pkg.path}/BuildInfoBundle.properties"/>
-  <property name="compile.listfiles" value="no"/>
+  <property name="javac.listfiles" value="no"/>
   <property name="code_jar_name" value="curn"/>
   <property name="code_jar_file" value="${code_jar_name}.jar"/>
   <property name="code_jar_dir" value="${dist}/lib"/>
@@ -102,32 +102,11 @@ source and documentation packages.
   <target name="all" depends="curn"/>
 
   <target name="curn"
-          depends="main, parsers,output,-build.info,parser.testers"
+          depends="init,main,output,third.party.parsers,-build.info,bundles"
           description="Compiles the source"/>
 
-  <target name="parsers"
-          depends="parser.builtin,parser.informa,parser.rome"/>
-
-  <!--
-  ***************************************************************************
-			       "util" Target
-  ***************************************************************************
-  -->
-
-  <target name="util" depends="init">
-    <javac srcdir="${src.dir}"
-           depend="true"
-           listfiles="${compile.listfiles}"
-           destdir="${build}">
-
-      <classpath refid="project.class.path"/>
-
-      <patternset id="util">
-        <include name="util/*.java"/>
-      </patternset>
-
-    </javac>
-  </target>
+  <target name="third.party.parsers"
+          depends="parser.informa,parser.rome"/>
 
   <!--
   ***************************************************************************
@@ -135,19 +114,30 @@ source and documentation packages.
   ***************************************************************************
   -->
 
-  <target name="main" depends="util,bundles,parser.main">
+  <target name="main">
     <javac srcdir="${src.dir}"
+           sourcepath="${src.top}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
 
       <classpath refid="project.class.path"/>
 
-      <patternset id="main.sources">
-        <include name="*.java"/>
-      </patternset>
+      <include name="*.java"/>
+      <include name="util/*.java"/>
+      <include name="parser/*.java"/>
+      <include name="parser/minirss/*.java"/>
+      <include name="parser/tester.java"/>
+
+      <exclude name="parser/rome/*.java"/>
+      <exclude name="parser/informa/*.java"/>
 
     </javac>
+
   </target>
 
   <!--
@@ -166,69 +156,8 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			Top-level Parser API Target
-  ***************************************************************************
-  -->
-
-  <target name="parser.main" depends="util">
-    <javac srcdir="${src.dir}"
-           depend="true"
-           listfiles="${compile.listfiles}"
-           destdir="${build}">
-      <classpath refid="project.class.path"/>
-
-      <patternset id="parser.main">
-        <include name="parser/*.java"/>
-        <exclude name="parser/*/*.java"/>
-        <exclude name="parser/tester.java"/>
-      </patternset>
-
-    </javac>
-  </target>
-
-  <!--
-  ***************************************************************************
-			 RSS Parser Tester Target
-  ***************************************************************************
-  -->
-
-  <target name="parser.testers">
-    <javac srcdir="${src.dir}"
-           depend="true"
-           listfiles="${compile.listfiles}"
-           destdir="${build}">
-      <classpath refid="project.class.path"/>
-
-      <patternset id="parser.testers">
-        <include name="parser/tester.java"/>
-      </patternset>
-
-    </javac>
-  </target>
-
-  <!--
-  ***************************************************************************
-			   MiniRSSParser Target
-  ***************************************************************************
-  -->
-
-  <target name="parser.builtin" depends="parser.main">
-    <javac srcdir="${src.dir}"
-           depend="true"
-           listfiles="${compile.listfiles}"
-           destdir="${build}">
-      <classpath refid="project.class.path"/>
-
-      <patternset id="parser.builtin">
-        <include name="parser/minirss/*.java"/>
-      </patternset>
-
-    </javac>
-  </target>
-
-  <!--
-  ***************************************************************************
 			  Informa Parser Targets
+	      (Only built if Informa libraries are present.)
   ***************************************************************************
   -->
 
@@ -250,12 +179,17 @@ source and documentation packages.
   </target>
 
   <target name="parser.informa"
-          depends="-check.informa,parser.main"
+          depends="-check.informa"
 	  if="informa.exists">
     <javac srcdir="${src.dir}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+
       <classpath refid="project.class.path"/>
 
       <patternset id="parser.informa">
@@ -270,6 +204,7 @@ source and documentation packages.
   <!--
   ***************************************************************************
 			    Rome Parser Targets
+		(Only built if Rome libraries are present.)
   ***************************************************************************
   -->
 
@@ -290,12 +225,17 @@ source and documentation packages.
   </target>
 
   <target name="parser.rome"
-          depends="-check.rome,parser.main"
+          depends="-check.rome"
 	  if="rome.exists">
     <javac srcdir="${src.dir}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+
       <classpath refid="project.class.path"/>
 
       <patternset id="parser.rome">
@@ -313,14 +253,19 @@ source and documentation packages.
   ***************************************************************************
   -->
 
-  <target name="output" depends="main">
+  <target name="output">
     <!--
       First the local targets.
     -->
     <javac srcdir="${src.dir}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+
       <classpath refid="project.class.path"/>
 
       <patternset id="output">
@@ -343,7 +288,31 @@ source and documentation packages.
   ***************************************************************************
   -->
 
-  <target name="output.html" depends="main,-check.xmlc" if="xmlc.exists">
+  <patternset id="generated.HTMLOutputHandler.java.pattern">
+    <include name="output/html/*HTML.java"/>
+  </patternset>
+
+  <patternset id="permanent.HTMLOutputHandler.java.pattern">
+    <include name="output/html/*.java"/>
+    <exclude name="output/html/*HTML.java"/>
+  </patternset>
+
+  <fileset id="generated.HTMLOutputHandler.java.files" dir="${src.dir}">
+    <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
+  </fileset>
+
+  <fileset id="permanent.HTMLOutputHandler.java.files" dir="${src.dir}">
+    <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
+  </fileset>
+
+  <fileset id="generated.HTMLOutputHandler.files" dir="${src.dir}">
+    <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
+    <patternset>
+      <include name="output/html/*.optionCheck"/>
+    </patternset>
+  </fileset>
+
+  <target name="output.html" depends="-check.xmlc" if="xmlc.exists">
 
     <!-- Make the <xmlc> task available -->
 
@@ -375,15 +344,40 @@ source and documentation packages.
       </fileset>
     </replaceregexp>
 
+    <!--
+
+    The XMLC-generated Java sources contain various anomalies (including
+    identifiers with "$" characters) that cause Jikes to complain. Compile
+    them separately, with various Jikes warnings disabled.
+
+    -->
+
     <javac srcdir="${src.dir}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
-      <classpath refid="project.class.path"/>
 
-      <patternset id="output.html">
-        <include name="output/html/*.java"/>
-      </patternset>
+      <compilerarg compiler="jikes" value="+Pno-naming-convention"/>
+      <compilerarg compiler="jikes" value="+Pno-switchcheck"/>
+      <compilerarg compiler="jikes" value="+Pno-shadow"/>
+      <compilerarg compiler="jikes" value="-nowarn"/>
+
+      <classpath refid="project.class.path"/>
+      <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
+
+    </javac>
+
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${javac.listfiles}"
+           destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+
+      <classpath refid="project.class.path"/>
+      <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
 
     </javac>
   </target>
@@ -409,12 +403,17 @@ source and documentation packages.
   ***************************************************************************
   -->
 
-  <target name="output.script" depends="main,-check.bsf" if="bsf.exists">
+  <target name="output.script" depends="-check.bsf" if="bsf.exists">
 
     <javac srcdir="${src.dir}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+
       <classpath refid="project.class.path"/>
 
       <patternset id="output.script">
@@ -460,12 +459,17 @@ source and documentation packages.
     </echo>
   </target>
 
-  <target name="email" depends="main,-check.email" if="email.exists">
+  <target name="email" depends="-check.email" if="email.exists">
 
     <javac srcdir="${src.dir}"
            depend="true"
-           listfiles="${compile.listfiles}"
+           listfiles="${javac.listfiles}"
            destdir="${build}">
+
+      <compilerarg compiler="jikes" value="+Peffective-java"/>
+      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
+      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
+
       <classpath refid="project.class.path"/>
 
       <patternset id="output.email">
@@ -623,8 +627,7 @@ source and documentation packages.
           description="clean up" >
 
     <delete failonerror="false">
-      <fileset dir="${src.dir}" includes="output/html/*HTML.java"/>
-      <fileset dir="${src.dir}" includes="output/html/*HTML.java.optionCheck"/>
+      <fileset refid="generated.HTMLOutputHandler.files"/>
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
