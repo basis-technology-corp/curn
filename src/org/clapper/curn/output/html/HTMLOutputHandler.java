@@ -105,12 +105,13 @@ public class HTMLOutputHandler extends FileOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config  the parsed <i>curn</i> configuration data
+     * @param config       the parsed <i>curn</i> configuration data
+     * @param sectionName  the config file section name for the handler
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile config)
+    public void initOutputHandler (ConfigFile config, String sectionName)
         throws ConfigurationException,
                CurnException
     {

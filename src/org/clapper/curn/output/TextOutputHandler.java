@@ -70,12 +70,13 @@ public class TextOutputHandler extends FileOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config  the parsed <i>curn</i> configuration data
+     * @param config       the parsed <i>curn</i> configuration data
+     * @param sectionName  the config file section name for the handler
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile config)
+    public void initOutputHandler (ConfigFile config, String sectionName)
         throws ConfigurationException,
                CurnException
     {
@@ -264,45 +265,5 @@ public class TextOutputHandler extends FileOutputHandler
         out.setPrefix (buf.toString());
 
         return level;
-    }
-
-    private String convert (String s)
-    {
-        char[] ch = s.toCharArray();
-
-        scratch.setLength (0);
-        for (int i = 0; i < ch.length; i++)
-        {
-            switch (ch[i])
-            {
-                case Unicode.LEFT_SINGLE_QUOTE:
-                case Unicode.RIGHT_SINGLE_QUOTE:
-                    scratch.append ('\'');
-                    break;
-
-                case Unicode.LEFT_DOUBLE_QUOTE:
-                case Unicode.RIGHT_DOUBLE_QUOTE:
-                    scratch.append ('"');
-                    break;
-
-                case Unicode.EM_DASH:
-                    scratch.append ("--");
-                    break;
-
-                case Unicode.EN_DASH:
-                    scratch.append ('-');
-                    break;
-
-                case Unicode.TRADEMARK:
-                    scratch.append ("[TM]");
-                    break;
-
-                default:
-                    scratch.append (ch[i]);
-                    break;
-            }
-        }
-
-        return scratch.toString();
     }
 }

@@ -8,7 +8,6 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
-import org.clapper.util.text.TextUtils;
 import org.clapper.util.text.Unicode;
 import org.clapper.util.misc.Logger;
 
@@ -21,11 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import java.util.Date;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * <p><tt>FileOutputHandler</tt> is an abstract base class for
@@ -93,15 +87,14 @@ public abstract class FileOutputHandler implements OutputHandler
         throws ConfigurationException,
                CurnException
     {
-        String saveAs = null;
+        String saveAs      = null;
+        String sectionName = null;
 
         this.config = config;
+        sectionName = config.getOutputHandlerSectionName (this.getClass());
 
         try
         {
-            String sectionName;
-            sectionName = config.getOutputHandlerSectionName (this.getClass());
-
             if (sectionName != null)
             {
                 saveAs = config.getOptionalStringValue (sectionName,
@@ -143,20 +136,25 @@ public abstract class FileOutputHandler implements OutputHandler
             }
         }
 
-        log.debug ("Calling " + this.getClass().getName() + "initOutputHandler()");
-        initOutputHandler (config);
+        log.debug ("Calling "
+                 + this.getClass().getName()
+                 + "initOutputHandler()");
+
+        initOutputHandler (config, sectionName);
     }
 
     /**
      * Perform any subclass-specific initialization. Subclasses must
      * override this method.
      *
-     * @param config  the parsed <i>curn</i> configuration data
+     * @param config       the parsed <i>curn</i> configuration data
+     * @param sectionName  the config file section name for the handler
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public abstract void initOutputHandler (ConfigFile config)
+    public abstract void initOutputHandler (ConfigFile config,
+                                            String     sectionName)
         throws ConfigurationException,
                CurnException;
 
@@ -267,5 +265,54 @@ public abstract class FileOutputHandler implements OutputHandler
     protected boolean savingOutputOnly()
     {
         return saveOnly;
+    }
+
+    /**
+     * Convert certain Unicode characters in a string to plain text
+     * sequences. Useful primarily for handlers that produce plain text.
+     *
+     * @param s  the string to convert
+     *
+     * @return the possibly converted string
+     */
+    protected String convert (String s)
+    {
+        StringBuffer buf = new StringBuffer();
+        char[]       ch  = s.toCharArray();
+
+        buf.setLength (0);
+        for (int i = 0; i < ch.length; i++)
+        {
+            switch (ch[i])
+            {
+                case Unicode.LEFT_SINGLE_QUOTE:
+                case Unicode.RIGHT_SINGLE_QUOTE:
+                    buf.append ('\'');
+                    break;
+
+                case Unicode.LEFT_DOUBLE_QUOTE:
+                case Unicode.RIGHT_DOUBLE_QUOTE:
+                    buf.append ('"');
+                    break;
+
+                case Unicode.EM_DASH:
+                    buf.append ("--");
+                    break;
+
+                case Unicode.EN_DASH:
+                    buf.append ('-');
+                    break;
+
+                case Unicode.TRADEMARK:
+                    buf.append ("[TM]");
+                    break;
+
+                default:
+                    buf.append (ch[i]);
+                    break;
+            }
+        }
+
+        return buf.toString();
     }
 }
