@@ -29,13 +29,19 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * <p><tt>MiniRSSParser</tt> is a stripped down RSS parser. It handles
- * files in RSS formats 0.91, 0.92, 1.0 and 2.0. However, it doesn't store
- * all the possible RSS items. It stores those items that the <i>rssget</i>
- * utility requires (plus a few more), but lacks support for others. For
- * instance, it ignores <tt>image</tt>, <tt>cloud</tt>, <tt>textinput</tt>
- * and other elements that <i>rssget</i> has no interest in displaying. As
- * such, <tt>MiniRSSParser</tt> is not suitable as a general-purpose RSS
- * parser. However, it is very suitable for use with <i>rssget</i>.</p>
+ * files in
+ * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+ * format (0.3) and RSS formats
+ * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92,
+ * {@link <a href="http://web.resource.org/rss/1.0/">1.0</a>} and
+ * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
+ * However, it doesn't store all the possible RSS items. It stores those
+ * items that the <i>rssget</i> utility requires (plus a few more), but
+ * lacks support for others. For instance, it ignores <tt>image</tt>,
+ * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
+ * has no interest in displaying. As such, <tt>MiniRSSParser</tt> is not
+ * suitable as a general-purpose RSS parser. However, it is very suitable
+ * for use with <i>rssget</i>.</p>
  *
  * <p><b>Notes:</b>
  *
@@ -289,6 +295,14 @@ public class MiniRSSParser
         {
             channel.setRSSFormat ("RSS 1.0");
             xmlReader.setContentHandler (new V1Parser (channel, elementName));
+        }
+
+        else if (elementName.equals ("feed"))
+        {
+            String version = attributes.getValue ("version");
+            channel.setRSSFormat ("Atom " + version);
+            xmlReader.setContentHandler (new AtomParser (channel,
+                                                         elementName));
         }
 
         else if (elementName.equals ("rss"))

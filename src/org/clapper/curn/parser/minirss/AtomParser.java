@@ -6,37 +6,52 @@ package org.clapper.rssget.parser.minirss;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.Stack;
 import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
 /**
- * <p><tt>V1Parser</tt> is a stripped down RSS parser for
- * {@link <a href="http://web.resource.org/rss/1.0/">RSS, version 1.0</a>}.
- * It's intended to be invoked once a <tt>MiniRSSParser</tt> has determined
- * whether the XML feed represents version 1 RSS or not.</p>
+ * <p><tt>AtomParser</tt> is a stripped down parser for an
+ * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+ * XML feed. It's intended to be invoked once a <tt>MiniRSSParser</tt> has
+ * determined that the XML feed is an Atom feed.</p>
  *
- * <p>This parser doesn't store all the possible RSS items. It stores
- * those items that the <i>rssget</i> utility requires (plus a few more),
- * but lacks support for others. For instance, it ignores <tt>image</tt>,
- * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
- * has no interest in displaying.</p>
+ * <p>This parser doesn't store all the possible items. It stores those
+ * items that the <i>rssget</i> utility requires (plus a few more), but
+ * lacks support for others.</p>
  *
  * @version <tt>$Revision$</tt>
  *
  * @see MiniRSSParser
  * @see V2Parser
+ * @see V1Parser
  */
-public class V1Parser extends ParserCommon
+public class AtomParser extends ParserCommon
 {
+    /*----------------------------------------------------------------------*\
+                               Inner Classes
+    \*----------------------------------------------------------------------*/
+
+    class Author
+    {
+        Channel parentChannel = null;
+
+        Author (Channel parentChannel)
+        {
+            this.parentChannel = parentChannel;
+        }
+    }
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Creates a new <tt>V1Parser</tt> to parse the remainder of an RSS
+     * Creates a new <tt>AtomParser</tt> to parse the remainder of an RSS
      * XML file, filling the specified <tt>Channel</tt> object with the
      * parsed contents.
      *
@@ -45,10 +60,11 @@ public class V1Parser extends ParserCommon
      *                     parsed by a <tt>MiniRSSParser</tt> object, before
      *                     it handed control to this object
      */
-    V1Parser (Channel channel, String firstElement)
+    AtomParser (Channel channel, String elementName)
+        throws SAXException
     {
         super (channel);
-        elementStack.push (new ElementStackEntry (firstElement, firstElement));
+        startChannel (elementName, null);
     }
 
     /*----------------------------------------------------------------------*\
@@ -81,34 +97,17 @@ public class V1Parser extends ParserCommon
         ElementStackEntry entry = (ElementStackEntry) elementStack.peek();
         Object container = entry.getContainer();
 
-        if (elementName.equals ("channel"))
-        {
+        if (elementName.equals ("feed"))
             startChannel (elementName, attributes);
-        }
-
-        else if (elementName.equals ("item"))
-        {
-            Item item = new Item (channel);
-
-            channel.addItem (item);
-            elementStack.push (new ElementStackEntry (elementName, item));
-        }
 
         else if (container instanceof Channel)
-        {
             startChannelSubelement (elementName, attributes, entry);
-        }
 
         else if (container instanceof Item)
-        {
             startItemSubelement (elementName, attributes, entry);
-        }
 
-        else
-        {
-            elementStack.push (new ElementStackEntry (elementName,
-                                                      elementName));
-        }
+        else if (container instanceof Author)
+            startAuthorSubelement (elementName, attributes, entry);
     }
 
     /**
@@ -167,7 +166,7 @@ public class V1Parser extends ParserCommon
      *
      * @param elementName  the element name, which is pushed onto the stack
      *                     along with the <tt>Channel</tt> object
-     * @param attributes   the attributes
+     * @param attributes   the attributes (currently not used)
      *
      * @throws SAXException on error
      */
@@ -175,20 +174,7 @@ public class V1Parser extends ParserCommon
                                Attributes attributes)
         throws SAXException
     {
-        try
-        {
-            String url = attributes.getValue ("rdf:about");
-
-            if (url != null)
-                channel.setLink (new URL (url));
-
-            elementStack.push (new ElementStackEntry (elementName, channel));
-        }
-
-        catch (MalformedURLException ex)
-        {
-            throw new SAXException (ex.toString());
-        }
+        elementStack.push (new ElementStackEntry (elementName, channel));
     }
 
     /**
@@ -209,29 +195,42 @@ public class V1Parser extends ParserCommon
     {
         Channel channel = (Channel) parentStackEntry.getContainer();
 
-        elementStack.push (new ElementStackEntry (elementName, channel));
-    }
+        if (elementName.equals ("entry"))
+        {
+            Item item = new Item (channel);
 
-    /**
-     * Handle the start of an XML element that's nested within an "item"
-     * element.
-     *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Item</tt> object
-     * @param attributes        the attributes (currently not used)
-     * @param parentStackEntry  the stack entry for the parent item element
-     *
-     * @throws SAXException on error
-     */
-    private void startItemSubelement (String            elementName,
-                                      Attributes        attributes,
-                                      ElementStackEntry parentStackEntry)
-        throws SAXException
-    {
-        Item item = (Item) parentStackEntry.getContainer();
-        elementStack.push (new ElementStackEntry (elementName, item));
-    }
+            channel.addItem (item);
+            elementStack.push (new ElementStackEntry (elementName, item));
+        }
 
+        else if (elementName.equals ("author"))
+        {
+            Author author = new Author (channel);
+
+            elementStack.push (new ElementStackEntry (elementName, author));
+        }
+
+
+        else if (elementName.equals ("link"))
+        {
+            try
+            {
+                channel.setLink (new URL (attributes.getValue ("href")));
+                elementStack.push (new ElementStackEntry (elementName,
+                                                          channel));
+            }
+
+            catch (MalformedURLException ex)
+            {
+                throw new SAXException (ex.toString());
+            }
+        }
+
+        else
+        {
+            elementStack.push (new ElementStackEntry (elementName, channel));
+        }
+    }
 
     /**
      * Handles the end of a channel element. This includes the channel
@@ -254,21 +253,100 @@ public class V1Parser extends ParserCommon
         if (chars.length() == 0)
             chars = null;
 
-        try
+        if (elementName.equals ("title"))
+            channel.setTitle (chars);
+
+        else if (elementName.equals ("issued"))
+            channel.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("modified"))
+            channel.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("created"))
+            channel.setPublicationDate (parseW3CDate (chars));
+    }
+
+    /**
+     * Handle the start of an XML element that's nested within an "author"
+     * element.
+     *
+     * @param elementName       the element name, which is pushed onto the
+     *                          stack along with the <tt>Item</tt> object
+     * @param attributes        the attributes (currently not used)
+     * @param parentStackEntry  the stack entry for the parent item element
+     *
+     * @throws SAXException on error
+     */
+    private void startAuthorSubelement (String            elementName,
+                                        Attributes        attributes,
+                                        ElementStackEntry parentStackEntry)
+        throws SAXException
+    {
+        Author author = (Author) parentStackEntry.getContainer();
+        elementStack.push (new ElementStackEntry (elementName, author));
+    }
+
+    /**
+     * Handles the end of an author element. This includes the author
+     * element itself and any nested elements. This method should
+     * only be called with the popped stack entry is known to have
+     * a <tt>Author</tt> object in its <tt>container</tt> data field.
+     *
+     * @param elementName the name of the XML element being ended
+     * @param stackEntry  the associated (popped) stack entry
+     *
+     * @throws SAXException on error
+     */
+    private void endAuthorElement (String            elementName,
+                                   ElementStackEntry stackEntry)
+        throws SAXException
+    {
+        Author  author  = (Author) stackEntry.getContainer();
+        String  chars   = stackEntry.getCharBuffer().toString().trim();
+
+        if (chars.length() == 0)
+            chars = null;
+
+        if (elementName.equals ("name"))
+            author.parentChannel.setAuthor (chars);
+    }
+
+    /**
+     * Handle the start of an XML element that's nested within an "item"
+     * element.
+     *
+     * @param elementName       the element name, which is pushed onto the
+     *                          stack along with the <tt>Item</tt> object
+     * @param attributes        the attributes (currently not used)
+     * @param parentStackEntry  the stack entry for the parent item element
+     *
+     * @throws SAXException on error
+     */
+    private void startItemSubelement (String            elementName,
+                                      Attributes        attributes,
+                                      ElementStackEntry parentStackEntry)
+        throws SAXException
+    {
+        Item item = (Item) parentStackEntry.getContainer();
+
+        if (elementName.equals ("link"))
         {
-            if (elementName.equals ("title"))
-                channel.setTitle (chars);
+            try
+            {
+                item.setLink (new URL (attributes.getValue ("href")));
+                elementStack.push (new ElementStackEntry (elementName,
+                                                          channel));
+            }
 
-            else if (elementName.equals ("link"))
-                channel.setLink (new URL (chars));
-
-            else if (elementName.equals ("description"))
-                channel.setDescription (chars);
+            catch (MalformedURLException ex)
+            {
+                throw new SAXException (ex.toString());
+            }
         }
 
-        catch (MalformedURLException ex)
+        else
         {
-            throw new SAXException (ex.toString());
+            elementStack.push (new ElementStackEntry (elementName, item));
         }
     }
 
@@ -296,69 +374,10 @@ public class V1Parser extends ParserCommon
         if (elementName.equals ("title"))
             item.setTitle (chars);
 
-        else if (elementName.equals ("link"))
-            setItemLink (item, chars);
-
-        else if (elementName.equals ("description"))
+        else if (elementName.equals ("summary"))
             item.setDescription (chars);
-    }
 
-    /**
-     * Some sites (notably, O'Reilly's Meerket) specify links with
-     * additional cruft in them, e.g., "13027@http://www.gizmodo.com/".
-     * This method is a hack that strips such things out before storing the
-     * link in the item.
-     *
-     * @param item the item
-     * @param url  the string containing the URL
-     *
-     * @throws SAXException on error
-     */
-    private void setItemLink (Item item, String url)
-        throws SAXException
-    {
-        try
-        {
-            item.setLink (new URL (url));
-        }
-
-        catch (MalformedURLException ex)
-        {
-            // Scan forward, character by character, looking for a valid
-            // protocol. Abort if (a) there's no ":" anywhere in the
-            // string, or (b) we reach the ":" without finding a valid URL.
-
-            int iColon = url.indexOf (":");
-            if (iColon < 0)
-            {
-                throw new SAXException ("Can't save item link \""
-                                      + url.toString()
-                                      + "\": "
-                                      + ex.toString());
-            }
-
-            boolean ok = false;
-            for (int i = 1; i < iColon; i++)
-            {
-                try
-                {
-                    item.setLink (new URL (url.substring (i)));
-                    ok = true;
-                    break;
-                }
-
-                catch (MalformedURLException ex2)
-                {
-                }
-            }
-
-            if (! ok)
-            {
-                throw new SAXException ("Can't save item link \""
-                                      + url.toString()
-                                      + "\": "
-                                      + ex.toString());
-            }
-        }
+        else if (elementName.equals ("issued"))
+            item.setPublicationDate (parseW3CDate (chars));
     }
 }

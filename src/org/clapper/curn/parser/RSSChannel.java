@@ -95,4 +95,11 @@ public interface RSSChannel
      * @return the format, or null if not available
      */
     public String getRSSFormat();
+
+    /**
+     * Get the author of the feed.
+     *
+     * @return the author, or null if not available
+     */
+    public String getAuthor();
 }

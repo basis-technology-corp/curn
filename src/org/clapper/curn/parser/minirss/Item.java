@@ -31,6 +31,7 @@ public class Item implements RSSItem
     private Date        pubDate     = null;
     private Collection  categories  = null;
     private String      author      = null;
+    private Channel     channel     = null;
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -39,9 +40,12 @@ public class Item implements RSSItem
     /**
      * Constructor. Objects of this type can only be created within this
      * package.
+     *
+     * @param parentChannel  the parent channel
      */
-    Item()
+    Item (Channel parentChannel)
     {
+        this.channel = parentChannel;
     }
 
     /*----------------------------------------------------------------------*\
@@ -135,7 +139,7 @@ public class Item implements RSSItem
      */
     public Date getPublicationDate()
     {
-        return pubDate;
+        return (pubDate != null) ? pubDate : channel.getPublicationDate();
     }
 
     /**

@@ -14,13 +14,14 @@ import org.xml.sax.Attributes;
 
 /**
  * <p><tt>V2Parser</tt> is a stripped down RSS parser for RSS versions
- * 0.91, 0.92 and 2. It's intended to be invoked once a
- * <tt>MiniRSSParser</tt> has determined whether the XML feed represents
- * version 1 RSS or not. For <i>rssget</i>'s purposes, there's considerable
- * similarity between RSS version 0.91 and RSS version 2--so much so that
- * the same parser logic will work for both. (The same cannot be said for
- * RSS version 1, which uses a different enough syntax to require a
- * separate parser.)</p>
+ * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92, and
+ * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
+ * It's intended to be invoked once a <tt>MiniRSSParser</tt> has determined
+ * whether the XML feed represents version 1 RSS or not. For
+ * <i>rssget</i>'s purposes, there's considerable similarity between RSS
+ * version 0.91 and RSS version 2--so much so that the same parser logic
+ * will work for both. (The same cannot be said for RSS version 1, which
+ * uses a different enough syntax to require a separate parser.)</p>
  *
  * <p>This parser doesn't store all the possible RSS items. It stores
  * those items that the <i>rssget</i> utility requires (plus a few more),
@@ -182,7 +183,7 @@ public class V2Parser extends ParserCommon
 
         if (elementName.equals ("item"))
         {
-            Item item = new Item();
+            Item item = new Item (channel);
 
             channel.addItem (item);
             elementStack.push (new ElementStackEntry (elementName, item));
@@ -221,7 +222,7 @@ public class V2Parser extends ParserCommon
                 channel.setTitle (chars);
 
             else if (elementName.equals ("link"))
-                channel.setLink (chars);
+                channel.setLink (new URL (chars));
 
             else if (elementName.equals ("description"))
                 channel.setDescription (chars);
@@ -293,7 +294,11 @@ public class V2Parser extends ParserCommon
                 item.setDescription (chars);
 
             else if (elementName.equals ("pubDate"))
+            {
+                Date date = parseRFC822Date (chars);
+                System.out.println ("*** setting item publication date to " + date);
                 item.setPublicationDate (parseRFC822Date (chars));
+            }
 
             else if (elementName.equals ("category"))
                 item.addCategory (chars);

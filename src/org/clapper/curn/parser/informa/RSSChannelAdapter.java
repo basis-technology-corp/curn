@@ -160,4 +160,14 @@ public class RSSChannelAdapter implements RSSChannel
     {
         return this.channel.getFormat().toString();
     }
+
+    /**
+     * Get the author of the feed.
+     *
+     * @return the author, or null if not available
+     */
+    public String getAuthor()
+    {
+        return null;
+    }
 }

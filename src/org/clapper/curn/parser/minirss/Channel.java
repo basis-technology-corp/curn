@@ -8,7 +8,6 @@ import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
 
 import java.net.URL;
-import java.net.MalformedURLException;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -37,6 +36,7 @@ public class Channel implements RSSChannel
     private Date        pubDate     = null;
     private String      rssFormat   = null;
     private String      copyright   = null;
+    private String      author      = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -148,14 +148,11 @@ public class Channel implements RSSChannel
     /**
      * Set the channel's published URL.
      *
-     * @param url  the URL, as a string
-     *
-     * @throws MalformedURLException  bad URL
+     * @param url  the URL
      */
-    public void setLink (String url)
-        throws MalformedURLException
+    public void setLink (URL url)
     {
-        this.url = new URL (url);
+        this.url = url;
     }
 
     /**
@@ -216,5 +213,24 @@ public class Channel implements RSSChannel
     public void setRSSFormat (String format)
     {
         this.rssFormat = format;
+    }
+    /**
+     * Get the author of the feed.
+     *
+     * @return the author, or null if not available
+     */
+    public String getAuthor()
+    {
+        return author;
+    }
+
+    /**
+     * Set the author of the feed.
+     *
+     * @param author the author, or null if not available
+     */
+    public void setAuthor (String author)
+    {
+        this.author = author;
     }
 }
