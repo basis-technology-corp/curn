@@ -559,16 +559,16 @@ source and documentation packages.
 
   <target name="-set.version.properties" depends="-get.version">
     <property name="versioned_src_zipfile"
-              value="src-${VERSION}.zip"/>
+              value="src-${curn.version}.zip"/>
 
     <property name="versioned_code_jar_file"
-              value="${code_jar_name}-${VERSION}.jar"/>
+              value="${code_jar_name}-${curn.version}.jar"/>
 
     <property name="versioned_docs_zipfile"
-              value="docs-${VERSION}.zip"/>
+              value="docs-${curn.version}.zip"/>
 
     <property name="versioned_javadocs_zipfile"
-              value="javadocs-${VERSION}.zip"/>
+              value="javadocs-${curn.version}.zip"/>
   </target>
 
   <target name="code.jar" depends="all"
