@@ -269,7 +269,7 @@
   <!-- Load the API version from the org.clapper.rssget.Util class -->
 
   <target name="-get.version" description="Get the version stamp">
-    <loadproperties srcfile="${build}/org/clapper/rssget/Util.class">
+    <loadproperties srcfile="${build}/org/clapper/rssget/Version.class">
       <filterchain>
         <classconstants/>
       </filterchain>
