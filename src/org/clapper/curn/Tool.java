@@ -53,7 +53,7 @@ import org.clapper.util.cmdline.CommandLineUsageException;
 import org.clapper.util.cmdline.UsageInfo;
 
 /**
- * <p><i>curn</i>: Curiously Uncomplicated RSS Notifier.</p>
+ * <p><i>curn</i>: Cacheing Utilitarian RSS Notifier.</p>
  *
  * <p><i>curn</i> is an RSS reader. It scans a configured set of URLs, each
  * one representing an RSS feed, and summarizes the results in an
