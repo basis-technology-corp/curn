@@ -1499,6 +1499,9 @@ section names are all valid for RSS feed sections.</p>
 		  encoding doesn't match the document's encoding
 	      <li>the remote HTTP server supplies the wrong encoding
 	    </ul>
+
+	    This value should be a character set encoding that is recognized
+	    by the Java runtime environment.
 	  </td>
 	  <td align="left">No</td>
 	  <td align="left">The server- or document-supplied
@@ -1777,6 +1780,18 @@ section.</p>
 	        </td>
 	        <td align="left">No</td>
 		<td align="left" class="code">RSS Feeds</td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">HTMLEncoding</td>
+	        <td align="left">String</td>
+	        <td align="left">Specify the character set encoding to use
+	        when writing the HTML. The encoding will be stored in an
+	        HTML &lt;META&gt; tag, and it will be used by the Java runtime
+	        when opening the output file (to ensure proper translation of
+	        characters from the in-memory Unicode character set).
+	        </td>
+	        <td align="left">No</td>
+		<td align="left">"utf-8"</td>
 	      </tr>
 	    </table>
 	  </td>

@@ -15,6 +15,13 @@ Version 1.4.1:
 
   See the Users Guide or the sample configuration file for more information.
 
+- Added HTMLEncoding parameter to the configuration for the HTMLOutputHandler
+  (org.clapper.curn.output.html.HTMLOutputHandler) class. This parameter
+  sets the desired character set encoding of the generated HTML file.
+  The encoding is set in a <META> tag in the document, and it is used when
+  opening the output file (to ensure proper translation of characters from
+  the in-memory Unicode character set). If not set, it defaults to "utf-8".
+
 
 Version 1.4:
 

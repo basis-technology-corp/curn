@@ -47,13 +47,14 @@ import org.clapper.util.text.Unicode;
 
 import org.clapper.util.misc.Logger;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.FileWriter;
 import java.io.File;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import java.util.Date;
 import java.util.Collection;
@@ -64,12 +65,16 @@ import java.text.SimpleDateFormat;
 
 import java.net.URL;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.html.HTMLElement;
+import org.w3c.dom.html.HTMLMetaElement;
 import org.w3c.dom.html.HTMLTableRowElement;
 import org.w3c.dom.html.HTMLTableCellElement;
 import org.w3c.dom.html.HTMLAnchorElement;
 
 import org.enhydra.xml.xmlc.XMLCUtil;
+import org.enhydra.xml.xmlc.html.HTMLObject;
 
 /**
  * Provides an output handler that produces HTML output.
@@ -89,12 +94,14 @@ public class HTMLOutputHandler extends FileOutputHandler
     private static final DateFormat OUTPUT_DATE_FORMAT =
                              new SimpleDateFormat ("dd MMM, yyyy, HH:mm:ss");
 
+    private static final String DEFAULT_CHARSET_ENCODING = "utf-8";
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
     private PrintWriter           out                 = null;
-    private RSSOutputHTML         doc                 = null;
+    private RSSOutputHTML         dom                 = null;
     private String                oddItemRowClass     = null;
     private String                oddChannelClass     = null;
     private int                   rowCount            = 0;
@@ -146,28 +153,34 @@ public class HTMLOutputHandler extends FileOutputHandler
         throws ConfigurationException,
                CurnException
     {
-        this.doc                 = new RSSOutputHTML();
+        this.dom                 = new RSSOutputHTML();
         this.config              = config;
-        this.oddChannelClass     = doc.getElementChannelTD().getClassName();
-        this.oddItemRowClass     = doc.getElementItemTitleTD().getClassName();
-        this.channelRow          = doc.getElementChannelRow();
-        this.channelSeparatorRow = doc.getElementChannelSeparatorRow();
+        this.oddChannelClass     = dom.getElementChannelTD().getClassName();
+        this.oddItemRowClass     = dom.getElementItemTitleTD().getClassName();
+        this.channelRow          = dom.getElementChannelRow();
+        this.channelSeparatorRow = dom.getElementChannelSeparatorRow();
         this.channelRowParent    = channelRow.getParentNode();
-        this.itemAnchor          = doc.getElementItemAnchor();
-        this.itemTitleTD         = doc.getElementItemTitleTD();
-        this.itemDescTD          = doc.getElementItemDescTD();
-        this.channelTD           = doc.getElementChannelTD();
+        this.itemAnchor          = dom.getElementItemAnchor();
+        this.itemTitleTD         = dom.getElementItemTitleTD();
+        this.itemDescTD          = dom.getElementItemDescTD();
+        this.channelTD           = dom.getElementChannelTD();
         this.title               = null;
 
         // Parse handler-specific configuration variables
 
-        String section = cfgHandler.getSectionName();
+        String section  = cfgHandler.getSectionName();
+        String encoding = null;
 
         try
         {
             if (section != null)
+            {
                 title = config.getOptionalStringValue (section, "Title", null);
-                                                       
+                encoding = config.getOptionalStringValue
+                                                    (section,
+                                                     "HTMLEncoding",
+                                                     DEFAULT_CHARSET_ENCODING);
+            }
         }
         
         catch (NoSuchSectionException ex)
@@ -175,15 +188,30 @@ public class HTMLOutputHandler extends FileOutputHandler
             throw new ConfigurationException (ex);
         }
 
+        // Set the content type in the document
+
+        HTMLElement      headElement;
+        HTMLMetaElement  metaElement;
+
+        headElement = getHeadElement (dom);
+        metaElement = (HTMLMetaElement) dom.createElement ("META");
+        metaElement.setHttpEquiv ("Content-Type");
+        metaElement.setContent (this.getContentType()
+                              + "; charset="
+                              + encoding);
+        headElement.insertBefore (metaElement, headElement.getFirstChild());
+
         // Open the output file.
 
         File outputFile = super.getOutputFile();
-        doc.setTextTimestamp (OUTPUT_DATE_FORMAT.format (new Date()));
+        dom.setTextTimestamp (OUTPUT_DATE_FORMAT.format (new Date()));
 
         try
         {
             log.debug ("Opening output file \"" + outputFile + "\"");
-            this.out = new PrintWriter (new FileWriter (outputFile));
+            this.out = new PrintWriter
+                          (new OutputStreamWriter
+                               (new FileOutputStream (outputFile), encoding));
         }
 
         catch (IOException ex)
@@ -228,9 +256,9 @@ public class HTMLOutputHandler extends FileOutputHandler
                                        channelSeparatorRow);
         // Do the rows of output.
 
-        doc.getElementChannelDate().removeAttribute ("id");
-        doc.getElementItemDate().removeAttribute ("id");
-        doc.getElementChannelLink().removeAttribute ("id");
+        dom.getElementChannelDate().removeAttribute ("id");
+        dom.getElementItemDate().removeAttribute ("id");
+        dom.getElementChannelLink().removeAttribute ("id");
 
         for (i = 0, it = items.iterator(); it.hasNext(); i++, rowCount++)
         {
@@ -241,35 +269,35 @@ public class HTMLOutputHandler extends FileOutputHandler
                 // First row in channel has channel title and link.
 
                 String s = HTMLUtil.textFromHTML (channel.getTitle());
-                doc.setTextChannelTitle (s);
+                dom.setTextChannelTitle (s);
 
                 URL url = channel.getLink();
                 if (url == null)
                     url = item.getLink();
 
-                doc.getElementChannelLink().setHref (url.toExternalForm());
+                dom.getElementChannelLink().setHref (url.toExternalForm());
 
                 date = null;
                 if (config.showDates())
                     date = channel.getPublicationDate();
                 if (date != null)
-                    doc.setTextChannelDate (OUTPUT_DATE_FORMAT.format (date));
+                    dom.setTextChannelDate (OUTPUT_DATE_FORMAT.format (date));
                 else
-                    doc.setTextChannelDate ("");
+                    dom.setTextChannelDate ("");
 
                 itemAnchor.setHref (item.getLink().toExternalForm());
             }
 
             else
             {
-                doc.setTextChannelTitle ("");
-                doc.setTextChannelDate ("");
-                doc.getElementChannelLink().setHref ("");
+                dom.setTextChannelTitle ("");
+                dom.setTextChannelDate ("");
+                dom.getElementChannelLink().setHref ("");
                 itemAnchor.setHref ("");
             }
 
             String title = item.getTitle();
-            doc.setTextItemTitle ((title == null) ? "(No Title)" : title);
+            dom.setTextItemTitle ((title == null) ? "(No Title)" : title);
 
             String desc = null;
             if (! feedInfo.summarizeOnly())
@@ -306,7 +334,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             if (desc == null)
                 desc = String.valueOf (Unicode.NBSP);
 
-            doc.setTextItemDescription (HTMLUtil.textFromHTML (desc));
+            dom.setTextItemDescription (HTMLUtil.textFromHTML (desc));
 
             itemAnchor.setHref (item.getLink().toExternalForm());
 
@@ -314,9 +342,9 @@ public class HTMLOutputHandler extends FileOutputHandler
             if (config.showDates())
                 date = item.getPublicationDate();
             if (date != null)
-                doc.setTextItemDate (OUTPUT_DATE_FORMAT.format (date));
+                dom.setTextItemDate (OUTPUT_DATE_FORMAT.format (date));
             else
-                doc.setTextItemDate ("");
+                dom.setTextItemDate ("");
 
             itemTitleTD.removeAttribute ("class");
             itemDescTD.removeAttribute ("class");
@@ -353,36 +381,36 @@ public class HTMLOutputHandler extends FileOutputHandler
     {
         // Remove the cloneable row.
 
-        removeElement (doc.getElementChannelRow());
+        removeElement (dom.getElementChannelRow());
 
         // Set the title and the top header.
 
         if (title != null)
         {
-            XMLCUtil.getFirstText (doc.getElementTitle()).setData (title);
-            doc.setTextTitleHeading (title);
+            XMLCUtil.getFirstText (dom.getElementTitle()).setData (title);
+            dom.setTextTitleHeading (title);
         }
 
         // Add configuration info, if available.
 
-        doc.setTextVersion (Version.VERSION);
+        dom.setTextVersion (Version.VERSION);
 
         URL configFileURL = config.getConfigurationFileURL();
         if (configFileURL == null)
-            removeElement (doc.getElementConfigFileRow());
+            removeElement (dom.getElementConfigFileRow());
         else
-            doc.setTextConfigURL (configFileURL.toString());
+            dom.setTextConfigURL (configFileURL.toString());
 
         // Write the document.
 
         log.debug ("Generating HTML");
 
-        out.print (doc.toDocument());
+        out.print (dom.toDocument());
         out.flush();
 
         // Kill the document.
 
-        doc = null;
+        dom = null;
     }
 
     /**
@@ -412,4 +440,54 @@ public class HTMLOutputHandler extends FileOutputHandler
         if (parentNode != null)
             parentNode.removeChild (element);
     }
+
+    /**
+     * Get the document's <HEAD> element in a DOM.
+     *
+     * @param doc  the loaded DOM for the document
+     *
+     * @return the <HEAD> element
+     *
+     * @throws IllegalStateException Bug: Missing <HEAD> element
+     */
+    public HTMLElement getHeadElement (HTMLObject doc)
+        throws IllegalStateException
+    {
+        Element htmlElement = dom.getDocumentElement();
+        Node    headNode;
+
+        // First, find the <HEAD> element. We start by finding the <HTML>
+        // element, relying on the following behavior (as documented in the
+        // javadoc for org.w3c.dom.Document):
+        //
+        // "[Document.getDocumentElement()] is a convenience attribute that
+        // allows direct access to the child node that is the root element
+        // of the document. For HTML documents, this is the element with
+        // the tagName "HTML".
+
+        if (htmlElement == null)
+        {
+            throw new IllegalStateException ("(BUG) No <HTML> element in "
+                                           + "document.");
+        }
+
+        headNode = htmlElement.getFirstChild();
+        while (headNode != null)
+        {
+            String name = headNode.getNodeName().toLowerCase();
+            if (name.equals ("head"))
+                break;
+
+            headNode = headNode.getNextSibling();
+        }
+
+        if (headNode == null)
+        {
+            throw new IllegalStateException ("(BUG) No <HEAD> element in "
+                                           + "document.");
+        }
+
+        return (HTMLElement) headNode;
+    }
 }
+
