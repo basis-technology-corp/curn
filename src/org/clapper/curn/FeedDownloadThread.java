@@ -494,11 +494,12 @@ class FeedDownloadThread extends Thread
         throws IOException
     {
         URL feedURL = feedInfo.getURL();
+        String feedURLString = feedURL.toString();
         int totalBytes = 0;
         File tempFile = createTempXMLFile();
 
         log.debug ("Downloading \""
-                 + feedURL.toString()
+                 + feedURLString
                  + "\" to file \""
                  + tempFile.getPath());
 
@@ -518,16 +519,40 @@ class FeedDownloadThread extends Thread
             if (contentTypeHeader != null)
             {
                 encoding = contentTypeCharSet (contentTypeHeader);
-                log.debug ("HTTP server says document's encoding is \""
+                log.debug ("HTTP server says encoding for \""
+                         + feedURLString
+                         + "\" is \""
                          + ((encoding == null) ? "<null>" : encoding)
                          + "\"");
             }
         }
 
+        else if (protocol.equals ("file"))
+        {
+            // Assume the same default encoding used by "SaveAsEncoding",
+            // unless explicitly specified.
+
+            encoding = FeedInfo.DEFAULT_SAVE_AS_ENCODING;
+            log.debug ("Default encoding for \""
+                     + feedURLString
+                     + "\" is \""
+                     + encoding
+                     + "\"");
+        }
+
+        // Set the forced encoding, if specified. Note: This is done after
+        // we check the HTTP encoding, so we can log any discrepancies
+        // between the config-specified encoding and the HTTP
+        // server-specified encoding.
+
         String forcedEncoding = feedInfo.getForcedCharacterEncoding();
         if (forcedEncoding != null)
         {
-            log.debug ("Forcing encoding to be \"" + forcedEncoding + "\"");
+            log.debug ("URL \""
+                     + feedURLString
+                     + "\": Forcing encoding to be \""
+                     + forcedEncoding
+                     + "\"");
             encoding = forcedEncoding;
         }
 
@@ -547,9 +572,14 @@ class FeedDownloadThread extends Thread
 
         else
         {
-            log.debug ("No encoding for document. Using default.");
-            reader = new InputStreamReader (urlStream);
+            InputStreamReader isr = new InputStreamReader (urlStream);
+            reader = isr;
             writer = new FileWriter (tempFile);
+            log.debug ("No encoding for \""
+                     + feedURLString
+                     + "\". Using VM default of \""
+                     + isr.getEncoding()
+                     + "\"");
         }
         
         totalBytes = FileUtil.copyReader (reader, writer);

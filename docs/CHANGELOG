@@ -19,6 +19,14 @@ Version 1.5.5 (10 November, 2004)
   that reads a saved file. See the sample configuration or the User's Guide
   for details.
 
+- The "ForceCharacterEncoding" per-feed configuration parameter is now
+  called "ForceEncoding" (though "ForceCharacterEncoding" is recognized,
+  as well, for backward compatibility).
+
+- For "file:" URLs, unless "ForceEncoding" is specified, the default encoding
+  is now "utf-8", instead of the Java VM's default. This plays better with
+  the new "SaveAsEncoding" parameter.
+
 - Curn now gives email attachments names with reasonable extensions.
   Previously, default names (ending in ".tmp") were used, which gave some 
   mail clients (e.g., some versions of Outlook) fits.

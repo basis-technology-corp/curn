@@ -1549,7 +1549,7 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
         <tr valign="top" class="oddrow">
-	  <td align="left" class="code">ForceCharacterEncoding</td>
+	  <td align="left" class="code"><a name="Feed_ForceEncoding">ForceEncoding</a></td>
           <td align="left">String</td>
 	  <td align="left">Force <i>curn</i> to ignore the character set
             encoding advertised by the remote server (if any), and use the
@@ -1561,15 +1561,32 @@ section names are all valid for RSS feed sections.</p>
 		  Content-Encoding header, and the local (Java) default
 		  encoding doesn't match the document's encoding
 	      <li>the remote HTTP server supplies the wrong encoding
+	      <li>the feed is coming from a file or an FTP server, and the
+		  default encoding (see below) isn't correct
 	    </ul>
 
-	    This value should be a character set encoding that is recognized
-	    by the Java runtime environment.
+	    <p>This value should be a character set encoding that is recognized
+	    by the Java runtime environment.</p>
+
+	    <p><span class="code">ForceCharacterEncoding</span> is a synonym
+	    for this parameter, retained for backward compatibility.</p>
 	  </td>
 	  <td align="left">No</td>
-	  <td align="left">The server- or document-supplied
-	    character set encoding, if present; otherwise, the encoding of
-	    the Java VM that's running curn.</td>
+	  <td align="left">
+	    <ul>
+	      <li>For <span class="code">http</span> and
+		  <span class="code">https</span> URLs, the encoding comes
+		  from the HTTP Content-Encoding header; if that header isn't
+		  present, then the Java VM's default encoding (usually
+		  "ISO-8859-1" on Unix, and "Cp1252" on Windows) is used.
+	      <li>For <span class="code">file</span> URLs, the default encoding
+		  is "utf-8", the same as the default value for the
+		  <a href="#Feed_SaveAsEncoding" class="code">SaveAsEncoding</a>
+		  parameter.
+	      <li>For all other URL types, the Java VM's default encoding is
+		  used.
+	    </ul>
+	  </td>
 	</tr>
 
         <tr valign="top" class="evenrow">
@@ -1739,7 +1756,12 @@ section names are all valid for RSS feed sections.</p>
 	    then any <span class="code">SaveAsEncoding</span> parameter is
 	    ignored.</p>
 	  <td align="left">No</td>
-	  <td align="left">"utf-8"</td>
+	  <td align="left">"utf-8". Note that this default value is the same
+            as the default value of the
+	    <a href="#Feed_ForceEncoding">ForceEncoding</a>, for
+            <span class="code">file</span> URLs. This makes it easy to have
+            one instance of <i>curn</i> save RSS feeds for other instances to
+            parse.</td>
 	</tr>
 
         <tr valign="top" class="oddrow">
@@ -1805,8 +1827,6 @@ section names are all valid for RSS feed sections.</p>
 	    refuse access to robots and spiders and other unknown web clients.
           </td>
 	  <td align="left">No</td>
-	  <td align="left">
-	   as the user agent.</td>
 	  <td align="left">
 	    The value of the global
 	    <a href="#Cfg_UserAgent" class="code">UserAgent</a>
