@@ -1,5 +1,5 @@
 <!--
-  Ant build file for clapper.org Java curn utility
+  Ant build file for curn
 
   $Id$
   ===========================================================================
@@ -27,9 +27,9 @@
 
 -->
 
-<project name="util" default="curn" basedir=".">
+<project name="curn" default="curn" basedir=".">
   <description>
-    Build file for "util" Java classes
+    Build file for "curn" Java classes
   </description>
 
   <!--
@@ -52,7 +52,7 @@
   <property name="code_jar_path" value="${dist}/${code_jar_file}"/>
   <property name="docs_top_dir" value="${dist}/docs"/>
   <property name="docs_api_dir" value="${docs_top_dir}/api"/>
-  <property name="zip_dir_prefix" value="org/clapper/util/"/>
+  <property name="zip_dir_prefix" value="org/clapper/curn/"/>
   <property name="release_dir" value="${dist}/release"/>
 
   <!--
