@@ -46,11 +46,18 @@ public interface RSSChannel
     public String getTitle();
 
     /**
-     * Get the channel's published URL.
+     * Get the channel's description
+     *
+     * @return the channel's description, or null if there isn't one
+     */
+    public String getDescription();
+
+    /**
+     * Get the channel's published link (its URL).
      *
      * @return the URL, or null if not available
      */
-    public URL getURL();
+    public URL getLink();
 
     /**
      * Get the channel's publication date.
@@ -58,6 +65,13 @@ public interface RSSChannel
      * @return the date, or null if not available
      */
     public Date getPublicationDate();
+
+    /**
+     * Get the channel's copyright string
+     *
+     * @return the copyright string, or null if not available
+     */
+    public String getCopyright();
 
     /**
      * Get the RSS format the channel is using.
