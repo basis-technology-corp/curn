@@ -25,9 +25,6 @@ import org.clapper.util.config.Configuration;
 import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt> class (part of
  * the <i>clapper.org</i> Java Utility library) to parse and validate the
@@ -117,9 +114,9 @@ public class ConfigFile extends Configuration
     private boolean     showAuthors      = false;
 
     /**
-     * Commons logging: For log messages
+     * For log messages
      */
-    private static Log log = LogFactory.getLog (ConfigFile.class);
+    private static Logger log = new Logger (ConfigFile.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor

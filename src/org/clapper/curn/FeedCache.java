@@ -20,9 +20,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Defines the in-memory format of the <i>curn</i> cache, and provides
  * methods for saving and restoring the cache.
@@ -59,9 +56,9 @@ public class FeedCache implements Serializable
     private long currentTime = System.currentTimeMillis();
 
     /**
-     * Commons logging: For log messages
+     * For log messages
      */
-    private static Log log = LogFactory.getLog (FeedCache.class);
+    private static Logger log = new Logger (FeedCache.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor

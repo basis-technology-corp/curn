@@ -62,9 +62,6 @@ import org.clapper.util.config.ConfigurationException;
 
 import org.apache.oro.text.perl.Perl5Util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * <p><i>curn</i>: Curiously Uncomplicated RSS Notifier.</p>
  *
@@ -157,9 +154,9 @@ public class curn
     private Perl5Util   perl5Util      = new Perl5Util();
 
     /**
-     * Commons logging: For log messages
+     * For log messages
      */
-    private static Log log = LogFactory.getLog (curn.class);
+    private static Logger log = new Logger (curn.class);
 
     /*----------------------------------------------------------------------*\
                                Main Program
@@ -407,6 +404,9 @@ public class curn
                 else if (s.equals ("-D") || s.equals ("--no-dates"))
                     opts.put ("D", "");
 
+                else if (s.equals ("-l") || (s.equals ("--logging")))
+                    opts.put ("l", "");
+
                 else
                     throw new BadCommandLineException ("Unknown option: "
                                                      + s);
@@ -458,6 +458,10 @@ public class curn
 
                     case 'D':   // --no-dates
                         config.setShowDatesFlag (false);
+                        break;
+
+                    case 'l':   // --logging
+                        Logger.enableAllLoggers();
                         break;
 
                     case 'Q':   // --no-quiet
@@ -552,8 +556,8 @@ public class curn
 "-C, --no-cache       Don't use a cache file at all.",
 "-d, --show-dates     Show dates on feeds and feed items, if available",
 "-D, --no-dates       Don't show dates on feeds and feed items",
-"-u, --no-update      Read the cache, but don't update it",
 "-Q, --no-quiet       Emit information about sites with no information",
+"-l, --logging        Enable logging via the Jakarta Commons Logging API",
 "-q, --quiet          Be quiet about sites with no information",
 "-r, --rss-version    Display the RSS version used at each site",
 "-R, --no-rss-version Don't display the RSS version used at each site",
@@ -561,6 +565,7 @@ public class curn
 "--time datetime      For the purposes of cache expiration, pretend the",
 "                       current time is <datetime>. <datetime> may be in a ",
 "                       variety of forms.",
+"-u, --no-update      Read the cache, but don't update it"
         };
 
         for (int i = 0; i < USAGE.length; i++)
