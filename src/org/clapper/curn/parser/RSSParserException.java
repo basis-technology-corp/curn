@@ -26,7 +26,7 @@
 
 package org.clapper.curn.parser;
 
-import org.clapper.util.misc.NestedException;
+import org.clapper.curn.CurnException;
 
 /**
  * A <tt>RSSParserException</tt> is thrown by parser implementations
@@ -36,7 +36,7 @@ import org.clapper.util.misc.NestedException;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSParserException extends NestedException
+public class RSSParserException extends CurnException
 {
     /*----------------------------------------------------------------------*\
                                 Constructor
