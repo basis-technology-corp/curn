@@ -24,9 +24,16 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn;
+package org.clapper.curn.output;
 
 import org.clapper.curn.util.Util;
+
+import org.clapper.curn.ConfigFile;
+import org.clapper.curn.ConfiguredOutputHandler;
+import org.clapper.curn.CurnException;
+import org.clapper.curn.FeedInfo;
+import org.clapper.curn.OutputHandler;
+import org.clapper.curn.Version;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -60,7 +67,7 @@ import java.util.Iterator;
  *
  * @see OutputHandler
  * @see FileOutputHandler
- * @see Curn
+ * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
@@ -107,13 +114,17 @@ public class TextOutputHandler extends FileOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config       the parsed <i>curn</i> configuration data
-     * @param sectionName  the config file section name for the handler
+     * @param config     the parsed <i>curn</i> configuration data
+     * @param cfgHandler the <tt>ConfiguredOutputHandler</tt> wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile config, String sectionName)
+    public void initOutputHandler (ConfigFile              config, 
+                                   ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -274,7 +285,7 @@ public class TextOutputHandler extends FileOutputHandler
     {
         out.println ();
         out.println (HORIZONTAL_RULE);
-        out.println ("curn, version " + Version.VERSION);
+        out.println (Version.getFullVersion());
         out.println ("Generated " + new Date().toString());
         out.flush();
         out = null;

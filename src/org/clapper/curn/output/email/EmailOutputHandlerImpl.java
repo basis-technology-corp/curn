@@ -24,17 +24,19 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn.email;
+package org.clapper.curn.output.email;
 
-import org.clapper.curn.OutputHandler;
-import org.clapper.curn.EmailOutputHandler;
-import org.clapper.curn.util.Util;
-import org.clapper.curn.Version;
-import org.clapper.curn.FeedInfo;
 import org.clapper.curn.ConfigFile;
+import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
+import org.clapper.curn.EmailOutputHandler;
+import org.clapper.curn.FeedInfo;
+import org.clapper.curn.OutputHandler;
+import org.clapper.curn.Version;
+
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.util.Util;
 
 import org.clapper.util.mail.EmailMessage;
 import org.clapper.util.mail.EmailTransport;
@@ -92,12 +94,19 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config  the parsed <i>curn</i> configuration data
+     * @param config     the parsed <i>curn</i> configuration data. The
+     *                   output handler is responsible for retrieving its
+     *                   own parameters from the configuration, by calling
+     *                   <tt>config.getOutputHandlerSpecificVariables()</tt>
+     * @param cfgHandler the <tt>ConfiguredOutputHandler</tt> wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile config)
+    public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -106,7 +115,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
             OutputHandler handler = (OutputHandler) it.next();
-            handler.init (config);
+            handler.init (config, cfgHandler);
         }
     }
 

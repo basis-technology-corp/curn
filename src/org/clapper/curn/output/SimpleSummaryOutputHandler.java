@@ -24,7 +24,13 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn;
+package org.clapper.curn.output;
+
+import org.clapper.curn.ConfigFile;
+import org.clapper.curn.ConfiguredOutputHandler;
+import org.clapper.curn.CurnException;
+import org.clapper.curn.FeedInfo;
+import org.clapper.curn.OutputHandler;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -54,25 +60,25 @@ import java.util.ArrayList;
  *
  * <blockquote><pre>
  * [OutputHandlerSummary]
- * Class: org.clapper.curn.SimpleSummaryOutputHandler
+ * Class: org.clapper.curn.output.SimpleSummaryOutputHandler
  * Message: Full details at http://localhost/rss/feeds.html
  * </pre></blockquote>
  *
  * <p>This handler is particularly useful in conjunction with a true output
  * handler. For instance, my mail reader does not support HTML (and I like
  * it that way); however, I prefer the output produced by the
- * {@link org.clapper.curn.htmloutput.HTMLOutputHandler HTMLOutputHandler}
+ * {@link org.clapper.curn.output.html.HTMLOutputHandler HTMLOutputHandler}
  * class to the output produced by the
  * {@link TextOutputHandler TextOutputHandler}
  * class. So, my configuration file contains the following output handlers:</p>
  *
  * <blockquote><pre>
  * [OutputHandlerSummary]
- * Class: org.clapper.curn.SimpleSummaryOutputHandler
+ * Class: org.clapper.curn.output.SimpleSummaryOutputHandler
  * Message: Full details at http://localhost/rss/feeds.html
  *
  * [OutputHandlerHTML]
- * Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+ * Class: org.clapper.curn.output.html.HTMLOutputHandler
  * SaveAs: /usr/local/www/htdocs/rss/feeds.html
  * SaveOnly: true
  * </pre></blockquote>
@@ -96,7 +102,7 @@ import java.util.ArrayList;
  *
  * @see OutputHandler
  * @see FileOutputHandler
- * @see Curn
+ * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
@@ -136,17 +142,23 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config       the parsed <i>curn</i> configuration data
-     * @param sectionName  the config file section name for the handler
+     * @param config     the parsed <i>curn</i> configuration data
+     * @param cfgHandler the <tt>ConfiguredOutputHandler</tt> wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile config, String sectionName)
+    public void initOutputHandler (ConfigFile              config,
+                                   ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
         this.config = config;
+
+        String sectionName = cfgHandler.getSectionName();
 
         if (sectionName != null)
         {

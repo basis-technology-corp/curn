@@ -24,9 +24,15 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn;
+package org.clapper.curn.output;
 
 import org.clapper.curn.util.Util;
+
+import org.clapper.curn.ConfigFile;
+import org.clapper.curn.ConfiguredOutputHandler;
+import org.clapper.curn.CurnException;
+import org.clapper.curn.FeedInfo;
+import org.clapper.curn.OutputHandler;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -65,7 +71,7 @@ import java.io.FileNotFoundException;
  * </ul>
  *
  * @see OutputHandler
- * @see Curn
+ * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
@@ -103,12 +109,16 @@ public abstract class FileOutputHandler implements OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config  the parsed <i>curn</i> configuration data
+     * @param config     the parsed <i>curn</i> configuration data
+     * @param cfgHandler the <tt>ConfiguredOutputHandler</tt> wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile config)
+    public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -116,7 +126,7 @@ public abstract class FileOutputHandler implements OutputHandler
         String sectionName = null;
 
         this.config = config;
-        sectionName = config.getOutputHandlerSectionName (this.getClass());
+        sectionName = cfgHandler.getSectionName();
 
         try
         {
@@ -165,21 +175,24 @@ public abstract class FileOutputHandler implements OutputHandler
                  + this.getClass().getName()
                  + "initOutputHandler()");
 
-        initOutputHandler (config, sectionName);
+        initOutputHandler (config, cfgHandler);
     }
 
     /**
      * Perform any subclass-specific initialization. Subclasses must
      * override this method.
      *
-     * @param config       the parsed <i>curn</i> configuration data
-     * @param sectionName  the config file section name for the handler
+     * @param config     the parsed <i>curn</i> configuration data
+     * @param cfgHandler the <tt>ConfiguredOutputHandler</tt> wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
      *
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public abstract void initOutputHandler (ConfigFile config,
-                                            String     sectionName)
+    public abstract void initOutputHandler (ConfigFile              config,
+                                            ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException;
 
