@@ -29,6 +29,11 @@ package org.clapper.curn;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 
 import java.util.Date;
 import java.util.Map;
@@ -50,6 +55,7 @@ import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
+import org.clapper.util.io.FileUtils;
 import org.clapper.util.misc.BadCommandLineException;
 import org.clapper.util.text.TextUtils;
 import org.clapper.util.config.ConfigurationException;
@@ -57,7 +63,7 @@ import org.clapper.util.config.ConfigurationException;
 import org.apache.oro.text.perl.Perl5Util;
 
 /**
- * <p><i>curn</i> - Completely Uncomplicated RSS Notifier</p>
+ * <p><i>curn</i> - Curiously Uncomplicated RSS Notifier</p>
  *
  * <p><i>curn</i> scans a configured set of URLs, each one representing an
  * RSS feed, and summarizes the results in an easy-to-read text format.
@@ -162,7 +168,6 @@ public class curn implements VerboseMessagesHandler
         catch (ConfigurationException ex)
         {
             System.err.println (ex.getMessages());
-            ex.printStackTrace();
             System.exit (1);
         }
 
@@ -267,7 +272,7 @@ public class curn implements VerboseMessagesHandler
      * @throws FeedException          any other error
      */
     public void processRSSFeeds (ConfigFile configuration,
-                                 Collection          emailAddresses)
+                                 Collection emailAddresses)
         throws IOException,
                ConfigurationException,
                RSSParserException,
@@ -295,6 +300,10 @@ public class curn implements VerboseMessagesHandler
         parser = RSSParserFactory.getRSSParser (parserClassName);
 
         channels = new ArrayList();
+
+        Collection feeds = configuration.getFeeds();
+        if (feeds.size() == 0)
+            throw new ConfigurationException ("No configured RSS feed URLs.");
 
         for (it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
@@ -371,7 +380,7 @@ public class curn implements VerboseMessagesHandler
                 if (s.equals ("-u") || s.equals ("--no-update"))
                     opts.put ("u", "");
 
-                else if (s.equals ("--build-info") || s.equals ("-B"))
+                else if (s.equals ("-B") || s.equals ("--build-info"))
                     opts.put ("B", "");
 
                 else if (s.equals ("-Q") || s.equals ("--no-quiet"))
@@ -444,7 +453,7 @@ public class curn implements VerboseMessagesHandler
                         config.setMustUpdateCacheFlag (false);
                         break;
 
-                    case 'B':
+                    case 'B':   // --build-info
                         showBuildInfo = true;
                         break;
 
@@ -460,7 +469,7 @@ public class curn implements VerboseMessagesHandler
                         config.setShowDatesFlag (false);
                         break;
 
-                    case 'Q':   // --noquiet
+                    case 'Q':   // --no-quiet
                         config.setQuietFlag (false);
                         break;
 
@@ -468,11 +477,11 @@ public class curn implements VerboseMessagesHandler
                         config.setQuietFlag (true);
                         break;
 
-                    case 'r':
+                    case 'r':   // --rss-version
                         config.setShowRSSVersionFlag (true);
                         break;
 
-                    case 'R':
+                    case 'R':   // --no-rss-version
                         config.setShowRSSVersionFlag (false);
                         break;
 
@@ -645,8 +654,8 @@ public class curn implements VerboseMessagesHandler
         }
     }
 
-    private RSSChannel processFeed (FeedInfo            feedInfo,
-                                    RSSParser           parser,
+    private RSSChannel processFeed (FeedInfo   feedInfo,
+                                    RSSParser  parser,
                                     ConfigFile configuration)
         throws RSSParserException
     {
@@ -656,7 +665,7 @@ public class curn implements VerboseMessagesHandler
         try
         {
             String feedURLString = feedURL.toString();
-            verbose (3, "Parsing feed at " + feedURLString);
+            verbose (2, "Parsing feed at " + feedURLString);
 
             // Don't download the channel if it hasn't been modified since
             // we last checked it.
@@ -669,7 +678,20 @@ public class curn implements VerboseMessagesHandler
                                       feedURL,
                                       feedInfo);
 
-                channel = parser.parseRSSFeed (conn.getInputStream());
+                File saveAsFile = feedInfo.getSaveAsFile();
+                InputStream is = conn.getInputStream();
+
+                if (saveAsFile != null)
+                {
+                    // Copy the contents of the feed to the file first, then
+                    // parse the downloaded file, instead.
+
+                    downloadFeed (is, feedURLString, saveAsFile);
+                    verbose (2, "Reopening \"" + saveAsFile.getPath() + "\".");
+                    is = new FileInputStream (saveAsFile);
+                }
+
+                channel = parser.parseRSSFeed (is);
                 processChannelItems (channel, feedInfo);
                 if (channel.getItems().size() == 0)
                     channel = null;
@@ -703,6 +725,40 @@ public class curn implements VerboseMessagesHandler
         return channel;
     }
 
+    private void downloadFeed (InputStream urlStream,
+                               String      feedURL,
+                               File        saveAsFile)
+        throws IOException
+    {
+        File temp = File.createTempFile ("curn", "xml", null);
+        temp.deleteOnExit();
+
+        try
+        {
+            verbose (2,
+                     "Downloading \""
+                   + feedURL
+                   + "\" to temporary file \""
+                   + temp.getPath());
+            OutputStream os = new FileOutputStream (temp);
+            FileUtils.copyStream (urlStream, os);
+            os.close();
+
+            verbose (2,
+                     "Copying temporary file \""
+                   + temp.getPath()
+                   + "\" to \""
+                   + saveAsFile.getPath()
+                   + "\"");
+            FileUtils.copyFile (temp, saveAsFile);
+        }
+
+        finally
+        {
+            temp.delete();
+        }
+    }
+
     private boolean feedHasChanged (URLConnection conn, FeedInfo feedInfo)
         throws IOException
     {
@@ -723,7 +779,7 @@ public class curn implements VerboseMessagesHandler
             verbose (2,
                      "Feed \""
                    + feedURL.toString()
-                   + "\" has no record last-seen time.");
+                   + "\" has no recorded last-seen time.");
             hasChanged = true;
         }
 
