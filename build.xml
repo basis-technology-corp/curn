@@ -102,7 +102,7 @@ source and documentation packages.
   <target name="all" depends="curn"/>
 
   <target name="curn"
-          depends="init,main,output,third.party.parsers,-build.info,bundles"
+          depends="init,main,output,third.party.parsers,bundles,-build.info"
           description="Compiles the source"/>
 
   <target name="third.party.parsers"
@@ -493,16 +493,11 @@ source and documentation packages.
   ***************************************************************************
   -->
 
-  <!-- Load the API version from the org.clapper.curn.Util class -->
+  <!-- Load the API version from the appropriate resource bundle -->
 
-  <target name="-get.version">
-    <loadproperties srcfile="${build}/org/clapper/curn/Version.class">
-      <filterchain>
-        <classconstants/>
-      </filterchain>
-    </loadproperties>
-
-    <echo>Version: ${VERSION}</echo>
+  <target name="-get.version" description="Get the version stamp">
+    <property file="${build}/org/clapper/util/misc/Bundle.properties"/>
+    <echo>Version: ${curn.version}</echo>
   </target>
 
   <target name="version" depends="-get.version"/>

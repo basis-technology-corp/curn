@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 import java.io.PrintStream;
 
 import org.clapper.util.misc.BuildInfo;
+import org.clapper.util.misc.BundleUtil;
 
 /**
  * <p>Contains the software version for the <i>org.clapper.util</i>
@@ -48,12 +49,10 @@ public final class Version
                              Public Constants
     \*----------------------------------------------------------------------*/
 
-    public static final String VERSION = "1.5.1";
-
     /**
      * The name of the resource bundle containing the build info.
      */
-    public static final String BUNDLE_NAME
+    public static final String BUILD_INFO_BUNDLE_NAME
         = "org.clapper.curn.BuildInfoBundle";
 
     /*----------------------------------------------------------------------*\
@@ -69,6 +68,18 @@ public final class Version
     \*----------------------------------------------------------------------*/
 
     /**
+     * Get just the version number string.
+     *
+     * @return the version number string
+     *
+     * @see #getFullVersion
+     */
+    public static String getVersionNumber()
+    {
+        return BundleUtil.getString (Curn.BUNDLE_NAME, "curn.version", "?");
+    }
+
+    /**
      * Get the full program version string, which contains the program name
      * and the version number. This is the string that the
      * {@link #showVersion()} method displays.
@@ -78,10 +89,11 @@ public final class Version
      * @see #showVersion()
      * @see #showVersion(PrintWriter)
      * @see #showVersion(PrintStream)
+     * @see #getVersionNumber
      */
     public static String getFullVersion()
     {
-        return "curn, version " + VERSION;
+        return "curn, version " + getVersionNumber();
     }
 
     /**
@@ -158,7 +170,7 @@ public final class Version
      */
     public static void showBuildInfo (PrintWriter out)
     {
-        BuildInfo buildInfo = new BuildInfo (BUNDLE_NAME);
+        BuildInfo buildInfo = new BuildInfo (BUILD_INFO_BUNDLE_NAME);
 
         out.println ();
         showVersion (out);
@@ -183,6 +195,6 @@ public final class Version
      */
     public static BuildInfo getBuildInfo()
     {
-        return new BuildInfo (BUNDLE_NAME);
+        return new BuildInfo (BUILD_INFO_BUNDLE_NAME);
     }
 }

@@ -83,6 +83,15 @@ public class Curn
                         "org.clapper.curn.output.email.EmailOutputHandlerImpl";
 
     /*----------------------------------------------------------------------*\
+                         Package-visible Constants
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Resource bundle for this package
+     */
+    static final String BUNDLE_NAME = "org.clapper.curn.Curn";
+
+    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 

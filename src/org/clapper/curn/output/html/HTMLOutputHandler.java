@@ -410,7 +410,7 @@ public class HTMLOutputHandler extends FileOutputHandler
 
         // Add configuration info, if available.
 
-        dom.setTextVersion (Version.VERSION);
+        dom.setTextVersion (Version.getVersionNumber());
 
         URL configFileURL = config.getConfigurationFileURL();
         if (configFileURL == null)
