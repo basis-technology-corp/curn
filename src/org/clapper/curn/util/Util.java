@@ -24,7 +24,7 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn;
+package org.clapper.curn.util;
 
 import java.util.ResourceBundle;
 import java.util.Locale;
@@ -116,6 +116,20 @@ public class Util
         throws MalformedURLException
     {
         return normalizeURL (new URL (url));
+    }
+
+    /**
+     * Convert a URL to a lookup key, by normalizing it and converting it
+     * to a string. Calling this method ensures that everyone converts a
+     * URL to a key the same way.
+     *
+     * @param url  the URL
+     *
+     * @return the lookup key (really, the normalized, stringified URL)
+     */
+    public static String urlToLookupKey (URL url)
+    {
+        return Util.normalizeURL (url).toExternalForm();
     }
 
     /**

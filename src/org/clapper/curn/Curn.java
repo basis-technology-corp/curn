@@ -47,6 +47,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
 
+import org.clapper.curn.util.Util;
+
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
