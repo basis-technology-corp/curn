@@ -155,7 +155,7 @@
   </target>
 
   <target name="-check.informa.exists">
-    <available classname="de.nava.informa.parsers.RSSParser"
+    <available classname="de.nava.informa.parsers.FeedParser"
                property="informa.exists" value="true"/>
   </target>
 

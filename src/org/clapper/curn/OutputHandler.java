@@ -5,7 +5,7 @@
 package org.clapper.curn;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -45,14 +45,14 @@ public interface OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>PrintWriter</tt> where the handler should send
-     *                output, if applicable.
+     * @param writer  the <tt>OutputStreamWriter</tt> where the handler
+     *                should send output, if applicable.
      * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException  initialization error
      */
-    public void init (PrintWriter         writer,
-                      ConfigFile config)
+    public void init (OutputStreamWriter writer,
+                      ConfigFile         config)
         throws FeedException;
 
     /**

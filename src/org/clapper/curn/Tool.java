@@ -28,7 +28,7 @@ package org.clapper.curn;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -278,11 +278,11 @@ public class curn implements VerboseMessagesHandler
                RSSParserException,
                FeedException
     {
-        Iterator     it;
-        String       parserClassName;
-        RSSParser    parser;
-        Collection   channels;
-        PrintWriter  out;
+        Iterator            it;
+        String              parserClassName;
+        RSSParser           parser;
+        Collection          channels;
+        OutputStreamWriter  out;
 
         loadOutputHandlers (configuration, emailAddresses);
 
@@ -330,7 +330,7 @@ public class curn implements VerboseMessagesHandler
         {
             // Dump the output to each output handler
 
-            out = new PrintWriter (System.out);
+            out = new OutputStreamWriter (System.out);
 
             for (it = outputHandlers.iterator(); it.hasNext(); )
             {

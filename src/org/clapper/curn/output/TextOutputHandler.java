@@ -9,18 +9,18 @@ import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.text.TextUtils;
+import org.clapper.util.text.Unicode;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
 
 import java.util.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Provides an output handler that produces plain text to a
- * <tt>PrintWriter</tt>.
+ * Provides an output handler that produces plain text to an
+ * <tt>OutputStreamWriter</tt>.
  *
  * @see OutputHandler
  * @see curn
@@ -37,7 +37,8 @@ public class TextOutputHandler implements OutputHandler
     private WordWrapWriter  out         = null;
     private int             indentLevel = 0;
     private ConfigFile      config      = null;
-
+    private StringBuffer    scratch     = new StringBuffer();
+       
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -56,14 +57,13 @@ public class TextOutputHandler implements OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param writer  the <tt>PrintWriter</tt> where the handler should send
-     *                output
+     * @param writer  the <tt>OutputStreamWWriter</tt> where the handler
+     *                should send output
      * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException  initialization error
      */
-    public void init (PrintWriter         writer,
-                      ConfigFile config)
+    public void init (OutputStreamWriter writer, ConfigFile config)
         throws FeedException
     {
         this.out    = new WordWrapWriter (writer, 79);
@@ -100,7 +100,7 @@ public class TextOutputHandler implements OutputHandler
             out.println ("---------------------------------------" +
                          "---------------------------------------");
 
-            out.println (channel.getTitle());
+            out.println (convert (channel.getTitle()));
             out.println (channel.getLink().toString());
 
             if (config.showDates())
@@ -129,13 +129,13 @@ public class TextOutputHandler implements OutputHandler
                 out.println ();
 
                 s = item.getTitle();
-                out.println ((s == null) ? "(No Title)" : s);
+                out.println ((s == null) ? "(No Title)" : convert (s));
 
                 if (config.showAuthors())
                 {
                     s = item.getAuthor();
                     if (s != null)
-                        out.println ("By " + s);
+                        out.println ("By " + convert (s));
                 }
 
                 out.println (item.getLink().toString());
@@ -178,7 +178,7 @@ public class TextOutputHandler implements OutputHandler
                     {
                         out.println();
                         setIndent (++indentLevel);
-                        out.println (s);
+                        out.println (convert (s));
                         setIndent (--indentLevel);
                     }
                 }
@@ -238,5 +238,45 @@ public class TextOutputHandler implements OutputHandler
         out.setPrefix (buf.toString());
 
         return level;
+    }
+
+    private String convert (String s)
+    {
+        char[] ch = s.toCharArray();
+
+        scratch.setLength (0);
+        for (int i = 0; i < ch.length; i++)
+        {
+            switch (ch[i])
+            {
+                case Unicode.LEFT_SINGLE_QUOTE:
+                case Unicode.RIGHT_SINGLE_QUOTE:
+                    scratch.append ('\'');
+                    break;
+
+                case Unicode.LEFT_DOUBLE_QUOTE:
+                case Unicode.RIGHT_DOUBLE_QUOTE:
+                    scratch.append ('"');
+                    break;
+
+                case Unicode.EM_DASH:
+                    scratch.append ("--");
+                    break;
+
+                case Unicode.EN_DASH:
+                    scratch.append ('-');
+                    break;
+
+                case Unicode.TRADEMARK:
+                    scratch.append ("[TM]");
+                    break;
+
+                default:
+                    scratch.append (ch[i]);
+                    break;
+            }
+        }
+
+        return scratch.toString();
     }
 }

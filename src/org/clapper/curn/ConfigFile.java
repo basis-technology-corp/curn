@@ -658,51 +658,52 @@ public class ConfigFile extends Configuration
     private void processSiteURLSection (String sectionName)
         throws ConfigurationException
     {
+        FeedInfo  feedInfo = null;
+        String    feedURLString = getVariableValue (sectionName, VAR_FEED_URL);
+        String    s;
+        URL       url = null;
+
         try
         {
-            String s = getVariableValue (sectionName, VAR_FEED_URL);
-            URL url = Util.normalizeURL (s);
-
-            FeedInfo feedInfo = new FeedInfo (url);
-
-            feedInfo.setDaysToCache
-                              (getOptionalIntegerValue (sectionName,
-                                                        VAR_DAYS_TO_CACHE,
-                                                        defaultCacheDays));
-            feedInfo.setPruneURLsFlag
-                              (getOptionalBooleanValue (sectionName,
-                                                        VAR_PRUNE_URLS,
-                                                        DEF_PRUNE_URLS));
-            feedInfo.setSummarizeOnlyFlag
-                              (getOptionalBooleanValue (sectionName,
-                                                        VAR_SUMMARY_ONLY,
-                                                        summaryOnly));
-            feedInfo.setEnabledFlag
-                              (! getOptionalBooleanValue (sectionName,
-                                                          VAR_DISABLE_FEED,
-                                                          false));
-
-            s = getOptionalStringValue (sectionName, VAR_TITLE_OVERRIDE, null);
-            if (s != null)
-                feedInfo.setTitleOverride (s);
-
-            s = getOptionalStringValue (sectionName, VAR_EDIT_ITEM_URL, null);
-            if (s != null)
-                feedInfo.setItemURLEditCommand (s);
-
-            s = getOptionalStringValue (sectionName, VAR_SAVE_FEED_AS, null);
-            if (s != null)
-                feedInfo.setSaveAsFile (new File (s));
-
-            feeds.add (feedInfo);
-            feedMap.put (url, feedInfo);
+            url = Util.normalizeURL (feedURLString);
+            feedInfo = new FeedInfo (url);
         }
 
         catch (MalformedURLException ex)
         {
             throw new ConfigurationException ("Bad RSS site URL: \""
-                                            + sectionName
+                                            + feedURLString
                                             + "\"");
         }
+
+        feedInfo.setDaysToCache (getOptionalIntegerValue (sectionName,
+                                                          VAR_DAYS_TO_CACHE,
+                                                          defaultCacheDays));
+        feedInfo.setPruneURLsFlag (getOptionalBooleanValue (sectionName,
+                                                            VAR_PRUNE_URLS,
+                                                            DEF_PRUNE_URLS));
+        feedInfo.setSummarizeOnlyFlag
+                              (getOptionalBooleanValue (sectionName,
+                                                        VAR_SUMMARY_ONLY,
+                                                        summaryOnly));
+        feedInfo.setEnabledFlag
+                              (! getOptionalBooleanValue (sectionName,
+                                                          VAR_DISABLE_FEED,
+                                                          false));
+
+        s = getOptionalStringValue (sectionName, VAR_TITLE_OVERRIDE, null);
+        if (s != null)
+            feedInfo.setTitleOverride (s);
+
+        s = getOptionalStringValue (sectionName, VAR_EDIT_ITEM_URL, null);
+        if (s != null)
+            feedInfo.setItemURLEditCommand (s);
+
+        s = getOptionalStringValue (sectionName, VAR_SAVE_FEED_AS, null);
+        if (s != null)
+            feedInfo.setSaveAsFile (new File (s));
+
+        feeds.add (feedInfo);
+        feedMap.put (url, feedInfo);
     }
 }

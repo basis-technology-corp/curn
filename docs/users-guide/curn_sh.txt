@@ -1,13 +1,19 @@
 #!/bin/sh
 
 : ${JAVA_ROOT:=/usr/local/java}
+JAVA_HOME=$JAVA_ROOT/jdk
+
+UNPKG_JAVA_CLASS_DIR=$JAVA_ROOT/classes
+PKG_JAVA_CLASS_DIR=/usr/local/share/java/classes
 
 exec $JAVA_HOME/bin/java -classpath \
-$JAVA_ROOT/classes/org-clapper-util.jar:\
-$JAVA_ROOT/classes/informa.jar:\
-$JAVA_ROOT/classes/commons-logging.jar:\
-$JAVA_ROOT/classes/jdom.jar:\
-$JAVA_ROOT/classes/xerces.jar:\
-$JAVA_ROOT/classes/curn.jar \
+$UNPKG_JAVA_CLASS_DIR/ocutil.jar:\
+$UNPKG_JAVA_CLASS_DIR/informa.jar:\
+$PKG_JAVA_CLASS_DIR/commons-logging.jar:\
+$PKG_JAVA_CLASS_DIR/jdom.jar:\
+$PKG_JAVA_CLASS_DIR/xerces.jar:\
+$PKG_JAVA_CLASS_DIR/jakarta-oro.jar:\
+$UNPKG_JAVA_CLASS_DIR/curn.jar:\
+$UNPKG_JAVA_CLASS_DIR/xmlc-all-runtime.jar \
 org.clapper.curn.curn "${@}"
 
