@@ -240,13 +240,13 @@ public class AtomParser extends ParserCommon
                                          ElementStackEntry parentStackEntry)
         throws SAXException
     {
-        Channel channel = (Channel) parentStackEntry.getContainer();
+        Channel theChannel = (Channel) parentStackEntry.getContainer();
 
         if (elementName.equals ("entry"))
         {
             Item item = new Item (channel);
 
-            channel.addItem (item);
+            theChannel.addItem (item);
             elementStack.push (new ElementStackEntry (elementName, item));
         }
 
@@ -261,9 +261,9 @@ public class AtomParser extends ParserCommon
         {
             try
             {
-                channel.setLink (new URL (attributes.getValue ("href")));
+                theChannel.setLink (new URL (attributes.getValue ("href")));
                 elementStack.push (new ElementStackEntry (elementName,
-                                                          channel));
+                                                          theChannel));
             }
 
             catch (MalformedURLException ex)
@@ -274,7 +274,8 @@ public class AtomParser extends ParserCommon
 
         else
         {
-            elementStack.push (new ElementStackEntry (elementName, channel));
+            elementStack.push (new ElementStackEntry (elementName,
+                                                      theChannel));
         }
     }
 
@@ -293,26 +294,26 @@ public class AtomParser extends ParserCommon
                                     ElementStackEntry stackEntry)
         throws SAXException
     {
-        Channel channel = (Channel) stackEntry.getContainer();
+        Channel theChannel = (Channel) stackEntry.getContainer();
         String  chars   = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
 
         if (elementName.equals ("title"))
-            channel.setTitle (chars);
+            theChannel.setTitle (chars);
 
         else if (elementName.equals ("issued"))
-            channel.setPublicationDate (parseW3CDate (chars));
+            theChannel.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("modified"))
-            channel.setPublicationDate (parseW3CDate (chars));
+            theChannel.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("created"))
-            channel.setPublicationDate (parseW3CDate (chars));
+            theChannel.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("id"))
-            channel.setUniqueID (chars);
+            theChannel.setUniqueID (chars);
     }
 
     /**

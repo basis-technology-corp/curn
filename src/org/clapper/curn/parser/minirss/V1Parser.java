@@ -223,9 +223,9 @@ public class V1Parser extends ParserCommon
                                          ElementStackEntry parentStackEntry)
         throws SAXException
     {
-        Channel channel = (Channel) parentStackEntry.getContainer();
+        Channel theChannel = (Channel) parentStackEntry.getContainer();
 
-        elementStack.push (new ElementStackEntry (elementName, channel));
+        elementStack.push (new ElementStackEntry (elementName, theChannel));
     }
 
     /**
@@ -264,8 +264,8 @@ public class V1Parser extends ParserCommon
                                     ElementStackEntry stackEntry)
         throws SAXException
     {
-        Channel channel = (Channel) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharacters().trim();
+        Channel theChannel = (Channel) stackEntry.getContainer();
+        String  chars      = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
@@ -273,16 +273,16 @@ public class V1Parser extends ParserCommon
         try
         {
             if (elementName.equals ("title"))
-                channel.setTitle (chars);
+                theChannel.setTitle (chars);
 
             else if (elementName.equals ("link"))
-                channel.setLink (new URL (chars));
+                theChannel.setLink (new URL (chars));
 
             else if (elementName.equals ("description"))
-                channel.setDescription (chars);
+                theChannel.setDescription (chars);
 
             else if (elementName.equals ("dc:date"))
-                channel.setPublicationDate (parseW3CDate (chars));
+                theChannel.setPublicationDate (parseW3CDate (chars));
         }
 
         catch (MalformedURLException ex)

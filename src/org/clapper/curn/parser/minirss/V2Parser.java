@@ -181,19 +181,20 @@ public class V2Parser extends ParserCommon
                                          ElementStackEntry parentStackEntry)
         throws SAXException
     {
-        Channel channel = (Channel) parentStackEntry.getContainer();
+        Channel theChannel = (Channel) parentStackEntry.getContainer();
 
         if (elementName.equals ("item"))
         {
             Item item = new Item (channel);
 
-            channel.addItem (item);
+            theChannel.addItem (item);
             elementStack.push (new ElementStackEntry (elementName, item));
         }
 
         else
         {
-            elementStack.push (new ElementStackEntry (elementName, channel));
+            elementStack.push (new ElementStackEntry (elementName,
+                                                      theChannel));
         }
     }
 
@@ -212,8 +213,8 @@ public class V2Parser extends ParserCommon
                                     ElementStackEntry stackEntry)
         throws SAXException
     {
-        Channel channel = (Channel) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharacters().trim();
+        Channel theChannel = (Channel) stackEntry.getContainer();
+        String  chars      = stackEntry.getCharacters().trim();
 
         if (chars.length() == 0)
             chars = null;
@@ -221,22 +222,22 @@ public class V2Parser extends ParserCommon
         try
         {
             if (elementName.equals ("title"))
-                channel.setTitle (chars);
+                theChannel.setTitle (chars);
 
             else if (elementName.equals ("link"))
-                channel.setLink (new URL (chars));
+                theChannel.setLink (new URL (chars));
 
             else if (elementName.equals ("description"))
-                channel.setDescription (chars);
+                theChannel.setDescription (chars);
 
             else if (elementName.equals ("pubDate"))
-                channel.setPublicationDate (parseRFC822Date (chars));
+                theChannel.setPublicationDate (parseRFC822Date (chars));
 
             else if (elementName.equals ("copyright"))
-                channel.setCopyright (chars);
+                theChannel.setCopyright (chars);
 
             else if (elementName.equals ("author"))
-                channel.setAuthor (chars);
+                theChannel.setAuthor (chars);
         }
 
         catch (MalformedURLException ex)
