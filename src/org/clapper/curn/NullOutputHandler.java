@@ -102,4 +102,21 @@ public class NullOutputHandler implements OutputHandler
     {
         return "text/null";
     }
+
+    /**
+     * Determine whether this <tt>OutputHandler</tt> wants a file for its
+     * output or not. For example, a handler that produces text output
+     * wants a file, or something similar, to receive the text; such a
+     * handler would return <tt>true</tt> when this method is called. By
+     * contrast, a handler that swallows its output, or a handler that
+     * writes to a network connection, does not want a file to receive
+     * output.
+     *
+     * @return <tt>true</tt> if the handler wants a file or file-like object
+     *         for its output, and <tt>false</tt> otherwise
+     */
+    public boolean wantsOutputFile()
+    {
+        return false;
+    }
 }

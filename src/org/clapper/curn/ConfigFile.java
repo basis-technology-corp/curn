@@ -21,6 +21,8 @@ import java.net.MalformedURLException;
 
 import org.clapper.util.text.TextUtils;
 
+import org.clapper.util.misc.OrderedHashMap;
+
 import org.clapper.util.config.Configuration;
 import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
@@ -47,7 +49,12 @@ public class ConfigFile extends Configuration
     /**
      * Prefix for sections that describing individual feeds.
      */
-    private static final String FEED_SECTION_PREFIX   = "feed";
+    private static final String FEED_SECTION_PREFIX   = "Feed";
+
+    /**
+     * Prefix for output handler sections.
+     */
+    private static final String OUTPUT_HANDLER_PREFIX = "OutputHandler";
 
     /**
      * Variable names
@@ -63,17 +70,17 @@ public class ConfigFile extends Configuration
     private static final String VAR_PARSER_CLASS_NAME = "ParserClass";
     private static final String VAR_PRUNE_URLS        = "PruneURLs";
     private static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
-    private static final String VAR_OUTPUT_CLASSES    = "OutputHandlerClasses";
     private static final String VAR_SMTP_HOST         = "SMTPHost";
     private static final String VAR_DEF_EMAIL_SENDER  = "MailFrom";
     private static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     private static final String VAR_SHOW_DATES        = "ShowDates";
     private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
     private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
-    private static final String VAR_DISABLE_FEED      = "Disabled";
+    private static final String VAR_DISABLED          = "Disabled";
     private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     private static final String VAR_SAVE_FEED_AS      = "SaveAs";
     private static final String VAR_FEED_URL          = "URL";
+    private static final String VAR_CLASS             = "Class";
 
     /**
      * Default values
@@ -97,21 +104,22 @@ public class ConfigFile extends Configuration
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private File        cacheFile        = null;
-    private int         defaultCacheDays = DEF_DAYS_TO_CACHE;
-    private boolean     updateCache      = true;
-    private boolean     quiet            = false;
-    private boolean     summaryOnly      = false;
-    private boolean     showRSSFormat    = false;
-    private boolean     showDates        = false;
-    private Collection  feeds            = new ArrayList();
-    private Map         feedMap          = new HashMap();
-    private String      parserClassName  = DEF_PARSER_CLASS_NAME;
-    private Collection  outputClassNames = new ArrayList();
-    private String      smtpHost         = DEF_SMTP_HOST;
-    private String      emailSender      = null;
-    private String      emailSubject     = DEF_EMAIL_SUBJECT;
-    private boolean     showAuthors      = false;
+    private File            cacheFile             = null;
+    private int             defaultCacheDays      = DEF_DAYS_TO_CACHE;
+    private boolean         updateCache           = true;
+    private boolean         quiet                 = false;
+    private boolean         summaryOnly           = false;
+    private boolean         showRSSFormat         = false;
+    private boolean         showDates             = false;
+    private Collection      feeds                 = new ArrayList();
+    private Map             feedMap               = new HashMap();
+    private String          parserClassName       = DEF_PARSER_CLASS_NAME;
+    private OrderedHashMap  outputHandlers        = new OrderedHashMap();
+    private Map             outputHandlerSections = new HashMap();
+    private String          smtpHost              = DEF_SMTP_HOST;
+    private String          emailSender           = null;
+    private String          emailSubject          = DEF_EMAIL_SUBJECT;
+    private boolean         showAuthors           = false;
 
     /**
      * For log messages
@@ -217,8 +225,87 @@ public class ConfigFile extends Configuration
      */
     public Collection getOutputHandlerClassNames()
     {
-        return outputClassNames;
+        return outputHandlers.keysInInsertionOrder();
     }
+
+    /**
+     * Get the output handler-specific parameters for an output handler.
+     *
+     * @param className  the output handler class name
+     *
+     * @return a <tt>Map</tt>, where each key is a variable name and each
+     *         value is the string value for the key. The map will be empty,
+     *         but not null, if there are no additional handler-specific
+     *         variables.
+     *
+     * @see #getOutputHandlerClassNames()
+     * @see #getOutputHandlerSpecificVariables(Class)
+     * @see #getOutputHandlerSectionName(String)
+     * @see #getOutputHandlerSectionName(Class)
+     */
+    public Map getOutputHandlerSpecificVariables (String className)
+    {
+        return (Map) outputHandlers.get (className);
+    }
+
+    /**
+     * Get the output handler-specific parameters for an output handler.
+     *
+     * @param cls  the output handler class
+     *
+     * @return a <tt>Map</tt>, where each key is a variable name and each
+     *         value is the string value for the key. The map will be empty,
+     *         but not null, if there are no additional handler-specific
+     *         variables.
+     *
+     * @see #getOutputHandlerClassNames()
+     * @see #getOutputHandlerSpecificVariables(String)
+     * @see #getOutputHandlerSectionName(String)
+     * @see #getOutputHandlerSectionName(Class)
+     */
+    public Map getOutputHandlerSpecificVariables (Class cls)
+    {
+        return (Map) outputHandlers.get (cls.getName());
+    }
+
+    /**
+     * Gets the configuration section name for a specific output handler.
+     * This makes it easier for the output handler to ask for its variables.
+     *
+     * @param className  the output handler class name
+     *
+     * @return the name of the configuration section where the output handler
+     *         was defined
+     *
+     * @see #getOutputHandlerClassNames()
+     * @see #getOutputHandlerSpecificVariables(String)
+     * @see #getOutputHandlerSpecificVariables(Class)
+     * @see #getOutputHandlerSectionName(Class)
+     */
+    public String getOutputHandlerSectionName (String className)
+    {
+        return (String) outputHandlerSections.get (className);
+    }
+
+    /**
+     * Gets the configuration section name for a specific output handler.
+     * This makes it easier for the output handler to ask for its variables.
+     *
+     * @param cls  the output handler class
+     *
+     * @return the name of the configuration section where the output handler
+     *         was defined
+     *
+     * @see #getOutputHandlerClassNames()
+     * @see #getOutputHandlerSpecificVariables(String)
+     * @see #getOutputHandlerSpecificVariables(Class)
+     * @see #getOutputHandlerSectionName(String)
+     */
+    public String getOutputHandlerSectionName (Class cls)
+    {
+        return getOutputHandlerSectionName (cls.getName());
+    }
+
     /**
      * Get the configured cache file.
      *
@@ -522,7 +609,7 @@ public class ConfigFile extends Configuration
 
         processMainSection();
 
-        // Each remaining section should be a URL of an RSS site.
+        // Process the remaining sections. Skip ones we don't recognize.
 
         for (Iterator it = getSectionNames (new ArrayList()).iterator();
              it.hasNext(); )
@@ -531,6 +618,9 @@ public class ConfigFile extends Configuration
 
             if (sectionName.startsWith (FEED_SECTION_PREFIX))
                 processSiteURLSection (sectionName);
+
+            else if (sectionName.startsWith (OUTPUT_HANDLER_PREFIX))
+                processOutputHandlerSection (sectionName);
         }
     }
 
@@ -584,12 +674,6 @@ public class ConfigFile extends Configuration
             parserClassName = getOptionalStringValue (MAIN_SECTION,
                                                       VAR_PARSER_CLASS_NAME,
                                                       DEF_PARSER_CLASS_NAME);
-            s = getOptionalStringValue (MAIN_SECTION,
-                                        VAR_OUTPUT_CLASSES,
-                                        DEF_OUTPUT_CLASS);
-            TextUtils.split (s, " \t", outputClassNames);
-            
-
             smtpHost = getOptionalStringValue (MAIN_SECTION,
                                                VAR_SMTP_HOST,
                                                DEF_SMTP_HOST);
@@ -618,7 +702,7 @@ public class ConfigFile extends Configuration
     /**
      * Process a section that identifies a site's RSS URL.
      *
-     * @param sectionName  the section name (which is also the URL)
+     * @param sectionName  the section name
      *
      * @throws ConfigurationException  configuration error
      */
@@ -656,7 +740,7 @@ public class ConfigFile extends Configuration
                                                         summaryOnly));
         feedInfo.setEnabledFlag
                               (! getOptionalBooleanValue (sectionName,
-                                                          VAR_DISABLE_FEED,
+                                                          VAR_DISABLED,
                                                           false));
 
         s = getOptionalStringValue (sectionName, VAR_TITLE_OVERRIDE, null);
@@ -673,5 +757,49 @@ public class ConfigFile extends Configuration
 
         feeds.add (feedInfo);
         feedMap.put (url.toString(), feedInfo);
+    }
+
+    /**
+     * Process a section that identifies an output handler.
+     *
+     * @param sectionName  the section name
+     *
+     * @throws ConfigurationException  configuration error
+     */
+    private void processOutputHandlerSection (String sectionName)
+        throws ConfigurationException
+    {
+        // Get the required class name.
+
+        String className = getVariableValue (sectionName, VAR_CLASS);
+
+        // Only process the rest if it's not disabled.
+
+        if (! getOptionalBooleanValue (sectionName, VAR_DISABLED, false))
+        {
+            Iterator it = getVariableNames (sectionName, new ArrayList())
+                        .iterator();
+            Map extraVariables = new HashMap();
+
+            while (it.hasNext())
+            {
+                String variableName = (String) it.next();
+
+                // Skip the ones we've already processed.
+
+                if (variableName.equals (VAR_DISABLED))
+                    continue;
+
+                if (variableName.equals (VAR_CLASS))
+                    continue;
+
+                extraVariables.put (variableName,
+                                    getVariableValue (sectionName,
+                                                      variableName));
+            }
+
+            outputHandlers.put (className, extraVariables);
+            outputHandlerSections.put (className, sectionName);
+        }
     }
 }

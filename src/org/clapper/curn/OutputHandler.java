@@ -10,6 +10,8 @@ import java.io.OutputStreamWriter;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
+import org.clapper.util.config.ConfigurationException;
+
 /**
  * This interface defines the methods that must be supported by a class
  * that is to be plugged into <i>curn</i> as an output handler. It is
@@ -47,13 +49,21 @@ public interface OutputHandler
      *
      * @param writer  the <tt>OutputStreamWriter</tt> where the handler
      *                should send output, if applicable.
-     * @param config  the parsed <i>curn</i> configuration data
+     * @param config  the parsed <i>curn</i> configuration data. The
+     *                output handler is responsible for retrieving its
+     *                own parameters from the configuration, by calling
+     *                <tt>config.getOutputHandlerSpecificVariables()</tt>
      *
-     * @throws FeedException  initialization error
+     * @throws ConfigurationException configuration error
+     * @throws FeedException          some other initialization error
+     *
+     * @see ConfigFile#getOutputHandlerSpecificVariables(Class)
+     * @see ConfigFile#getOutputHandlerSpecificVariables(String)
      */
     public void init (OutputStreamWriter writer,
                       ConfigFile         config)
-        throws FeedException;
+        throws ConfigurationException,
+               FeedException;
 
     /**
      * Display the list of <tt>RSSItem</tt> news items to whatever output
@@ -73,10 +83,11 @@ public interface OutputHandler
         throws FeedException;
 
     /**
-     * Flush any buffered-up output. <i>curn</i> calls this method
-     * once, after calling <tt>displayChannelItems()</tt> for all channels.
-     * If the output handler doesn't need to flush any output, it can simply
-     * return without doing anything.
+     * Flush any buffered-up output, but do NOT close the underlying output
+     * stream(s). <i>curn</i> calls this method once, after calling
+     * <tt>displayChannelItems()</tt> for all channels. If the output
+     * handler doesn't need to flush any output, it can simply return
+     * without doing anything.
      *
      * @throws FeedException  unable to write output
      */
@@ -90,4 +101,18 @@ public interface OutputHandler
      * @return the content type
      */
     public String getContentType();
+
+    /**
+     * Determine whether this <tt>OutputHandler</tt> wants a file for its
+     * output or not. For example, a handler that produces text output
+     * wants a file, or something similar, to receive the text; such a
+     * handler would return <tt>true</tt> when this method is called. By
+     * contrast, a handler that swallows its output, or a handler that
+     * writes to a network connection, does not want a file to receive
+     * output.
+     *
+     * @return <tt>true</tt> if the handler wants a file or file-like object
+     *         for its output, and <tt>false</tt> otherwise
+     */
+    public boolean wantsOutputFile();
 }

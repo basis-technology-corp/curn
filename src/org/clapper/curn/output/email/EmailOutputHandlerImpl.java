@@ -6,6 +6,7 @@ package org.clapper.curn.email;
 
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.EmailOutputHandler;
+import org.clapper.curn.OutputHandlerContainer;
 import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
@@ -19,6 +20,8 @@ import org.clapper.util.mail.EmailTransport;
 import org.clapper.util.mail.SMTPEmailTransport;
 import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
+
+import org.clapper.util.config.ConfigurationException;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -43,50 +46,11 @@ import java.util.ArrayList;
 public class EmailOutputHandlerImpl implements EmailOutputHandler
 {
     /*----------------------------------------------------------------------*\
-			       Inner Classes
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Defines an entry in the table of handlers
-     */
-    private class HandlerTableEntry
-    {
-	OutputHandler     handler;
-	File              tempFile;
-        FileOutputStream  fileOut;
-
-	HandlerTableEntry (OutputHandler handler)
-	    throws FeedException
-	{
-            try
-            {
-                this.handler = handler;
-
-                tempFile = File.createTempFile ("curn", null);
-                tempFile.deleteOnExit();
-
-                fileOut = new FileOutputStream (tempFile);
-            }
-
-            catch (IOException ex)
-            {
-                throw new FeedException ("Can't initialize handler", ex);
-            }   
-	}
-
-        void init (ConfigFile config)
-            throws FeedException
-        {
-            handler.init (new OutputStreamWriter (fileOut), config);
-        }
-    }
-
-    /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private Collection           handlers   = new ArrayList();
-    private Collection           recipients = new ArrayList();
+    private Collection  handlers   = new ArrayList();
+    private Collection  recipients = new ArrayList();
     private ConfigFile  config     = null;
 
     /*----------------------------------------------------------------------*\
@@ -111,16 +75,18 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *                should send output. Not used here.
      * @param config  the parsed <i>curn</i> configuration data
      *
-     * @throws FeedException initialization error
+     * @throws ConfigurationException  configuration error
+     * @throws FeedException           some other initialization error
      */
     public void init (OutputStreamWriter writer, ConfigFile config)
-        throws FeedException
+        throws ConfigurationException,
+               FeedException
     {
         this.config = config;
 
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            HandlerTableEntry entry = (HandlerTableEntry) it.next();
+            OutputHandlerContainer entry = (OutputHandlerContainer) it.next();
 
             entry.init (config);
         }
@@ -144,9 +110,10 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     {
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            HandlerTableEntry entry = (HandlerTableEntry) it.next();
+            OutputHandlerContainer entry = (OutputHandlerContainer) it.next();
+            OutputHandler handler = entry.getOutputHandler();
 
-            entry.handler.displayChannel (channel, feedInfo);
+            handler.displayChannel (channel, feedInfo);
         }
     }
     
@@ -158,23 +125,16 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      */
     public void flush() throws FeedException
     {
-        try
+        for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
-            for (Iterator it = handlers.iterator(); it.hasNext(); )
-            {
-                HandlerTableEntry entry = (HandlerTableEntry) it.next();
+            OutputHandlerContainer entry = (OutputHandlerContainer) it.next();
+            OutputHandler handler = entry.getOutputHandler();
 
-                entry.handler.flush();
-                entry.fileOut.close();
-            }
-
-            emailOutput();
+            handler.flush();
+            entry.close();
         }
 
-        catch (IOException ex)
-        {
-            throw new FeedException (ex);
-        }
+        emailOutput();
     }
 
     /**
@@ -202,7 +162,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     public void addOutputHandler (OutputHandler handler)
 	throws FeedException
     {
-	handlers.add (new HandlerTableEntry (handler));
+	handlers.add (new OutputHandlerContainer (handler));
     }
 
     /**
@@ -227,6 +187,25 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
         }
     }
 
+    /**
+     * Determine whether this <tt>OutputHandler</tt> wants a file for its
+     * output or not. For example, a handler that produces text output
+     * wants a file, or something similar, to receive the text; such a
+     * handler would return <tt>true</tt> when this method is called. By
+     * contrast, a handler that swallows its output, or a handler that
+     * writes to a network connection, does not want a file to receive
+     * output.
+     *
+     * @return <tt>true</tt> if the handler wants a file or file-like object
+     *         for its output, and <tt>false</tt> otherwise
+     */
+    public boolean wantsOutputFile()
+    {
+        // Not really applicable
+
+        return false;
+    }
+
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
@@ -243,52 +222,92 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     {
         try
         {
-            EmailMessage       message   = new EmailMessage();
-            String             smtpHost  = config.getSMTPHost();
-            EmailTransport     transport = new SMTPEmailTransport (smtpHost);
-            Iterator           it;
-            HandlerTableEntry  entry;
+            Iterator               it;
+            OutputHandlerContainer entry;
+            OutputHandlerContainer firstEntryWithOutput = null;
+            OutputHandler          handler;
+            int                    totalAttachments = 0;
 
-            for (it = recipients.iterator(); it.hasNext(); )
-                message.addTo ((EmailAddress) it.next());
+            // First, figure out whether we have any attachments or not.
 
-            message.addHeader ("X-Mailer",
-                               "curn, version " + Version.VERSION);
-            message.setSubject (config.getEmailSubject());
-
-            // Add the output. If there's only one handler, and its output
-            // is text, then there's no need for attachments. Just set it
-            // as the text part, and set the appropriate Content-type:
-            // header. Otherwise, make a multipart-alternative message with
-            // separate attachments for each output.
-
-            if (handlers.size() == 1)
+            for (it = handlers.iterator(); it.hasNext(); )
             {
-                entry = (HandlerTableEntry) handlers.iterator().next();
-                String contentType = entry.handler.getContentType();
+                entry = (OutputHandlerContainer) it.next();
+                File tempFile = entry.getTempFile();
 
-                message.setMultipartSubtype
-                                     (EmailMessage.MULTIPART_MIXED);
-                if (contentType.startsWith ("text/"))
-                    message.setText (entry.tempFile, contentType);
-                else
-                    message.addAttachment (entry.tempFile, contentType);
+                if ((tempFile != null) && (tempFile.length() > 0))
+                {
+                    totalAttachments++;
+                    firstEntryWithOutput = entry;
+                }
+            }
+
+            if (totalAttachments == 0)
+            {
+                // None of the handlers produced any output.
+
+                System.err.println ("Warning: None of the output handlers "
+                                  + "produced any emailable output.");
             }
 
             else
             {
-                message.setMultipartSubtype
-                                     (EmailMessage.MULTIPART_ALTERNATIVE);
+                // Create an SMTP transport and a new email message.
 
-                for (it = handlers.iterator(); it.hasNext(); )
+                EmailMessage message = new EmailMessage();
+                String smtpHost = config.getSMTPHost();
+                EmailTransport transport = new SMTPEmailTransport (smtpHost);
+
+                // Fill 'er up.
+
+                for (it = recipients.iterator(); it.hasNext(); )
+                    message.addTo ((EmailAddress) it.next());
+
+                message.addHeader ("X-Mailer",
+                                   "curn, version " + Version.VERSION);
+                message.setSubject (config.getEmailSubject());
+
+                // Add the output. If there's only one attachment, and its
+                // output is text, then there's no need for attachments.
+                // Just set it as the text part, and set the appropriate
+                // Content-type: header. Otherwise, make a
+                // multipart-alternative message with separate attachments
+                // for each output.
+
+                if (totalAttachments == 1)
                 {
-                    entry = (HandlerTableEntry) it.next();
-                    message.addAttachment (entry.tempFile,
-                                           entry.handler.getContentType());
-                }
-            }
+                    entry = firstEntryWithOutput;
+                    handler = entry.getOutputHandler();
+                    String contentType = handler.getContentType();
 
-            transport.send (message);
+                    File tempFile = entry.getTempFile();
+                    message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
+                    if (contentType.startsWith ("text/"))
+                        message.setText (tempFile, contentType);
+                    else
+                        message.addAttachment (tempFile, contentType);
+                }
+
+                else
+                {
+                    message.setMultipartSubtype
+                                          (EmailMessage.MULTIPART_ALTERNATIVE);
+
+                    for (it = handlers.iterator(); it.hasNext(); )
+                    {
+                        entry = (OutputHandlerContainer) it.next();
+                        handler = entry.getOutputHandler();
+
+                        if (entry.hasOutput())
+                        {
+                            message.addAttachment (entry.getTempFile(),
+                                                   handler.getContentType());
+                        }
+                    }
+                }
+
+                transport.send (message);
+            }
         }
 
         catch (EmailException ex)

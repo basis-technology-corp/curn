@@ -11,11 +11,16 @@ import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.text.TextUtils;
 import org.clapper.util.text.Unicode;
 
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.config.NoSuchSectionException;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.FileWriter;
 
 import java.util.Date;
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -31,14 +36,65 @@ import java.util.Iterator;
 public class TextOutputHandler implements OutputHandler
 {
     /*----------------------------------------------------------------------*\
+                               Inner Classes
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Wraps one or more WordWrapWriters
+     */
+    private class WordWrapWriters
+    {
+        private Collection writers = new ArrayList();
+
+        WordWrapWriters()
+        {
+        }
+
+        void addWriter (WordWrapWriter w)
+        {
+            writers.add (w);
+        }
+
+        void println()
+        {
+            for (Iterator it = writers.iterator(); it.hasNext(); )
+                ((WordWrapWriter) it.next()).println();
+        }
+
+        void println (String s)
+        {
+            for (Iterator it = writers.iterator(); it.hasNext(); )
+                ((WordWrapWriter) it.next()).println (s);
+        }
+
+        void setPrefix (String s)
+        {
+            for (Iterator it = writers.iterator(); it.hasNext(); )
+                ((WordWrapWriter) it.next()).setPrefix (s);
+        }
+
+        void flush()
+        {
+            for (Iterator it = writers.iterator(); it.hasNext(); )
+            {
+                WordWrapWriter w = (WordWrapWriter) it.next();
+                w.flush();
+            }
+
+            writers.clear();
+        }
+    }
+
+    /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private WordWrapWriter  out         = null;
+    private WordWrapWriters out         = new WordWrapWriters();
     private int             indentLevel = 0;
     private ConfigFile      config      = null;
     private StringBuffer    scratch     = new StringBuffer();
-       
+    private boolean         saveOnly    = false;
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -58,16 +114,69 @@ public class TextOutputHandler implements OutputHandler
      * Initializes the output handler for another set of RSS channels.
      *
      * @param writer  the <tt>OutputStreamWWriter</tt> where the handler
-     *                should send output
+     *                should send output, if applicable. Ignored if the
+     *                "SaveOnly" parameter is set in this handler's
+     *                configuration section
      * @param config  the parsed <i>curn</i> configuration data
      *
-     * @throws FeedException  initialization error
+     * @throws ConfigurationException  configuration error
+     * @throws FeedException           some other initialization error
      */
     public void init (OutputStreamWriter writer, ConfigFile config)
-        throws FeedException
+        throws ConfigurationException,
+               FeedException
     {
-        this.out    = new WordWrapWriter (writer, 79);
+        String saveAs = null;
+
         this.config = config;
+
+        try
+        {
+            String sectionName;
+            sectionName = config.getOutputHandlerSectionName (this.getClass());
+
+            if (sectionName != null)
+            {
+                saveAs = config.getOptionalStringValue (sectionName,
+                                                        "SaveAs",
+                                                        null);
+                saveOnly = config.getOptionalBooleanValue (sectionName,
+                                                           "SaveOnly",
+                                                           false);
+
+                if (saveOnly && (saveAs == null))
+                {
+                    throw new ConfigurationException (sectionName,
+                                                      "SaveOnly can only be "
+                                                    + "specified if SaveAs "
+                                                    + "is defined.");
+                }
+            }
+        }
+
+        catch (NoSuchSectionException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+
+        if (saveAs != null)
+        {
+            try
+            {
+                out.addWriter (new WordWrapWriter (new FileWriter (saveAs)));
+            }
+
+            catch (IOException ex)
+            {
+                throw new FeedException ("Can't open file \""
+                                       + saveAs
+                                       + "\" for output",
+                                         ex);
+            }
+        }
+
+        if (! saveOnly)
+            out.addWriter (new WordWrapWriter (writer));
     }
 
     /**
@@ -107,7 +216,7 @@ public class TextOutputHandler implements OutputHandler
             {
                 Date date = channel.getPublicationDate();
                 if (date != null)
-                    out.println (date);
+                    out.println (date.toString());
             }
 
             if (config.showRSSVersion())
@@ -144,7 +253,7 @@ public class TextOutputHandler implements OutputHandler
                 {
                     Date date = item.getPublicationDate();
                     if (date != null)
-                        out.println (date);
+                        out.println (date.toString());
                 }
 
                 if (! feedInfo.summarizeOnly())
@@ -202,8 +311,7 @@ public class TextOutputHandler implements OutputHandler
     }
 
     /**
-     * Flush any buffered-up output. <i>curn</i> calls this method
-     * once, after calling <tt>displayChannelItems()</tt> for all channels.
+     * Flush any buffered-up output.
      *
      * @throws FeedException  unable to write output
      */
@@ -222,6 +330,25 @@ public class TextOutputHandler implements OutputHandler
     public String getContentType()
     {
         return "text/plain";
+    }
+
+    /**
+     * Determine whether this <tt>OutputHandler</tt> wants a file for its
+     * output or not. For example, a handler that produces text output
+     * wants a file, or something similar, to receive the text; such a
+     * handler would return <tt>true</tt> when this method is called. By
+     * contrast, a handler that swallows its output, or a handler that
+     * writes to a network connection, does not want a file to receive
+     * output.
+     *
+     * @return <tt>true</tt> if the handler wants a file or file-like object
+     *         for its output, and <tt>false</tt> otherwise
+     */
+    public boolean wantsOutputFile()
+    {
+        // We only want an output file from curn if "SaveOnly" is not set.
+
+        return (! saveOnly);
     }
 
     /*----------------------------------------------------------------------*\

@@ -290,7 +290,7 @@ public class curn
         // Parse the RSS feeds
 
         parserClassName = configuration.getRSSParserClassName();
-        log.debug ("Getting parser \"" + parserClassName + "\"");
+        log.info ("Getting parser \"" + parserClassName + "\"");
         parser = RSSParserFactory.getRSSParser (parserClassName);
 
         channels = new ArrayList();
@@ -304,7 +304,7 @@ public class curn
             FeedInfo feedInfo = (FeedInfo) it.next();
             if (! feedInfo.feedIsEnabled())
             {
-                log.debug ("Skipping disabled feed: " + feedInfo.getURL());
+                log.info ("Skipping disabled feed: " + feedInfo.getURL());
             }
 
             else
@@ -317,27 +317,7 @@ public class curn
             }
         }
 
-        if (channels.size() > 0)
-        {
-            // Dump the output to each output handler
-
-            out = new OutputStreamWriter (System.out);
-
-            for (it = outputHandlers.iterator(); it.hasNext(); )
-            {
-                OutputHandler outputHandler = (OutputHandler) it.next();
-
-                outputHandler.init (out, configuration);
-                for (Iterator itChannel = channels.iterator();
-                     itChannel.hasNext(); )
-                {
-                    ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
-                    outputHandler.displayChannel (cfi.channel, cfi.feedInfo);
-                }
-
-                outputHandler.flush();
-            }
-        }
+        displayChannels (channels);
 
         if ((cache != null) && configuration.mustUpdateCache())
             cache.saveCache();
@@ -586,7 +566,18 @@ public class curn
         {
             className = (String) it.next();
             handler   = OutputHandlerFactory.getOutputHandler (className);
-            outputHandlers.add (handler);
+            outputHandlers.add (new OutputHandlerContainer (handler));
+        }
+
+        // If there were no output handlers, then just use a default
+        // TextOutputHandler.
+
+        if (outputHandlers.size() == 0)
+        {
+            log.info ("No configured output handlers. Installing default.");
+            handler = OutputHandlerFactory.getOutputHandler
+                                                   (TextOutputHandler.class);
+            outputHandlers.add (new OutputHandlerContainer (handler));
         }
 
         // If there are email addresses, then attempt to load that handler,
@@ -603,7 +594,10 @@ public class curn
             // Place all the other handlers inside the EmailOutputHandler
 
             for (it = outputHandlers.iterator(); it.hasNext(); )
-                emailHandler.addOutputHandler ((OutputHandler) it.next());
+            {
+                OutputHandlerContainer c = (OutputHandlerContainer) it.next();
+                emailHandler.addOutputHandler (c.getOutputHandler());
+            }
 
             // Add the email addresses to the handler
 
@@ -614,20 +608,7 @@ public class curn
             // with the email handler.
 
             outputHandlers.clear();
-            outputHandlers.add (emailHandler);
-        }
-
-        else
-        {
-            // If there are multiple handlers, nuke all but the first. It
-            // doesn't make sense to use multiple handlers when going to
-            // standard output.
-
-            log.debug ("No email addresses. Nuking all but the first "
-                     + "output handler.");
-            handler = (OutputHandler) outputHandlers.iterator().next();
-            outputHandlers.clear();
-            outputHandlers.add (handler);
+            outputHandlers.add (new OutputHandlerContainer (emailHandler));
         }
     }
 
@@ -642,7 +623,7 @@ public class curn
         try
         {
             String feedURLString = feedURL.toString();
-            log.debug ("Parsing feed at " + feedURLString);
+            log.info ("Parsing feed at " + feedURLString);
 
             // Don't download the channel if it hasn't been modified since
             // we last checked it.
@@ -677,17 +658,17 @@ public class curn
 
         catch (MalformedURLException ex)
         {
-            log.debug ("", ex);
+            log.error ("", ex);
         }
 
         catch (RSSParserException ex)
         {
-            log.debug ("RSS parse exception: ", ex); 
+            log.error ("RSS parse exception: ", ex); 
         }
 
         catch (IOException ex)
         {
-            log.debug ("", ex);
+            log.error ("", ex);
         }
 
         return channel;
@@ -792,6 +773,7 @@ public class curn
         String      titleOverride = feedInfo.getTitleOverride();
         boolean     pruneURLs = feedInfo.pruneURLs();
         String      editCmd = feedInfo.getItemURLEditCommand();
+        String      channelName = channel.getLink().toString();
 
         if (titleOverride != null)
             channel.setTitle (titleOverride);
@@ -799,7 +781,7 @@ public class curn
         if (editCmd != null)
         {
             log.debug ("Channel \""
-                     + channel.getLink().toString()
+                     + channelName
                      + "\": Edit command is: "
                      + editCmd);
         }
@@ -808,7 +790,11 @@ public class curn
 
         // First, weed out the ones we don't care about.
 
-        log.debug (String.valueOf (items.size()) + " total items");
+        log.info ("Channel \""
+                + channelName
+                + "\": "
+                + String.valueOf (items.size())
+                + " total items");
         for (it = items.iterator(); it.hasNext(); )
         {
             RSSItem item = (RSSItem) it.next();
@@ -878,6 +864,75 @@ public class curn
                     cache.addToCache (item.getCacheKey(),
                                       item.getLink(),
                                       feedInfo);
+                }
+            }
+        }
+    }
+
+    private void displayChannels (Collection channels)
+        throws FeedException,
+               ConfigurationException
+    {
+        OutputHandlerContainer firstOutput = null;
+
+        // Dump the output to each output handler
+
+        for (Iterator itHandler = outputHandlers.iterator();
+             itHandler.hasNext(); )
+        {
+            OutputHandlerContainer  container;
+            OutputHandler           handler;
+
+            container = (OutputHandlerContainer) itHandler.next();
+            handler = container.getOutputHandler();
+
+            log.info ("Initializing output handler "
+                    + handler.getClass().getName());
+            container.init (config);
+
+            for (Iterator itChannel = channels.iterator();
+                 itChannel.hasNext(); )
+            {
+                ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
+                handler.displayChannel (cfi.channel, cfi.feedInfo);
+            }
+
+            handler.flush();
+            container.close();
+
+            if ((firstOutput == null) && (container.hasOutput()))
+                firstOutput = container;
+        }
+
+        // If we're not emailing the output, then dump the output from the
+        // first handler to the screen.
+
+        if (emailAddresses.size() == 0)
+        {
+            if (firstOutput == null)
+                log.info ("None of the output handlers produced output.");
+
+            else
+            {
+                File tempFile = firstOutput.getTempFile();
+
+                try
+                {
+                    log.debug ("Copying \""
+                             + tempFile.getPath()
+                             + "\" to standard output."); 
+
+                    InputStream is = new FileInputStream (tempFile);
+                    FileUtils.copyStream (is, System.out);
+                    is.close();
+                }
+
+                catch (IOException ex)
+                {
+                    throw new FeedException ("Failed to copy \""
+                                           + tempFile.getPath()
+                                           + "\" to standard output.",
+                                             ex);
                 }
             }
         }

@@ -10,8 +10,12 @@ import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.ConfigFile;
+import org.clapper.curn.Logger;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.config.NoSuchSectionException;
 
 import org.clapper.util.text.Unicode;
 import org.clapper.util.text.TextUtils;
@@ -19,6 +23,7 @@ import org.clapper.util.text.TextUtils;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.FileWriter;
 
 import java.util.Date;
 import java.util.Collection;
@@ -57,13 +62,14 @@ public class HTMLOutputHandler implements OutputHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private PrintWriter           out                 = null;
+    private PrintWriter           curnOut             = null;
+    private PrintWriter           saveAsOut           = null;
     private RSSOutputHTML         doc                 = null;
     private String                oddItemRowClass     = null;
     private String                oddChannelClass     = null;
     private int                   rowCount            = 0;
     private int                   channelCount        = 0;
-    private ConfigFile   config              = null;
+    private ConfigFile            config              = null;
     private HTMLTableRowElement   channelRow          = null;
     private HTMLTableRowElement   channelSeparatorRow = null;
     private Node                  channelRowParent    = null;
@@ -71,6 +77,12 @@ public class HTMLOutputHandler implements OutputHandler
     private HTMLTableCellElement  itemTitleTD         = null;
     private HTMLTableCellElement  itemDescTD          = null;
     private HTMLTableCellElement  channelTD           = null;
+    private boolean               saveOnly            = false;
+
+    /**
+     * For logging
+     */
+    private static Logger log = new Logger (HTMLOutputHandler.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -91,17 +103,20 @@ public class HTMLOutputHandler implements OutputHandler
      * Initializes the output handler for another set of RSS channels.
      *
      * @param writer  the <tt>OutputStreamWWriter</tt> where the handler
-     *                should send output
+     *                should send output, if applicable. Ignored if the
+     *                "SaveOnly" parameter is set in this handler's
+     *                configuration section
      * @param config  the parsed <i>curn</i> configuration data
      *
-     * @throws FeedException  initialization error
+     * @throws ConfigurationException  configuration error
+     * @throws FeedException           some other initialization error
      */
     public void init (OutputStreamWriter writer, ConfigFile config)
-        throws FeedException
+        throws ConfigurationException,
+               FeedException
     {
         this.doc                 = new RSSOutputHTML();
         this.config              = config;
-        this.out                 = new PrintWriter (writer);
         this.oddChannelClass     = doc.getElementChannelTD().getClassName();
         this.oddItemRowClass     = doc.getElementItemTitleTD().getClassName();
         this.channelRow          = doc.getElementChannelRow();
@@ -111,6 +126,60 @@ public class HTMLOutputHandler implements OutputHandler
         this.itemTitleTD         = doc.getElementItemTitleTD();
         this.itemDescTD          = doc.getElementItemDescTD();
         this.channelTD           = doc.getElementChannelTD();
+
+        String saveAs = null;
+
+        try
+        {
+            String sectionName;
+
+            sectionName = config.getOutputHandlerSectionName (this.getClass());
+            if (sectionName != null)
+            {
+                saveAs = config.getOptionalStringValue (sectionName,
+                                                        "SaveAs",
+                                                        null);
+                saveOnly = config.getOptionalBooleanValue (sectionName,
+                                                           "SaveOnly",
+                                                           false);
+
+                if (saveOnly && (saveAs == null))
+                {
+                    throw new ConfigurationException (sectionName,
+                                                      "SaveOnly can only be "
+                                                    + "specified if SaveAs "
+                                                    + "is defined.");
+                }
+            }
+        }
+
+        catch (NoSuchSectionException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+
+        log.debug ("SaveAs=" + ((saveAs == null) ? "null" : saveAs));
+        log.debug ("SaveOnly=" + String.valueOf (saveOnly));
+
+        if (saveAs != null)
+        {
+
+            try
+            {
+                this.saveAsOut = new PrintWriter (new FileWriter (saveAs));
+            }
+
+            catch (IOException ex)
+            {
+                throw new FeedException ("Can't open file \""
+                                       + saveAs
+                                       + "\" for output",
+                                         ex);
+            }
+        }
+
+        if (! saveOnly)
+            this.curnOut = new PrintWriter (writer);
     }
 
     /**
@@ -254,8 +323,7 @@ public class HTMLOutputHandler implements OutputHandler
     }
     
     /**
-     * Flush any buffered-up output. <i>curn</i> calls this method
-     * once, after calling <tt>displayChannelItems()</tt> for all channels.
+     * Flush any buffered-up output.
      *
      * @throws FeedException  unable to write output
      */
@@ -277,8 +345,26 @@ public class HTMLOutputHandler implements OutputHandler
 
         // Write the document.
 
-        out.print (doc.toDocument());
-        out.flush();
+        if ((curnOut != null) || (saveAsOut != null))
+        {
+            log.debug ("Generating HTML");
+
+            String html = doc.toDocument();
+
+            if (curnOut != null)
+            {
+                log.debug ("Writing HTML to curn-specified output.");
+                curnOut.print (html);
+                curnOut.flush();
+            }
+
+            if (saveAsOut != null)
+            {
+                log.debug ("Writing HTML to save-as file.");
+                saveAsOut.print (html);
+                saveAsOut.flush();
+            }
+        }
 
         // Kill the document.
 
@@ -294,6 +380,25 @@ public class HTMLOutputHandler implements OutputHandler
     public String getContentType()
     {
         return "text/html";
+    }
+
+    /**
+     * Determine whether this <tt>OutputHandler</tt> wants a file for its
+     * output or not. For example, a handler that produces text output
+     * wants a file, or something similar, to receive the text; such a
+     * handler would return <tt>true</tt> when this method is called. By
+     * contrast, a handler that swallows its output, or a handler that
+     * writes to a network connection, does not want a file to receive
+     * output.
+     *
+     * @return <tt>true</tt> if the handler wants a file or file-like object
+     *         for its output, and <tt>false</tt> otherwise
+     */
+    public boolean wantsOutputFile()
+    {
+        // We only want an output file from curn if "SaveOnly" is not set.
+
+        return (! saveOnly);
     }
 
     /*----------------------------------------------------------------------*\
