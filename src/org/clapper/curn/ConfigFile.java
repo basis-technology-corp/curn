@@ -82,6 +82,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_SAVE_FEED_AS      = "SaveAs";
     private static final String VAR_FEED_URL          = "URL";
     private static final String VAR_CLASS             = "Class";
+    private static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
 
     /**
      * Default values
@@ -94,6 +95,7 @@ public class ConfigFile extends Configuration
     private static final boolean DEF_SHOW_RSS_VERSION  = false;
     private static final boolean DEF_SHOW_DATES        = false;
     private static final boolean DEF_SHOW_AUTHORS      = false;
+    private static final boolean DEF_GET_GZIPPED_FEEDS = true;
     private static final String  DEF_SMTP_HOST         = "localhost";
     private static final String  DEF_EMAIL_SUBJECT     = "RSS Feeds";
     private static final String  DEF_PARSER_CLASS_NAME =
@@ -121,6 +123,7 @@ public class ConfigFile extends Configuration
     private String          emailSender           = null;
     private String          emailSubject          = DEF_EMAIL_SUBJECT;
     private boolean         showAuthors           = false;
+    private boolean         getGzippedFeeds       = true;
 
     /**
      * For log messages
@@ -372,6 +375,34 @@ public class ConfigFile extends Configuration
     public void setQuietFlag (boolean val)
     {
         this.quiet = val;
+    }
+
+    /**
+     * Determine whether to retrieve RSS feeds via Gzip. Only applicable
+     * when connecting to HTTP servers.
+     *
+     * @return <tt>true</tt> if Gzip is to be used, <tt>false</tt>
+     *         otherwise
+     *
+     * @see #setRetrieveFeedsWithGzipFlag
+     */
+    public boolean retrieveFeedsWithGzip()
+    {
+        return getGzippedFeeds;
+    }
+
+    /**
+     * Set the flag that controls whether to retrieve RSS feeds via Gzip.
+     * Only applicable when connecting to HTTP servers.
+     *
+     * @param val <tt>true</tt> if Gzip is to be used, <tt>false</tt>
+     *            otherwise
+     *
+     * @see #retrieveFeedsWithGzipFlag
+     */
+    public void setRetrieveFeedsWithGzipFlag (boolean val)
+    {
+        this.getGzippedFeeds = val;
     }
 
     /**
@@ -687,6 +718,9 @@ public class ConfigFile extends Configuration
             showAuthors = getOptionalBooleanValue (MAIN_SECTION,
                                                    VAR_SHOW_AUTHORS,
                                                    DEF_SHOW_AUTHORS);
+            getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
+                                                       VAR_GET_GZIPPED_FEEDS,
+                                                       DEF_GET_GZIPPED_FEEDS);
         }
 
         catch (NoSuchVariableException ex)

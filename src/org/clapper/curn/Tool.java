@@ -46,6 +46,7 @@ import java.util.ResourceBundle;
 import java.util.NoSuchElementException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.zip.GZIPInputStream;
 
 import java.text.ParseException;
 import java.text.MessageFormat;
@@ -707,10 +708,28 @@ public class curn extends CommandLineUtility
             String feedURLString = feedURL.toString();
             log.info ("Parsing feed at " + feedURLString);
 
-            // Don't download the channel if it hasn't been modified since
-            // we last checked it.
+            // Open the connection.
 
             URLConnection conn = feedURL.openConnection();
+
+            // Don't download the channel if it hasn't been modified since
+            // we last checked it. We set the If-Modified-Since header, to
+            // tell the web server not to return the content if it's not
+            // newer than what we saw before. However, as a double-check
+            // (for web servers that ignore the header), we also check the
+            // Last-Modified header, if any, that's returned; if it's not
+            // newer, we don't bother to parse and process the returned
+            // XML.
+
+            setIfModifiedSinceHeader (conn, feedInfo);
+
+            // If the config allows us to transfer gzipped content, then
+            // set that header, too.
+
+            setGzipHeader (conn, configuration);
+
+            // If the feed has actually changed, process it.
+
             if (feedHasChanged (conn, feedInfo))
             {
                 if (cache != null)
@@ -719,7 +738,7 @@ public class curn extends CommandLineUtility
                                       feedInfo);
 
                 File saveAsFile = feedInfo.getSaveAsFile();
-                InputStream is = conn.getInputStream();
+                InputStream is = getURLInputStream (conn);
 
                 if (saveAsFile != null)
                 {
@@ -785,6 +804,72 @@ public class curn extends CommandLineUtility
         finally
         {
             temp.delete();
+        }
+    }
+
+    private InputStream getURLInputStream (URLConnection conn)
+        throws IOException
+    {
+        InputStream is = conn.getInputStream();
+        String ce = conn.getHeaderField ("content-encoding");
+
+        if (ce != null)
+        {
+            String urlString = conn.getURL().toString();
+
+            log.debug ("URL \""
+                     + urlString
+                     + "\" -> Content-Encoding: "
+                     + ce);
+            if (ce.indexOf ("gzip") != -1)
+            {
+                log.debug ("URL \""
+                         + urlString
+                         + "\" is compressed. Using GZIPInputStream.");
+                is = new GZIPInputStream (is);
+            }
+        }
+
+        return is;
+    }
+
+    private void setGzipHeader (URLConnection conn, ConfigFile configuration)
+    {
+        if (configuration.retrieveFeedsWithGzip())
+        {
+            log.debug ("Setting header \"Accept-Encoding\" to \"gzip\"");
+            conn.setRequestProperty ("Accept-Encoding", "gzip");
+        }
+    }
+
+    private void setIfModifiedSinceHeader (URLConnection conn,
+                                           FeedInfo      feedInfo)
+    {
+        long     lastSeen = 0;
+        boolean  hasChanged = false;
+        String   cacheKey = feedInfo.getCacheKey();
+        URL      feedURL = feedInfo.getURL();
+
+        if ((cache != null) && (cache.contains (cacheKey)))
+        {
+            FeedCacheEntry entry = (FeedCacheEntry) cache.getItem (cacheKey);
+            lastSeen = entry.getTimestamp();
+
+            if (lastSeen > 0)
+            {
+                if (log.isDebugEnabled())
+                {
+                    log.debug ("Setting If-Modified-Since header for feed \""
+                             + feedURL.toString()
+                             + "\" to: "
+                             + String.valueOf (lastSeen)
+                             + " ("
+                             + new Date (lastSeen).toString()
+                             + ")");
+                }
+
+                conn.setIfModifiedSince (lastSeen);
+            }
         }
     }
 
