@@ -232,34 +232,58 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param recipients  collection of email addresses, as strings.
      *
-     * @throws RSSGetException  initialization error
+     * @throws RSSGetException  on error
      */
     private void emailOutput()
         throws RSSGetException
     {
         try
         {
-            EmailMessage    message   = new EmailMessage();
-            String          smtpHost  = config.getSMTPHost();
-            EmailTransport  transport = new SMTPEmailTransport (smtpHost);
-            Iterator        it;
-
-            message.setMultipartSubtype (EmailMessage.MULTIPART_ALTERNATIVE);
+            EmailMessage       message   = new EmailMessage();
+            String             smtpHost  = config.getSMTPHost();
+            EmailTransport     transport = new SMTPEmailTransport (smtpHost);
+            Iterator           it;
+            HandlerTableEntry  entry;
 
             for (it = recipients.iterator(); it.hasNext(); )
                 message.addTo ((EmailAddress) it.next());
 
-            for (it = handlers.iterator(); it.hasNext(); )
-            {
-                HandlerTableEntry entry = (HandlerTableEntry) it.next();
-                message.addAttachment (entry.tempFile,
-                                       entry.handler.getContentType());
-            }
-
             message.addHeader ("X-Mailer",
                                "rssget, version " + Util.getVersion());
-
             message.setSubject (config.getEmailSubject());
+
+            // Add the output. If there's only one handler, and its output
+            // is text, then there's no need for attachments. Just set it
+            // as the text part, and set the appropriate Content-type:
+            // header. Otherwise, make a multipart-alternative message with
+            // separate attachments for each output.
+
+            if (handlers.size() == 1)
+            {
+                entry = (HandlerTableEntry) handlers.iterator().next();
+                String contentType = entry.handler.getContentType();
+
+                message.setMultipartSubtype
+                                     (EmailMessage.MULTIPART_MIXED);
+                if (contentType.startsWith ("text/"))
+                    message.setText (entry.tempFile, contentType);
+                else
+                    message.addAttachment (entry.tempFile, contentType);
+            }
+
+            else
+            {
+                message.setMultipartSubtype
+                                     (EmailMessage.MULTIPART_ALTERNATIVE);
+
+                for (it = handlers.iterator(); it.hasNext(); )
+                {
+                    entry = (HandlerTableEntry) it.next();
+                    message.addAttachment (entry.tempFile,
+                                           entry.handler.getContentType());
+                }
+            }
+
             transport.send (message);
         }
 
