@@ -1,6 +1,12 @@
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.3.3:
+
+- Fixed slight problem when translating embedded newlines into spaces in
+  parsed XML character data.
+
+
 Version 1.3.2:
 
 - Now handles feeds with alternate character sets (e.g., UTF-8) better.
