@@ -369,7 +369,7 @@
   </target>
   <target name="dist" depends="code.jar"/>
 
-  <target name="-javadoczip" depends="javadocs"
+  <target name="javadoczip" depends="javadocs"
           description="Builds the javadocs zip file">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_javadocs_zipfile}">
@@ -378,7 +378,7 @@
     </zip>
   </target>
 
-  <target name="-doczip"
+  <target name="doczip"
           description="Builds the non-Javadocs documentation zip file">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_docs_zipfile}">
@@ -387,7 +387,7 @@
     </zip>
   </target>
 
-  <target name="-srczip" depends=""
+  <target name="srczip" depends=""
           description="Generate the source zip">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_src_zipfile}">
@@ -405,7 +405,7 @@
   </target>
 
   <target name="fulldist" 
-          depends="dist,-set.version.properties,-srczip,-doczip,-javadoczip"
+          depends="dist,-set.version.properties,srczip,doczip,javadoczip"
           description="Generate the distribution and source jars">
     <copy file="${code_jar_path}" 
           tofile="${release_dir}/${versioned_code_jar_file}"/>
