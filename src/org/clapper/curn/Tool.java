@@ -321,6 +321,12 @@ public class rssget implements VerboseMessagesHandler
                 else if (s.equals ("-v") || s.equals ("--verbose"))
                     opts.put ("v", args[++i]);
 
+                else if (s.equals ("-d") || s.equals ("--show-dates"))
+                    opts.put ("d", "");
+
+                else if (s.equals ("-D") || s.equals ("--no-dates"))
+                    opts.put ("D", "");
+
                 else
                     throw new BadCommandLineException ("Unknown option: "
                                                      + s);
@@ -356,6 +362,14 @@ public class rssget implements VerboseMessagesHandler
 
                     case 'C':   // --nocache
                         useCache = false;
+                        break;
+
+                    case 'd':   // --show-dates
+                        config.setShowDatesFlag (true);
+                        break;
+
+                    case 'D':   // --no-dates
+                        config.setShowDatesFlag (false);
                         break;
 
                     case 'Q':   // --noquiet
@@ -462,6 +476,8 @@ public class rssget implements VerboseMessagesHandler
 "OPTIONS",
 "-B, --build-info     Show full build information",
 "-C, --nocache        Don't use a cache file at all.",
+"-d, --show-dates     Show dates on feeds and feed items, if available",
+"-D, --no-dates       Don't show dates on feeds and feed items",
 "-u, --noupdate       Read the cache, but don't update it",
 "-Q, --noquiet        Emit information about sites with no information",
 "-q, --quiet          Be quiet about sites with no information",

@@ -20,6 +20,9 @@ import java.util.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import java.net.URL;
 
 import org.enhydra.xml.xmlc.html.*;
@@ -38,6 +41,13 @@ import org.w3c.dom.html.*;
  */
 public class HTMLOutputHandler implements OutputHandler
 {
+    /*----------------------------------------------------------------------*\
+                             Private Constants
+    \*----------------------------------------------------------------------*/
+
+    private static final DateFormat OUTPUT_DATE_FORMAT =
+                             new SimpleDateFormat ("dd MMM, yyyy, HH:mm:ss");
+
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
@@ -122,6 +132,7 @@ public class HTMLOutputHandler implements OutputHandler
 
         int       i = 0;
         Iterator  it;
+        Date      date;
 
         channelCount++;
 
@@ -130,6 +141,9 @@ public class HTMLOutputHandler implements OutputHandler
         channelRowParent.insertBefore (channelSeparatorRow.cloneNode (true),
                                        channelSeparatorRow);
         // Do the rows of output.
+
+        doc.getElementChannelDate().removeAttribute ("id");
+        doc.getElementItemDate().removeAttribute ("id");
 
         for (i = 0, it = items.iterator(); it.hasNext(); i++, rowCount++)
         {
@@ -140,12 +154,22 @@ public class HTMLOutputHandler implements OutputHandler
                 // First row in channel has channel title and link.
 
                 doc.setTextChannelTitle (channel.getTitle());
+
+                date = null;
+                if (config.showDates())
+                    date = channel.getPublicationDate();
+                if (date != null)
+                    doc.setTextChannelDate (OUTPUT_DATE_FORMAT.format (date));
+                else
+                    doc.setTextChannelDate ("");
+
                 itemAnchor.setHref (item.getLink().toExternalForm());
             }
 
             else
             {
                 doc.setTextChannelTitle ("");
+                doc.setTextChannelDate ("");
                 itemAnchor.setHref ("");
             }
 
@@ -158,6 +182,14 @@ public class HTMLOutputHandler implements OutputHandler
 
             doc.setTextItemDescription ((desc == null) ? "" : desc);
             itemAnchor.setHref (item.getLink().toExternalForm());
+
+            date = null;
+            if (config.showDates())
+                date = item.getPublicationDate();
+            if (date != null)
+                doc.setTextItemDate (OUTPUT_DATE_FORMAT.format (date));
+            else
+                doc.setTextItemDate ("");
 
             itemTitleTD.removeAttribute ("class");
             itemDescTD.removeAttribute ("class");

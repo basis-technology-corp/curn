@@ -63,6 +63,7 @@ public class RSSGetConfiguration extends Configuration
     private static final String VAR_SMTP_HOST         = "SMTPHost";
     private static final String VAR_DEF_EMAIL_SENDER  = "MailFrom";
     private static final String VAR_EMAIL_SUBJECT     = "MailSubject";
+    private static final String VAR_SHOW_DATES        = "ShowDates";
 
     /**
      * Default values
@@ -91,6 +92,7 @@ public class RSSGetConfiguration extends Configuration
     private boolean     quiet            = false;
     private boolean     summaryOnly      = false;
     private boolean     showRSSFormat    = false;
+    private boolean     showDates        = false;
     private int         verboseness      = 0;
     private Collection  rssFeeds         = new ArrayList();
     private Map         rssFeedMap       = new HashMap();
@@ -205,6 +207,9 @@ public class RSSGetConfiguration extends Configuration
      * Get the configured cache file.
      *
      * @return the cache file
+     *
+     * @see #mustUpdateCache
+     * @see #setMustUpdateCacheFlag
      */
     public File getCacheFile()
     {
@@ -216,6 +221,9 @@ public class RSSGetConfiguration extends Configuration
      *
      * @return <tt>true</tt> if the cache should be updated, <tt>false</tt>
      *         if it should not.
+     *
+     * @see #getCacheFile
+     * @see #setMustUpdateCacheFlag
      */
     public boolean mustUpdateCache()
     {
@@ -227,6 +235,9 @@ public class RSSGetConfiguration extends Configuration
      *
      * @param val <tt>true</tt> if the cache should be updated, <tt>false</tt>
      *            if it should not
+     *
+     * @see #mustUpdateCache
+     * @see #getCacheFile
      */
     public void setMustUpdateCacheFlag (boolean val)
     {
@@ -238,6 +249,8 @@ public class RSSGetConfiguration extends Configuration
      *
      * @return <tt>true</tt> if "quiet" flag is set, <tt>false</tt>
      *         otherwise
+     *
+     * @see #setQuietFlag
      */
     public boolean beQuiet()
     {
@@ -249,6 +262,8 @@ public class RSSGetConfiguration extends Configuration
      *
      * @param val <tt>true</tt> to set the "quiet" flag, <tt>false</tt>
      *            to clear it
+     *
+     * @see #beQuiet
      */
     public void setQuietFlag (boolean val)
     {
@@ -256,9 +271,39 @@ public class RSSGetConfiguration extends Configuration
     }
 
     /**
+     * Return the value of the "show dates" flag. This flag controls whether
+     * to display the dates associated with each feed and item, if available.
+     *
+     * @return <tt>true</tt> if "show dates" flag is set, <tt>false</tt>
+     *         otherwise
+     *
+     * @see #setShowDatesFlag
+     */
+    public boolean showDates()
+    {
+        return showDates;
+    }
+
+    /**
+     * Set the value of the "show dates" flag. This flag controls whether
+     * to display the dates associated with each feed and item, if available.
+     *
+     * @param val <tt>true</tt> to set the "show dates" flag, <tt>false</tt>
+     *            to clear it
+     *
+     * @see #showDates
+     */
+    public void setShowDatesFlag (boolean val)
+    {
+        this.showDates = val;
+    }
+
+    /**
      * Return the value of "show RSS version" flag.
      *
      * @return <tt>true</tt> if flag is set, <tt>false</tt> if it isn't
+     *
+     * @see #setShowRSSVersionFlag
      */
     public boolean showRSSVersion()
     {
@@ -270,6 +315,8 @@ public class RSSGetConfiguration extends Configuration
      *
      * @param val <tt>true</tt> to set the flag,
      *            <tt>false</tt> to clear it
+     *
+     * @see #showRSSVersion
      */
     public void setShowRSSVersionFlag (boolean val)
     {
@@ -280,6 +327,8 @@ public class RSSGetConfiguration extends Configuration
      * Get the SMTP host to use when sending email.
      *
      * @return the SMTP host. Never null.
+     *
+     * @see #setSMTPHost
      */
     public String getSMTPHost()
     {
@@ -290,6 +339,8 @@ public class RSSGetConfiguration extends Configuration
      * Set the SMTP host to use when sending email.
      *
      * @param host the SMTP host, or null to revert to the default value
+     *
+     * @see #getSMTPHost
      */
     public void setSMTPHost (String host)
     {
@@ -300,6 +351,8 @@ public class RSSGetConfiguration extends Configuration
      * Get the email address to use as the sender for email messages.
      *
      * @return the email address, or null if not specified
+     *
+     * @see #setEmailSender
      */
     public String getEmailSender()
     {
@@ -310,6 +363,8 @@ public class RSSGetConfiguration extends Configuration
      * Set the email address to use as the sender for email messages.
      *
      * @param address the new address, or null to clear the field
+     *
+     * @see #getEmailSender
      */
     public void setEmailSender (String address)
     {
@@ -320,6 +375,8 @@ public class RSSGetConfiguration extends Configuration
      * Get the subject to use in email messages, if email is being sent.
      *
      * @return the subject. Never null.
+     *
+     * @see #setEmailSubject
      */
     public String getEmailSubject()
     {
@@ -330,6 +387,8 @@ public class RSSGetConfiguration extends Configuration
      * Set the subject to use in email messages, if email is being sent.
      *
      * @param subject the subject, or null to reset to the default
+     *
+     * @see #getEmailSubject
      */
     public void setEmailSubject (String subject)
     {
@@ -340,6 +399,8 @@ public class RSSGetConfiguration extends Configuration
      * Get the verbosity level.
      *
      * @return the verbosity level
+     *
+     * @see #setVerbosityLevel
      */
     public int verbosityLevel()
     {
@@ -350,6 +411,8 @@ public class RSSGetConfiguration extends Configuration
      * Set the verbosity level
      *
      * @param val the new level
+     *
+     * @see #verbosityLevel
      */
     public void setVerbosityLevel (int val)
     {
@@ -360,6 +423,10 @@ public class RSSGetConfiguration extends Configuration
      * Get the configured RSS feeds.
      *
      * @return a <tt>Collection</tt> of <tt>RSSFeedInfo</tt> objects.
+     *
+     * @see #hasFeed
+     * @see #getFeedInfoFor(String)
+     * @see #getFeedInfoFor(URL)
      */
     public Collection getFeeds()
     {
@@ -373,6 +440,10 @@ public class RSSGetConfiguration extends Configuration
      * @param url  the URL
      *
      * @return <tt>true</tt> if it's there, <tt>false</tt> if not
+     *
+     * @see #getFeeds
+     * @see #getFeedInfoFor(String)
+     * @see #getFeedInfoFor(URL)
      */
     public boolean hasFeed (URL url)
     {
@@ -386,6 +457,10 @@ public class RSSGetConfiguration extends Configuration
      *
      * @return the corresponding <tt>RSSFeedInfo</tt> object, or null
      *         if not found
+     *
+     * @see #getFeeds
+     * @see #hasFeed
+     * @see #getFeedInfoFor(String)
      */
     public RSSFeedInfo getFeedInfoFor (URL url)
     {
@@ -399,6 +474,10 @@ public class RSSGetConfiguration extends Configuration
      *
      * @return the corresponding <tt>RSSFeedInfo</tt> object, or null
      *         if not found
+     *
+     * @see #getFeeds
+     * @see #hasFeed
+     * @see #getFeedInfoFor(URL)
      */
     public RSSFeedInfo getFeedInfoFor (String url)
     {

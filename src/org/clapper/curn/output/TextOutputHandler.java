@@ -102,9 +102,12 @@ public class TextOutputHandler implements OutputHandler
             out.println (channel.getTitle());
             out.println (channel.getLink().toString());
 
-            Date date = channel.getPublicationDate();
-            if (date != null)
-                out.println (date);
+            if (config.showDates())
+            {
+                Date date = channel.getPublicationDate();
+                if (date != null)
+                    out.println (date);
+            }
 
             if (config.showRSSVersion())
                 out.println ("(Format: " + channel.getRSSFormat() + ")");
@@ -127,6 +130,13 @@ public class TextOutputHandler implements OutputHandler
                 s = item.getTitle();
                 out.println ((s == null) ? "(No Title)" : s);
                 out.println (item.getLink().toString());
+
+                if (config.showDates())
+                {
+                    Date date = item.getPublicationDate();
+                    if (date != null)
+                        out.println (date);
+                }
 
                 if (! feedInfo.summarizeOnly())
                 {
