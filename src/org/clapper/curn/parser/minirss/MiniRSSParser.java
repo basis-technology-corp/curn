@@ -151,7 +151,7 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final Channel parse (File path)
+    public final RSSChannel parse (File path)
 	throws FileNotFoundException,
 	       IOException,
 	       RSSParserException
@@ -177,7 +177,7 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final Channel parse (File path, String encoding)
+    public final RSSChannel parse (File path, String encoding)
 	throws FileNotFoundException,
 	       IOException,
 	       RSSParserException
@@ -210,7 +210,7 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final Channel parse (URL url)
+    public final RSSChannel parse (URL url)
 	throws IOException,
 	       RSSParserException
     {
@@ -234,7 +234,7 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final Channel parse (Reader r)
+    public final RSSChannel parse (Reader r)
 	throws IOException,
 	       RSSParserException
     {
