@@ -42,6 +42,7 @@ import org.clapper.util.mail.EmailTransport;
 import org.clapper.util.mail.SMTPEmailTransport;
 import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
+import org.clapper.util.misc.MIMETypeUtil;
 
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -181,19 +182,6 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     public String getContentType()
     {
 	// Not really applicable.
-
-        return null;
-    }
-
-    /**
-     * Get a file name extension suitable for the content. This is useful
-     * primarily for setting the file name in generated email.
-     *
-     * @return a suitable extension, with the leading "."
-     */
-    public String getFilenameExtension()
-    {
-        // Not really applicable
 
         return null;
     }
@@ -345,16 +333,21 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
                 DecimalFormat fmt  = new DecimalFormat ("##000");
                 StringBuffer  name = new StringBuffer();
+                String        ext;
+                String        contentType;
+                InputStream   is;
 
                 if (totalAttachments == 1)
                 {
                     handler = firstHandlerWithOutput;
-                    String contentType = handler.getContentType();
-                    InputStream is = handler.getGeneratedOutput();
+                    contentType = handler.getContentType();
+                    ext = MIMETypeUtil.fileExtensionForMIMEType (contentType);
+                    is = handler.getGeneratedOutput();
                     message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
 
                     name.append (fmt.format (1));
-                    name.append (handler.getFilenameExtension());
+                    name.append ('.');
+                    name.append (ext);
 
                     if (contentType.startsWith ("text/"))
                         message.setText (is, name.toString(), contentType);
@@ -375,16 +368,20 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                         handlerWrapper = (ConfiguredOutputHandler) it.next();
                         handler        = handlerWrapper.getOutputHandler();
 
-                        InputStream is = handler.getGeneratedOutput();
+                        contentType = handler.getContentType();
+                        ext = MIMETypeUtil.fileExtensionForMIMEType
+                                                                (contentType);
+                        is = handler.getGeneratedOutput();
                         if (is != null)
                         {
                             name.setLength (0);
                             name.append (fmt.format (i));
-                            name.append (handler.getFilenameExtension());
+                            name.append ('.');
+                            name.append (ext);
                             i++;
                             message.addAttachment (is,
                                                    name.toString(),
-                                                   handler.getContentType());
+                                                   contentType);
                         }
                     }
                 }

@@ -284,17 +284,6 @@ public class TextOutputHandler extends FileOutputHandler
         return "text/plain";
     }
 
-    /**
-     * Get a file name extension suitable for the content. This is useful
-     * primarily for setting the file name in generated email.
-     *
-     * @return a suitable extension, with the leading "."
-     */
-    public String getFilenameExtension()
-    {
-        return ".txt";
-    }
-
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/

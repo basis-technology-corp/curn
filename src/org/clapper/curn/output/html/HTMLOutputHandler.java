@@ -437,17 +437,6 @@ public class HTMLOutputHandler extends FileOutputHandler
         return "text/html";
     }
 
-    /**
-     * Get a file name extension suitable for the content. This is useful
-     * primarily for setting the file name in generated email.
-     *
-     * @return a suitable extension, with the leading "."
-     */
-    public String getFilenameExtension()
-    {
-        return ".html";
-    }
-
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
