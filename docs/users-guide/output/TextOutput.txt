@@ -80,5 +80,5 @@ http://justthefactsmaam.clapper.org/
     Wed Jul 28 02:32:27 EDT 2004
 
 ------------------------------------------------------------------------------
-curn, version 1.5.5
-Generated Wed Nov 10 17:07:30 EST 2004
+curn, version 1.5.6
+Generated Thu Dec 02 16:53:00 EST 2004
