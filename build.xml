@@ -52,7 +52,8 @@
   <property name="compile.listfiles" value="no"/>
   <property name="code_jar_name" value="curn"/>
   <property name="code_jar_file" value="${code_jar_name}.jar"/>
-  <property name="code_jar_path" value="${dist}/${code_jar_file}"/>
+  <property name="code_jar_dir" value="${dist}/lib"/>
+  <property name="code_jar_path" value="${code_jar_dir}/${code_jar_file}"/>
   <property name="docs_top_dir" value="docs"/>
   <property name="javadocs_top_dir" value="${dist}/docs"/>
   <property name="javadocs_api_dir" value="${javadocs_top_dir}/api"/>
@@ -377,7 +378,7 @@
 
   <target name="code.jar" depends="all"
           description="Generate the binary jar file">
-    <mkdir dir="${dist}/lib"/>
+    <mkdir dir="${code_jar_dir}"/>
     <jar jarfile="${code_jar_path}" basedir="${build}"/>
   </target>
 
