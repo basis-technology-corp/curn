@@ -2,27 +2,27 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSItem;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 /**
  * This interface defines the methods that must be supported by a class
- * that is to be plugged into <i>rssget</i> as an output handler. It is
+ * that is to be plugged into <i>curn</i> as an output handler. It is
  * responsible for writing any channel headers, item headers, and item
  * information. It will only be called with items that should be displayed;
  * any channel items that are cached and should be skipped are not handed
- * to the output handler. <i>rssget</i> models output in this manner to make
+ * to the output handler. <i>curn</i> models output in this manner to make
  * it simpler to substitute different kinds of output handlers.
  *
- * @see rssget
+ * @see curn
  * @see OutputHandlerFactory
- * @see org.clapper.rssget.parser.RSSChannel
- * @see org.clapper.rssget.parser.RSSItem
+ * @see org.clapper.curn.parser.RSSChannel
+ * @see org.clapper.curn.parser.RSSItem
  *
  * @version <tt>$Revision$</tt>
  */
@@ -37,7 +37,7 @@ public interface OutputHandler
      *
      * @param writer  the <tt>PrintWriter</tt> where the handler should send
      *                output, if applicable.
-     * @param config  the parsed <i>rssget</i> configuration data
+     * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException  initialization error
      */
@@ -63,7 +63,7 @@ public interface OutputHandler
         throws FeedException;
 
     /**
-     * Flush any buffered-up output. <i>rssget</i> calls this method
+     * Flush any buffered-up output. <i>curn</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      * If the output handler doesn't need to flush any output, it can simply
      * return without doing anything.

@@ -2,13 +2,13 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 /**
  * This interface defines the methods required to be a verbose messages
  * handler.
  *
- * @see rssget
+ * @see curn
  *
  * @version <tt>$Revision$</tt>
  */

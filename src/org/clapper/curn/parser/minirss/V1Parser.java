@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser.minirss;
+package org.clapper.curn.parser.minirss;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -19,12 +19,12 @@ import org.xml.sax.Attributes;
  * whether the XML feed represents version 1 RSS or not.</p>
  *
  * <p>This parser doesn't store all the possible RSS items. It stores those
- * items that the <i>rssget</i> utility requires (plus a few more), but
+ * items that the <i>curn</i> utility requires (plus a few more), but
  * lacks support for others. For instance, it ignores <tt>image</tt>,
- * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
+ * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>curn</i>
  * has no interest in displaying. Thus, it is unsuitable for use as a
  * general-purpose Atom parser (though it's perfectly suited for use in
- * <i>rssget</i>).</p>
+ * <i>curn</i>).</p>
  *
  * @version <tt>$Revision$</tt>
  *

@@ -1,4 +1,4 @@
-package org.clapper.rssget.parser;
+package org.clapper.curn.parser;
 
 import java.io.*;
 import java.util.*;

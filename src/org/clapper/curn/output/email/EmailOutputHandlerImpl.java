@@ -2,17 +2,17 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.email;
+package org.clapper.curn.email;
 
-import org.clapper.rssget.OutputHandler;
-import org.clapper.rssget.EmailOutputHandler;
-import org.clapper.rssget.Util;
-import org.clapper.rssget.Version;
-import org.clapper.rssget.FeedInfo;
-import org.clapper.rssget.ConfigFile;
-import org.clapper.rssget.FeedException;
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSItem;
+import org.clapper.curn.OutputHandler;
+import org.clapper.curn.EmailOutputHandler;
+import org.clapper.curn.Util;
+import org.clapper.curn.Version;
+import org.clapper.curn.FeedInfo;
+import org.clapper.curn.ConfigFile;
+import org.clapper.curn.FeedException;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.mail.EmailMessage;
 import org.clapper.util.mail.EmailTransport;
@@ -34,8 +34,8 @@ import java.util.ArrayList;
  * sends an email message, using the contents of the real handlers.
  *
  * @see OutputHandler
- * @see org.clapper.rssget.rssget
- * @see org.clapper.rssget.parser.RSSChannel
+ * @see org.clapper.curn.curn
+ * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */
@@ -61,7 +61,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
             {
                 this.handler = handler;
 
-                tempFile = File.createTempFile ("rssget", null);
+                tempFile = File.createTempFile ("curn", null);
                 tempFile.deleteOnExit();
 
                 fileOut = new FileWriter (tempFile);
@@ -108,7 +108,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      *
      * @param writer  the <tt>PrintWriter</tt> where the handler should send
      *                output. Not used here.
-     * @param config  the parsed <i>rssget</i> configuration data
+     * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException initialization error
      */
@@ -151,7 +151,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     }
     
     /**
-     * Flush any buffered-up output. <i>rssget</i> calls this method
+     * Flush any buffered-up output. <i>curn</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
      * @throws FeedException  unable to write output
@@ -253,7 +253,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                 message.addTo ((EmailAddress) it.next());
 
             message.addHeader ("X-Mailer",
-                               "rssget, version " + Version.VERSION);
+                               "curn, version " + Version.VERSION);
             message.setSubject (config.getEmailSubject());
 
             // Add the output. If there's only one handler, and its output

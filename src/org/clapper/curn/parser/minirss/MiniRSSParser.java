@@ -2,11 +2,11 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser.minirss;
+package org.clapper.curn.parser.minirss;
 
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSParser;
-import org.clapper.rssget.parser.RSSParserException;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSParser;
+import org.clapper.curn.parser.RSSParserException;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -36,10 +36,10 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * {@link <a href="http://web.resource.org/rss/1.0/">1.0</a>} and
  * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
  * However, it doesn't store all the possible RSS items. It stores those
- * items that the <i>rssget</i> utility requires (plus a few more), but
+ * items that the <i>curn</i> utility requires (plus a few more), but
  * lacks support for others.  Thus, it is unsuitable for use as a
  * general-purpose RSS parser (though it's perfectly suited for use
- * in <i>rssget</i>).</p>
+ * in <i>curn</i>).</p>
  *
  * <p><b>Notes:</b>
  *
@@ -108,7 +108,7 @@ public class MiniRSSParser
 
     /**
      * Parses the RSS feed located at the specified URL. This method,
-     * required by <i>rssget</i>'s <tt>RSSParser</tt> interface, is
+     * required by <i>curn</i>'s <tt>RSSParser</tt> interface, is
      * simply a front-end for {@link #parse(URL)}.
      *
      * @param stream  the <tt>InputStream</tt> for the feed
@@ -306,7 +306,7 @@ public class MiniRSSParser
             String version = attributes.getValue ("version");
             channel.setRSSFormat ("RSS " + version);
 
-            // For rssget's purposes, there's considerable similarity between
+            // For curn's purposes, there's considerable similarity between
             // RSS version 0.91 and RSS version 2--so much so that the same
             // parser logic will work for both.
 

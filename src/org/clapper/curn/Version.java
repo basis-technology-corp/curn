@@ -24,7 +24,7 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.lang.System;
 
@@ -54,7 +54,7 @@ public final class Version
      * The name of the resource bundle containing the build info.
      */
     public static final String BUNDLE_NAME
-        = "org.clapper.rssget.BuildInfoBundle";
+        = "org.clapper.curn.BuildInfoBundle";
 
     /*----------------------------------------------------------------------*\
                                Main Program
@@ -67,7 +67,7 @@ public final class Version
     {
         BuildInfo buildInfo = new BuildInfo (BUNDLE_NAME);
 
-        System.out.println ("rssget, version " +
+        System.out.println ("curn, version " +
                             VERSION);
         System.out.println ();
         System.out.println ("Build date:     " +

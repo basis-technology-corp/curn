@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.io.File;
 import java.io.ObjectInputStream;
@@ -19,11 +19,11 @@ import java.util.Date;
 import java.util.Iterator;
 
 /**
- * Defines the in-memory format of the <i>rssget</i> cache, and provides
+ * Defines the in-memory format of the <i>curn</i> cache, and provides
  * methods for saving and restoring the cache.
  *
- * @see rssget
- * @see org.clapper.rssget.parser.RSSChannel
+ * @see curn
+ * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */
@@ -66,7 +66,7 @@ public class FeedCache implements Serializable
      * Construct a new, empty cache object.
      *
      * @param verboseHandler  the verbose messages handler to use
-     * @param config          the <i>rssget</i> configuration
+     * @param config          the <i>curn</i> configuration
      */
     FeedCache (VerboseMessagesHandler vh,
                  ConfigFile    config)

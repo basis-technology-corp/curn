@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser.minirss;
+package org.clapper.curn.parser.minirss;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -21,10 +21,10 @@ import org.xml.sax.Attributes;
  * determined that the XML feed is an Atom feed.</p>
  *
  * <p>This parser doesn't store all the possible items. It stores those
- * items that the <i>rssget</i> utility requires (plus a few more), but
+ * items that the <i>curn</i> utility requires (plus a few more), but
  * lacks support for others. Thus, it is unsuitable for use as a
  * general-purpose Atom parser (though it's perfectly suited for use
- * in <i>rssget</i>).</p>
+ * in <i>curn</i>).</p>
  *
  * @version <tt>$Revision$</tt>
  *

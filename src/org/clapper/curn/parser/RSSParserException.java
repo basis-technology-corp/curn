@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser;
+package org.clapper.curn.parser;
 
 import org.clapper.util.misc.NestedException;
 

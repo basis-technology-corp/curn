@@ -8,6 +8,6 @@ $JAVA_ROOT/classes/informa.jar:\
 $JAVA_ROOT/classes/commons-logging.jar:\
 $JAVA_ROOT/classes/jdom.jar:\
 $JAVA_ROOT/classes/xerces.jar:\
-$JAVA_ROOT/classes/rssget.jar \
-org.clapper.rssget.rssget "${@}"
+$JAVA_ROOT/classes/curn.jar \
+org.clapper.curn.curn "${@}"
 

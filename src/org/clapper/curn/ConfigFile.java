@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import org.clapper.util.config.ConfigurationException;
 /**
  * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt> class (part of
  * the <i>clapper.org</i> Java Utility library) to parse and validate the
- * <i>rssget</i> configuration file, holding the results in memory for easy
+ * <i>curn</i> configuration file, holding the results in memory for easy
  * access.</p>
  *
  * @version <tt>$Revision$</tt>
@@ -42,7 +42,7 @@ public class ConfigFile extends Configuration
     /**
      * Main section name
      */
-    private static final String  MAIN_SECTION           = "rssget";
+    private static final String  MAIN_SECTION           = "curn";
 
     /**
      * Variable names
@@ -82,9 +82,9 @@ public class ConfigFile extends Configuration
     private static final String  DEF_SMTP_HOST         = "localhost";
     private static final String  DEF_EMAIL_SUBJECT     = "RSS Feeds";
     private static final String  DEF_PARSER_CLASS_NAME =
-                             "org.clapper.rssget.parser.minirss.MiniRSSParser";
+                             "org.clapper.curn.parser.minirss.MiniRSSParser";
     private static final String  DEF_OUTPUT_CLASS =
-                             "org.clapper.rssget.TextOutputHandler";
+                             "org.clapper.curn.TextOutputHandler";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items

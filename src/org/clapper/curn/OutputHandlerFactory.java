@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

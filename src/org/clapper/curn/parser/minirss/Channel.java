@@ -2,12 +2,12 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser.minirss;
+package org.clapper.curn.parser.minirss;
 
-import org.clapper.rssget.Util;
+import org.clapper.curn.Util;
 
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSItem;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import java.net.URL;
 
@@ -17,10 +17,10 @@ import java.util.Date;
 
 /**
  * This class contains a subset of standard RSS channel data, providing
- * only the methods necessary for <i>rssget</i> to work.
+ * only the methods necessary for <i>curn</i> to work.
  *
- * @see org.clapper.rssget.parser.RSSParserFactory
- * @see org.clapper.rssget.parser.RSSParser
+ * @see org.clapper.curn.parser.RSSParserFactory
+ * @see org.clapper.curn.parser.RSSParser
  * @see RSSItem
  *
  * @version <tt>$Revision$</tt>

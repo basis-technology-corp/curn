@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser;
+package org.clapper.curn.parser;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * This interface defines a simplified view of an RSS item, providing only
- * the methods necessary for <i>rssget</i> to work. <i>rssget</i> uses the
+ * the methods necessary for <i>curn</i> to work. <i>curn</i> uses the
  * {@link RSSParserFactory} class to get a specific implementation of
  * <tt>RSSParser</tt>, which returns <tt>RSSChannel</tt>-conforming objects
  * that, in turn, return objects that conform to this interface. This

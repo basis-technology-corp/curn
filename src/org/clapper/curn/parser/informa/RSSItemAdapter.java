@@ -2,11 +2,11 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser.informa;
+package org.clapper.curn.parser.informa;
 
-import org.clapper.rssget.Util;
+import org.clapper.curn.Util;
 
-import org.clapper.rssget.parser.RSSItem;
+import org.clapper.curn.parser.RSSItem;
 
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.core.CategoryIF;
@@ -24,9 +24,9 @@ import java.util.Iterator;
  * adapter for the <a href="http://informa.sourceforge.net/">Informa</a>
  * RSS Parser's <tt>ItemIF</tt> type.
  *
- * @see org.clapper.rssget.parser.RSSParserFactory
- * @see org.clapper.rssget.parser.RSSParser
- * @see org.clapper.rssget.parser.RSSItem
+ * @see org.clapper.curn.parser.RSSParserFactory
+ * @see org.clapper.curn.parser.RSSParser
+ * @see org.clapper.curn.parser.RSSItem
  * @see RSSItemAdapter
  *
  * @version <tt>$Revision$</tt>

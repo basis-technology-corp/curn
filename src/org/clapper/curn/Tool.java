@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -22,11 +22,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
 
-import org.clapper.rssget.parser.RSSParserFactory;
-import org.clapper.rssget.parser.RSSParser;
-import org.clapper.rssget.parser.RSSParserException;
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSItem;
+import org.clapper.curn.parser.RSSParserFactory;
+import org.clapper.curn.parser.RSSParser;
+import org.clapper.curn.parser.RSSParserException;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.misc.BadCommandLineException;
 import org.clapper.util.text.TextUtils;
@@ -35,23 +35,25 @@ import org.clapper.util.config.ConfigurationException;
 import org.apache.oro.text.perl.Perl5Util;
 
 /**
-* <p>rssget - scan RSS feeds and display a summary, using one or more
-* configured output handlers, optionally emailing the results.</p>
-*
-* <p>This program scans a configured set of URLs, each one representing an
-* RSS feed, and summarizes the results in an easy-to-read text format.
-* <i>rssget</i> keeps track of URLs it's seen before, using an on-disk
-* cache; when using the cache, it will suppress displaying URLs it has
-* already reported (though that behavior can be disabled).</p>
-*
-* @version <tt>$Revision$</tt>
-*/
-public class rssget implements VerboseMessagesHandler
+ * <p>curn - Clapper's Uncomplicated RSS Notifier</p>
+ *
+ * <p>Curn scans a configured set of URLs, each one representing an
+ * RSS feed, and summarizes the results in an easy-to-read text format.
+ * <i>curn</i> keeps track of URLs it's seen before, using an on-disk
+ * cache; when using the cache, it will suppress displaying URLs it has
+ * already reported (though that behavior can be disabled). Curn can be
+ * extended to use any RSS parser; its built-in RSS parser, the
+ * {@link org.clapper.curn.parser.MiniRSSParser} class, can handle files in
+ * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+ * format (0.3) and RSS formats
+ * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92,
+ * {@link <a href="http://web.resource.org/rss/1.0/">1.0</a>} and
+ * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.</p>
+ *
+ * @version <tt>$Revision$</tt>
+ */
+public class curn implements VerboseMessagesHandler
 {
-    /*----------------------------------------------------------------------*\
-                               Inner Classes
-    \*----------------------------------------------------------------------*/
-
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
@@ -87,7 +89,7 @@ public class rssget implements VerboseMessagesHandler
     };
 
     private static final String EMAIL_HANDLER_CLASS =
-                            "org.clapper.rssget.email.EmailOutputHandlerImpl";
+                            "org.clapper.curn.email.EmailOutputHandlerImpl";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -111,14 +113,14 @@ public class rssget implements VerboseMessagesHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private ConfigFile config         = null;
-    private boolean             useCache       = true;
-    private FeedCache         cache          = null;
-    private Date                currentTime    = new Date();
-    private Collection          outputHandlers = new ArrayList();
-    private Collection          emailAddresses = new ArrayList();
-    private boolean             showBuildInfo  = false;
-    private Perl5Util           perl5Util      = new Perl5Util();
+    private ConfigFile  config         = null;
+    private boolean     useCache       = true;
+    private FeedCache   cache          = null;
+    private Date        currentTime    = new Date();
+    private Collection  outputHandlers = new ArrayList();
+    private Collection  emailAddresses = new ArrayList();
+    private boolean     showBuildInfo  = false;
+    private Perl5Util   perl5Util      = new Perl5Util();
 
     /*----------------------------------------------------------------------*\
                                Main Program
@@ -126,7 +128,7 @@ public class rssget implements VerboseMessagesHandler
 
     public static void main (String[] args) throws Exception
     {
-        rssget tool = new rssget();
+        curn tool = new curn();
 
         try
         {
@@ -176,7 +178,7 @@ public class rssget implements VerboseMessagesHandler
                                 Constructor
     \*----------------------------------------------------------------------*/
 
-    private rssget()
+    private curn()
     {
     }
 
@@ -197,7 +199,7 @@ public class rssget implements VerboseMessagesHandler
     }
 
     /**
-     * Run the rssget tool. Parses the command line arguments, storing the
+     * Run the curn tool. Parses the command line arguments, storing the
      * results in an internal configuration; then, calls the
      * {@link #processRSSFeeds} method.
      *
@@ -517,9 +519,9 @@ public class rssget implements VerboseMessagesHandler
     {
         String[] USAGE = new String[]
         {
-"rssget, version " + Version.VERSION,
+"curn, version " + Version.VERSION,
 "",
-"Usage: " + rssget.class.getName() + " [options] configFile [email_addr ...]",
+"Usage: " + curn.class.getName() + " [options] configFile [email_addr ...]",
 "",
 "OPTIONS",
 "-B, --build-info     Show full build information",

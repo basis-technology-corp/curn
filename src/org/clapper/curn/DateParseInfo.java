@@ -2,12 +2,12 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.text.SimpleDateFormat;
 
 /**
- * Used by <i>rssget</i> when parsing dates.
+ * Used by <i>curn</i> when parsing dates.
  */
 class DateParseInfo
 {

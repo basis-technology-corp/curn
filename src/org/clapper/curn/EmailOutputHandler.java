@@ -2,7 +2,7 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
 import java.util.Collection;
 
@@ -12,7 +12,7 @@ import java.util.Collection;
  * exists is to permit conditional building of the actual implementing
  * class, which depends on third-party APIs that might not be present.
  *
- * @see rssget
+ * @see curn
  *
  * @version <tt>$Revision$</tt>
  */

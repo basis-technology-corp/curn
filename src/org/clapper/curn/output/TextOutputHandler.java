@@ -2,10 +2,10 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget;
+package org.clapper.curn;
 
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSItem;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
 
@@ -22,8 +22,8 @@ import java.util.Iterator;
  * <tt>PrintWriter</tt>.
  *
  * @see OutputHandler
- * @see rssget
- * @see org.clapper.rssget.parser.RSSChannel
+ * @see curn
+ * @see org.clapper.curn.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */
@@ -57,7 +57,7 @@ public class TextOutputHandler implements OutputHandler
      *
      * @param writer  the <tt>PrintWriter</tt> where the handler should send
      *                output
-     * @param config  the parsed <i>rssget</i> configuration data
+     * @param config  the parsed <i>curn</i> configuration data
      *
      * @throws FeedException  initialization error
      */
@@ -169,7 +169,7 @@ public class TextOutputHandler implements OutputHandler
     }
 
     /**
-     * Flush any buffered-up output. <i>rssget</i> calls this method
+     * Flush any buffered-up output. <i>curn</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
      * @throws FeedException  unable to write output

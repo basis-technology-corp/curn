@@ -2,11 +2,11 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.parser.informa;
+package org.clapper.curn.parser.informa;
 
-import org.clapper.rssget.parser.RSSParser;
-import org.clapper.rssget.parser.RSSChannel;
-import org.clapper.rssget.parser.RSSParserException;
+import org.clapper.curn.parser.RSSParser;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSParserException;
 
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ParseException;
@@ -28,8 +28,8 @@ import java.io.IOException;
  * but does <i>not</i> support the
  * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>} format.
  *
- * @see org.clapper.rssget.parser.RSSParserFactory
- * @see org.clapper.rssget.parser.RSSParser
+ * @see org.clapper.curn.parser.RSSParserFactory
+ * @see org.clapper.curn.parser.RSSParser
  * @see RSSChannelAdapter
  *
  * @version <tt>$Revision$</tt>
