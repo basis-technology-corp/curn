@@ -91,7 +91,6 @@ public class Curn
     private FeedCache   cache            = null;
     private Date        currentTime      = new Date();
     private Collection  outputHandlers   = new ArrayList();
-    private Collection  emailAddresses   = new ArrayList();
 
     /**
      * For log messages
@@ -186,7 +185,7 @@ public class Curn
                  + channels.size());
 
         if (channels.size() > 0)
-            displayChannels (channels);
+            displayChannels (channels, emailAddresses);
 
         if ((cache != null) && configuration.mustUpdateCache())
             cache.saveCache();
@@ -487,7 +486,8 @@ public class Curn
         return process;
     }
 
-    private void displayChannels (Collection channels)
+    private void displayChannels (Collection channels,
+                                  Collection emailAddresses)
         throws CurnException,
                ConfigurationException
     {
