@@ -113,7 +113,7 @@ public class rssget implements VerboseMessagesHandler
 
     private ConfigFile config         = null;
     private boolean             useCache       = true;
-    private RSSGetCache         cache          = null;
+    private FeedCache         cache          = null;
     private Date                currentTime    = new Date();
     private Collection          outputHandlers = new ArrayList();
     private Collection          emailAddresses = new ArrayList();
@@ -257,7 +257,7 @@ public class rssget implements VerboseMessagesHandler
 
         if (useCache)
         {
-            cache = new RSSGetCache (this, configuration);
+            cache = new FeedCache (this, configuration);
             cache.setCurrentTime (currentTime);
             cache.loadCache();
         }
@@ -672,7 +672,7 @@ public class rssget implements VerboseMessagesHandler
 
         if ((cache != null) && (cache.contains (cacheKey)))
         {
-            RSSCacheEntry entry = (RSSCacheEntry) cache.getItem (cacheKey);
+            FeedCacheEntry entry = (FeedCacheEntry) cache.getItem (cacheKey);
             lastSeen = entry.getTimestamp();
         }
 

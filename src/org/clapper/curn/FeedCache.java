@@ -27,7 +27,7 @@ import java.util.Iterator;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSGetCache implements Serializable
+public class FeedCache implements Serializable
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
@@ -68,7 +68,7 @@ public class RSSGetCache implements Serializable
      * @param verboseHandler  the verbose messages handler to use
      * @param config          the <i>rssget</i> configuration
      */
-    RSSGetCache (VerboseMessagesHandler vh,
+    FeedCache (VerboseMessagesHandler vh,
                  ConfigFile    config)
     {
         this.vh     = vh;
@@ -170,12 +170,12 @@ public class RSSGetCache implements Serializable
      *
      * @param id  the unique ID to check
      *
-     * @return the corresponding <tt>RSSCacheEntry</tt> object, or null if
+     * @return the corresponding <tt>FeedCacheEntry</tt> object, or null if
      *         not found
      */
-    public RSSCacheEntry getItem (String id)
+    public FeedCacheEntry getItem (String id)
     {
-        return (RSSCacheEntry) cacheMap.get (id);
+        return (FeedCacheEntry) cacheMap.get (id);
     }
 
     /**
@@ -191,7 +191,7 @@ public class RSSGetCache implements Serializable
     public void addToCache (String uniqueID, URL url, FeedInfo parentFeed)
     {
         URL parentURL = parentFeed.getURL();
-        RSSCacheEntry entry = new RSSCacheEntry (uniqueID,
+        FeedCacheEntry entry = new FeedCacheEntry (uniqueID,
                                                  parentURL,
                                                  url,
                                                  System.currentTimeMillis());
@@ -236,7 +236,7 @@ public class RSSGetCache implements Serializable
              itKeys.hasNext(); )
         {
             String itemUrlString = (String) itKeys.next();
-            RSSCacheEntry entry = (RSSCacheEntry) cacheMap.get (itemUrlString);
+            FeedCacheEntry entry = (FeedCacheEntry) cacheMap.get (itemUrlString);
             URL channelURL = entry.getChannelURL();
 
             vh.verbose (3, "Checking cached URL \"" + itemUrlString + "\"");

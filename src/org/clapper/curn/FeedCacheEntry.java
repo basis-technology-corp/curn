@@ -16,7 +16,7 @@ import java.io.Serializable;
  *
  * @version <tt>$Revision$</tt>
  */
-class RSSCacheEntry implements Serializable
+class FeedCacheEntry implements Serializable
 {
     /*----------------------------------------------------------------------*\
                                  Constants
@@ -44,7 +44,7 @@ class RSSCacheEntry implements Serializable
      *                    or the channel URL (again).
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
-    RSSCacheEntry (String entryID,
+    FeedCacheEntry (String entryID,
                    URL    channelURL,
                    URL    entryURL,
                    long   timestamp)
