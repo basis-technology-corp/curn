@@ -9,9 +9,9 @@ http://irrelevant.clapper.org/
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
     Wed Jul 28 00:00:00 EDT 2004
 
-        During rush hour this morning, on the city's busy Schuylkill
-        Expressway, Philadelphia police stopped fifteen motorists and cited
-        them under Philadelphia's new, controversial "stupid driver" ordinance.
+        During rush hour this morning, on the city's busy Schuylkill Expressway,
+        Philadelphia police stopped fifteen motorists and cited them under
+        Philadelphia's new, controversial "stupid driver" ordinance.
 
     Joe Sixpack to retire
     http://irrelevant.clapper.org/2004/06/13/joe6.html
@@ -27,9 +27,9 @@ http://irrelevant.clapper.org/
     Wed Jul 28 02:13:29 EDT 2004
 
         Police, responding to neighbors' reports of disturbing sounds from
-        televangelist Gerard Tripwell's home, found his garage door open and
-        the door to his home ajar. Upon entering, police encountered Tripwell
-        and a young woman having sex on the kitchen table. The woman has been
+        televangelist Gerard Tripwell's home, found his garage door open and the
+        door to his home ajar. Upon entering, police encountered Tripwell and a
+        young woman having sex on the kitchen table. The woman has been
         identified as Tripwell's secretary. Tripwell is married, but his wife,
         Trudy, had left an hour earlier to catch a plane to Little Rock,
         Arkansas, to visit her dying father.
@@ -80,5 +80,5 @@ http://justthefactsmaam.clapper.org/
     Wed Jul 28 02:32:27 EDT 2004
 
 ------------------------------------------------------------------------------
-curn, version 1.4
-Generated Wed Sep 22 16:16:26 EDT 2004
+curn, version 1.5
+Generated Thu Oct 07 12:40:43 EDT 2004
