@@ -25,7 +25,9 @@ public class Util
      *
      * @param url  The URL to normalize.
      *
-     * @return a new <tt>URL</tt> object
+     * @return a new <tt>URL</tt> object representing the normalized URL
+     *
+     * @see #normalizeURL(String)
      */
     public static URL normalizeURL (URL url)
     {
@@ -49,5 +51,23 @@ public class Util
         }
 
         return url;
+    }
+
+    /**
+     * Normalize a URL, by forcing its host name and protocol to lower
+     * case.
+     *
+     * @param url  The URL to normalize, as a string
+     *
+     * @return a new <tt>URL</tt> object representing the normalized URL
+     *
+     * @see #normalizeURL(URL)
+     *
+     * @throws MalformedURLException bad URL string
+     */
+    public static URL normalizeURL (String url)
+        throws MalformedURLException
+    {
+        return normalizeURL (new URL (url));
     }
 }
