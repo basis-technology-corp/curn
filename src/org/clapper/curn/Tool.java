@@ -33,8 +33,8 @@ import org.clapper.util.text.TextUtils;
 import org.clapper.util.config.ConfigurationException;
 
 /**
-* <p>rssget - scan RSS feeds and display a textual summary, suitable for
-* emailing.</p>
+* <p>rssget - scan RSS feeds and display a summary, using one or more
+* configured output handlers, optionally emailing the results.</p>
 *
 * <p>This program scans a configured set of URLs, each one representing an
 * RSS feed, and summarizes the results in an easy-to-read text format.
@@ -181,22 +181,38 @@ public class rssget implements VerboseMessagesHandler
                               Public Methods
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Emit a verbose message.
+     *
+     * @param level  the verbosity level at which the message becomes visible
+     * @param msg    the message to emit
+     */
     public void verbose (int level, String msg)
     {
         if (config.verbosityLevel() >= level)
             System.out.println ("[V:" + level + "] " + msg);
     }
 
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
-
-    private void runProgram (String[] args)
+    /**
+     * Run the rssget tool. Parses the command line arguments, storing the
+     * results in an internal configuration; then, calls the
+     * {@link #processRSSFeeds} method.
+     *
+     * @param args  the command-line parameters
+     *
+     * @throws IOException              unable to open or read a required file
+     * @throws ConfigurationException   error in configuration file
+     * @throws RSSParserException       error parsing XML feed(s)
+     * @throws BadCommandLineException  command-line error
+     * @throws RSSGetException          any other error
+     *
+     * @see #processRSSFeeds
+     */
+    public void runProgram (String[] args)
         throws RSSGetException,
                IOException,
                ConfigurationException,
                RSSParserException,
-               RSSGetException,
                BadCommandLineException
         
     {
@@ -204,13 +220,26 @@ public class rssget implements VerboseMessagesHandler
         if (showBuildInfo)
             Version.showBuildInfo();
 
-        getFeeds();
-
+        processRSSFeeds (this.config, this.emailAddresses);
     }
 
-    private void getFeeds()
-        throws RSSGetException,
-               IOException,
+    /**
+     * Read the RSS feeds specified in a parsed configuration, writing them
+     * to the output handler(s) specified in the configuration.
+     *
+     * @param configuration   the parsed configuration
+     * @param emailAddresses  a collection of (string) email addresses to
+     *                        receive the output, or null (or empty collection)
+     *                        for none.
+     *
+     * @throws IOException              unable to open or read a required file
+     * @throws ConfigurationException   error in configuration file
+     * @throws RSSParserException       error parsing XML feed(s)
+     * @throws RSSGetException          any other error
+     */
+    public void processRSSFeeds (RSSGetConfiguration configuration,
+                                 Collection          emailAddresses)
+        throws IOException,
                ConfigurationException,
                RSSParserException,
                RSSGetException
@@ -221,27 +250,29 @@ public class rssget implements VerboseMessagesHandler
         Collection   channels;
         PrintWriter  out;
 
-        loadOutputHandlers();
+        loadOutputHandlers (configuration, emailAddresses);
 
         if (useCache)
         {
-            cache = new RSSGetCache (this, config);
+            cache = new RSSGetCache (this, configuration);
             cache.setCurrentTime (currentTime);
             cache.loadCache();
         }
 
         // Parse the RSS feeds
 
-        parserClassName = config.getRSSParserClassName();
+        parserClassName = configuration.getRSSParserClassName();
         verbose (2, "Getting parser \"" + parserClassName + "\"");
         parser = RSSParserFactory.getRSSParser (parserClassName);
 
         channels = new ArrayList();
 
-        for (it = config.getFeeds().iterator(); it.hasNext(); )
+        for (it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
             RSSFeedInfo feedInfo = (RSSFeedInfo) it.next();
-            RSSChannel  channel  = processFeed (feedInfo, parser);
+            RSSChannel  channel  = processFeed (feedInfo,
+                                                parser,
+                                                configuration);
 
             if (channel != null)
                 channels.add (new ChannelFeedInfo (feedInfo, channel));
@@ -257,7 +288,7 @@ public class rssget implements VerboseMessagesHandler
             {
                 OutputHandler outputHandler = (OutputHandler) it.next();
 
-                outputHandler.init (out, config);
+                outputHandler.init (out, configuration);
                 for (Iterator itChannel = channels.iterator();
                      itChannel.hasNext(); )
                 {
@@ -269,9 +300,13 @@ public class rssget implements VerboseMessagesHandler
             }
         }
 
-        if ((cache != null) && config.mustUpdateCache())
+        if ((cache != null) && configuration.mustUpdateCache())
             cache.saveCache();
     }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
 
     private void parseParams (String[] args)
         throws ConfigurationException,
@@ -495,7 +530,8 @@ public class rssget implements VerboseMessagesHandler
             System.err.println (USAGE[i]);
     }
 
-    private void loadOutputHandlers()
+    private void loadOutputHandlers (RSSGetConfiguration configuration,
+                                     Collection          emailAddresses)
         throws ConfigurationException,
                RSSGetException
     {
@@ -503,7 +539,7 @@ public class rssget implements VerboseMessagesHandler
         OutputHandler  handler;
         Iterator       it;
 
-        for (it = config.getOutputHandlerClassNames().iterator();
+        for (it = configuration.getOutputHandlerClassNames().iterator();
              it.hasNext(); )
         {
             className = (String) it.next();
@@ -514,7 +550,7 @@ public class rssget implements VerboseMessagesHandler
         // If there are email addresses, then attempt to load that handler,
         // and wrap the other output handlers inside it.
 
-        if (emailAddresses.size() > 0)
+        if ((emailAddresses != null) && (emailAddresses.size() > 0))
         {
             EmailOutputHandler emailHandler;
 
@@ -554,7 +590,9 @@ public class rssget implements VerboseMessagesHandler
         }
     }
 
-    private RSSChannel processFeed (RSSFeedInfo feedInfo, RSSParser parser)
+    private RSSChannel processFeed (RSSFeedInfo         feedInfo,
+                                    RSSParser           parser,
+                                    RSSGetConfiguration configuration)
         throws RSSParserException
     {
         URL         feedURL = feedInfo.getURL();
@@ -584,7 +622,7 @@ public class rssget implements VerboseMessagesHandler
 
         catch (MalformedURLException ex)
         {
-            if (config.verbosityLevel() > 1)
+            if (configuration.verbosityLevel() > 1)
                 ex.printStackTrace();
             else
                 verbose (1, ex.getMessage());
@@ -592,7 +630,7 @@ public class rssget implements VerboseMessagesHandler
 
         catch (RSSParserException ex)
         {
-            if (config.verbosityLevel() > 1)
+            if (configuration.verbosityLevel() > 1)
                 ex.printStackTrace();
             else
                 verbose (1, ex.getMessage());
@@ -600,7 +638,7 @@ public class rssget implements VerboseMessagesHandler
 
         catch (IOException ex)
         {
-            if (config.verbosityLevel() > 1)
+            if (configuration.verbosityLevel() > 1)
                 ex.printStackTrace();
             else
                 verbose (1, ex.getMessage());
