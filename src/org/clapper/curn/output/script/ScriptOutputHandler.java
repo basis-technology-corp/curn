@@ -260,7 +260,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     }
 
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private BSFManager    bsfManager     = null;

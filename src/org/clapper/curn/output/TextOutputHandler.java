@@ -83,7 +83,7 @@ public class TextOutputHandler extends FileOutputHandler
                     + "---------------------------------------";
 
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private WordWrapWriter  out         = null;

@@ -109,7 +109,7 @@ public class Tool extends CommandLineUtility
     };
 
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private String      configPath       = null;

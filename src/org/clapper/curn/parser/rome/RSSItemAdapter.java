@@ -60,7 +60,7 @@ import java.util.Iterator;
 public class RSSItemAdapter extends RSSItem
 {
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     /**

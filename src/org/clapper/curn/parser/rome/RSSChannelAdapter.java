@@ -62,7 +62,7 @@ import java.util.List;
 public class RSSChannelAdapter implements RSSChannel
 {
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     /**

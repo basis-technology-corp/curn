@@ -224,7 +224,10 @@ class WordWrapper
         tokens = str.split(' ')
 
         for token in tokens
-            if (@currentLength + token.length) > 79
+            # If the word (plus a delimiting space) exceeds the line length,
+            # wrap now.
+
+            if (@currentLength + token.length + 1) > 79
                 newline()
             end
 

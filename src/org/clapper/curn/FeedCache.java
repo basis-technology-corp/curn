@@ -58,7 +58,7 @@ import org.clapper.util.misc.Logger;
 public class FeedCache implements Serializable
 {
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     /**

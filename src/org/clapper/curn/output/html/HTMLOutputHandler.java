@@ -90,7 +90,7 @@ public class HTMLOutputHandler extends FileOutputHandler
                              new SimpleDateFormat ("dd MMM, yyyy, HH:mm:ss");
 
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private PrintWriter           out                 = null;

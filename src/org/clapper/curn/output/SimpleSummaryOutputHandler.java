@@ -110,7 +110,7 @@ import java.util.ArrayList;
 public class SimpleSummaryOutputHandler extends FileOutputHandler
 {
     /*----------------------------------------------------------------------*\
-                           Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private WordWrapWriter  out              = null;

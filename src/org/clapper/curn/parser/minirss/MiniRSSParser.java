@@ -93,7 +93,7 @@ public class MiniRSSParser
                                       "org.apache.xerces.parsers.SAXParser";
 
     /*----------------------------------------------------------------------*\
-			   Private Instance Data
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     private Channel   channel         = null;
