@@ -26,12 +26,9 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSItem;
 
 import java.net.URL;
-import java.net.MalformedURLException;
 
 import java.util.Collection;
 import java.util.ArrayList;

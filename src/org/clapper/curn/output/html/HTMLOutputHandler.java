@@ -30,13 +30,11 @@ import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.OutputHandler;
 import org.clapper.curn.Version;
 
 import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.util.Util;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -48,10 +46,7 @@ import org.clapper.util.text.Unicode;
 import org.clapper.util.misc.Logger;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -296,8 +291,9 @@ public class HTMLOutputHandler extends FileOutputHandler
                 itemAnchor.setHref ("");
             }
 
-            String title = item.getTitle();
-            dom.setTextItemTitle ((title == null) ? "(No Title)" : title);
+            String channelTitle = item.getTitle();
+            dom.setTextItemTitle ((channelTitle == null) ? "(No Title)"
+                                                         : channelTitle);
 
             String desc = null;
             if (! feedInfo.summarizeOnly())

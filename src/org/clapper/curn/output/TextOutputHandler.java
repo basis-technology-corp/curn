@@ -26,13 +26,10 @@
 
 package org.clapper.curn.output;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.OutputHandler;
 import org.clapper.curn.Version;
 
 import org.clapper.curn.parser.RSSChannel;
@@ -40,22 +37,16 @@ import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.text.TextUtil;
-import org.clapper.util.text.Unicode;
 import org.clapper.util.misc.Logger;
 
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.config.NoSuchSectionException;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import java.util.Date;
 import java.util.Collection;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**

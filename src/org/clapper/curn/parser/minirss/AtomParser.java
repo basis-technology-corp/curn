@@ -30,10 +30,6 @@ import org.clapper.curn.parser.RSSItem;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;

@@ -121,6 +121,25 @@ public class FeedInfo
     }
 
     /**
+     * Determine whether this <tt>FeedInfo</tt> object is equivalent to
+     * another one, based on the URL.
+     *
+     * @param obj  the other object
+     *
+     * @return <tt>true</tt> if <tt>obj</tt> is a <tt>FeedInfo</tt> object
+     *         that specifies the same URL, <tt>false</tt> otherwise
+     */
+    public boolean equals (Object obj)
+    {
+        boolean eq = false;
+
+        if (obj instanceof FeedInfo)
+            eq = this.siteURL.equals (((FeedInfo) obj).siteURL);
+
+        return eq;
+    }
+
+    /**
      * Get the main RSS URL for the site.
      *
      * @return the site's main RSS URL, guaranteed to be normalized

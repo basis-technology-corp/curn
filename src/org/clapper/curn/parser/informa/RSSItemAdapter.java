@@ -26,14 +26,10 @@
 
 package org.clapper.curn.parser.informa;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSItem;
 
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.core.CategoryIF;
-import de.nava.informa.impl.basic.ChannelBuilder;
-import de.nava.informa.parsers.FeedParser;
 
 import java.net.URL;
 import java.util.Date;

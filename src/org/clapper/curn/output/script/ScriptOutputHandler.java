@@ -30,7 +30,6 @@ import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.OutputHandler;
 import org.clapper.curn.Version;
 
 import org.clapper.curn.output.FileOutputHandler;
@@ -55,10 +54,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-
-import java.net.URL;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFEngine;

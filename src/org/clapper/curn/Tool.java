@@ -37,8 +37,6 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.Calendar;
 import java.util.NoSuchElementException;
-import java.util.Map;
-import java.util.HashMap;
 
 import java.text.ParseException;
 
@@ -134,7 +132,7 @@ public class Tool extends CommandLineUtility
                                Main Program
     \*----------------------------------------------------------------------*/
 
-    public static void main (String[] args) throws Exception
+    public static void main (String[] args)
     {
         Tool tool = new Tool();
 

@@ -42,8 +42,12 @@ import java.lang.reflect.InvocationTargetException;
 public class RSSParserFactory
 {
     /*----------------------------------------------------------------------*\
-                                 Constants
+                                Constructor
     \*----------------------------------------------------------------------*/
+
+    private RSSParserFactory()
+    {
+    }
 
     /*----------------------------------------------------------------------*\
                               Public Methods

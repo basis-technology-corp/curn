@@ -26,8 +26,6 @@
 
 package org.clapper.curn;
 
-import java.util.Collection;
-
 /**
  * This interface defines the additional methods that must be supported by
  * a class that sends output via email. The main reason this interface

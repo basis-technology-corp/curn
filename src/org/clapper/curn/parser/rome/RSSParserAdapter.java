@@ -32,12 +32,9 @@ import org.clapper.curn.parser.RSSParserException;
 
 import com.sun.syndication.feed.synd.SyndFeedI;
 import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.FeedException;
 
 import org.xml.sax.InputSource;
-
-import org.apache.commons.logging.LogFactory;
 
 import java.io.InputStream;
 import java.io.IOException;

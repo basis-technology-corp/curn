@@ -31,9 +31,6 @@ import java.lang.System;
 import java.io.PrintWriter;
 import java.io.PrintStream;
 
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-
 import org.clapper.util.misc.BuildInfo;
 
 /**
@@ -58,6 +55,14 @@ public final class Version
      */
     public static final String BUNDLE_NAME
         = "org.clapper.curn.BuildInfoBundle";
+
+    /*----------------------------------------------------------------------*\
+                                Constructor
+    \*----------------------------------------------------------------------*/
+
+    private Version()
+    {
+    }
 
     /*----------------------------------------------------------------------*\
                                Main Program

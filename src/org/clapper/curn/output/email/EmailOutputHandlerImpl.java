@@ -35,8 +35,6 @@ import org.clapper.curn.OutputHandler;
 import org.clapper.curn.Version;
 
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.util.Util;
 
 import org.clapper.util.mail.EmailMessage;
 import org.clapper.util.mail.EmailTransport;
@@ -47,10 +45,6 @@ import org.clapper.util.mail.EmailException;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.misc.Logger;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import java.util.Collection;

@@ -26,11 +26,9 @@
 
 package org.clapper.curn;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 

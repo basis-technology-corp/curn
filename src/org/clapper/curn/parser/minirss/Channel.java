@@ -26,10 +26,7 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
 
 import java.net.URL;
 

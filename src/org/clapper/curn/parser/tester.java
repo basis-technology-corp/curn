@@ -29,13 +29,41 @@ package org.clapper.curn.parser;
 import org.clapper.util.io.WordWrapWriter;
 import java.io.*;
 import java.util.*;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
 
 public class tester
 {
     private static WordWrapWriter out = new WordWrapWriter (System.out);
 
-    public static void main (String args[]) throws Throwable
+    private tester()
+    {
+    }
+
+    public static void main (String args[])
+    {
+        try
+        {
+            runTest (args);
+        }
+
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            System.exit (1);
+        }
+
+        System.exit (0);
+    }
+
+    private static void runTest (String args[])
+        throws ClassNotFoundException,
+               NoSuchMethodException,
+               InvocationTargetException,
+               IllegalAccessException,
+               InstantiationException,
+               FileNotFoundException,
+               IOException,
+               RSSParserException
     {
         if (args.length < 2)
         {
@@ -59,12 +87,9 @@ public class tester
             if (channel != null)
                 show (channel);
         }
-
-        System.exit (0);
     }
 
     private static void show (RSSChannel channel)
-        throws Throwable
     {
         out.println ("Channel title: " + channel.getTitle());
         out.println ("Channel link:  " + channel.getLink());

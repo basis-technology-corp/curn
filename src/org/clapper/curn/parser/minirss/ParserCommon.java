@@ -31,8 +31,6 @@ import org.clapper.curn.parser.ParserUtil;
 import java.util.Date;
 import java.util.Stack;
 
-import java.text.NumberFormat;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 

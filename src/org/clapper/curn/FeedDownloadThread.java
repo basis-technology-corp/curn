@@ -33,7 +33,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
@@ -41,9 +40,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.TreeSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,8 +71,8 @@ class FeedDownloadThread extends Thread
                              Private Constants
     \*----------------------------------------------------------------------*/ 
     
-    private final String HTTP_CONTENT_TYPE_CHARSET_FIELD = "charset=";
-    private final int    HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN =
+    private final static String HTTP_CONTENT_TYPE_CHARSET_FIELD = "charset=";
+    private final static int    HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN =
                                       HTTP_CONTENT_TYPE_CHARSET_FIELD.length();
 
     /*----------------------------------------------------------------------*\
@@ -143,6 +140,11 @@ class FeedDownloadThread extends Thread
             }
 
             return cmp;
+        }
+
+        public int hashCode()
+        {
+            return super.hashCode();
         }
 
         public boolean equals (Object o)

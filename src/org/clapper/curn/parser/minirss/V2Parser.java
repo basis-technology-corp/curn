@@ -28,8 +28,6 @@ package org.clapper.curn.parser.minirss;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.Stack;
-import java.util.Date;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;

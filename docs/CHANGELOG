@@ -1,6 +1,29 @@
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.5 (---)
+
+- Now requires JDK 1.4 or better. JDK 1.3 is no longer supported. Among
+  the reasons for this requirement:
+
+  * I wanted to use the new assertion capabilities of 1.4
+
+  * The regular expression classes that come with 1.4 are more extensible
+    than the Jakarta ORO classes, in that they work with anything that
+    implements the CharSequence interface, not just with Strings. Plus,
+    using java.util.regexp, instead of Jakarta ORO, removes a third-party
+    library dependency.
+
+- Converted code that used Jakarta ORO to use the 1.4 java.util.regexp
+  classes.
+
+- Overhauled build.xml to make compilations more efficient. Requires a
+  newer version of Jikes (if compiling with Jikes).
+
+- Cleaned up a lot of unnecessary imports. Addressed minor issues that
+  Jikes warned about.
+
+
 Version 1.4.1 (28 September, 2004):
 
 - Added ForceCharacterEncoding (per-feed) configuration parameter. If

@@ -34,7 +34,6 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.clapper.util.misc.Logger;
-import org.clapper.util.text.XStringBuffer;
 
 /**
  * Miscellaneous utility methods that are shared among classes in this package,
@@ -61,6 +60,14 @@ public class Util
      * For log messages
      */
     private static Logger log = new Logger (Util.class);
+
+    /*----------------------------------------------------------------------*\
+                                Constructor
+    \*----------------------------------------------------------------------*/
+
+    private Util()
+    {
+    }
 
     /*----------------------------------------------------------------------*\
                               Public Methods

@@ -26,20 +26,14 @@
 
 package org.clapper.curn.parser;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Stack;
-import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
-import org.apache.oro.text.regex.PatternCompiler;
 import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.Perl5Matcher;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Pattern;

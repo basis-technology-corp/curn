@@ -27,11 +27,7 @@
 package org.clapper.curn;
 
 import java.io.IOException;
-import java.io.File;
 import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,19 +37,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 
-import java.text.MessageFormat;
-
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.MalformedURLException;
-
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.misc.Logger;

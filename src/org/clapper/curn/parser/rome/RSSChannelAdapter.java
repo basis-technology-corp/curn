@@ -26,10 +26,7 @@
 
 package org.clapper.curn.parser.rome;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.ParserUtil;
 
 import org.clapper.util.misc.Logger;

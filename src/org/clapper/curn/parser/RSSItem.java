@@ -29,7 +29,6 @@ package org.clapper.curn.parser;
 import org.clapper.util.text.TextUtil;
 
 import java.net.URL;
-import java.net.MalformedURLException;
 
 import java.util.Collection;
 import java.util.Date;
