@@ -4,7 +4,7 @@
 
 package org.clapper.curn.parser;
 
-import org.clapper.util.text.TextUtils;
+import org.clapper.util.text.TextUtil;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -91,7 +91,7 @@ public abstract class RSSItem
         for (int i = 0; i < mimeTypes.length; i++)
         {
             result = (String) contentMap.get (mimeTypes[i]);
-            if (! TextUtils.stringIsEmpty (result))
+            if (! TextUtil.stringIsEmpty (result))
                 break;
         }
 
