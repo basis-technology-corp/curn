@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html><head>
 
-<title>curn User's Guide</title><style>
+<title>curn User's Guide</title>
+<style type="text/css">
 <!--
    body            { background-color: #ffffff; color: #000000; }
    h1              { color: #000000; font-family: serif; }
@@ -20,6 +21,7 @@
    .code           { font-family: monospace; }
    .path           { font-family: monospace; }
    .exampleHeader  { font-weight: bold; text-decoration: underline; }
+   .url            { font-style: italic; }
 -->
 </style></head>
 
@@ -32,64 +34,83 @@
 </p>
 <hr>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="#TOC">Table of Contents</a></h2>
 
 <ul>
   <li><a href="#Introduction" class="toc">Introduction</a></li>
-  </li>
 
-  <li><a href="#CommandLine" class="toc"><i>curn</i> Command Line Syntax</a></li>
+  <li><a href="#CommandLine" class="toc"><i>curn</i> Command Line Syntax</a>
       <ul type="disc">
         <li><a href="#CommandLineOptions" class="toc">Command Line Options</a></li>
         <li><a href="#CommandLineParams" class="toc">Command Line Parameters</a></li>
       </ul>
   </li>
 
-  <li><a href="#ConfigFile" class="toc">The <i>curn</i> Configuration File</a></li>
+  <li><a href="#ConfigFile" class="toc">The <i>curn</i> Configuration File</a>
       <ul type="disc">
-        <li><a href="#ConfigFileSyntax" class="toc">Configuration File Syntax</a></li>
+        <li><a href="#ConfigFileSyntax" class="toc">Configuration File Syntax</a>
 	    <ul type="disc">
               <li><a href="#CfgSectionNameSyntax" class="toc">Section Name Syntax</a></li>
               <li><a href="#CfgVariableNameSyntax" class="toc">Variable Name Syntax</a></li>
               <li><a href="#CfgContinuationLines" class="toc">Continuation Lines</a></li>
 
-              <li><a href="#CfgExpansions" class="toc">Expansions of Variable Values</a></li>
+              <li><a href="#CfgExpansions" class="toc">Expansions of Variable Values</a>
 		  <ul type="disc">
                     <li><a href="#CfgMetacharacters" class="toc">Metacharacter Expansion</a></li>
                     <li><a href="#CfgVariableSubst" class="toc">Variable Substitution</a></li>
                     <li><a href="#CfgRawValues" class="toc">Suppressing Metacharacter Expansion and Variable Substitution</a></li>
 		  </ul>
+	      </li>
 
               <li><a href="#CfgIncludes" class="toc">Includes</a></li>
               <li><a href="#CfgComments" class="toc">Comments and Blank Lines</a></li>
 	    </ul>
+	</li>
 
         <li><a href="#ConfigFileParameters" class="toc">Overview of <i>curn</i>'s Configuration File</a></li>
 	<li><a href="#CfgCurnSection" class="toc">The <span class="code">[curn]</span> Section</a></li>
 	<li><a href="#CfgRSSFeeds" class="toc">Configuring the RSS Feeds</a></li>
-	<li><a href="#CfgOutputHandlers" class="toc">Configuring Output Handlers</a></li>
+	<li><a href="#CfgOutputHandlers" class="toc">Configuring Output Handlers</a>
 	    <ul type="disc">
 	      <li><a href="#CfgOutputHandlerSections" class="toc">Output Handler Sections</a></li>
 	      <li><a href="#CfgPredefinedOutputHandlers" class="toc">Predefined Output Handlers</a>
 	      <li><a href="#CfgOutputHandlerExamples" class="toc">Examples</a>
 	    </ul>
+	</li>
       </ul>
   </li>
 
-  <li><a href="#SchedulingCurn" class="toc">Having <i>curn</i> Run on a Schedule</a></li>
-
+  <li><a href="#SchedulingCurn" class="toc">Having <i>curn</i> Run on a Schedule</a>
       <ul type="disc">
 	<li><a href="#UsingCron" class="toc">Running <i>curn</i> from <i>cron</i>(8) on Unix-like Systems</a></li>
 	<li><a href="#UsingWindowsScheduler" class="toc">Running <i>curn</i> via the Windows Scheduler</a></li>
       </ul>
+  </li>
 
-  <li><a href="#Bandwidth" class="toc">Being "Bandwidth Friendly"</a></li>
+  <li><a href="#Bandwidth" class="toc">Being "Bandwidth Friendly"</a>
+      <ul type="disc">
+	<li><a href="#NotTooOften" class="toc">Don't Run <i>curn</i> Too Often</a>
+	<li><a href="#ConsolidateCommonFeeds" class="toc">Consolidate Common Feeds</a>
+      </ul>
+  </li>
 
-  <li><a href="#ExtendingCurn" class="toc">Extending <i>curn</i></a></li>
+  <li><a href="#ExtendingCurn" class="toc">Extending <i>curn</i></a>
       <ul type="disc">
         <li><a href="#DifferentParser" class="toc">Using a Different RSS Parser</a></li>
-        <li><a href="#NewOutputHandler" class="toc">Writing Your Own Output Handler</a></li>
+        <li><a href="#NewOutputHandler" class="toc">Writing Your Own Output Handler</a>
+	    <ul type="disc">
+	      <li><a href="#NewJavaOutputHandler" class="toc">Writing a Java Output Handler</a></li>
+	      <li><a href="#NewScriptOutputHandler" class="toc">Writing a Script Output Handler</a>
+		  <ul type="disc">
+		    <li><a href="#SupportedScriptingLanguages" class="toc">Supported Scripting Languages</a>
+		    <li><a href="#AdditionalScriptingLanguages" class="toc">Supporting Additional Scripting Languages</a>
+		    <li><a href="#WritingScriptOutputHandler" class="toc">Writing a Script Output Handler</a>
+		    <li><a href="#ConfigScriptOutputHandler" class="toc">Configuring the Script Output Handler</a>
+		  </ul>
+		</li>
+	    </ul>
+	</li>
       </ul>
   </li>
 
@@ -97,7 +118,7 @@
   <li><a href="#EndNotes" class="toc">End Notes</a></li>
 </ul>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="Introduction">Introduction</a></h2>
 
 <p><i>curn</i> is an RSS reader. It scans a configured set of URLs, each
@@ -125,7 +146,7 @@ you can take to be more bandwidth-friendly.)</p>
 
 <p><i>curn</i>
 can be extended to use any RSS parser; its built-in RSS parser, the
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
+<a href="../../javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
 class, can handle files in
 <a target="_top" href="http://www.atomenabled.org/developers/">Atom</a>
 format (0.3) and RSS formats
@@ -152,12 +173,12 @@ format. See the section entitled
 details.</p>
 
 <p>One of <i>curn</i>'s output handlers, the
-<span class="code">org.clapper.curn.TextOutputHandler</span> class,
+<span class="code">org.clapper.curn.output.TextOutputHandler</span> class,
 produces a plain text output file, suitable for emailing to people who can't
 handle HTML email;
 to see a sample, follow <a href="TextOutputHandler_sample.html">this link</a>.
 Another output handler,
-<span class="code">org.clapper.curn.htmloutput.HTMLOutputHandler</span>,
+<span class="code">org.clapper.curn.output.html.HTMLOutputHandler</span>,
 produces a prettier HTML output file; to see a sample,
 follow <a href="HTMLOutputHandler_sample.html">this link</a>.</p>
 
@@ -171,7 +192,7 @@ retrieves the output from the first configured output handler that actually
 produced output, and displays it on standard output.</p>
 
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="CommandLine"><i>curn</i> Command Line Syntax</a></h2>
 
 <p><i>curn</i>'s command line uses a Unix-like syntax. If you invoke
@@ -179,7 +200,7 @@ produced output, and displays it on standard output.</p>
 
 <br><br>
 <table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
-       align="center"
+       align="center">
   <tr>
     <td>
       <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
@@ -203,7 +224,7 @@ OPTIONS:
 -q, --quiet          Be quiet about sites with no new items.
 -R, --no-rss-version Don't show the RSS version each site uses.
 -r, --rss-version    Show the RSS version each site uses.
--T, --threads &lt;n&gt;    Set the number of concurrent download threads to <n>. &lt;n&gt; 
+-T, --threads &lt;n&gt;    Set the number of concurrent download threads to &lt;n&gt;. &lt;n&gt; 
                      must be greater than 0.
 -t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current 
                      time is &lt;time&gt;. &lt;time&gt; may be in one of the following 
@@ -272,7 +293,7 @@ Each option and argument is discussed in more detail, below.</p>
           <td>Don't display author data found in the RSS feeds.
 	      Also see the <span class="code">-a</span> option.
 	      This option overrides any
-	      <a href="#Cfg_ShowAuthors class="code"">ShowAuthors</a>
+	      <a href="#Cfg_ShowAuthors" class="code">ShowAuthors</a>
 	      setting in the configuration file.
 	  </td>
         </tr>
@@ -283,7 +304,7 @@ Each option and argument is discussed in more detail, below.</p>
           <td>Display any author data found in the RSS feeds. RSS
 	      feeds are not required to contain author data, but some do.
 	      This option overrides any
-	      <a href="#Cfg_ShowAuthors class="code"">ShowAuthors</a>
+	      <a href="#Cfg_ShowAuthors" class="code">ShowAuthors</a>
 	      setting in the configuration file.
         </tr>
 
@@ -347,7 +368,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
 	<tr valign="top" class="oddRow">
 	  <td align="left">&nbsp;</td>
-	  <td><a name="--logging" class="code">--logging</td>
+	  <td><a name="--logging" class="code">--logging</a></td>
           <td>Enable logging via the
 	      <a href="http://jakarta.apache.org/commons/logging/">Jakarta Commons Logging API</a>.
 	      Specifying this option will cause <i>curn</i> to abort with
@@ -436,6 +457,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	      its cache of out-of-date items, or when loading cache items,
 	      <i>curn</i> will behave as if the current time is the specified
 	      time.</p>
+	      </blockquote>
 	  </td>
 	</tr>
 
@@ -556,7 +578,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
   </tr>
 </table>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="ConfigFile">The <i>curn</i> Configuration File</a></h2>
 
 <p><i>curn's</i> configuration file controls all aspects of <i>curn</i>'s
@@ -581,7 +603,7 @@ a name surrounded by brackets. Each section contains variable assignments;
 the variable assignment syntax is similar to that of a Java properties file.
 For example:</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -601,7 +623,7 @@ ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <h4><a name="CfgSectionNameSyntax">Section Name Syntax</a></h4>
 
@@ -633,7 +655,7 @@ line is treated as a logical continuation of the first line; however, any
 leading whitespace is removed from continued lines. For example, the
 following four variable assignments all have the same value:</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -656,7 +678,7 @@ three
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p>Because leading whitespace is skipped, all four variables have the
 value "one two three".</p>
@@ -759,7 +781,7 @@ are:</p>
         </tr>
 
         <tr class="evenrow" valign="top">
-          <td align="left">now</span>&nbsp;<i>delim</i>&nbsp;<i>fmt</i>&nbsp;[<i>delim</i>&nbsp;<i>lang&nbsp;delim&nbsp;country</i>]]</td>
+          <td align="left" class="code">now&nbsp;<i>delim</i>&nbsp;<i>fmt</i>&nbsp;[<i>delim</i>&nbsp;<i>lang&nbsp;delim&nbsp;country</i>]]</td>
           <td align="left">
 	    The current date/time, formatted with the specified
             <span class="code">java.text.SimpleDateFormat</span>
@@ -790,16 +812,18 @@ are:</p>
 	    </table>
 	    </blockquote>
 
-	    <p>Note: <tt>SimpleDateFormat</tt> requires that literal strings
-	    (i.e., strings that should not be processed as part of the format)
-	    be enclosed in quotes. For instance:</p>
+	    <p>Note: <span class="code">SimpleDateFormat</span> requires
+	    that literal strings (i.e., strings that should not be
+	    processed as part of the format) be enclosed in quotes. For
+	    instance:</p>
 
 	    <blockquote><pre>yyyy.MM.dd 'at' hh:mm:ss z</pre></blockquote>
 
-	    <p>Because single quotes are special characters in configuration
-	    files, it's important to escape them if you use them inside date
-	    formats. So, to include the above string in a configuration
-	    file's <tt>${program:now}</tt> reference, use the following:</p>
+	    <p>Because single quotes are special characters in
+	    configuration files, it's important to escape them if you use
+	    them inside date formats. So, to include the above string in a
+	    configuration file's <span class="code">${program:now}</span>
+	    reference, use the following:</p>
 
 	    <blockquote><pre>${program:now/yyyy.MM.dd \'at\' hh:mm:ss z}</pre></blockquote>
 
@@ -920,7 +944,7 @@ properties file. A blank line is a line containing no content, or one
 containing only whitespace. Blank lines and comments are ignored. For
 example:</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -957,7 +981,7 @@ CacheFile: test.cache
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <h3><a name="CurnConfigFile">Overview of <i>curn's</i> Configuration File</a></h3>
 
@@ -1155,7 +1179,7 @@ in detail, below.</p>
 	  <td align="left">
             <p>The full name of the underlying RSS parser class to be used.
             This class must implement the
-	    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+	    <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
             interface. It can be a first-class parser of its own, or
             it can be nothing more than an adapter for a third party
             RSS parser class.</p>
@@ -1163,7 +1187,7 @@ in detail, below.</p>
             <p>Three parsers are bundled with <i>curn</i>:</p>
 
             <dl>
-	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
+	      <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
 
 	      <dd>A minimal SAX-based RSS parser that handles files in
 		  <a href="http://www.atomenabled.org/developers/">Atom</a>
@@ -1177,7 +1201,7 @@ in detail, below.</p>
 		  RSS parser (though it's perfectly suited for use in
 		  <i>curn</i>).
 
-	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
+	      <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
 		  
 	      <dd>An adapter class that makes the
 		  <a href="https://rome.dev.java.net/">Rome RSS parser</a>
@@ -1187,7 +1211,7 @@ in detail, below.</p>
 		  that Rome requires version 1.0 of the
 		  <a href="http://www.jdom.org/">JDOM</a> library.)
 
-	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
+	      <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
 		  
 	      <dd>An adapter class that makes the
 		  <a href="http://informa.sourceforge.net/">Informa RSS parser</a>
@@ -1197,7 +1221,7 @@ in detail, below.</p>
 	    </dl>
 
             <p>Any class that implements
-	    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+	    <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
             may be used as a value for <span class="code">ParserClass</span>.
           </td>
 	  <td align="left">No</td>
@@ -1234,7 +1258,7 @@ in detail, below.</p>
 	    to display author version for each feed item, if available.
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">false</span></td>
+	  <td align="left" class="code">false</td>
 	  <td align="left">
 	    <a href="#--no-authors" class="code">--no-authors</a><br>
 	    <a href="#--show-authors" class="code">--show-authors</a>
@@ -1264,7 +1288,7 @@ in detail, below.</p>
           <td align="left">Boolean</td>
 	  <td align="left">Display the RSS version for each feed.</td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">false</span></td>
+	  <td align="left" class="code">false</td>
 	  <td align="left">
 	    <a href="#--no-rss-version" class="code">--no-rss-version</a><br>
 	    <a href="#--rss-version" class="code">--rss-version</a>
@@ -1282,7 +1306,7 @@ in detail, below.</p>
             the default value.
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">false</span></td>
+	  <td align="left" class="code">false</td>
 	  <td align="left">&nbsp;</td>
         </tr>
 
@@ -1295,7 +1319,7 @@ in detail, below.</p>
 	    are specified on <i>curn</i>'s command line.
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">localhost</span></td>
+	  <td align="left" class="code">localhost</td>
 	  <td align="left">
 	    <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
 	    <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
@@ -1324,7 +1348,7 @@ in detail, below.</p>
 	    </ul>
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">none</span></td>
+	  <td align="left" class="code">none</td>
 	  <td align="left">
 	    Per-feed <a href="#Feed_SortBy" class="code">SortBy</a> parameter
           </td>
@@ -1335,7 +1359,7 @@ in detail, below.</p>
   </tr>
 </table>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h3><a name="CfgRSSFeeds">Configuring the RSS Feeds</a></h3>
 
 <p>The <i>curn</i> configuration file also contains a list of RSS feeds to
@@ -1540,7 +1564,7 @@ section names are all valid for RSS feed sections.</p>
 	    </ul>
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">none</span></td>
+	  <td align="left" class="code">none</td>
         </tr>
 
         <tr valign="top" class="oddrow">
@@ -1559,7 +1583,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 </table>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h3><a name="CfgOutputHandlers">Configuring Output Handlers</a></h3>
 
 <h4><a name="CfgOutputHandlerSections">Output Handler Sections</a></h4>
@@ -1630,7 +1654,7 @@ variables common to all output handlers are described below.</p>
 	  <td>String</td>
 	  <td align="left">Identifies Java class that implements the output
 	  handler. (The class must implement the
-	  <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+	  <a href="../../javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
 	  interface. See
 	  <a href="#NewOutputHandler">Writing Your Own Output Handler</a>
 	  for details.) 
@@ -1665,7 +1689,7 @@ section.</p>
 <p><i>curn</i> comes bundled with the following built-in output handlers.</p>
 
 <table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
-       align="center" width="90%">
+       align="center" width="100%">
   <tr>
     <td>
       <table border="0" bgcolor="#ffffff" cellpadding="8" align="center"
@@ -1681,7 +1705,7 @@ section.</p>
 
         <tr valign="top" class="oddrow">
 	  <td align="left" class="code">
-	  <a name="HTMLOutputHandler">org.clapper.curn.htmloutput.HTMLOutputHandler</a>
+	  <a name="HTMLOutputHandler">org.clapper.curn.output.html.HTMLOutputHandler</a>
           </td>
 	  <td align="left">
 	  <p>Produces an HTML description of the new RSS items. You can find a
@@ -1739,7 +1763,7 @@ section.</p>
 
         <tr valign="top" class="evenrow">
 	  <td align="left" class="code">
-	  <a name="TextOutputHandler">org.clapper.curn.TextOutputHandler</a>
+	  <a name="TextOutputHandler">org.clapper.curn.output.TextOutputHandler</a>
           </td>
 	  <td align="left">
 	  <p>Produces a plain text description of the new RSS items. You can
@@ -1782,7 +1806,7 @@ section.</p>
 
         <tr valign="top" class="oddrow">
 	  <td align="left" class="code">
-	  org.clapper.curn.SimpleSummaryOutputHandler
+	  org.clapper.curn.output.SimpleSummaryOutputHandler
           </td>
 	  <td align="left">
 	  <p>Produces a plain text summary of the new RSS items. For each
@@ -1848,6 +1872,180 @@ section.</p>
 	  </td>
 	</tr>
 
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code">
+	  <a name="CfgScriptOutputHandler">org.clapper.curn.output.script.ScriptOutputHandler</a>
+          </td>
+	  <td align="left">
+	  <p>Provides an output handler calls a script via the Apache Jakarta
+	     <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a>.
+	     This handler supports any scripting language supported by
+	     BSF. For complete details on writing a script output handler,
+	     See <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>, below.</p>
+	  </td>
+	  <td align="left">
+	    <table border="1" cellpadding="4" align="left" width="100%"
+                   cellspacing="0">
+	      <tr valign="bottom">
+		<th align="left">Variable</th>
+		<th align="left">Argument type</th>
+		<th align="left">Explanation</th>
+		<th align="left">Required?</th>
+		<th align="left">Default value</th>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">Script</td>
+	        <td align="left">File name or path name</td>
+	        <td align="left">Path to the script to be invoked. The
+	        script will be called once, as if from the command line,
+	        except that additional global objects will be available
+	        via BSF.</td>
+	        <td align="left">Yes</td>
+		<td align="left">None</td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">Language</td>
+	        <td align="left">String</td>
+	        <td align="left">
+	        <p>The scripting language, as recognized by BSF. This
+	        handler supports all the scripting language engines that
+	        are built into the BSF distribution. In addition, this
+	        handler explicitly registers the
+	        
+	        engine that comes with the JRuby distribution. See
+	        <a href="http://jruby.sourceforge.net/" class="url">jruby.sourceforge.net</a>
+	        for more information.) Of course, the jar files for the
+	        scripting languages themselves must be in the CLASSPATH at
+	        runtime, for those languages to be available.</p>
+ 
+                <p>The following values are initially legal for this
+	        parameter. This set of values comes from the
+	        <span class="path">Languages.properties</span> file
+	        distributed with BSF version 2.3.0; it represents the
+	        default language bindings recognized by BSF, minus those
+                entries that are platform-specific (such as the ActiveScript
+	        VBScript binding), and those that appear to be leftovers
+	        without any real language to back them up any more (such as
+	        the Bean Markup Language).</p>
+
+		<table border="1" class="evenRow" cellpadding="0"
+		       cellspacing="2" align="center" width="100%">
+		  <tr valign="top">
+		    <th>Value&nbsp;&nbsp;&nbsp;&nbsp;</th>
+		    <th>Corresponding Language</th>
+		    <th>File Extensions</th>
+		    <th>Engine supplied with BSF?</th>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>jython</td>
+		    <td><a href="http://www.jython.org/">Jython</a></td>
+		    <td>py</td>
+		    <td>Yes</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>javascript</td>
+		    <td>JavaScript, via the Mozilla Rhino engine</td>
+		    <td>js</td>
+		    <td>Yes</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>jacl</td>
+		    <td><a href="http://www.tcl.tk/software/java/">Jacl (Java TCL)</a></td>
+		    <td>jacl</td>
+		    <td>Yes</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>netrexx</td>
+		    <td><a href="http://www2.hursley.ibm.com/netrexx/">NetRexx</a></td>
+		    <td>nrx</td>
+		    <td>Yes</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>java</td>
+		    <td>Java (using <a href="http://www.beanshell.org/">BeanShell</a>)</td>
+		    <td>java</td>
+		    <td>Yes</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>xslt</td>
+		    <td>XSLT Stylesheets (as a component of Apache
+			    XML project's Xalan and Xerces)</td>
+		    <td>xslt</td>
+		    <td>Yes</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>pnuts</td>
+		    <td><a href="http://pnuts.org">Pnuts</a></td>
+		    <td>pnut</td>
+		    <td>No</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>ruby</td>
+		    <td><a href="http://jruby.sourceforge.net/">JRuby</a></td>
+		    <td>rb</td>
+		    <td>No</td>
+		  </tr>
+
+		  <tr valign="top">
+		    <td>judoscript</td>
+		    <td><a href="http://www.judoscript.com">JudoScript</a></td>
+		    <td>judo, jud</td>
+		    <td>No</td>
+		  </tr>
+		</table>
+
+	        <p>If you want to use a BSF scripting language engine that
+	        isn't one of the above, you must extend the
+	        <span class="code">ScriptOutputHandler</span> class and
+	        override its
+	        <span class="code">registerAdditionalScriptingEngines()</span>
+	        method. See
+                <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>
+	        for details on extending
+	        <span class="code">ScriptOutputHandler</span>
+	        in this way.</p>
+	        </td>
+	        <td align="left">Yes</td>
+		<td align="left" class="code">false</td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveAs</td>
+	        <td align="left">File name or path name</td>
+	        <td align="left">Save a copy of the generated text to the
+	        specified file. The argument is a relative or absolute path
+	        to the file where the feed's XML should be saved.</td>
+	        <td align="left">No</td>
+		<td align="left">None (i.e., no copy is saved)
+	        </td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveOnly</td>
+	        <td align="left">Boolean</td>
+	        <td align="left">If "true" and if
+	        <span class="code">SaveAs</span> is defined, then save a copy
+	        of the generated text, but don't make it available to the user.
+	        </td>
+	        <td align="left">No</td>
+		<td align="left" class="code">false</td>
+	      </tr>
+	    </table>
+
+	    <br clear="all">
+	    <p>In addition to these variables, which are supported by the
+	    <span class="code">ScriptOutputHandler</span> class directly,
+	    an output handler script can supported its own custom variables.
+	     See <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a> for more details.</p>
+	  </td>
+	</tr>
+
       </table>
     </td>
   </tr>
@@ -1861,7 +2059,7 @@ produces HTML output. If <i>curn</i> is called with email addresses, the
 HTML output will be mailed to the specified email addresses. The HTML
 output is not saved anywhere.</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -1870,7 +2068,7 @@ output is not saved anywhere.</p>
         <tr valign="top">
           <td align="left">
 <blockquote><pre>[OutputHandler]
-Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+Class: org.clapper.curn.output.html.HTMLOutputHandler
 Disabled: false
 </pre></blockquote>
           </td>
@@ -1878,7 +2076,7 @@ Disabled: false
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p><a name="CfgOutputHandlerExample2"><span class="exampleHeader">Example 2</span></a>:
 The output handler sections from a <i>curn</i> configuration file that
@@ -1887,7 +2085,7 @@ email addresses, the text output and the HTML output will be mailed to the
 specified email addresses as "multipart/alternative" attachments. The
 output is not saved anywhere.</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -1896,24 +2094,24 @@ output is not saved anywhere.</p>
         <tr valign="top">
           <td align="left">
 <blockquote><pre>[OutputHandlerText]
-Class: org.clapper.curn.TextOutputHandler
+Class: org.clapper.curn.output.TextOutputHandler
 
 [OutputHandlerHTML]
-Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+Class: org.clapper.curn.output.html.HTMLOutputHandler
 </pre></blockquote>
           </td>
 	</tr>
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p><a name="CfgOutputHandlerExample3"><span class="exampleHeader">Example 3</span></a>:
 The output handler sections from a <i>curn</i> configuration file that
 produces HTML output to a file (but not to the user), and displays (or emails)
 the user a text summary that contains a link to the HTML file.</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -1922,13 +2120,13 @@ the user a text summary that contains a link to the HTML file.</p>
         <tr valign="top">
           <td align="left">
 <blockquote><pre>[OutputHandlerSummary]
-Class: org.clapper.curn.SimpleSummaryOutputHandler
+Class: org.clapper.curn.output.SimpleSummaryOutputHandler
 # Message assumes that generated HTML is available via the web server running
 # on internal machine "foo", at the specified location.
 Message: See http://foo/rss/news.html
 
 [OutputHandlerHTML]
-Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+Class: org.clapper.curn.output.html.HTMLOutputHandler
 # Below path is assumed to correspond to URL http://foo/rss/news.html
 SaveAs: /usr/local/www/htdocs/rss/news.html
 SaveOnly: true
@@ -1938,7 +2136,7 @@ SaveOnly: true
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p><a name="CfgOutputHandlerExample4"><span class="exampleHeader">Example 4</span></a>:
 The feed and output handler sections from a <i>curn</i> configuration file that
@@ -1947,7 +2145,7 @@ displaying them. (See
 <a href="#Bandwidth">Being Bandwidth Friendly</a> for reasons why you might
 want to do this.)</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -1978,9 +2176,9 @@ SaveAs: ${vars:feedDir}/CNN_TOP_STORIES.xml
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="SchedulingCurn">Having <i>curn</i> Run on a Schedule</a></h2>
 
 <p>You can run <i>curn</i> manually, at the command line, whenever you feel
@@ -1997,7 +2195,7 @@ personal crontab, rather than the system-wide
 <span class="path">/etc/crontab</span> file.
 Here's a sample crontab entry that does this:</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -2012,7 +2210,7 @@ Here's a sample crontab entry that does this:</p>
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p>Note the inclusion of an email address on the <i>curn</i> command line.
 A seasoned <i>cron</i> user will wonder why this is necessary. After all,
@@ -2058,12 +2256,135 @@ experiment with running <i>curn</i> from the Windows Scheduler, I'll update
 this section. Unless, of course, someone else wants to supply the relevant
 details...)
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="Bandwidth">Being "Bandwidth Friendly"</a></h2>
 
-<p><i>[more to come]</i></p>
+<p>When pulling down RSS documents from remote HTTP servers, <i>curn</i>
+does its best to minimize the amount of bandwidth it consumes. By default,
+it uses the following strategies to do so (though most can be overridden by
+configuration parameters and command-line parameters).</p>
 
-<!--------------------------------------------------------------------------->
+<ul>
+  <li>Uses the cache to determine how to set the HTTP
+      <span class="code">If-Modified-Since</span> header, instructing the
+      remote HTTP server to send the RSS document only if it has changed
+      since the last time <i>curn</i> retrieved it. (The HTTP server isn't
+      required to honor that header.)
+
+  <li>Requests that the remote HTTP server compress the RSS data in
+      transit, by setting the HTTP <span class="code">Accept-Encoding</span>
+      header to <span class="code">gzip</span>. Again, the HTTP server isn't
+      required to honor that header; some do, some don't.
+</ul>
+
+<p>But there are other things you can do to be polite to remote HTTP
+servers.</p>
+
+<h5><a name="NotTooOften">Don't Run <i>curn</i> Too Often</a></h5>
+
+<p>I run <i>curn</i> three times a day. In practice, that's more than
+sufficient to keep up with the daily news feeds I want to read. Your needs
+may vary, but if you're using <i>curn</i> to poll remote RSS feeds every
+five minutes, you probably fall into the "impolite RSS feed user"
+category.</p>
+
+<h5><a name="ConsolidateCommonFeeds">Consolidate Common Feeds</a></h5>
+
+<p>Suppose you have a number of users, all of whom run <i>curn</i> several
+times a day. Further suppose that there's significant commonality in the
+RSS feeds that they want to read. Rather than have each user poll the common
+remote HTTP servers individually, you could run a single instance of
+<i>curn</i> that downloads and saves those feeds several times a day. You could
+then instruct the individual users to point their <i>curn</i> configuration
+files at the local copies of the RSS feeds, instead of the remote ones.</p>
+
+<p>For instance, suppose the following URLs (for a fictitious RSS
+aggregator service) are commonly downloaded by people on your local
+network:</p>
+
+<blockquote><pre>
+http://www.example.org/rss/nytimes_front_page.xml
+http://www.example.org/rss/bbc_world_news.rdf
+http://www.example.org/rss/big_jimmys_blog.xml
+</pre>
+</blockquote>
+
+<p>You could run <i>curn</i> periodically with the following configuration
+file, to download each of those feeds without producing any output.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
+<blockquote><pre>
+[var]
+
+# "feedDir" dumps to a directory that's accessible internally via URL
+# http://hub.ourdivision.example.com/rssfeeds/
+
+feedDir: /usr/local/apache/htdocs/rssfeeds
+
+# curnDir: where this file and the cache live
+
+curnDir: /usr/local/etc/curn
+
+[curn]
+
+CacheFile: ${var:curnDir}/common.cache
+MaxThreads: 15
+ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
+GetGzippedFeeds: true
+
+#####################################
+# No output handlers are configured #
+#####################################
+
+[Feed_nytimes_front]
+
+# New York Times front page. Accessible internally as:
+# http://hub.ourdivision.example.com/rssfeeds/nytimes_front_page.xml
+
+URL: http://www.example.org/rss/nytimes_front_page.xml
+SaveAs: ${var:feedDir}/nytimes_front_page.xml
+
+
+[Feed_bbc_news_world]
+
+# BBC World News page. Accessible internally as:
+# http://hub.ourdivision.example.com/rssfeeds/bbc_world_news.rdf
+
+URL: http://www.example.org/rss/bbc_world_news.rdf
+SaveAs: ${var:feedDir}/bbc_world_news.rdf
+
+
+[Feed_big_jimmy]
+
+# Big Jimmy's Blog. (Why is this blowhard so popular?)
+# Accessible internally as:
+# http://hub.ourdivision.example.com/rssfeeds/big_jimmys_blog.xml
+
+URL: http://www.example.org/rss/big_jimmys_blog.xml
+SaveAs: ${var:feedDir}/big_jimmys_blog.xml
+</pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<p>Note that you could use <i>curn</i> in this manner even if your users
+are not using <i>curn</i> to read their RSS feeds. You could still run your
+periodic instance of <i>curn</i> to download the common feeds to a directory
+that's part of an internal web site, and instruct your users to point whatever
+RSS readers they're using to those internal web pages, instead of the external
+ones.</p>
+
+<!-- ********************************************************************** -->
 <h2><a name="ExtendingCurn">Extending <i>curn</i></a></h2>
 
 <p>This section is intended for Java programmers who want to extend
@@ -2130,17 +2451,17 @@ that implement some interfaces and extend some classes provided with the
         </tr>
 
 	<tr valign="top">
-	  <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
+	  <td align="left"><a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
 	  <td align="left">Interface</td>
 	  <td align="left">
             Defines a simplified view of an RSS parser. Classes implementing
 	    this interface must provide a default public constructor and
-	    a <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
+	    a <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
           </td>
         </tr>
 
 	<tr valign="top">
-	  <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
+	  <td align="left"><a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
 	  <td align="left">Interface</td>
 	  <td align="left">
             Defines a simplified view of an RSS channel (a.k.a., a parsed
@@ -2151,7 +2472,7 @@ that implement some interfaces and extend some classes provided with the
         </tr>
 
 	<tr valign="top">
-	  <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
+	  <td align="left"><a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
 	  <td align="left">Abstract class</td>
 	  <td align="left">
             Defines a simplified view of an RSS item (a.k.a., one of the items
@@ -2172,16 +2493,24 @@ that implement some interfaces and extend some classes provided with the
 implement the above interfaces or extend the above classes, and map the
 necessary calls onto methods in the real underlying parser. For a sample
 integration, see the classes in the <i>curn</i> source code package
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
+<a href="../../javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
 <a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
 
 <h3><a name="NewOutputHandler">Writing Your Own Output Handler</a></h3>
+
+<p>There are two ways to write your own output handler. You can write a
+Java class that implements the output handler, or you can write a script
+using a scripting language supported by the Apache Jakarta
+<a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework</a> (BSF).
+Both approaches are discussed below.</p>
+
+<h4><a name="NewJavaOutputHandler">Writing a Java Output Handler</a></h4>
 
 <p>Writing a new output handler is reasonably straightforward:</p>
 
 <ul>
   <li>First, write a Java class the implements the
-      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+      <a href="../../javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
       interface.
   <li>Compile the class and place the compiled class somewhere in your
       CLASSPATH.
@@ -2192,13 +2521,13 @@ integration, see the classes in the <i>curn</i> source code package
 <p>To illustrate the concept, let's look at an output handler that simply
 writes each channel and its items as plain text. (As it turns out,
 this example is a stripped down version of the existing
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/TextOutputHandler.html" class="code">org.clapper.curn.TextOutputHandler</a> class. The real source code has more
+<a href="../../javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a> class. The real source code has more
 comments and documentation and also implements a common base class.)</p>
 
 <p>First, let's look at the top of the class and the required
 <span class="code">init()</span> method:</p>
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -2209,6 +2538,8 @@ comments and documentation and also implements a common base class.)</p>
 <blockquote><pre>
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.CurnException;
+import org.clapper.curn.ConfigureOutputHandler;
+import org.clapper.curn.OutputHandler;
 import org.clapper.curn.FeedInfo;
 
 import org.clapper.curn.parser.RSSChannel;
@@ -2254,11 +2585,24 @@ public class MyOutputHandler
     {
     }
 
-    public void init (ConfigFile config)
+    /**
+     * Initializes the output handler for another set of RSS channels.
+     *
+     * @param config     the parsed <i>curn</i> configuration data
+     * @param cfgHandler the ConfiguredOutputHandler wrapper object that
+     *                   contains this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
+     *
+     * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other initialization error
+     */
+    public void init (ConfigFile              config,
+	              ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
-        String sectionName = config.getOutputHandlerSectionName (getClass());
+        String sectionName = cfgHandler.getSectionName();
         String saveAs      = null;
 
         this.config = config;
@@ -2276,7 +2620,7 @@ public class MyOutputHandler
                 message = config.getOptionalStringValue (sectionName,
                                                          "Message",
                                                          null);
-                if (saveOnly && (saveAs == null))
+                if (saveOnly &amp;&amp; (saveAs == null))
                 {
                     throw new ConfigurationException (sectionName,
                                                       "SaveOnly can only be "
@@ -2331,7 +2675,7 @@ public class MyOutputHandler
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p><i>curn</i> calls the <span class="code">init()</span> method right
 after instantiating the output handler class. One of the
@@ -2339,8 +2683,8 @@ after instantiating the output handler class. One of the
 handle any special handler-specific configuration variables. It does so by:</p>
 
 <ol>
-  <li>asking the <span class="code">ConfigFile</span> object for the section
-      name that's associated with the output handler class
+  <li>asking the <span class="code">ConfiguredOutputHandler</span> object
+      for the section name that's associated with the output handler class
   <li>requesting the specific configuration variable values from that
       section
   <li>processing the results, if any
@@ -2349,24 +2693,202 @@ handle any special handler-specific configuration variables. It does so by:</p>
 <p>The <span class="code">init()</span> method also performs any other
 initialization required by the output handler class.</p>
 
-<p>Next, let's look at the output methods. There are two output-generating
-methods that are required by the <span class="code">OutputHandler</span>
-interface:</p>
+<p><b>Note</b>: The sample <span class="code">init()</span> method, above,
+does a little more work than it needs to do. As it turns out, the
+<i>curn</i> API provides a useful abstract base class called
+<a href="../../javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.output.FileHandler</a> that
+implements the <span class="code">OutputHandler</span> interface.
+<span class="code">FileOutputHandler</span> provides an
+<span class="code">init()</span> method that:
 
 <ul>
-  <li><span class="code">displayChannel</span>: Displays the output for
-      a parsed channel. This method takes the parsed
-      <span class="code">RSSChannel</span> object and a special
-      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
-      object that contains the configuration information about the feed
-      (i.e., its URL, its title, etc.).
-  <li><span class="code">flush</span>: Flushes the output and closes the
-      output files
+  <li>automatically handles the "SaveAs" and "SaveOnly" configuration
+      parameters
+  <li>handles creation of the output file, much the same way the sample
+      <span class="code">init()</span> method, above, does
+  <li>provides some useful protected methods for the subclass, such as
+      <span class="code">getOutputFile()</span> (which returns the
+      file to which the subclass should write its output).
 </ul>
 
-<p>Here's the code for those methods:</p>
+<p><span class="code">FileOutputHandler</span> requires that the subclass
+provide:
 
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+<ul>
+  <li>an <span class="code">initOutputHandler()</span> method, to handle
+      subclass initialization. This method takes the same parameters as the
+      <span class="code">init()</span> method.
+  <li>the output methods (e.g., <span class="code">displayChannel()</span>),
+      discussed below
+</ul>
+
+<p>With that in mind, let's simplify our original
+<span class="code">init()</span> method and class definition.
+Changes from the original, above, are marked in bold.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
+<blockquote><pre>
+import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnException;
+import org.clapper.curn.ConfigureOutputHandler;
+import org.clapper.curn.OutputHandler;
+import org.clapper.curn.FeedInfo;
+
+<b>import org.clapper.curn.output.FileOutputHandler;</b>
+
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
+
+import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.text.TextUtil;
+import org.clapper.util.text.Unicode;
+import org.clapper.util.misc.Logger;
+
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.config.NoSuchSectionException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+public class MyOutputHandler <b>extends FileOutputHandler</b>
+{
+    private static final String HORIZONTAL_RULE =
+                      "---------------------------------------"
+                    + "---------------------------------------";
+
+    private WordWrapWriter  out         = null;
+    private ConfigFile      config      = null;
+    private String          message     = null;
+    private Collection      channels    = new ArrayList();
+    private int             totalItems  = 0;
+    private File            outputFile  = null;
+    private boolean         saveOnly    = false;
+
+    private static Logger log = new Logger (SimpleSummaryOutputHandler.class);
+
+    public MyOutputHandler()
+    {
+    }
+
+<b>    /**
+     * Perform any subclass-specific initialization. Subclasses must
+     * override this method.
+     *
+     * @param config     the parsed <i>curn</i> configuration data
+     * @param cfgHandler the ConfiguredOutputHandler wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
+     *
+     * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other initialization error
+     */
+    public void initOutputHandler (ConfigFile              config,
+                                   ConfiguredOutputHandler cfgHandler)
+        throws ConfigurationException,
+               CurnException</b>
+    {
+        String sectionName = cfgHandler.getSectionName();
+
+        this.config = config;
+
+        try
+        {
+<b>            if (sectionName != null)
+            {
+                // Only need to handle the "Message" parameter. The
+                // FileOutputHandler parent class handles "SaveAs" and
+                // "SaveOnly"
+
+                message = config.getOptionalStringValue (sectionName,
+                                                         "Message",
+                                                         null);
+            }</b>
+        }
+
+        catch (NoSuchSectionException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+
+        <b>outputFile = super.getOutputFile()</b>
+        try
+        {
+            log.debug ("Opening output file \"" + outputFile + "\"");
+            out = new WordWrapWriter (new FileWriter (outputFile));
+        }
+
+        catch (IOException ex)
+        {
+            throw new CurnException ("Can't open file \""
+                                   + outputFile.getPath()
+                                   + "\" for output",
+                                     ex);
+        }
+
+        channels.clear();
+        totalItems = 0;
+    }
+</pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+
+<p>Next, let's look at the output-related methods. There are several
+output-related methods that are required by the
+<span class="code">OutputHandler</span> interface:</p>
+
+<ul>
+  <li><span class="code">displayChannel()</span>: Displays the output for
+      a parsed channel. This method takes the parsed
+      <span class="code">RSSChannel</span> object and a special
+      <a href="../../javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
+      object that contains the configuration information about the feed
+      (i.e., its URL, its title, etc.).
+  <li><span class="code">flush()</span>: Flushes the output and closes the
+      output files
+  <li><span class="code">getContentType()</span> returns the MIME type
+      associated with the generated output.
+  <li><span class="code">hasGeneratedOutput()</span>: returns
+      <span class="code">true</span> if the handler generated output that
+      the user should see, <span class="code">false</span> otherwise.
+      In this handler's case, <span class="code">hasGeneratedOutput()</span>
+      is provided by the parent <span class="code">FileOutputHandler</span>
+      class; it returns <span class="code">true</span> if the output file
+      has a non-zero length <i>and</i> the <span class="code">SaveOnly</span>
+      configuration parameter has not been set. (Recall that "SaveOnly"
+      says that the generated output should only be saved, not displayed.)
+  <li><span class="code">getGeneratedOutput()</span>: Returns an
+      <span class="code">InputStream</span> for reading the generated output
+      (if <span class="code">hasGeneratedOutput()</span> returns
+      <span class="code">true</span>) or null otherwise. Again, we don't
+      have to implement that method in our sample output handler, because the
+      parent <span class="code">FileOutputHandler</span> provides it for us.
+</ul>
+
+<p>Here's the code for the methods our sample class must implement:</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center">
   <tr>
     <td>
@@ -2512,91 +3034,24 @@ interface:</p>
         out.flush();
         out = null;
     }
+
+    public String getContentType()
+    {
+        return "text/plain";
+    }
 </pre></blockquote>
           </td>
 	</tr>
       </table>
     </td>
   </tr>
-</table></p>
+</table>
 
 <p>This particular output handler's
 <span class="code">displayChannel()</span> method summarizes the channel
 and item data, writing it to the output file that the
 <span class="code">init()</span> method opened. The 
 <span class="code">flush()</span> method simply finishes the display.</p>
-
-<p>The remaining required methods are:</p>
-
-<ul>
-  <li><span class="code">getContentType()</span>: returns the MIME type
-      for the generated output
-  <li><span class="code">hasGeneratedOutput()</span>: returns
-      <span class="code">true</span> if the handler generated output that
-      the user should see, <span class="code">false</span> otherwise.
-      In this handler's case, <span class="code">hasGeneratedOutput()</span>
-      returns true unless the <span class="code">saveOnly</span> configuration
-      parameter has been set. (That parameter says that the generated output
-      should only be saved, not displayed.)
-  <li><span class="code">getGeneratedOutput()</span>: Returns an
-      <span class="code">InputStream</span> for reading the generated output
-      (if <span class="code">hasGeneratedOutput()</span> returns
-      <span class="code">true</span>) or null otherwise.
-</ul>
-
-<p>Here's the code:</p>
-
-<p><table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
-       align="center">
-  <tr>
-    <td>
-      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
-             width="100%">
-        <tr valign="top">
-          <td align="left">
-<blockquote><pre>
-    public String getContentType()
-    {
-        return "text/plain";
-    }
-
-    public InputStream getGeneratedOutput()
-        throws CurnException
-    {
-        InputStream result = null;
-
-        if (hasGeneratedOutput())
-        {
-            try
-            {
-                result = new FileInputStream (outputFile);
-            }
-
-            catch (FileNotFoundException ex)
-            {
-                throw new CurnException ("Can't re-open file \""
-                                       + outputFile
-                                       + "\"",
-                                         ex);
-            }
-        }
-
-        return result;
-    }
-
-    public boolean hasGeneratedOutput()
-    {
-        return (! saveOnly) &&
-               (outputFile != null) &&
-               (outputFile.length() > 0);
-    }
-</pre></blockquote>
-              </td>
-	</tr>
-      </table>
-    </td>
-  </tr>
-</table></p>
 
 <p>With this model, it's possible to create output handlers that produce
 all kinds of output, including (for instance):</p>
@@ -2608,7 +3063,402 @@ all kinds of output, including (for instance):</p>
   <li>etc.
 </ul>
 
-<!--------------------------------------------------------------------------->
+<h4><a name="NewScriptOutputHandler">Writing a Script Output Handler</a></h4>
+
+<p>Writing a script output handler is even simpler, in a way, than writing
+a Java output handler. You simply write a script in a supported language,
+then configure an instance of the
+<a href="#CfgScriptOutputHandler" class="code">ScriptOutputHandler</a> class
+to point to your script.</p>
+
+<h5><a name="SupportedScriptingLanguages">Supported Scripting Languages</a></h5>
+
+<p>The
+<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
+uses the Apache Jakarta
+<a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a>
+to call scripts. It currently supports all the script language engines that
+come bundled with BSF; see the <a href="#CfgScriptOutputHandler">configuration
+section for the <span class="code">ScriptOutputHandler</span> class</a>
+for the list of languages supported by default.</p>
+
+<p>At runtime, <i>curn</i>'s CLASSPATH must include the
+BSF jar file and the jar files for the scripting languages you want to use.</p>
+
+<h5><a name="AdditionalScriptingLanguages">Supporting Additional Scripting Languages</a></h5>
+
+<p>If you want to use a BSF scripting language engine that isn't one of the
+above, simply write a Java class that extends the
+<span class="code">ScriptOutputHandler</span> class and overrides its
+<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#registerAdditionalScriptingEngines()" class="code">registerAdditionalScriptingEngines()</a>
+method. In that method, call
+<span class="code">BSFManager.registerScriptingEngine()</span> for each
+additional language you want to support. For example, a scripting
+output handler that supports (fictitious) scripting language <i>JStooge</i>
+might look like this:</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
+<blockquote><pre>
+import org.clapper.curn.CurnException;
+import org.clapper.curn.output.script.ScriptOutputHandler;
+import org.apache.bsf.BSFManager;
+
+public class JStoogeScriptOutputHandler extends ScriptOutputHandler
+{
+    public MyOutputHandler()
+    {
+        super();
+    }
+
+    public void registerAdditionalScriptingEngines()
+        throws CurnException
+    {
+        BSFManager.registerScriptingLanguage ("jstooge",
+                                              "org.example.stooges.JStoogeBSFEngine",
+                                              new String[]
+	                                      {
+	                                         "moe",
+	                                         "larry",
+	                                         "curley"
+	                                      });
+    }
+}
+</pre></blockquote>
+          </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h5><a name="WritingScriptOutputHandler">Writing a Script Output Handler</a></h5>
+
+<p>The <span class="code">ScriptOutputHandler</span> class's
+
+<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#displayChannel(org.clapper.curn.parser.RSSChannel,%20org.clapper.curn.FeedInfo)" class="code">displayChannel()</a>
+method doesn't actually generated any output. Instead, it buffers the
+channels so that the
+<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#flush()" class="code">flush()</a>
+method can invoke the script. That way, the overhead of invoking the
+script occurs only once. Via BSF, <span class="code">ScriptOutputHandler</span>
+makes the following objects available to the script.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="85%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%" cellspacing="0">
+
+	<tr>
+	  <th class="thvis" align="left" colspan="3">&nbsp;</th>
+	</tr>
+
+	<tr valign="top">
+          <th class="thvis" align="left">Bound name</th>
+	  <th class="thvis" align="left">Java type</th>
+	  <th class="thvis" align="left">Explanation</th>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+          <td>channels</td>
+	  <td class="code">java.util.Collection</td>
+	  <td>An <span class="code">Collection</span> of special internal
+	      objects that wrap both
+	      <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">RSSChannel</a>
+	      and
+	      <a href="../../javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">FeedInfo</a>
+	      objects. The wrapper objects provide two methods:
+
+	      <ul>
+		<li><span class="code">getChannel()</span>
+		    gets the <span class="code">RSSChannel</span> object
+		<li><span class="code">getFeedInfo()</span>
+		    gets the <span class="code">FeedInfo</span> object.
+		    This object contains useful metadata about the channel.
+	      </ul>
+	    </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+          <td>outputPath</td>
+	  <td><span class="code">java.lang.String</span></td>
+	  <td>The path to the output file. The script should write its
+	      output to that file. Overwriting the file is fine. If the
+	      script generates no output, then it can ignore the file.</td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+          <td>config</td>
+	  <td><a href="../../javadocs/curn/api/org/clapper/curn/ConfigFile.html" class="code">ConfigFile</a></td>
+	  <td>The <span class="code">org.clapper.curn.ConfigFile</span> object
+	      that represents the parsed configuration data. Useful in
+	      conjunction with the "configSection" object, to parse
+	      additional parameters from the configuration.</td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+          <td>configSection</td>
+	  <td><span class="code">java.lang.String</span></td>
+	  <td>The name of the configuration file section in which the output
+	      handler was defined. Useful if the script wants to access
+	      additional script-specific configuration data.</td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+          <td>mimeType</td>
+          <td><span class="code">java.lang.StringBuffer</span></td>
+          <td>A <span class="code">StringBuffer</span> object to which the
+	      script should append the MIME type that corresponds to the
+	      generated output. If the script generates no output, then it can
+	      ignore this object.</td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+          <td>logger</td>
+          <td class="code">org.clapper.util.misc.Logger</td>
+          <td>A <span class="code">Logger</span> object, useful for logging
+	      messages to the <i>curn</i> log file.</td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+          <td>version</td>
+          <td><span class="code">java.lang.String</span></td>
+          <td>Full <i>curn</i> version string, in case the script wants to
+	      include it in the generated output</td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<p>Here's a sample <a href="http://www.jython.org/">Jython</a> script
+that shows how to put it all together. This script reimplements most of the
+functionality of the
+<a href="../../javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a>
+Java class that comes with <i>curn</i>. (Note that the script uses a
+<span class="code">org.clapper.util.io.WordWrapWriter</span> object for
+its output. While the word-wrapping functionality could have been implemented
+directly in Jython, this strategy both saves time and demonstrates how easily
+you can use existing Java classes from a Jython script.)</p>
+
+<p>Class documentation, copyrights, etc., have been stripped from the
+script for brevity. You can find the complete script, along with a
+<a href="http://jruby.sourceforge.net/">JRuby</a> implementation
+of the same functionality, in the <i>curn</i> source bundle, in directory
+<span class="path">src/org/clapper/curn/output/script</span>.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%" cellspacing="0">
+
+	<tr>
+	  <td>
+<blockquote><pre>
+import sys
+from org.clapper.util.io import WordWrapWriter
+
+class TextOutputHandler:
+
+    HORIZONTAL_RULE = "---------------------------------------" \
+                    + "---------------------------------------"
+
+    def __init__ (self):
+        """
+        Initialize a new TextOutputHandler object.
+        """
+        self.__channels    = bsf.lookupBean ("channels")
+        self.__outputPath  = bsf.lookupBean ("outputPath")
+        self.__mimeTypeBuf = bsf.lookupBean ("mimeType")
+        self.__config      = bsf.lookupBean ("config")
+        self.__sectionName = bsf.lookupBean ("configSection")
+        self.__logger      = bsf.lookupBean ("logger");
+        self.__version     = bsf.lookupBean ("version")
+        self.__message     = None
+
+    def processChannels (self):
+        """
+        Process the channels passed in through the Bean Scripting Framework.
+        """
+
+        # If we didn't care about wrapping the output, we'd just use:
+        #
+        #     out = open (self.__outputPath, "w")
+        #
+        # But it'd be nice to wrap long summaries on word boundaries at
+        # the end of an 80-character line. For that reason, we use the
+        # Java org.clapper.util.io.WordWrapWriter class.
+
+        out = WordWrapWriter (open (self.__outputPath, "w"))
+        out.setPrefix ("")
+
+        msg = self.__config.getOptionalStringValue (self.__sectionName, "Message", None)
+
+        totalNew = 0
+
+        # First, count the total number of new items
+
+        iterator = self.__channels.iterator()
+        while iterator.hasNext():
+            channel_wrapper = iterator.next()
+            channel = channel_wrapper.getChannel()
+            totalNew = totalNew + channel.getItems().size()
+
+        if totalNew > 0:
+            # If the config file specifies a message for this handler,
+            # display it.
+
+            if msg != None:
+                out.println (msg)
+                out.println ()
+
+            # Now, process the items
+
+            indentation = 0
+            iterator = self.__channels.iterator()
+            while iterator.hasNext():
+                channel_wrapper = iterator.next()
+                channel = channel_wrapper.getChannel()
+                feed_info = channel_wrapper.getFeedInfo()
+                self.__process_channel (out, channel, feed_info, indentation)
+
+            self.__mimeTypeBuf.append ("text/plain")
+
+            # Output a footer
+
+            self.__indent (out, indentation)
+            out.println ()
+            out.println (TextOutputHandler.HORIZONTAL_RULE)
+            out.println (self.__version)
+            out.flush()
+
+    def __process_channel (self, out, channel, feed_info, indentation):
+        """
+        Process all items within a channel.
+        """
+        self.__logger.debug ("Processing channel \"" +
+                             str (channel.getLink()) + "\"")
+
+        # Print a channel header
+
+        config = self.__config
+
+        self.__indent (out, indentation)
+        out.println (TextOutputHandler.HORIZONTAL_RULE)
+        out.println (channel.getTitle())
+        out.println (channel.getLink().toString())
+        out.println (str (channel.getItems().size()) + " item(s)")
+        if config.showDates():
+            date = channel.getPublicationDate()
+            if date != None:
+                out.println (str (date))
+
+        if config.showRSSVersion():
+            out.println ("(Format: " + channel.getRSSFormat() + ")")
+
+        indentation = indentation + 1
+        self.__indent (out, indentation)
+        iterator = channel.getItems().iterator()
+        while iterator.hasNext():
+            # These are RSSItem objects
+            item = iterator.next()
+
+            out.println()
+            out.println (item.getTitle())
+            out.println (str (item.getLink()))
+
+            if config.showDates():
+                date = item.getPublicationDate();
+                if date != None:
+                    out.println (str (date))
+
+            out.println()
+
+            if not feed_info.summarizeOnly():
+                summary = item.getSummary()
+                if summary != None:
+                    self.__indent (out, indentation + 1)
+                    out.println (summary)
+                    self.__indent (out, indentation)
+
+    def __indent (self, out, indentation):
+        """
+        Apply a level of indentation to a WordWrapWriter, by changing
+        the WordWrapWriter's prefix string.
+
+        out         - the org.clapper.util.io.WordWrapWriter
+        indentation - the numeric indentation level
+        """
+
+        prefix = ""
+        for i in range (indentation):
+            prefix = prefix + "    "
+
+        out.setPrefix (prefix)
+
+# ---------------------------------------------------------------------------
+
+def main():
+    """
+    Main program entry point. This is what ScriptOutputHandler actually
+    ends up invoking.
+    """
+    handler = TextOutputHandler()
+    handler.processChannels()
+
+main()
+</pre></blockquote>
+	  </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h5><a name="ConfigScriptOutputHandler">Configuring the Script Output Handler</a></h5>
+
+<p>The <a href="#CfgScriptOutputHandler">configuration section for the
+<span class="code">ScriptOutputHandler</span> class</a> provides a detailed
+description of the configuration parameters. Here is a sample configuration
+entry for our <span class="code">TextOutputHandler.py</span> Jython script.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%" cellspacing="0">
+
+	<tr>
+	  <td>
+<blockquote><pre>
+[OutputHandlerJythonScript]
+
+Class: org.clapper.curn.output.script.ScriptOutputHandler
+#SaveAs: ${system:user.home}/curn/rss-py.txt
+#SaveOnly: true
+Language: jython
+Script: ${system:user.home}/curn/TextOutputHandler.py
+Message: Copy saved in file ${system:user.home}/curn/rss-py.txt
+</pre></blockquote>
+	  </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- ********************************************************************** -->
 <h2><a name="AppendixA">Appendix A: Similar Products and Tools</a></h2>
 
 <p>Adam Sampson's <a href="http://offog.org/code/rawdog.html"><i>rawdog</i></a>
@@ -2616,7 +3466,7 @@ all kinds of output, including (for instance):</p>
 features, and invocation. It's written in Python. Like <i>curn</i>,
 <i>rawdog</i> is intended to be run from a scheduler such as <i>cron</i>.</p>
 
-<!--------------------------------------------------------------------------->
+<!-- ********************************************************************** -->
 <h2><a name="EndNotes">End Notes</a></h2>
 
 <table width="100%" border="0" cellpadding="4" cellspacing="0" align="left">
@@ -2656,7 +3506,6 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
                 only the plain text part.</td>
            </tr>
         </table>
-      </p>
     </td>
   </tr>
 
@@ -2704,5 +3553,6 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
 <br clear="all"/>
 
 <hr>
-<p><pre>$Id$</pre></p>
-</body></html>
+<pre>$Id$</pre>
+</body>
+</html>
