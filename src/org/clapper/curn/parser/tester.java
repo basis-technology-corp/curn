@@ -52,7 +52,7 @@ public class tester
             System.out.println ();
 
             FileInputStream is = new FileInputStream (args[i]);
-            RSSChannel channel = parser.parseRSSFeed (is);
+            RSSChannel channel = parser.parseRSSFeed (is, null);
             if (channel != null)
                 show (channel);
         }

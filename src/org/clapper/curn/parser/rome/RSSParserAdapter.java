@@ -24,27 +24,55 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn.parser;
+package org.clapper.curn.parser.rome;
 
-import java.io.IOException;
+import org.clapper.curn.parser.RSSParser;
+import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSParserException;
+
+import com.sun.syndication.feed.synd.SyndFeedI;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.FeedException;
+
+import org.xml.sax.InputSource;
+
+import org.apache.commons.logging.LogFactory;
+
 import java.io.InputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
- * This interface defines a simplified view of an RSS parser, providing
- * only the methods necessary for <i>curn</i> to work. <i>curn</i> uses
- * the {@link RSSParserFactory} class to get a specific implementation of
- * an <tt>RSSParser</tt>. This strategy isolates the bulk of the code from
- * the underlying RSS parser, making it easier to substitute different
- * parsers as more of them become available.
+ * This class implements the <tt>RSSParser</tt> interface and defines an
+ * adapter for the {@link <a href="https://rome.dev.java.net/">Rome</a>}
+ * RSS Parser. Rome supports the
+ * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92,
+ * {@link <a href="http://web.resource.org/rss/1.0/">1.0</a>},
+ * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}
+ * and
+ * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+ * RSS formats.
  *
- * @see RSSParserFactory
- * @see RSSChannel
- * @see RSSItem
+ * @see org.clapper.curn.parser.RSSParserFactory
+ * @see org.clapper.curn.parser.RSSParser
+ * @see RSSChannelAdapter
  *
  * @version <tt>$Revision$</tt>
  */
-public interface RSSParser
+public class RSSParserAdapter implements RSSParser
 {
+    /*----------------------------------------------------------------------*\
+                                Constructor
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Default constructor.
+     */
+    public RSSParserAdapter()
+    {
+    }
+
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
@@ -64,5 +92,30 @@ public interface RSSParser
      */
     public RSSChannel parseRSSFeed (InputStream stream, String encoding)
         throws IOException,
-               RSSParserException;
+               RSSParserException
+    {
+        try
+        {
+            InputStreamReader r;
+
+            if (encoding == null)
+                r = new InputStreamReader (stream);
+            else
+                r = new InputStreamReader (stream, encoding);
+
+            SyndFeedInput input = new SyndFeedInput();
+            SyndFeedI     feed  = input.build (new InputSource (r));
+
+            return new RSSChannelAdapter (feed);
+        }
+
+        catch (FeedException ex)
+        {
+            throw new RSSParserException (ex);
+        }
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
 }

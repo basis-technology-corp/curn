@@ -81,7 +81,9 @@ public class RSSParserAdapter implements RSSParser
     /**
      * Parse an RSS feed.
      *
-     * @param stream  the <tt>InputStream</tt> for the feed
+     * @param stream   the <tt>InputStream</tt> for the feed
+     * @param encoding the encoding of the data in the field, if known, or
+     *                 null
      *
      * @return an <tt>RSSChannel</tt> object representing the RSS data from
      *         the site.
@@ -89,7 +91,7 @@ public class RSSParserAdapter implements RSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      */
-    public RSSChannel parseRSSFeed (InputStream stream)
+    public RSSChannel parseRSSFeed (InputStream stream, String encoding)
         throws IOException,
                RSSParserException
     {

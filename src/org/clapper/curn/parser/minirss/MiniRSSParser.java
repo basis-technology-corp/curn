@@ -144,7 +144,9 @@ public class MiniRSSParser
      * required by <i>curn</i>'s <tt>RSSParser</tt> interface, is
      * simply a front-end for {@link #parse(URL)}.
      *
-     * @param stream  the <tt>InputStream</tt> for the feed
+     * @param stream   the <tt>InputStream</tt> for the feed
+     * @param encoding the encoding of the data in the field, if known, or
+     *                 null
      *
      * @return the <tt>RSSChannel</tt> object containing the parsed RSS data
      *
@@ -158,11 +160,18 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final RSSChannel parseRSSFeed (InputStream stream)
+    public final RSSChannel parseRSSFeed (InputStream stream, String encoding)
         throws IOException,
                RSSParserException
     {
-        return parse (new InputStreamReader (stream));
+        Reader r;
+
+        if (encoding == null)
+            r = new InputStreamReader (stream);
+        else
+            r = new InputStreamReader (stream, encoding);
+
+        return parse (r);
     }
 
     /**
@@ -246,6 +255,7 @@ public class MiniRSSParser
 	throws IOException,
 	       RSSParserException
     {
+        // FIXME: Should determine encoding from Content-Encoding
 	return parse (new InputStreamReader (url.openStream()));
     }
 

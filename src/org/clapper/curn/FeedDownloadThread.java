@@ -330,7 +330,7 @@ class FeedDownloadThread extends Thread
                                  + " to parse the feed.");
 
                         is = new FileInputStream (temp);
-                        channel = parser.parseRSSFeed (is);
+                        channel = parser.parseRSSFeed (is, null);
                         is.close();
 
                         processChannelItems (channel, feedInfo);
