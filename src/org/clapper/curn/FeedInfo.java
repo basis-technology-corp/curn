@@ -22,6 +22,8 @@ public class RSSFeedInfo
     private boolean  pruneURLsFlag = false;
     private boolean  summaryOnly   = false;
     private int      daysToCache   = 0;
+    private String   titleOverride = null;
+    private String   itemURLEditCmd= null;
     private URL      siteURL       = null;
 
     /*----------------------------------------------------------------------*\
@@ -145,5 +147,61 @@ public class RSSFeedInfo
     public void setSummarizeOnlyFlag (boolean val)
     {
         this.summaryOnly = val;
+    }
+
+    /**
+     * Get the title override for this feed. The title override value
+     * overrides any title supplied in the RSS feed itself. This is an
+     * optional value.
+     *
+     * @return the title override, or null if none
+     */
+    public String getTitleOverride()
+    {
+        return titleOverride;
+    }
+
+    /**
+     * Set the title override for this feed. The title override value
+     * overrides any title supplied in the RSS feed itself. This is an
+     * optional value.
+     *
+     * @param s  the title override, or null if none
+     */
+    public void setTitleOverride (String s)
+    {
+        titleOverride = s;
+    }
+
+    /**
+     * Get the item URL edit command for this feed. This command, if supplied,
+     * is a Perl-style substitution command, e.g.:
+     *
+     * <pre>s/foo/bar/g</pre>
+     *
+     * It's intended to be used with the Jakarta ORO <tt>Perl5Util</tt>
+     * class to edit the item URLs before displaying them.
+     *
+     * @return the item URL edit command, or null if none
+     */
+    public String getItemURLEditCommand()
+    {
+        return itemURLEditCmd;
+    }
+
+    /**
+     * Get the item URL edit command for this feed. This command, if supplied,
+     * is a Perl-style substitution command, e.g.:
+     *
+     * <pre>s/foo/bar/g</pre>
+     *
+     * It's intended to be used with the Jakarta ORO <tt>Perl5Util</tt>
+     * class to edit the item URLs before displaying them.
+     *
+     * @param cmd   the item URL edit command, or null if none
+     */
+    public void setItemURLEditCommand (String cmd)
+    {
+        itemURLEditCmd = cmd;
     }
 }

@@ -105,10 +105,24 @@ public class RSSChannelAdapter implements RSSChannel
      * Get the channel's title
      *
      * @return the channel's title, or null if there isn't one
+     *
+     * @see #setTitle(String)
      */
     public String getTitle()
     {
         return this.channel.getTitle();
+    }
+
+    /**
+     * Set the channel's title
+     *
+     * @param newTitle the channel's title, or null if there isn't one
+     *
+     * @see #getTitle()
+     */
+    public void setTitle (String newTitle)
+    {
+        this.channel.setTitle (newTitle);
     }
 
     /**

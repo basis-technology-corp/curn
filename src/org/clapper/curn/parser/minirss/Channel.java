@@ -109,6 +109,8 @@ public class Channel implements RSSChannel
      * Set the channel's title
      *
      * @param title the channel's title, or null if there isn't one
+     *
+     * @see #getTitle()
      */
     public void setTitle (String title)
     {

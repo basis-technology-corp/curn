@@ -32,6 +32,8 @@ import org.clapper.util.misc.BadCommandLineException;
 import org.clapper.util.text.TextUtils;
 import org.clapper.util.config.ConfigurationException;
 
+import org.apache.oro.text.perl.Perl5Util;
+
 /**
 * <p>rssget - scan RSS feeds and display a summary, using one or more
 * configured output handlers, optionally emailing the results.</p>
@@ -116,6 +118,7 @@ public class rssget implements VerboseMessagesHandler
     private Collection          outputHandlers = new ArrayList();
     private Collection          emailAddresses = new ArrayList();
     private boolean             showBuildInfo  = false;
+    private Perl5Util           perl5Util      = new Perl5Util();
 
     /*----------------------------------------------------------------------*\
                                Main Program
@@ -712,8 +715,22 @@ public class rssget implements VerboseMessagesHandler
                MalformedURLException
     {
         Collection  items;
-        boolean     pruneURLs = feedInfo.pruneURLs();
         Iterator    it;
+        String      titleOverride = feedInfo.getTitleOverride();
+        boolean     pruneURLs = feedInfo.pruneURLs();
+        String      editCmd = feedInfo.getItemURLEditCommand();
+
+        if (titleOverride != null)
+            channel.setTitle (titleOverride);
+
+        if (editCmd != null)
+        {
+            verbose (1,
+                     "Channel \""
+                   + channel.getLink().toString()
+                   + "\": Edit command is: "
+                   + editCmd);
+        }
 
         items = channel.getItems();
 
@@ -732,26 +749,31 @@ public class rssget implements VerboseMessagesHandler
                 continue;
             }
 
-            // Prune the URL of its parameters, if configured for this
-            // site. This must be done before checking the cache, because
-            // the pruned URLs are what end up in the cache.
-
-            if (pruneURLs)
+            if (pruneURLs || (editCmd != null))
             {
-                String s = itemURL.toExternalForm();
-                int    i = s.indexOf ("?");
+                // Prune the URL of its parameters, if configured for this
+                // site. This must be done before checking the cache, because
+                // the pruned URLs are what end up in the cache.
 
-                if (i != -1)
+                String sURL = itemURL.toExternalForm();
+
+                if (pruneURLs)
                 {
-                    s = s.substring (0, i);
-                    itemURL = new URL (s);
+                    int i = sURL.indexOf ("?");
+
+                    if (i != -1)
+                        sURL = sURL.substring (0, i);
                 }
+
+                if (editCmd != null)
+                    sURL = perl5Util.substitute (editCmd, sURL);
+
+                itemURL = new URL (sURL);
             }
 
-            // Normalize the URL.
+            // Normalize the URL and save it.
 
-            itemURL = Util.normalizeURL (itemURL);
-            item.setLink (itemURL);
+            item.setLink (Util.normalizeURL (itemURL));
 
             // Skip it if it's cached.
 

@@ -64,6 +64,8 @@ public class RSSGetConfiguration extends Configuration
     private static final String VAR_DEF_EMAIL_SENDER  = "MailFrom";
     private static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     private static final String VAR_SHOW_DATES        = "ShowDates";
+    private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
+    private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
 
     /**
      * Default values
@@ -629,6 +631,16 @@ public class RSSGetConfiguration extends Configuration
                               (getOptionalBooleanValue (sectionName,
                                                         VAR_SUMMARY_ONLY,
                                                         summaryOnly));
+            String s = getOptionalStringValue (sectionName,
+                                               VAR_TITLE_OVERRIDE,
+                                               null);
+            if (s != null)
+                feedInfo.setTitleOverride (s);
+
+            s = getOptionalStringValue (sectionName, VAR_EDIT_ITEM_URL, null);
+            if (s != null)
+                feedInfo.setItemURLEditCommand (s);
+
             rssFeeds.add (feedInfo);
             rssFeedMap.put (url, feedInfo);
         }

@@ -58,8 +58,19 @@ public interface RSSChannel
      * Get the channel's title
      *
      * @return the channel's title, or null if there isn't one
+     *
+     * @see #setTitle(String)
      */
     public String getTitle();
+
+    /**
+     * Set the channel's title
+     *
+     * @param newTitle the channel's title, or null if there isn't one
+     *
+     * @see #getTitle()
+     */
+    public void setTitle (String newTitle);
 
     /**
      * Get the channel's description
