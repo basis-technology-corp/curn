@@ -27,7 +27,7 @@ class RSSCacheEntry implements Serializable
     \*----------------------------------------------------------------------*/
 
     private long  timestamp  = 0;
-    private URL   itemURL    = null;
+    private URL   entryURL   = null;
     private URL   channelURL = null;
 
     /*----------------------------------------------------------------------*\
@@ -38,13 +38,14 @@ class RSSCacheEntry implements Serializable
      * Default constructor. Only accessible within this package.
      *
      * @param channelURL  the main URL for the site's RSS feed
-     * @param itemURL     the URL for the item
+     * @param entryURL    the URL to be cached. May be an individual item URL,
+     *                    or the channel URL (again).
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
-    RSSCacheEntry (URL channelURL, URL itemURL, long timestamp)
+    RSSCacheEntry (URL channelURL, URL entryURL, long timestamp)
     {
         this.channelURL = channelURL;
-        this.itemURL    = itemURL;
+        this.entryURL   = entryURL;
         this.timestamp  = timestamp;
     }
 
@@ -64,13 +65,13 @@ class RSSCacheEntry implements Serializable
     }
 
     /**
-     * Get the item's URL.
+     * Get the URL for this entry.
      *
-     * @return the item's URL
+     * @return the entry URL
      */
-    URL getItemURL()
+    URL getEntryURL()
     {
-        return itemURL;
+        return entryURL;
     }
 
     /**

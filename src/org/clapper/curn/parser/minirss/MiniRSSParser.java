@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.Reader;
 
 import java.net.URL;
@@ -108,7 +109,7 @@ public class MiniRSSParser
      * required by <i>rssget</i>'s <tt>RSSParser</tt> interface, is
      * simply a front-end for {@link #parse(URL)}.
      *
-     * @param url  the URL for the RSS feed
+     * @param stream  the <tt>InputStream</tt> for the feed
      *
      * @return the <tt>RSSChannel</tt> object containing the parsed RSS data
      *
@@ -122,11 +123,11 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final RSSChannel parseRSSFeed (URL url)
+    public final RSSChannel parseRSSFeed (InputStream stream)
         throws IOException,
                RSSParserException
     {
-        return parse (url);
+        return parse (new InputStreamReader (stream));
     }
 
     /**
@@ -141,7 +142,7 @@ public class MiniRSSParser
      * @throws RSSParserException error parsing the XML
      *
      * @see #parse(URL)
-     * @see #parseRSSFeed(URL)
+     * @see #parseRSSFeed(InputStream)
      * @see #parse(File,String)
      * @see #parse(Reader)
      * @see Channel
@@ -167,7 +168,7 @@ public class MiniRSSParser
      * @throws RSSParserException error parsing the XML
      *
      * @see #parse(URL)
-     * @see #parseRSSFeed(URL)
+     * @see #parseRSSFeed(InputStream)
      * @see #parse(File,String)
      * @see #parse(Reader)
      * @see Channel
@@ -199,7 +200,7 @@ public class MiniRSSParser
      * @throws IOException        error opening or reading from the URL
      * @throws RSSParserException error parsing the XML
      *
-     * @see #parseRSSFeed(URL)
+     * @see #parseRSSFeed(InputStream)
      * @see #parse(File)
      * @see #parse(File,String)
      * @see #parse(Reader)
@@ -223,7 +224,7 @@ public class MiniRSSParser
      * @throws IOException        error opening or reading from the URL
      * @throws RSSParserException error parsing the XML
      *
-     * @see #parseRSSFeed(URL)
+     * @see #parseRSSFeed(InputStream)
      * @see #parse(File)
      * @see #parse(File,String)
      * @see #parse(URL)

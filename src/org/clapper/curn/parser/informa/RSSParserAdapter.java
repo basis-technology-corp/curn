@@ -14,7 +14,7 @@ import de.nava.informa.impl.basic.ChannelBuilder;
 
 import org.apache.commons.logging.LogFactory;
 
-import java.net.URL;
+import java.io.InputStream;
 import java.io.IOException;
 
 /**
@@ -53,7 +53,7 @@ public class RSSParserAdapter implements RSSParser
     /**
      * Parse an RSS feed.
      *
-     * @param url  The URL for the feed
+     * @param stream  the <tt>InputStream</tt> for the feed
      *
      * @return an <tt>RSSChannel</tt> object representing the RSS data from
      *         the site.
@@ -61,7 +61,7 @@ public class RSSParserAdapter implements RSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      */
-    public RSSChannel parseRSSFeed (URL url)
+    public RSSChannel parseRSSFeed (InputStream stream)
         throws IOException,
                RSSParserException
     {
@@ -70,7 +70,8 @@ public class RSSParserAdapter implements RSSParser
             ChannelBuilder builder = new ChannelBuilder();
             ChannelIF      channel;
 
-            channel = de.nava.informa.parsers.RSSParser.parse (builder, url);
+            channel = de.nava.informa.parsers.RSSParser.parse (builder,
+                                                               stream);
 
             return new RSSChannelAdapter (channel);
         }

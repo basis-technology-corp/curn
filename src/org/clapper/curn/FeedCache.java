@@ -149,7 +149,7 @@ public class RSSGetCache implements Serializable
     }
 
     /**
-     * Determine whether a given item's URL is cached.
+     * Determine whether a given URL is cached.
      *
      * @param url  the URL to check. The URL should already have
      *             been normalized.
@@ -158,10 +158,9 @@ public class RSSGetCache implements Serializable
      *
      * @see Util#normalizeURL
      */
-    public boolean containsItemURL (URL itemURL)
+    public boolean containsURL (URL url)
     {
-        itemURL = itemURL;
-        String key = itemURL.toExternalForm();
+        String key = url.toExternalForm();
         vh.verbose (3,
                     "Cache contains \""
                   + key
@@ -171,28 +170,43 @@ public class RSSGetCache implements Serializable
     }
 
     /**
-     * Add (or replace) a cached RSS item.
+     * Get an item from the cache.
      *
-     * @param itemURL    the URL for the item. The URL should already have
-     *                   been normalized
+     * @param url  the URL, which must be normalized.
+     *
+     * @return the corresponding <tt>RSSCacheEntry</tt> object, or null if
+     *         not found
+     *
+     * @see #Util#normalizeURL
+     */
+    public RSSCacheEntry getItem (URL url)
+    {
+        return (RSSCacheEntry) cacheMap.get (url.toExternalForm());
+    }
+
+    /**
+     * Add (or replace) a cached URL.
+     *
+     * @param url        the URL to cache. May be an individual item URL, or
+     *                   the URL for an entire feed.
      * @param parentFeed the associated feed
      *
      * @see Util#normalizeURL
      */
-    public void addToCache (URL itemURL, RSSFeedInfo parentFeed)
+    public void addToCache (URL url, RSSFeedInfo parentFeed)
     {
         URL parentURL = parentFeed.getURL();
         RSSCacheEntry entry = new RSSCacheEntry (parentURL,
-                                                 itemURL,
+                                                 url,
                                                  System.currentTimeMillis());
 
         vh.verbose (3,
                     "Adding cache entry for URL \""
-                  + entry.getItemURL().toExternalForm()
+                  + entry.getEntryURL().toExternalForm()
                   + "\". Channel URL: \""
                   + entry.getChannelURL().toExternalForm()
                   + "\"");
-        cacheMap.put (itemURL.toExternalForm(), entry);
+        cacheMap.put (url.toExternalForm(), entry);
         modified = true;
     }
 

@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.text.ParseException;
 
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.MalformedURLException;
 
 import org.clapper.rssget.parser.RSSParserFactory;
@@ -232,23 +233,26 @@ public class rssget implements VerboseMessagesHandler
                 channels.add (new ChannelFeedInfo (feedInfo, channel));
         }
 
-        // Dump the output to each output handler
-
-        out = new PrintWriter (System.out);
-
-        for (it = outputHandlers.iterator(); it.hasNext(); )
+        if (channels.size() > 0)
         {
-            OutputHandler outputHandler = (OutputHandler) it.next();
+            // Dump the output to each output handler
 
-            outputHandler.init (out, config);
-            for (Iterator itChannel = channels.iterator();
-                 itChannel.hasNext(); )
+            out = new PrintWriter (System.out);
+
+            for (it = outputHandlers.iterator(); it.hasNext(); )
             {
-                ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
-                outputHandler.displayChannel (cfi.channel, cfi.feedInfo);
-            }
+                OutputHandler outputHandler = (OutputHandler) it.next();
 
-            outputHandler.flush();
+                outputHandler.init (out, config);
+                for (Iterator itChannel = channels.iterator();
+                     itChannel.hasNext(); )
+                {
+                    ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
+                    outputHandler.displayChannel (cfi.channel, cfi.feedInfo);
+                }
+
+                outputHandler.flush();
+            }
         }
 
         if ((cache != null) && config.mustUpdateCache())
@@ -515,86 +519,28 @@ public class rssget implements VerboseMessagesHandler
     private RSSChannel processFeed (RSSFeedInfo feedInfo, RSSParser parser)
         throws RSSParserException
     {
-        URL         url = feedInfo.getURL();
-        boolean     pruneURLs = feedInfo.pruneURLs();
-        Iterator    it;
+        URL         feedURL = feedInfo.getURL();
         RSSChannel  channel = null;
-        Collection  items;
 
         try
         {
-            verbose (3, "Parsing feed at " + url.toString());
-            channel = parser.parseRSSFeed (url);
-            items = channel.getItems();
+            String feedURLString = feedURL.toString();
+            verbose (3, "Parsing feed at " + feedURLString);
 
-            // First, weed out the ones we don't care about.
+            // Don't download the channel if it hasn't been modified since
+            // we last checked it.
 
-            verbose (3, String.valueOf (items.size()) + " total items");
-            for (it = items.iterator(); it.hasNext(); )
+            feedURL = Util.normalizeURL (feedURL);
+            URLConnection conn = feedURL.openConnection();
+            if (feedHasChanged (conn, feedURL))
             {
-                RSSItem item = (RSSItem) it.next();
-                URL itemURL = item.getLink();
+                if (cache != null)
+                    cache.addToCache (feedURL, feedInfo);
 
-                if (itemURL == null)
-                {
-                    verbose (3, "Skipping item with null URL.");
-                    it.remove();
-                    continue;
-                }
-
-                // Prune the URL of its parameters, if configured for this
-                // site. This must be done before checking the cache,
-                // because the pruned URLs are what end up in the cache.
-
-                if (pruneURLs)
-                {
-                    String s = itemURL.toExternalForm();
-                    int    i = s.indexOf ("?");
-
-                    if (i != -1)
-                    {
-                        s = s.substring (0, i);
-                        itemURL = new URL (s);
-                    }
-                }
-                
-                // Normalize the URL.
-
-                itemURL = Util.normalizeURL (itemURL);
-                item.setLink (itemURL);
-
-                // Skip it if it's cached.
-
-                if ((cache != null) && cache.containsItemURL (itemURL))
-                {
-                    verbose (3,
-                             "Skipping cached URL \""
-                           + itemURL.toString()
-                           + "\"");
-                    it.remove();
-                    continue;
-                }
-            }
-
-            // Now, change the channel's items to the ones that are left.
-
-            channel.setItems (items);
-
-            // Finally, add all the items to the cache.
-
-            if (items.size() > 0)
-            {
-                for (it = items.iterator(); it.hasNext(); )
-                {
-                    RSSItem item = (RSSItem) it.next();
-
-                    verbose (3,
-                             "Cacheing URL \""
-                           + item.getLink().toString()
-                           + "\"");
-                    if (cache != null)
-                        cache.addToCache (item.getLink(), feedInfo);
-                }
+                channel = parser.parseRSSFeed (conn.getInputStream());
+                processChannelItems (channel, feedInfo);
+                if (channel.getItems().size() == 0)
+                    channel = null;
             }
         }
 
@@ -623,5 +569,144 @@ public class rssget implements VerboseMessagesHandler
         }
 
         return channel;
+    }
+
+    private boolean feedHasChanged (URLConnection conn, URL feedURL)
+        throws IOException
+    {
+        long     lastSeen = 0;
+        long     lastModified = 0;
+        boolean  hasChanged = false;
+
+        if ((cache != null) && (cache.containsURL (feedURL)))
+        {
+            RSSCacheEntry entry = (RSSCacheEntry) cache.getItem (feedURL);
+            lastSeen = entry.getTimestamp();
+        }
+
+        if (lastSeen == 0)
+        {
+            verbose (2,
+                     "Feed \""
+                   + feedURL.toString()
+                   + "\" has no record last-seen time.");
+            hasChanged = true;
+        }
+
+        else if ((lastModified = conn.getLastModified()) == 0)
+        {
+            verbose (2,
+                     "Feed \""
+                   + feedURL.toString()
+                   + "\" provides no last-modified time.");
+            hasChanged = true;
+        }
+
+        else if (lastSeen >= lastModified)
+        {
+            verbose (2,
+                     "Feed \""
+                   + feedURL.toString()
+                   + "\" has Last-Modified time of "
+                   + new Date (lastModified).toString()
+                   + ", which is not newer than last-seen time of "
+                   + new Date (lastSeen).toString()
+                   + ". Feed has no new data.");
+        }
+
+        else
+        {
+            verbose (2,
+                     "Feed \""
+                   + feedURL.toString()
+                   + "\" has Last-Modified time of "
+                   + new Date (lastModified).toString()
+                   + ", which is newer than last-seen time of "
+                   + new Date (lastSeen).toString()
+                   + ". Feed might have new data.");
+            hasChanged = true;
+        }
+
+        return hasChanged;
+    }
+
+    private void processChannelItems (RSSChannel  channel,
+                                      RSSFeedInfo feedInfo)
+        throws RSSParserException,
+               MalformedURLException
+    {
+        Collection  items;
+        boolean     pruneURLs = feedInfo.pruneURLs();
+        Iterator    it;
+
+        items = channel.getItems();
+
+        // First, weed out the ones we don't care about.
+
+        verbose (2, String.valueOf (items.size()) + " total items");
+        for (it = items.iterator(); it.hasNext(); )
+        {
+            RSSItem item = (RSSItem) it.next();
+            URL itemURL = item.getLink();
+
+            if (itemURL == null)
+            {
+                verbose (2, "Skipping item with null URL.");
+                it.remove();
+                continue;
+            }
+
+            // Prune the URL of its parameters, if configured for this
+            // site. This must be done before checking the cache, because
+            // the pruned URLs are what end up in the cache.
+
+            if (pruneURLs)
+            {
+                String s = itemURL.toExternalForm();
+                int    i = s.indexOf ("?");
+
+                if (i != -1)
+                {
+                    s = s.substring (0, i);
+                    itemURL = new URL (s);
+                }
+            }
+
+            // Normalize the URL.
+
+            itemURL = Util.normalizeURL (itemURL);
+            item.setLink (itemURL);
+
+            // Skip it if it's cached.
+
+            if ((cache != null) && cache.containsURL (itemURL))
+            {
+                verbose (3,
+                         "Skipping cached URL \"" + itemURL.toString() + "\"");
+                it.remove();
+                continue;
+            }
+        }
+
+        // Now, change the channel's items to the ones that are left.
+
+        channel.setItems (items);
+
+        // Finally, add all the items to the cache.
+
+        if (items.size() > 0)
+        {
+            for (it = items.iterator(); it.hasNext(); )
+            {
+                RSSItem item = (RSSItem) it.next();
+
+                verbose (3,
+                         "Cacheing URL \""
+                       + item.getLink().toString()
+                       + "\"");
+                if (cache != null)
+                    cache.addToCache (item.getLink(), feedInfo);
+            }
+        }
     }
 }

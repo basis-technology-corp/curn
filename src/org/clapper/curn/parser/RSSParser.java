@@ -4,8 +4,8 @@
 
 package org.clapper.rssget.parser;
 
-import java.net.URL;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This interface defines a simplified view of an RSS channel, providing
@@ -30,7 +30,7 @@ public interface RSSParser
     /**
      * Parse an RSS feed.
      *
-     * @param url  The URL for the feed
+     * @param stream  the <tt>InputStream</tt> for the feed
      *
      * @return an <tt>RSSChannel</tt> object representing the RSS data from
      *         the site.
@@ -38,7 +38,7 @@ public interface RSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      */
-    public RSSChannel parseRSSFeed (URL url)
+    public RSSChannel parseRSSFeed (InputStream stream)
         throws IOException,
                RSSParserException;
 }
