@@ -1719,7 +1719,19 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-	<tr valign="top" class="evenrow">
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Feed_SaveOnly">SaveOnly</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left"><p>If set, and if
+	   <a href="#Feed_SaveAs" class="code">SaveAs</a> is also set,
+	    then the feed will be downloaded and saved, but not parsed and
+	    not included in the generated output. This parameter can be
+	    useful when <a href="#Bandwidth">Being Bandwidth Friendly</a>.</p>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	</tr>
+
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1743,7 +1755,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">none</td>
         </tr>
 
-        <tr valign="top" class="oddrow">
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code">TitleOverride</td>
           <td align="left">String</td>
 	  <td align="left">Specifies a string to be used as the site's
