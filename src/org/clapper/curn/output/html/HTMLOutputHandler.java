@@ -128,6 +128,7 @@ public class HTMLOutputHandler extends FileOutputHandler
         this.channelTD           = doc.getElementChannelTD();
 
         File outputFile = super.getOutputFile();
+        doc.setTextTimestamp (OUTPUT_DATE_FORMAT.format (new Date()));
 
         try
         {
