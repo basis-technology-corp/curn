@@ -44,6 +44,8 @@ import java.util.Collection;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 import java.util.NoSuchElementException;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.text.ParseException;
 import java.text.MessageFormat;
@@ -153,15 +155,21 @@ public class curn extends CommandLineUtility
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private ConfigFile      config         = null;
-    private boolean         useCache       = true;
-    private FeedCache       cache          = null;
-    private Date            currentTime    = new Date();
-    private Collection      outputHandlers = new ArrayList();
-    private Collection      emailAddresses = new ArrayList();
-    private boolean         showBuildInfo  = false;
-    private Perl5Util       perl5Util      = new Perl5Util();
-    private ResourceBundle  bundle         = null;
+    private String          configPath       = null;
+    private ConfigFile      config           = null;
+    private boolean         useCache         = true;
+    private FeedCache       cache            = null;
+    private Date            currentTime      = new Date();
+    private Collection      outputHandlers   = new ArrayList();
+    private Collection      emailAddresses   = new ArrayList();
+    private boolean         showBuildInfo    = false;
+    private Perl5Util       perl5Util        = new Perl5Util();
+    private ResourceBundle  bundle           = null;
+    private Boolean         optShowDates     = null;
+    private Boolean         optShowAuthors   = null;
+    private Boolean         optQuiet         = null;
+    private Boolean         optRSSVersion    = null;
+    private Boolean         optUpdateCache   = null;
 
     /**
      * For log messages
@@ -179,6 +187,13 @@ public class curn extends CommandLineUtility
         try
         {
             tool.execute (args);
+        }
+
+        catch (CommandLineUsageException ex)
+        {
+            // Already reported
+
+            System.exit (1);
         }
 
         catch (CommandLineException ex)
@@ -302,10 +317,10 @@ public class curn extends CommandLineUtility
                NoSuchElementException
     {
         if (option.equals ("-a") || option.equals ("--show-authors"))
-            config.setShowAuthorsFlag (true);
+            optShowAuthors = Boolean.TRUE;
 
         else if (option.equals ("-A") || option.equals ("--no-authors"))
-            config.setShowAuthorsFlag (false);
+            optShowAuthors = Boolean.FALSE;
 
         else if (option.equals ("-B") || option.equals ("--build-info"))
             showBuildInfo = true;
@@ -314,28 +329,28 @@ public class curn extends CommandLineUtility
             useCache = false;
 
         else if (option.equals ("-d") || option.equals ("--show-dates"))
-            config.setShowDatesFlag (true);
+            optShowDates = Boolean.TRUE;
 
         else if (option.equals ("-D") || option.equals ("--no-dates"))
-            config.setShowDatesFlag (false);
+            optShowDates = Boolean.FALSE;
 
         else if (option.equals ("-Q") || option.equals ("--no-quiet"))
-            config.setQuietFlag (false);
+            optQuiet = Boolean.FALSE;
 
         else if (option.equals ("-q") || option.equals ("--quiet"))
-            config.setQuietFlag (true);
+            optQuiet = Boolean.TRUE;
 
         else if (option.equals ("-r") || option.equals ("--rss-version"))
-            config.setShowRSSVersionFlag (true);
+            optRSSVersion = Boolean.TRUE;
 
         else if (option.equals ("-R") || option.equals ("--no-rss-version"))
-            config.setShowRSSVersionFlag (false);
+            optRSSVersion = Boolean.FALSE;
 
         else if (option.equals ("-t") || option.equals ("--time"))
             currentTime = parseDateTime ((String) it.next());
 
         else if (option.equals ("-u") || option.equals ("--no-update"))
-            config.setMustUpdateCacheFlag (false);
+            optUpdateCache = Boolean.FALSE;
 
         else
             throw new CommandLineUsageException ("Unknown option: " + option);
@@ -371,6 +386,8 @@ public class curn extends CommandLineUtility
         throws CommandLineUsageException,
                NoSuchElementException
     {
+        configPath = (String) it.next();
+
         while (it.hasNext())
             emailAddresses.add ((String) it.next());
     }
@@ -442,6 +459,13 @@ public class curn extends CommandLineUtility
                       + "current time is <time>. <time> may be in one of the "
                       + "following formats."
                       + sw.toString());
+
+        info.addParameter ("config",
+                           "Path to configuration file",
+                           true);
+        info.addParameter ("emailAddress ...",
+                           "One or more email addresses to receive the output",
+                           false);
     }
 
     /**
@@ -500,6 +524,8 @@ public class curn extends CommandLineUtility
                CommandLineException
         
     {
+        loadConfig();
+
         bundle = ResourceBundle.getBundle (BUNDLE_NAME);
         if (bundle == null)
         {
@@ -511,6 +537,31 @@ public class curn extends CommandLineUtility
             Version.showBuildInfo();
 
         processRSSFeeds (this.config, this.emailAddresses);
+    }
+
+    private void loadConfig()
+        throws ConfigurationException,
+               IOException
+    {
+        config = new ConfigFile (configPath);
+
+        // Adjust the configuration, if necessary, based on the command-line
+        // parameters.
+
+        if (optShowAuthors != null)
+            config.setShowAuthorsFlag (optShowAuthors.booleanValue());
+
+        if (optQuiet != null)
+            config.setQuietFlag (optQuiet.booleanValue());
+
+        if (optRSSVersion != null)
+            config.setShowRSSVersionFlag (optRSSVersion.booleanValue());
+
+        if (optUpdateCache != null)
+            config.setMustUpdateCacheFlag (optUpdateCache.booleanValue());
+
+        if (optShowDates != null)
+            config.setShowDatesFlag (true);
     }
 
     private Date parseDateTime (String s)
