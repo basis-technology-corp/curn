@@ -452,8 +452,6 @@ public class Tool extends CommandLineUtility
      * instantiates a {@link Curn} object and calls its
      * {@link Curn#processRSSFeeds processRSSFeeds()} method.
      *
-     * @param args  the command-line parameters
-     *
      * @throws CommandLineException error occurred
      */
     protected void runCommand()

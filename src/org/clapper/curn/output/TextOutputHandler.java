@@ -56,7 +56,7 @@ import java.util.Iterator;
  * class-specific configuration items of its own. It produces output only
  * if the channels contain
  *
- * @see OutputHandler
+ * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
  * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel

@@ -75,7 +75,7 @@ import org.enhydra.xml.xmlc.html.HTMLObject;
 /**
  * Provides an output handler that produces HTML output.
  *
- * @see OutputHandler
+ * @see org.clapper.curn.OutputHandler
  * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *

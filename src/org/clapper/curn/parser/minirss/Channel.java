@@ -40,7 +40,8 @@ import java.util.Date;
  *
  * @see org.clapper.curn.parser.RSSParserFactory
  * @see org.clapper.curn.parser.RSSParser
- * @see RSSItem
+ * @see org.clapper.curn.parser.RSSChannel
+ * @see org.clapper.curn.parser.RSSItem
  *
  * @version <tt>$Revision$</tt>
  */

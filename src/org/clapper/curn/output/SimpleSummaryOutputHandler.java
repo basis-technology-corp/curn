@@ -95,7 +95,7 @@ import java.util.ArrayList;
  * won't render full HTML), and view the resulting HTML document in my
  * browser.</p>
  *
- * @see OutputHandler
+ * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
  * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel

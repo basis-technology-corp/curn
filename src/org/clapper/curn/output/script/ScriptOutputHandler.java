@@ -283,7 +283,7 @@ import org.apache.bsf.BSFManager;
  * </pre>
  * </blockquote>
  *
- * @see OutputHandler
+ * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
  * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel

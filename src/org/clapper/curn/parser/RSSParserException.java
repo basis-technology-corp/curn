@@ -32,7 +32,7 @@ import org.clapper.curn.CurnException;
  * A <tt>RSSParserException</tt> is thrown by parser implementations
  * to signify parser errors.
  *
- * @see NestedException
+ * @see org.clapper.util.misc.NestedException
  *
  * @version <tt>$Revision$</tt>
  */
@@ -90,22 +90,23 @@ public class RSSParserException extends CurnException
      * found). Using this constructor is equivalent to calling the
      * {@link #RSSParserException(String,String,String,Object[])}
      * constructor, with a null pointer for the <tt>Object[]</tt>
-     * parameter. Calls to {@link NestedException#getMessage(Locale)} will
-     * attempt to retrieve the top-most message (i.e., the message from
-     * this exception, not from nested exceptions) by querying the named
-     * resource bundle. Calls to
-     * {@link NestedException#printStackTrace(PrintWriter,Locale)} will do the
-     * same, where applicable. The message is not retrieved until one of
-     * those methods is called, because the desired locale is passed into
-     * <tt>getMessage()</tt> and <tt>printStackTrace()</tt>, not this
-     * constructor.
+     * parameter. Calls to
+     * {@link org.clapper.util.misc.NestedException#getMessage(java.util.Locale)}
+     * will attempt to retrieve the top-most message (i.e., the message
+     * from this exception, not from nested exceptions) by querying the
+     * named resource bundle. Calls to
+     * {@link org.clapper.util.misc.NestedException#printStackTrace(PrintWriter,java.util.Locale)}
+     * will do the same, where applicable. The message is not retrieved
+     * until one of those methods is called, because the desired locale is
+     * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
+     * not this constructor.
      *
      * @param bundleName  resource bundle name
      * @param messageKey  the key to the message to find in the bundle
      * @param defaultMsg  the default message
      *
      * @see #RSSParserException(String,String,String,Object[])
-     * @see NestedException#getMessage(Locale)
+     * @see org.clapper.util.misc.NestedException#getMessage(java.util.Locale)
      */
     public RSSParserException (String bundleName,
                                String messageKey,
@@ -120,15 +121,16 @@ public class RSSParserException extends CurnException
      * found). Using this constructor is equivalent to calling the
      * {@link #RSSParserException(String,String,String,Object[],Throwable)}
      * constructor, with a null pointer for the <tt>Throwable</tt>
-     * parameter. Calls to {@link NestedException#getMessage(Locale)} will
-     * attempt to retrieve the top-most message (i.e., the message from
-     * this exception, not from nested exceptions) by querying the named
-     * resource bundle. Calls to
-     * {@link NestedException#printStackTrace(PrintWriter,Locale)} will do the
-     * same, where applicable. The message is not retrieved until one of
-     * those methods is called, because the desired locale is passed into
-     * <tt>getMessage()</tt> and <tt>printStackTrace()</tt>, not this
-     * constructor.
+     * parameter. Calls to
+     * {@link org.clapper.util.misc.NestedException#getMessage(java.util.Locale)}
+     * will attempt to retrieve the top-most message (i.e., the message
+     * from this exception, not from nested exceptions) by querying the
+     * named resource bundle. Calls to
+     * {@link org.clapper.util.misc.NestedException#printStackTrace(PrintWriter,java.util.Locale)}
+     * will do the same, where applicable. The message is not retrieved
+     * until one of those methods is called, because the desired locale is
+     * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
+     * not this constructor.
      *
      * @param bundleName  resource bundle name
      * @param messageKey  the key to the message to find in the bundle
@@ -136,7 +138,7 @@ public class RSSParserException extends CurnException
      * @param msgParams   parameters to the message, if any, or null
      *
      * @see #RSSParserException(String,String,String,Object[],Throwable)
-     * @see NestedException#getMessage(Locale)
+     * @see org.clapper.util.misc.NestedException#getMessage(java.util.Locale)
      */
     public RSSParserException (String   bundleName,
                                String   messageKey,
@@ -152,15 +154,16 @@ public class RSSParserException extends CurnException
      * another exception. Using this constructor is equivalent to calling then
      * {@link #RSSParserException(String,String,String,Object[],Throwable)}
      * constructor, with a null pointer for the <tt>Object[]</tt>
-     * parameter. Calls to {@link #getMessage(Locale)} will attempt to
-     * retrieve the top-most message (i.e., the message from this
-     * exception, not from nested exceptions) by querying the named
-     * resource bundle. Calls to
-     * {@link #printStackTrace(PrintWriter,Locale)} will do the same, where
-     * applicable. The message is not retrieved until one of those methods
-     * is called, because the desired locale is passed into
-     * <tt>getMessage()</tt> and <tt>printStackTrace()</tt>, not this
-     * constructor.
+     * parameter. Calls to
+     * {@link org.clapper.util.misc.NestedException#getMessage(java.util.Locale)}
+     * will attempt to retrieve the top-most message (i.e., the message
+     * from this exception, not from nested exceptions) by querying the
+     * named resource bundle. Calls to
+     * {@link org.clapper.util.misc.NestedException#printStackTrace(PrintWriter,java.util.Locale)}
+     * will do the same, where applicable. The message is not retrieved
+     * until one of those methods is called, because the desired locale is
+     * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
+     * not this constructor.
      *
      * @param bundleName  resource bundle name
      * @param messageKey  the key to the message to find in the bundle
@@ -168,45 +171,46 @@ public class RSSParserException extends CurnException
      * @param exception   the exception to nest
      *
      * @see #RSSParserException(String,String,String,Object[],Throwable)
-     * @see NestedException#getMessage(Locale)
+     * @see org.clapper.util.misc.NestedException#getMessage(java.util.Locale)
      */
     public RSSParserException (String    bundleName,
                                String    messageKey,
                                String    defaultMsg,
-                               Throwable ex)
+                               Throwable exception)
     {
-        this (bundleName, messageKey, defaultMsg, null, ex);
+        this (bundleName, messageKey, defaultMsg, null, exception);
     }
 
     /**
      * Constructs an exception containing a resource bundle name, a message
      * key, a default message format (in case the resource bundle can't be
      * found), arguments to be incorporated in the message via
-     * <tt>java.text.MessageFormat</tt>, and another exception.
-     * Calls to {@link #getMessage(Locale)} will attempt to retrieve the
-     * top-most message (i.e., the message from this exception, not from
-     * nested exceptions) by querying the named resource bundle. Calls to
-     * {@link #printStackTrace(PrintWriter,Locale)} will do the same, where
-     * applicable. The message is not retrieved until one of those methods
-     * is called, because the desired locale is passed into
-     * <tt>getMessage()</tt> and <tt>printStackTrace()</tt>, not this
-     * constructor.
+     * <tt>java.text.MessageFormat</tt>, and another exception. Calls to
+     * {@link org.clapper.util.misc.NestedException#getMessage(java.util.Locale)}
+     * will attempt to retrieve the top-most message (i.e., the message
+     * from this exception, not from nested exceptions) by querying the
+     * named resource bundle. Calls to
+     * {@link org.clapper.util.misc.NestedException#printStackTrace(PrintWriter,java.util.Locale)}
+     * will do the same, where applicable. The message is not retrieved
+     * until one of those methods is called, because the desired locale is
+     * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
+     * not this constructor.
      *
      * @param bundleName  resource bundle name
      * @param messageKey  the key to the message to find in the bundle
      * @param defaultMsg  the default message
      * @param msgParams   parameters to the message, if any, or null
-     * @param ex          exception to be nested
+     * @param exception   exception to be nested
      *
      * @see #RSSParserException(String,String,String,Object[])
-     * @see NestedException#getMessage(Locale)
+     * @see org.clapper.util.misc.NestedException#getMessage(java.util.Locale)
      */
     public RSSParserException (String    bundleName,
                                String    messageKey,
                                String    defaultMsg,
                                Object[]  msgParams,
-                               Throwable ex)
+                               Throwable exception)
     {
-        super (bundleName, messageKey, defaultMsg, msgParams, ex);
+        super (bundleName, messageKey, defaultMsg, msgParams, exception);
     }
 }
