@@ -1,5 +1,27 @@
 /*---------------------------------------------------------------------------*\
   $Id$
+  ---------------------------------------------------------------------------
+  This software is released under a Berkeley-style license:
+
+  Copyright (c) 2004 Brian M. Clapper. All rights reserved.
+
+  Redistribution and use in source and binary forms are permitted provided
+  that: (1) source distributions retain this entire copyright notice and
+  comment; and (2) modifications made to the software are prominently
+  mentioned, and a copy of the original software (or a pointer to its
+  location) are included. The name of the author may not be used to endorse
+  or promote products derived from this software without specific prior
+  written permission.
+
+  THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+  Effectively, this means you can do what you want with the software except
+  remove this notice or take advantage of the author's name. If you modify
+  the software and redistribute your modified version, you must indicate that
+  your version is a modification of the original, and you must provide either
+  a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
 package org.clapper.curn;
@@ -35,20 +57,22 @@ import org.clapper.util.config.ConfigurationException;
 import org.apache.oro.text.perl.Perl5Util;
 
 /**
- * <p>curn - Clapper's Uncomplicated RSS Notifier</p>
+ * <p><i>curn</i> - Clapper's Uncomplicated RSS Notifier</p>
  *
- * <p>Curn scans a configured set of URLs, each one representing an
+ * <p><i>curn</i> scans a configured set of URLs, each one representing an
  * RSS feed, and summarizes the results in an easy-to-read text format.
  * <i>curn</i> keeps track of URLs it's seen before, using an on-disk
  * cache; when using the cache, it will suppress displaying URLs it has
- * already reported (though that behavior can be disabled). Curn can be
- * extended to use any RSS parser; its built-in RSS parser, the
- * {@link org.clapper.curn.parser.MiniRSSParser} class, can handle files in
+ * already reported (though that behavior can be disabled). <i>curn</i> can
+ * be extended to use any RSS parser; its built-in RSS parser, the
+ * {@link org.clapper.curn.parser.minirss.MiniRSSParser MiniRSSParser}
+ * class, can handle files in
  * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
  * format (0.3) and RSS formats
- * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92,
- * {@link <a href="http://web.resource.org/rss/1.0/">1.0</a>} and
- * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.</p>
+ * {@link <a target="_top" href="http://backend.userland.com/rss091">0.91</a>},
+ * 0.92,
+ * {@link <a target="_top" href="http://web.resource.org/rss/1.0/">1.0</a>} and
+ * {@link <a target="_top" href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.</p>
  *
  * @version <tt>$Revision$</tt>
  */

@@ -30,11 +30,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 /**
  * <p><tt>MiniRSSParser</tt> is a stripped down RSS parser. It handles
  * files in
- * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+ * {@link <a target="_top" href="http://www.atomenabled.org/developers/">Atom</a>}
  * format (0.3) and RSS formats
- * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92,
- * {@link <a href="http://web.resource.org/rss/1.0/">1.0</a>} and
- * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
+ * {@link <a target="_top" href="http://backend.userland.com/rss091">0.91</a>},
+ * 0.92,
+ * {@link <a target="_top" href="http://web.resource.org/rss/1.0/">1.0</a>} and
+ * {@link <a target="_top" href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
  * However, it doesn't store all the possible RSS items. It stores those
  * items that the <i>curn</i> utility requires (plus a few more), but
  * lacks support for others.  Thus, it is unsuitable for use as a
