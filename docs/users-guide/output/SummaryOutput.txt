@@ -1,0 +1,19 @@
+Some or all configured feeds have new items.
+Total new items for all channels: 8
+
+See http://localhost/rss/output.html
+
+A summary follows.
+
+    The Daily Irrelevant
+    http://irrelevant.clapper.org/
+        3 items
+
+    News Bites
+    http://bites.clapper.org/
+        2 items
+
+    Simple News Summaries
+    http://justthefactsmaam.clapper.org/
+        3 items
+

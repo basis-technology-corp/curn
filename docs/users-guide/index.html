@@ -1,0 +1,1839 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html><head>
+
+<title>curn User's Guide</title><style>
+<!--
+   body            { background-color: #ffffff; color: #000000; }
+   h1              { color: #000000; font-family: serif; }
+   h1.title        { text-align: center; }
+   p.author        { text-align: center; }
+   h2              { color: #990000; font-family: sans-serif; }
+   h3              { color: #000000; font-family: sans-serif; }
+   .toc            { font-weight: bold; }
+   .oddrow         { background-color: #ffffff; }
+   .evenrow        { background-color: #c9c9c9; }
+   th              { font-weight: bold; }
+   th.thvis        { background-color: #c9c9c9; }
+   .code           { font-family: monospace; }
+   .path           { font-family: monospace; }
+   .exampleHeader  { font-weight: bold; text-decoration: underline; }
+-->
+</style></head>
+
+<body>
+
+<h1 class="title">curn: Curiously Uncomplicated RSS Notifier<br>User's Guide</h1>
+<p class="author">Brian M. Clapper<br>
+<i>bmc<!--spamfoil--> @ <!--spamfoil-->clapper<!--spamfoil--> . <!--spamfoil-->org</i><br>
+<tt>$Id$</tt>
+</p>
+<hr>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="#TOC">Table of Contents</a></h2>
+
+<ul>
+  <li><a href="#Introduction" class="toc">Introduction</a></li>
+  </li>
+
+  <li><a href="#CommandLine" class="toc"><i>curn</i> Command Line Syntax</a></li>
+      <ul type="disc">
+        <li><a href="#CommandLineOptions" class="toc">Command Line Options</a></li>
+        <li><a href="#CommandLineParams" class="toc">Command Line Parameters</a></li>
+      </ul>
+  </li>
+
+  <li><a href="#ConfigFile" class="toc">The <i>curn</i> Configuration File</a></li>
+      <ul type="disc">
+        <li><a href="#ConfigFileSyntax" class="toc">Configuration File Syntax</a></li>
+	    <ul type="disc">
+              <li><a href="#CfgSectionNameSyntax" class="toc">Section Name Syntax</a></li>
+              <li><a href="#CfgVariableNameSyntax" class="toc">Variable Name Syntax</a></li>
+              <li><a href="#CfgContinuationLines" class="toc">Continuation Lines</a></li>
+              <li><a href="#CfgVariableSubst" class="toc">Variable Substitution</a></li>
+              <li><a href="#CfgIncludes" class="toc">Includes</a></li>
+              <li><a href="#CfgComments" class="toc">Comments and Blank Lines</a></li>
+	    </ul>
+
+        <li><a href="#ConfigFileParameters" class="toc">Overview of <i>curn</i>'s Configuration File</a></li>
+	<li><a href="#CfgCurnSection" class="toc">The <span class="code">[curn]</span> Section</a></li>
+	<li><a href="#CfgRSSFeeds" class="toc">Configuring the RSS Feeds</a></li>
+	<li><a href="#CfgOutputHandlers" class="toc">Configuring Output Handlers</a></li>
+	    <ul type="disc">
+	      <li><a href="#CfgOutputHandlerSections" class="toc">Output Handler Sections</a></li>
+	      <li><a href="#CfgPredefinedOutputHandlers" class="toc">Predefined Output Handlers</a>
+	      <li><a href="#CfgOutputHandlerExamples" class="toc">Examples</a>
+	    </ul>
+      </ul>
+  </li>
+
+  <li><a href="#SchedulingCurn" class="toc">Having <i>curn</i> Run on a Schedule</a></li>
+
+      <ul type="disc">
+	<li><a href="#UsingCron" class="toc">Running <i>curn</i> from <i>cron</i>(8) on Unix-like Systems</a></li>
+	<li><a href="#UsingWindowsScheduler" class="toc">Running <i>curn</i> via the Windows Scheduler</a></li>
+      </ul>
+
+  <li><a href="#Bandwidth" class="toc">Being "Bandwidth Friendly"</a></li>
+
+  <li><a href="#ExtendingCurn" class="toc">Extending <i>curn</i></a></li>
+      <ul type="disc">
+        <li><a href="#DifferentParser" class="toc">Using a Different RSS Parser</a></li>
+        <li><a href="#NewOutputHandler" class="toc">Writing Your Own Output Handler</a></li>
+      </ul>
+  </li>
+
+  <li><a href="#AppendixA" class="toc">Appendix A: Similar Products and Tools</a></li>
+  <li><a href="#EndNotes" class="toc">End Notes</a></li>
+</ul>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="Introduction">Introduction</a></h2>
+
+<p><i>curn</i> is an RSS reader. It scans a configured set of URLs, each
+one representing an RSS feed, and summarizes the results. By default,
+<i>curn</i> keeps track of individual items within each RSS feed, using an
+on-disk cache; when using the cache, it will suppress displaying information
+for items it has already processed (though that behavior can be disabled).
+<i>curn</i> is intended to be run periodically from a scheduler such as
+<a href="http://www.freebsd.org/cgi/man.cgi?query=cron&apropos=0&sektion=0&manpath=FreeBSD+5.2-RELEASE+and+Ports&format=html"><i>cron</i>(8)</a>
+(on Unix-like systems) or the Windows Scheduler Service (on Windows).</p>
+
+<p><i>curn</i> can read RSS feeds from any URL that's supported by Java's
+runtime. When querying HTTP sites, <i>curn</i> uses the HTTP
+<span class="code">If-Modified-Since</span> and
+<span class="code">Last-Modified</span> headers to suppress
+retrieving and processing feeds that haven't changed. By default, it also
+requests that the remote HTTP server <i>gzip</i> the XML before sending it.
+(Some HTTP servers honor the request; some don't.) These measures both minimize
+network bandwidth and ensure that <i>curn</i> is as kind as possible to the
+remote RSS servers. (There are some <a href="#Bandwidth">additional steps</a>
+you can take to be more bandwidth-friendly.)</p>
+
+<p><i>curn</i>
+can be extended to use any RSS parser; its built-in RSS parser, the
+<a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
+class, can handle files in
+<a target="_top" href="http://www.atomenabled.org/developers/">Atom</a>
+format (0.3) and RSS formats
+<a href="http://backend.userland.com/rss091">0.91</a>, 0.92,
+<a href="http://web.resource.org/rss/1.0/">1.0</a> and
+<a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>. <i>curn</i>
+also comes with a built-in adapter for the
+<a href="http://informa.sourceforge.net/">Informa</a> RSS parser.
+See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
+item for information on how to specify which parser <i>curn</i> should use.
+See the section entitled
+<a href="#DifferentParser">Using a Different RSS Parser</a> for more
+details on adapting <i>curn</i> to use other RSS parsers.</p>
+
+<p><i>curn</i> supports a several output formats; you can configure
+one or more output handlers in <i>curn</i>'s
+<a href="#ConfigFile">configuration file</a>. In addition, someone conversant
+with Java programming can easily extend <i>curn</i> to handle a new output
+format. See the section entitled
+<a href="#NewOutputHandler">Writing Your Own Output Handler</a> for more
+details.</p>
+
+<p>One of <i>curn</i>'s output handlers, the
+<span class="code">org.clapper.curn.TextOutputHandler</span> class,
+produces a plain text output file, suitable for emailing to people who can't
+handle HTML email;
+to see a sample, follow <a href="TextOutputHandler_sample.html">this link</a>.
+Another output handler,
+<span class="code">org.clapper.curn.htmloutput.HTMLOutputHandler</span>,
+produces a prettier HTML output file; to see a sample,
+follow <a href="HTMLOutputHandler_sample.html">this link</a>.</p>
+
+<p>In addition, <i>curn</i> supports emailing its output. If email
+addresses are specified <a href="#CommandLine">on the command line</a>,
+then <i>curn</i> creates a MIME multipart/alternative email
+message<a href="#Note1">[1]</a>, using
+the output of each output handler as one of the alternative attachments. If
+no email addresses are specified on the command line, then <i>curn</i>
+retrieves the output from the first configured output handler that actually
+produced output, and displays it on standard output.</p>
+
+
+<!--------------------------------------------------------------------------->
+<h2><a name="CommandLine"><i>curn</i> Command Line Syntax</a></h2>
+
+<p><i>curn</i>'s command line uses a Unix-like syntax. If you invoke
+<i>curn</i> without any parameters, you get the following usage display.
+
+<br><br>
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="70%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="0" align="center"
+             width="100%">
+        <tr valign="top">
+          <td align="left">
+<pre>Usage: java org.clapper.curn.curn [options] config [emailAddress ...]
+
+OPTIONS:
+
+-A, --no-authors     Don't the authors for each item, if available.
+-a, --show-authors   Show the authors for each item, if available.
+-B, --build-info     Show full build information.
+-C, --no-cache       Don't use a cache file at all.
+-D, --no-dates       Don't show dates on feeds and feed items.
+-d, --show-dates     Show dates on feeds and feed items, if available.
+--logging            Enable logging via Jakarta Commons Logging API.
+-Q, --no-quiet       Emit messages about sites with no new items.
+-q, --quiet          Be quiet about sites with no new items.
+-R, --no-rss-version Don't show the RSS version each site uses.
+-r, --rss-version    Show the RSS version each site uses.
+-t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current 
+                     time is &lt;time&gt;. &lt;time&gt; may be in one of the following 
+                     formats.
+                         2004/07/22 09:37:29 AM
+                         2004/07/22 09:37:29
+                         2004/07/22 09:37 AM
+                         2004/07/22 09:37
+                         2004/07/22 9:37 AM
+                         2004/07/22 9:37
+                         2004/07/22 09 AM
+                         2004/07/22 9 AM
+                         2004/07/22
+                         04/07/22
+                         09:37:29 AM
+                         09:37:29
+                         09:37 AM
+                         09:37
+                         9:37 AM
+                         9:37
+                         09 AM
+                         9 AM
+-u, --no-update      Read the cache, but don't update it.
+-Z, --no-gzip        Don't ask remote HTTP servers to gzip content before 
+                     sending it.
+-z, --gzip           Ask remote HTTP servers to gzip content before sending it. 
+PARAMETERS:
+
+config               Path to configuration file
+emailAddress ...     One or more email addresses to receive the output
+</pre>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<br><br>
+<p>Many of <i>curn</i>'s command-line options simply override settings in the
+<a href="#ConfigFile"><i>curn</i> configuration file</a>.
+Each option and argument is discussed in more detail, below.</p>
+
+<h3><a name="CommandLineOptions">Command Line Options</a></h3>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="85%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="4" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="top">
+	  <th class="thvis" align="center" colspan="3">O&nbsp;P&nbsp;T&nbsp;I&nbsp;O&nbsp;N&nbsp;S</th>
+        </tr>
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Short Option</th>
+	  <th class="thvis" align="left">Long Option</th>
+	  <th class="thvis" align="left">Explanation</th>
+        </tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-A</td>
+	  <td align="left" class="code"><a name="--show-authors">--show-authors</a></td>
+          <td>Don't display author data found in the RSS feeds.
+	      Also see the <span class="code">-a</span> option.
+	      This option overrides any
+	      <a href="#Cfg_ShowAuthors class="code"">ShowAuthors</a>
+	      setting in the configuration file.
+	  </td>
+        </tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-a</td>
+	  <td align="left" class="code"><a name="--no-authors">--no-authors</a></td>
+          <td>Display any author data found in the RSS feeds. RSS
+	      feeds are not required to contain author data, but some do.
+	      This option overrides any
+	      <a href="#Cfg_ShowAuthors class="code"">ShowAuthors</a>
+	      setting in the configuration file.
+        </tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-B</td>
+	  <td align="left" class="code">--build-info</td>
+          <td>Display detailed information about how and when <i>curn</i>
+	      was built, then exit without doing anything. Useful primarily
+	      when debugging or submitting problem reports. For instance,
+	      the command
+	      <blockquote><pre>curn -B</pre></blockquote>
+	      products output similar to the following:
+	      <blockquote><pre>curn, version 1.0.0
+
+Build date:     2004/07/27 16:14:24 EDT
+Built by:       bmc@z.inside.clapper.org
+Built on:       FreeBSD 4.10-RELEASE (i386)
+Build Java VM:  Classic VM 1.3.1-p9-bmc-040715-11:49 (Sun Microsystems Inc.)
+Build compiler: jikes
+Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
+</blockquote>
+	  </td>
+        </tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-C</td>
+	  <td align="left" class="code"><a name="--no-cache">--no-cache</a></td>
+          <td>Run without a cache. Each RSS item <i>curn</i> encounters will
+	      appear to be new and will be passed to the output handlers.
+	      Also see the <a href="#Cfg_CacheFile" class="code">CacheFile</a>
+	      configuration directive.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-D</td>
+	  <td align="left" class="code"><a name="--no-dates">--no-dates</a></td>
+          <td>Some RSS feeds or the individual items within each feed
+	      contain dates (usually corresponding to the publication
+	      dates for the feed or item). If this option is specified,
+	      <i>curn</i> will not display those dates. Also see the
+	      <span class="code">-d</span> option.
+	      This option overrides any
+	      <a href="#Cfg_ShowDates" class="code">ShowDates</a>
+	      setting in the configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-d</td>
+	  <td align="left" class="code"><a name="--show-dates">--show-dates</a></td>
+          <td>Display any dates founds in the RSS feeds or items.
+	      Also see the <span class="code">-D</span> option.
+	      This option overrides any
+	      <a href="#Cfg_ShowDates" class="code">ShowDates</a>
+	      setting in the configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left">&nbsp;</td>
+	  <td> class="code">--logging</td>
+          <td>Enable logging via the
+	      <a href="http://jakarta.apache.org/commones/logging/">Jakarta Commons Logging API</a>.
+	      Depending on the underlying logging technology, you will
+	      probably also have to specify a configuration file via a
+	      <span class="code">-D</span> parameter to the
+	      <span class="code">java</span> command. For instance, if you're
+	      using Apache's
+	      <a href="http://logging.apache.org/log4j/docs/">Log4J</a> logging
+	      API, you'll have to specify the path to a valid Log4J
+	      configuration file, e.g.,
+	      <blockquote><pre>java -Dlog4j.configuration=file:///tmp/log4j.properties org.clapper.curn.curn --logging ...</pre></blockquote>
+	  </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-Q</td>
+	  <td align="left" class="code"><a name="--no-quiet">--no-quiet</a></td>
+          <td>Normally, if an RSS feed contains no new items,
+	      most <i>curn</i> output handlers display the site's name and
+	      URL, followed by something like "No new items." Similarly, if
+	      <i>curn</i> can't contact a feed site, or if the site's XML
+	      is unparseable, <i>curn</i> displays an error message. This
+	      option tells <i>curn</i> to silently ignore sites with no data
+	      or bad XML.
+	      Also see the <a href="#--quiet">-q</a> option.
+	      This option overrides any
+	      <a href="#Cfg_Quiet" class="code">Quiet</a>
+	      setting in the configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-q</td>
+	  <td align="left" class="code"><a name="--quiet">--quiet</a></td>
+          <td>Unconditionally enable quiet mode, overriding any
+	      <a href="#Cfg_Quiet" class="code">Quiet</a>
+	      setting in the configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-R</td>
+	  <td align="left" class="code"><a name="--no-rss-version">--no-rss-version</a></td>
+          <td>Do not display the RSS version for each feed.
+	      Also see the <span class="code">-r</span> option.
+	      This option overrides any <a href="#Cfg_ShowRSSVersion" class="code">ShowRSSVersion</a> setting in the
+	      configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-r</td>
+	  <td align="left" class="code"><a name="--rss-version">--rss-version</a></td>
+          <td>Display the RSS version for each feed.
+	      Also see the <span class="code">-r</span> option.
+	      This option overrides any <a href="#Cfg_ShowRSSVersion" class="code">ShowRSSVersion</a> setting in the
+	      configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-t</td>
+	  <td align="left" class="code">--time &lt;time&gt;</td>
+          <td><p>For the purposes of cache expiration, pretend the current time
+	      is &lt;time&gt;, instead of the wall clock time. &lt;time&gt;
+	      may be specified in one of the following formats:</p>
+
+	      <blockquote>
+	      <p>2004/07/22 09:37:29 AM<br>
+	      2004/07/22 09:37:29<br>
+	      2004/07/22 09:37 AM<br>
+	      2004/07/22 09:37<br>
+	      2004/07/22 9:37 AM<br>
+	      2004/07/22 9:37<br>
+	      2004/07/22 09 AM<br>
+	      2004/07/22 9 AM<br>
+	      2004/07/22<br>
+	      04/07/22<br>
+	      09:37:29 AM<br>
+	      09:37:29<br>
+	      09:37 AM<br>
+	      09:37<br>
+	      9:37 AM<br>
+	      9:37<br>
+	      09 AM<br>
+	      9 AM</p>
+
+	      <p>This option is useful primarily for debugging. Before reading
+	      the RSS feeds, <i>curn</i> first loads its cache and prunes any
+	      cache entries that are out of date. When pruning
+	      its cache of out-of-date items, or when loading cache items,
+	      <i>curn</i> will behave as if the current time is the specified
+	      time.</p>
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-u</td>
+	  <td align="left" class="code"><a name="--no-update">--no-update</a></td>
+          <td>Load (and prune) the cache file before processing the RSS feeds,
+	      but do not save the modified in-memory cache back to disk. Useful
+	      primarily for debugging.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="evenRow">
+	  <td align="left" class="code">-Z</td>
+	  <td align="left" class="code"><a name="--no-gzip">--no-gzip</a></td>
+          <td>Do not ask remote HTTP servers to <i>gzip</i> their content
+	      before sending it.
+	      By default, <i>curn</i> requests that XML feeds from HTTP
+	      servers be <i>gzipped</i>, to save network bandwidth; since XML
+	      is text, it usually compresses quite nicely.
+	      (Note, however, that HTTP servers are not obligated to honor
+	      a request to <i>gzip</i> the feed.)
+	      This behavior can be disabled with the
+	      <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
+	      configuration setting or the
+	      <span class="code">-Z</span> command-line options.
+	      This option overrides any
+	      <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
+	      configuration setting.
+	      Also see the <a href="#--gzip" class="code">-z</a> option.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-z</td>
+	  <td align="left" class="code"><a name="--gzip">--gzip</a></td>
+          <td>Ask remote HTTP servers to <i>gzip</i> their content before
+	      sending it.
+	      This option overrides any
+	      <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
+	      configuration setting.
+	      Also see the <a href="#--no-gzip" class="code">-Z</a>
+	  </td>
+	</tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h3><a name="CommandLineParameters">Command Line Parameters</a></h3>
+
+<p>A list of <i>curn</i>'s positional parameters follows.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="85%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="4" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="top">
+	  <th class="thvis" align="center" colspan="3">P&nbsp;A&nbsp;R&nbsp;A&nbsp;M&nbsp;E&nbsp;T&nbsp;E&nbsp;R&nbsp;S&nbsp;</th>
+        </tr>
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Positional Parameter</th>
+	  <th class="thvis" align="left">Explanation</th>
+        </tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">config</td>
+          <td>The path or URL to the <i>curn</i>
+	      <a href="#ConfigFile">configuration file</a>. This parameter
+	      is required.
+	  </td>
+        </tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code"><a name="Param_EmailAddress">emailAddress</a></td>
+          <td><p>One or more email addresses to receive the output.
+	      This parameter is optional and may be specified multiple times.
+	      If any email addresses are present on the command line, then
+	      <i>curn</i> constructs a MIME multipart/alternative email
+	      message<a href="#Note1">[1]</a>, attaching the output from
+	      each configured output handler as a separate
+	      multipart/alternative attachment. (<i>curn</i> assumes that
+	      each output handler is generating an alternate form of the
+	      same information.) Output handlers that don't generate output
+	      are skipped. If none of the configured output handlers
+	      generate any output, then <i>curn</i> doesn't send an email
+	      message.</p>
+
+	      <p>If no email addresses are present on the command line, then
+	      <i>curn</i> simply takes the output from the first output handler
+	      that produces output and displays it on standard output.</p>
+
+	      <p>Also see the
+	      <a href="#Cfg_SMTPHost" class="code">SMTPHost</a>,
+	      <a href="#Cfg_DefaultMailFrom" class="code">MailFrom</a>,
+	      and <a href="#Cfg_MailSubject" class="code">MailSubject</a>,
+	      configuration parameters.	      
+	  </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="ConfigFile">The <i>curn</i> Configuration File</a></h2>
+
+<p><i>curn's</i> configuration file controls all aspects of <i>curn</i>'s
+behavior. The configuration file contains parameters that control <i>curn</i>'s
+behavior, the output handlers, and the individual RSS feed sites. This
+section first describes the overall configuration file syntax, and then
+describes each <i>curn</i> configuration item in detail.</p>
+
+<p>You can view a sample <i>curn</i> configuration file by following
+<a href="sample.cfg">this link</a>.</p>
+
+<h3><a name="ConfigFileSyntax">Configuration File Syntax</a></h3>
+
+<p><i>curn</i>'s configuration file is a simple text file. It resembles
+a standard Java properties file, but it is broken into individual sections,
+each of which has its own variable namespace. At a glance, the configuration
+file is reminiscent of a Windows .INI file, but there are quite a few
+differences.<a href="#Note2">[2]</a>.</p>
+
+<p>Like a .INI file, each section in the configuration file consists of
+a name surrounded by brackets. Each section contains variable assignments;
+the variable assignment syntax is similar to that of a Java properties file.
+For example:</p>
+
+<blockquote><pre>
+[curn]
+CacheFile: /home/bmc/.curn/cache
+DaysToCache: 30
+ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
+...
+</pre></blockquote>
+
+<h4><a name="CfgSectionNameSyntax">Section Name Syntax</a></h4>
+
+<p>There can be any amount of whitespace before and after the brackets in a
+section name; the whitespace is ignored. That is.
+"<span class="code">[curn]</span>",
+"<span class="code">[  curn]</span>" and
+"<span class="code">[   curn   ]</span>" all specify a section named
+"curn".</p>
+
+<h4><a name="CfgVariableNameSyntax">Variable Name Syntax</a></h4>
+
+<p>Each section contains zero or more variable settings. Similar to a Java
+properties file, the variables are specified as name/value pairs, separated
+by an equals sign ("=") or a colon (":"). Variable names are case-sensitive
+and mayu contain alphanumerics and periods. Variable values may contain
+anything at all. The parser ignores whitespace on either side of the "=" or
+":"; that is, leading whitespace in the value is skipped. The way to
+include leading whitespace in a value is escape the whitespace characters
+with backslashes. (See below).</p>
+
+<h4><a name="CfgContinuationLines"></a></h4>
+
+<p>Variable definitions may span multiple lines; each line to be continued
+must end with a backslash ("\") character, which escapes the meaning of the
+newline, causing it to be treated like a space character. The following
+line is treated as a logical continuation of the first line; however, any
+leading whitespace is removed from continued lines. For example, the
+following four variable assignments all have the same value:</p>
+
+<blockquote><pre>
+[test]
+a: one two three
+b:            one two three
+c: one two \
+three
+d:        one \
+two \
+three
+</pre></blockquote>
+
+<p>Because leading whitespace is skipped, all four variables have the
+value "one two three".</p>
+
+<p>Only variable definition lines may be continued. Section header
+lines, comment lines (see below) and include directives (see below)
+cannot span multiple lines.</p>
+
+<h4><a name="CfgMetacharacters">Metacharacter Expansion</a></h4>
+
+<p>Within a variable's value, Java-style ASCII escape sequences
+<span class="code">\t</span>, <span class="code">\n</span>,
+<span class="code">\r</span>, <span class="code">\\</span>,
+<span class="code">\"</span>, <span class="code">\'</span>,
+<span class="code">\&nbsp;</span> (a backslash and a space), and
+<span class="code">\u</span><i>xxxx</i> are recognized and converted to
+single characters. Note that metacharacter expansion is performed
+<i>before</i> variable substitution.</p>
+
+<h4><a name="CfgVariableSubst">Variable Substitution</a></h4>
+
+<p>A variable value can interpolate the values of other variables, using a
+variable substitution syntax. The general form of a variable reference is
+<span class="code">${sectionName:varName}</span>.
+<span class="code">sectionName</span> is the name of the section containing the
+variable to substitute; if omitted, it defaults to the current section.
+<span class="code">varName</span> is the name of the variable to
+substitute. If the variable doesn't exist, or has no value, an empty string
+is substituted.</p>
+
+<p>The special section "system" is reserved. It doesn't actually exist in
+the configuration; however, you can refer to it during variable
+substitution to pull in values from Java's
+<span class="code">System.properties</span> class.</p>
+
+<p>The special section "program" is also reserved. Like "system", "program"
+doesn't really exist. It's a placeholder for various special variables
+provided by the <tt>Configuration</tt> class at runtime. Those variables
+are:</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="70%">
+  <tr>
+    <td>
+      <table bgcolor="#ffffff" border="0" cellpadding="4" cellspacing="0" width="100%" align="left">
+
+        <tr valign="bottom">
+          <th class="thvis" align="left">"<span class="code">program</span>" Section Variable</th>
+	  <th class="thvis" align="left">Explanation</th>
+        </tr>
+
+	<tr class="oddrow" valign="top">
+	  <td align="left" class="code">cwd</td>
+	  <td align="left">The program's current working directory. Thus,
+	    <span class="code">${program:cwd}</span> will substitute the
+	    current working directory, with an appropriate path separator for
+	    the host operating system (e.g., "\" for Windows, "/" for Unix.)
+          </td>
+        </tr>
+
+        <tr class="evenrow" valign="top">
+          <td align="left" class="code">cwdURL</td>
+          <td align="left">The program's current working directory, as a
+	    <span class="code">file</span> URL, without the trailing "/".
+	    Useful when you need to create a URL reference to something
+	    relative to the current directory. This is especially helpful
+	    on Windows, where
+	    <blockquote><pre>file://${program:cwd}/something.txt</pre></blockquote>
+	    produces an invalid URL, with a mixture of backslashes and
+	    forward slashes.  By contrast,
+	    <blockquote><pre>${program:cwdURL}/something.txt</pre></blockquote>
+	    always produces a valid URL, regardless of the underlying host
+	    operating system.
+	  </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<p>For example:</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="70%">
+  <tr>
+    <td>
+      <table bgcolor="#ffffff" border="0" cellpadding="4" cellspacing="0" width="100%" align="left">
+
+        <tr valign="bottom">
+          <th class="thvis" align="left">Variable Reference</th>
+	  <th class="thvis" align="left">Explanation</th>
+	  <th class="thvis" align="left">Sample</th>
+        </tr>
+
+	<tr class="oddrow" valign="top">
+	  <td align="left" class="code">${system:user.home}</td>
+	  <td align="left">Substitutes the value of the system property
+	    "<span class="code">user.home</span>" (usually set to the current
+	    user's home directory).
+          </td>
+	  <td align="left">
+	  <pre>[curn]
+myCurnDir = <b>${system:user.home}</b>/.curn</pre>
+	  </td>
+        </tr>
+
+        <tr class="evenrow" valign="top">
+          <td align="left" class="code">${curn:myCurnDir}</td>
+          <td align="left">Substitutes the value of variable
+	    "<span class="code">myCurnDir</span>" from section the
+	    <span class="code">[curn]</span> section.</td>
+          <td><pre>[Feed_Wired]
+URL: http://www.wired.com/news_drop/netcenter/netcenter.rdf
+SaveAs: <b>${curn:myCurnDir}/feeds/wired.rdf</b></pre>
+	  </td>
+        </tr>
+
+        <tr class="oddrow" valign="top">
+          <td align="left" class="code">${myCurnDir}</td>
+          <td align="left">Substitutes the value of variable
+	    "<span class="code">myCurnDir</span>" from the current section.
+	  </td>
+	  <td><pre>[curn]
+myCurnDir = ${system:user.home}/.curn
+CacheFile = <b>${myCurnDir}</b>/cache</pre>
+          </td>
+	</tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h4><a name="CfgIncludes">Includes</a></h4>
+
+<p>A special <i>include</i> directive permits inline inclusion of another
+configuration file. The include directive takes two forms:
+
+<blockquote><pre>
+%include "path"
+%include "URL"
+</pre></blockquote>
+
+<p>For example:</p>
+
+<blockquote><pre>
+%include "/home/bmc/mytools/common.cfg"
+%include "file:///home/bmc/mytools/common.cfg"
+</pre></blockquote>
+
+<p>The included file may contain any content that is valid for this parser.
+It may contain just variable definitions (i.e., the contents of a section,
+without the section header), or it may contain a complete configuration
+file, with individual sections. Since the parser recognizes a variable
+syntax that is essentially identical to Java's properties file syntax, it's
+also legal to include a properties file, provided it's included within a
+valid section.</p>
+
+<p>Attempting to include a file from itself, either directly or indirectly,
+will cause the parser to throw an exception.</p>
+
+<h4><a name="CfgComments">Comments and Blank Lines</a></h4>
+
+<p>A comment line is a one whose first non-whitespace character is a "#" or
+a "!". This comment syntax is identical to the one supported by a Java
+properties file. A blank line is a line containing no content, or one
+containing only whitespace. Blank lines and comments are ignored. For
+example:</p>
+
+<blockquote><pre>
+[curn]
+
+# ---------------------------------------------------------------------------
+# CacheFile: The full path to the file in which curn should cache URLs.
+#            curn uses the cache file to keep track of which URLs it
+#            has already received and displayed, and when it received them.
+#            Under normal operation, curn won't display a URL it has
+#            already displayed and cached.
+#
+#            This path may contain the ~ metacharacter, to denote the
+#	     invoking user's home directory.
+#
+#            The use of a cache can be disabled by omitting this parameter.
+#	     Use the "NoCacheUpdate" parameter to tell curn to read,
+#	     but not update, the cache.
+#
+# See also: Configuration parameter "NoCacheUpdate" 
+#           Command line parameter -C, --nocache
+# 
+# OPTIONAL. Default: None
+
+CacheFile: test.cache
+</pre></blockquote>
+
+
+<h3><a name="CurnConfigFile">Overview of <i>curn's</i> Configuration File</a></h3>
+
+<p><i>curn</i>'s configuration file has three kinds of sections:</p>
+
+<ul>
+  <li>The main section, named "curn", contains global parameters. Some of
+      these parameters can be overridden on the command-line. Others can
+      be overridden on a per-feed basis.
+
+  <li>Output handler sections, each specifying an output handler that will
+      process parsed feed data and (presumably) produce output.
+      There can be any number of these sections.
+
+  <li>Feed sections, each specifying a single RSS feed to be downloaded,
+      parsed and processed.
+</ul>
+
+<p>All other sections in the configuration file are parsed (and subject to
+syntactic constraints), but otherwise ignored. Thus, it's perfectly legal
+to have a separate section, e.g., "<span class="code">[var]</span>", where
+you define variables that exist solely to be substituted into other
+sections.</p>
+
+<p>Any boolean parameter (i.e., one documented as taking a "true" or "false"
+value) can also take a value of "0" (false), "1" (true), "no" (false) or
+"yes" (true).</p>
+
+<h3><a name="CfgCurnSection">The <span class="code">[curn]</span> Section</a></h3>
+
+<p>This section contains variable global parameters. Each is described
+in detail, below.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="85%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="8" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Variable</th>
+	  <th class="thvis" align="left">Argument type</th>
+	  <th class="thvis" align="left">Description</th>
+	  <th class="thvis" align="left">Required?</th>
+	  <th class="thvis" align="left">Default value</th>
+	  <th class="thvis" align="left">See also</th>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_CacheFile">CacheFile</a></td>
+          <td align="left">File name or path name</td>
+	  <td align="left"><p>The full path to the file in which <i>curn</i>
+	    should cache feed item data. <i>curn</i> uses the cache file to
+	    keep track of which feed items it has already received and
+	    displayed, and when it received them. Under normal operation,
+	    <i>curn</i> won't display a feed item it has already displayed
+	    and cached.</p>
+
+            <p>The use of a cache can be disabled by omitting this parameter.
+            Use the
+	    <a href="#Cfg_NoCacheUpdate" class="code">NoCacheUpdate</a>
+	    parameter, or the
+	    <a href="#--no-update" class="code">--no-update</a>
+	    command line option, to tell <i>curn</i> to read, but not update,
+	    the cache.</p>
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">None. (If not specified, no cache is used.)</td>
+	  <td align="left">
+	    <a href="#Cfg_NoCacheUpdate" class="code">NoCacheUpdate</a><br>
+	    <a href="#--no-cache" class="code">--no-cache</a><br>
+	    <a href="#--no-update" class="code">--no-update</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_NoCacheUpdate">NoCacheUpdate</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">If set to "true" (and if a cache file is specified),
+            this parameter tells curn to read the cache file and honor its
+	    contents, but not to save the modified in-memory cache back to
+	    disk.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	  <td align="left">
+	    <a href="#Cfg_CacheFile" class="code">CacheFile</a><br>
+	    <a href="#--no-update" class="code">--no-update</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Curn_DaysToCache">DaysToCache</a></td>
+          <td align="left">Integer</td>
+	  <td align="left">
+	    Default maximum number of days to cache an already-read item.
+            This parameter is used when the configuration section for a
+            section for a particular site lacks its own
+	    <a href="#Feed_DaysToCache" class="code">DaysToCache</a>
+            value. Items older than this many days are tossed from the
+            cache when it's read, which means <i>curn</i> forgets that it saw
+            them before. A value of 0 renders the cache is essentially
+	    useless (i.e., 0 ensures that <i>curn</i> always forgets items
+	    that are cached)
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">5 (days)</td>
+	  <td align="left"><a href="#Feed_DaysToCache" class="code">DaysToCache</a> for an individual feed</td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_Quiet">Quiet</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    Normally, if an RSS feed contains no new items, most
+	    <i>curn</i> output handlers display the site's name and URL,
+	    followed by something like "No new items." Similarly, if
+	    <i>curn</i> can't contact a feed site, or if the site's XML is
+	    unparseable, <i>curn</i> displays an error message. This option
+	    tells <i>curn</i> to silently ignore sites with no data or bad
+	    XML. Setting <span class="code">Quiet</span> to "true" tells
+	    <i>curn</i> to suppress both of the above displays.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	  <td align="left">
+            <a href="#--quiet" class="code">--quiet</a><br>
+            <a href="#--no-quiet" class="code">--no-quiet</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_SummaryOnly">SummaryOnly</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+            Some RSS feeds provide a description for each item, in addition
+            to the (brief) title. Setting <span class="code">SummaryOnly</span>
+	    to "true" suppresses display of the description. This parameter
+            can be overridden on a per-site basis. This global value sets
+            the default value.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</span></td>
+	  <td align="left"></td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_ShowAuthors">ShowAuthors</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    If set to "true", this configuration item instructs <i>curn</i>
+	    to display author version for each feed item, if available.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</span></td>
+	  <td align="left">
+	    <a href="#--no-authors" class="code">--no-authors</a><br>
+	    <a href="#--show-authors" class="code">--show-authors</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_ShowRSSVersion">ShowRSSVersion</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">Display the RSS version for each feed.</td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</span></td>
+	  <td align="left">
+	    <a href="#--no-rss-version" class="code">--no-rss-version</a><br>
+	    <a href="#--rss-version" class="code">--rss-version</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_ShowDates">ShowDates</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    Some RSS feeds or the individual items within each feed
+	    contain dates (usually corresponding to the publication
+	    dates for the feed or item). If this option is set to "true",
+	    then <i>curn</i> will display the date for each item that
+	    provides a date.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	  <td align="left">
+            <a href="#--no-dates" class="code">--no-dates</a><br>
+            <a href="#--show-dates" class="code">--show-dates</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_ParserClass">ParserClass</a></td>
+          <td align="left">String</td>
+	  <td align="left">
+            <p>The full name of the underlying RSS parser class to be used.
+            This class must implement the
+	    <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+            interface. It can be a first-class parser of its own, or
+            it can be nothing more than an adapter for a third party
+            RSS parser class.</p>
+
+            <p>Two parsers are bundled with <i>curn</i>:</p>
+
+            <dl>
+	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
+
+	      <dd>A minimal SAX-based RSS parser that handles files in
+		  <a href="http://www.atomenabled.org/developers/">Atom</a>
+		  format (0.3) and RSS formats
+		  <a href="http://backend.userland.com/rss091">0.91</a>, 0.92,
+		  <a href="http://web.resource.org/rss/1.0/">1.0</a> and
+		  <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>.
+		  This parser doesn't store all the  the possible RSS items;
+		  it stores just items that <i>curn</i> requires (plus a few
+		  more). Thus, it is unsuitable for use as a general-purpose
+		  RSS parser (though it's perfectly suited for use in
+		  <i>curn</i>).
+
+	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
+		  
+	      <dd>An adapter class that makes the
+		  <a href="http://informa.sourceforge.net/">Informa RSS parser</a>
+		  work with <i>curn</i>.
+		  (The Informa adapter is only available if the appropriate
+		  Informa jar files are in <i>curn</i>'s class path.)
+
+	    </dl>
+
+            <p>Any class that implements
+	    <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+            may be used as a value for <span class="code">ParserClass</span>.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</td>
+	  <td align="left"></td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_GetGzippedFeeds">GetGzippedFeeds</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    If set to "true", this parameter directs <i>curn</i> to use the
+	    "<span class="code">Accept-Encoding:&nbsp;gzip</span>"
+	    HTTP header when retrieving an RSS feed from an HTTP server.
+	    Since RSS feeds are XML, they typically compress well;
+	    retrieving gzipped data, rather than the uncompressed HTML, can
+	    save a significant amount of time and network bandwidth. (Note,
+	    however, that HTTP servers are not obligated to honor a request
+	    to <i>gzip</i> the feed.)
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">true</td>
+	  <td align="left">
+	    <a href="#--gzip" class="code">--gzip</a><br>
+	    <a href="#--no-gzip" class="code">--no-gzip</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_SMTPHost">SMTPHost</a></td>
+	  <td align="left">
+	    The SMTP host to use when mailing output. This parameter is only
+	    used when <a href="#Param_EmailAddress">email addresses</a>
+	    are specified on <i>curn</i>'s command line.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">localhost</span></td>
+	  <td align="left">
+	    <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
+	    <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
+            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+          </td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Cfg_MailFrom">MailFrom</a></td>
+	  <td align="left">
+	    The email address to use as the sender, when mailing output.
+	    The address can be a full RFC 2822-compliant address (e.g.,
+            "Joe&nbsp;Blow&nbsp;&lt;joe@example.org&gt;") or just a simple address
+	    (e.g., "joe@example.org"). This parameter is only
+	    used when <a href="#Param_EmailAddress">email addresses</a>
+	    are specified on <i>curn</i>'s command line.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">
+	    <i>curn</i> constructs its own "from" address from the user name
+	    associated with running process and the current host name.
+          </td>
+	  <td align="left">
+	    <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
+	    <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
+            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+          </td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_MailSubject">MailSubject</a></td>
+	  <td align="left">
+	    The subject line to use when mailing output. This parameter is only
+	    used when <a href="#Param_EmailAddress">email addresses</a>
+	    are specified on <i>curn</i>'s command line.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">"<span class="code">curn output</span>"</td>
+	  <td align="left">
+	    <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
+	    <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
+            <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!--------------------------------------------------------------------------->
+<h3><a name="CfgRSSFeeds">Configuring the RSS Feeds</a></h3>
+
+<p>The <i>curn</i> configuration file also contains a list of RSS feeds to
+be polled. Each feed must be specified in its own section in the
+configuration file. The name of the section must start with the string
+"Feed". If more than one feed is present, then each section name must also
+have additional characters, to make the section name unique. The following
+section names are all valid for RSS feed sections.</p>
+
+<ul>
+  <li><span class="code">Feed</span> (if there's only one configured feed)
+  <li><span class="code">Feed1</span>
+  <li><span class="code">Feed_0</span>
+  <li><span class="code">Feed_Wired</span>
+  <li><span class="code">Feed.NYTimes.Top</span>
+</ul>
+
+<p>Each feed section supports the following parameters.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="85%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="8" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Variable</th>
+	  <th class="thvis" align="left">Argument type</th>
+	  <th class="thvis" align="left">Description</th>
+	  <th class="thvis" align="left">Required?</th>
+	  <th class="thvis" align="left">Default Value</th>
+        </tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">URL</td>
+          <td align="left">String</td>
+	  <td align="left">The fully-qualified URL for the feed. For local
+	  files, use a "<span class="code">file:</span>" URL.
+	  </td>
+	  <td align="left">Yes</td>
+	  <td align="left">&nbsp;</td>
+	</tr>
+
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Feed_DaysToCache">DaysToCache</a></td>
+          <td align="left">Integer</td>
+	  <td align="left">
+	    Maximum number of days to cache an already-read item for this
+	    feed. This value locally overrides the global
+	    <a href="#Curn_DaysToCache" class="code">DaysToCache</a> default
+	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section,
+            Items older than this many days are tossed from the
+            cache when it's read, which means <i>curn</i> forgets that it saw
+            them before. A value of 0 renders the cache is essentially useless
+	    for this feed (i.e., 0 ensures that <i>curn</i> always forgets
+            items that are cached for this feed).
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">
+	    The value of the global <span class="code">DaysToCache</span>
+	    parameter in the <span class="code">[curn]</span> section.</td>
+        </tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">Disabled</td>
+          <td align="left">Boolean</td>
+	  <td align="left">If "true", then the feed is skipped.
+	  If "false", the feed is processed. This variable
+	  provides a simple way to disable a feed without having
+	  to comment its entire section out.
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Feed_EditItemURL">EditItemURL</a></td>
+          <td align="left">String</td>
+	  <td align="left">
+	      <p>Apply the specified regular expression edit to each of the 
+              site's RSS item URLs. The value for this option consists of
+              a Perl 5-style substitution applied to the URL. For example:</p>
+
+	      <p>Remove all the parameters from the URL:</p>
+
+	      <blockquote><pre>s/?.*$//</pre></blockquote>
+
+	      <p>(The <a href="#Feed_PruneURLs" class="code">PruneURLs</a>
+	      parameter provides a simpler mechanism for this common
+	      operation.)</p>
+
+              <p>Remove a "redirect" CGI from a site whose URLs look
+                 like: <span class="code">http://www.example.com/redir.cgi?http://...</span></p>
+
+	      <blockquote><pre>s+http://www.example.com/cgi-bin/redir.cgi?++</pre></blockquote>
+
+	      <p>The substitution syntax does support perl's $1, $2, etc.,
+              grouping syntax. However, because the "$" character also
+              introduces a configuration file variable reference, you must
+              escape the "$" to use it in a regular expression. For
+	      instance:</p>
+
+	      <blockquote><pre>s/^([a-z]+)foo(.*)$/\$1bar\$2/</pre></blockquote>
+
+              <p>You'll also have to escape any backslashes in the string.
+              Because of double-parsing (by the configuration file parser
+              and the Perl 5 regular expression engine), if you want a
+              literal backslash in your expression, you must supply 4
+              of them (i.e., double-escape it). e.g., To get the equivalent
+              of Perl 5 expression.</p>
+
+	      <blockquote><pre>s/^\*.*$//</pre></blockquote>
+
+              <p>you must specify</p>
+
+	      <blockquote><pre>s/^\\\\*.*\$//</pre></blockquote>
+
+	      <p>(Yes, I know this is ugly. I'm working on a way around it.
+	      The quadruple-backslash requirement may be changed in a future
+	      release of <i>curn</i>.)</p>
+
+              <p>Hint: When <a href="#--logging">logging is enabled</a>,
+	      <i>curn</i> will log the parsed expression at the "debug"
+	      log level.</p>
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left">None</td>
+	</tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">PruneURLs</td>
+          <td align="left">Boolean</td>
+	  <td align="left">Specifies a string to be used as the site's
+	    title, instead of the title supplied in the RSS XML. Useful
+	    when the real site-supplied title is not suitable.
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left">None</td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code">SaveAs</td>
+          <td align="left">File name or path name</td>
+	  <td align="left">If set, this parameter specifies the path to
+	    a file where <i>curn</i> should save the raw XML contents of
+	    the feed, whenever it downloads the feed. This can be useful
+	    if you have a master version of <i>curn</i> that downloads
+	    a bunch of feeds, with multiple slave versions of <i>curn</i>
+            that then run against the downloaded files. (See
+            <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
+	    detailed discussion of this tactic.)
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left">None</td>
+	</tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">TitleOverride</td>
+          <td align="left">String</td>
+	  <td align="left">Specifies a string to be used as the site's
+	    title, instead of the title supplied in the RSS XML. Useful
+	    when the real site-supplied title is not suitable.
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left">None</td>
+	</tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!--------------------------------------------------------------------------->
+<h3><a name="CfgOutputHandlers">Configuring Output Handlers</a></h3>
+
+<h4><a name="CfgOutputHandlerSections">Output Handler Sections</a></h4>
+
+<p>As <i>curn</i> processes each RSS feed, it parses the XML and loads the
+new items into internal data structures. When it has finished processing
+the XML, it hands the parsed data structures to one or more output
+handlers. Output handlers are so called because they generally produce output
+that's to be displayed or emailed to the user&#8212;generally, but not
+always. An output handler may choose to do nothing; the
+<span class="code">NullOutputHandler</span> class does just that. (See
+below.) Or, the class may choose to convert the internal data structures to
+readable output, which it publishes somewhere (e.g., via a network
+connection to an HTTP server).</p>
+
+<p>Each output handler is specified in its own section in the configuration
+file. The name of the section must start with the string "OutputHandler".
+If more than one output handler is present, then each section name must also
+have additional characters, to make the section name unique. The following
+section names are all valid for output handler sections.</p>
+
+<ul>
+  <li><span class="code">OutputHandler</span> (if there's only one output
+      handler)
+  <li><span class="code">OutputHandlerHTML</span>
+  <li><span class="code">OutputHandlerText</span>
+  <li><span class="code">OutputHandler1</span>
+  <li><span class="code">OutputHandler_asdf</span>
+</ul>
+
+<p>All output handler sections take two variables. In addition, individual
+output handlers can require configuration items of their own. The two
+variables common to all output handlers are described below.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="85%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="8" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Variable</th>
+	  <th class="thvis" align="left">Argument type</th>
+	  <th class="thvis" align="left">Description</th>
+	  <th class="thvis" align="left">Required?</th>
+	  <th class="thvis" align="left">Default Value</th>
+        </tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">Class</td>
+	  <td>String</td>
+	  <td align="left">Identifies Java class that implements the output
+	  handler. (The class must implement the
+	  <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+	  interface. See
+	  <a href="#NewOutputHandler">Writing Your Own Output Handler</a>
+	  for details.) 
+	  </td>
+	  <td align="left">Yes</td>
+	  <td align="left">&nbsp;</td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code">Disabled</td>
+	  <td>Boolean</td>
+	  <td align="left">If "true", the output handler is skipped.
+	  If "false", the output handler is processed. This variable
+	  provides a simple way to disable an output handler without having
+	  to comment its entire section out.
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	</tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+
+<p>For example:</p>
+
+<blockquote><pre>[OutputHandler]
+Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+Disabled: false</pre></blockquote>
+
+<h4><a name="CfgPredefinedOutputHandlers">Predefined Output Handlers</a></h4>
+
+<p><i>curn</i> comes bundled with 4 built-in output handlers.</p>
+
+<table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
+       align="center" width="90%">
+  <tr>
+    <td>
+      <table border="0" bgcolor="#ffffff" cellpadding="8" align="center"
+	     width="100%" cellspacing="0">
+
+	<tr valign="bottom">
+	  <th class="thvis" align="left">Class</th>
+	  <th class="thvis" align="left">Description</th>
+	  <th class="thvis" align="left">Additional Configuration Parameters
+	  (not counting <span class="code">Class</span> and
+          <span class="code">Disabled</span>)</th>
+        </tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">
+	  org.clapper.curn.htmloutput.HTMLOutputHandler
+          </td>
+	  <td align="left">
+	  <p>Produces an HTML description of the new RSS items. You can find a
+	  sample of its output <a href="output/HTMLOutput.html">here</a>.</p>
+
+	  <p>Note: This class is only available if
+	  <a href="http://xmlc.objectweb.org/">XMLC</a> is installed
+	  and available to <i>curn</i>. See <i>curn's</i>
+	  <a href="http://www.clapper.org/software/java/curn/index.html#Installation">installation instructions</a>
+	  for details.</p>
+	  </td>
+	  <td align="left">
+	    <table border="1" cellpadding="4" align="left" width="100%"
+	           cellspacing="0">
+	      <tr valign="bottom">
+		<th align="left">Variable</th>
+		<th align="left">Argument type</th>
+		<th align="left">Explanation</th>
+		<th align="left">Required?</th>
+		<th align="left">Default value</th>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveAs</td>
+	        <td align="left">File name or path name</td>
+	        <td align="left">Save a copy of the generated HTML to the
+	        specified file. The argument</td>
+	        <td align="left">No</td>
+		<td align="left">None (i.e., no copy is saved)
+	        </td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveOnly</td>
+	        <td align="left">Boolean</td>
+	        <td align="left">If "true" and if
+	        <span class="code">SaveAs</span> is defined, then save a copy
+	        of the generated HTML, but don't make it available to the user.
+	        (i.e., Don't display it on standard output, and don't email it.)
+	        </td>
+	        <td align="left">No</td>
+		<td align="left" class="code">false</td>
+	      </tr>
+	    </table>
+	  </td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code">
+	  org.clapper.curn.TextOutputHandler
+          </td>
+	  <td align="left">
+	  <p>Produces a plain text description of the new RSS items. You can
+	  find a sample of its output
+	  <a href="output/TextOutput.txt">here</a>.</p>
+
+	  </td>
+	  <td align="left">
+	    <table border="1" cellpadding="4" align="left" width="100%"
+                   cellspacing="0">
+	      <tr valign="bottom">
+		<th align="left">Variable</th>
+		<th align="left">Argument type</th>
+		<th align="left">Explanation</th>
+		<th align="left">Required?</th>
+		<th align="left">Default value</th>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveAs</td>
+	        <td align="left">File name or path name</td>
+	        <td align="left">Save a copy of the generated text to the
+	        specified file. The argument</td>
+	        <td align="left">No</td>
+		<td align="left">None (i.e., no copy is saved)
+	        </td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveOnly</td>
+	        <td align="left">Boolean</td>
+	        <td align="left">If "true" and if
+	        <span class="code">SaveAs</span> is defined, then save a copy
+	        of the generated text, but don't make it available to the user.
+	        </td>
+	        <td align="left">No</td>
+		<td align="left" class="code">false</td>
+	      </tr>
+	    </table>
+	  </td>
+	</tr>
+
+        <tr valign="top" class="oddrow">
+	  <td align="left" class="code">
+	  org.clapper.curn.SimpleSummaryOutputHandler
+          </td>
+	  <td align="left">
+	  <p>Produces a plain text summary of the new RSS items. For each
+	  RSS feed that has new items, this output handler shows the feed's
+	  name, its URL, and the number of new items. It does not show the
+	  items themselves.
+	  You can find
+	  a sample of its output <a href="output/SummaryOutput.txt">here</a>.
+	  </p>
+
+	  <p>This handler is especially useful when you want to show the
+	  user a brief summary of the new items, but store the actual output
+	  (via another handler) somewhere else. The handler's
+	  <span class="code">Message</span> parameter allows you to specify
+	  a special text message that will be included in the output. 
+	  </td>
+	  <td align="left">
+	    <table border="1" cellpadding="4" align="left" width="100%"
+                   cellspacing="0">
+	      <tr valign="bottom">
+		<th align="left">Variable</th>
+		<th align="left">Argument type</th>
+		<th align="left">Explanation</th>
+		<th align="left">Required?</th>
+		<th align="left">Default value</th>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveAs</td>
+	        <td align="left">File name or path name</td>
+	        <td align="left">Save a copy of the generated text to the
+	        specified file. The argument</td>
+	        <td align="left">No</td>
+		<td align="left">None (i.e., no copy is saved)
+	        </td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">SaveOnly</td>
+	        <td align="left">Boolean</td>
+	        <td align="left">If "true" and if
+	        <span class="code">SaveAs</span> is defined, then save a copy
+	        of the generated text, but don't make it available to the user.
+	        </td>
+	        <td align="left">No</td>
+		<td align="left" class="code">false</td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">Message</td>
+	        <td align="left">String</td>
+	        <td align="left">Static text that is to be included in the
+	        output. The text appears right after the heading line and
+	        before the actual summary of the RSS feeds. The
+                <a href="output/SummaryOutput.txt">sample output</a> was
+	        created using a <span class="code">Message</span> value that
+	        points to a URL, where (presumably) the output from the
+	        HTML handler has been saved. See 
+                <a href="#CfgOutputHandlerExample3">Example 3</a>, below.
+	        </td>
+	        <td align="left">No</td>
+		<td align="left">Nothing</td>
+	      </tr>
+	    </table>
+	  </td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
+	  <td align="left" class="code">org.clapper.curn.NullOutputHandler
+          </td>
+	  <td align="left">Produces no output at all. This handler is useful
+	  when you simply want <i>curn</i> to update the cache, or when
+	  <i>curn</i> is being used to download new feeds but not convert
+	  them to readable text. (See
+          <a href="#CfgOutputHanderExample4">Example 4</a>, below, and
+          <a href="#Bandwidth">Being Bandwidth Friendly</a>.)
+	  </td>
+	  <td align="left">None</td>
+	</tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h4><a name="CfgOutputHandlerExamples">Examples</a></h4>
+
+<p><a name="CfgOutputHandlerExample1"><span class="exampleHeader">Example 1</span></a>:
+The output handler sections from a <i>curn</i> configuration file that
+produces HTML output. If <i>curn</i> is called with email addresses, the
+HTML output will be mailed to the specified email addresses. The HTML
+output is not saved anywhere.</p>
+
+<blockquote><pre>[OutputHandler]
+Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+</pre></blockquote>
+
+<p><a name="CfgOutputHandlerExample2"><span class="exampleHeader">Example 2</span></a>:
+The output handler sections from a <i>curn</i> configuration file that
+produces HTML output and plain text output. If <i>curn</i> is called with
+email addresses, the text output and the HTML output will be mailed to the
+specified email addresses as "multipart/alternative" attachments. The
+output is not saved anywhere.</p>
+
+<blockquote><pre>[OutputHandlerText]
+Class: org.clapper.curn.TextOutputHandler
+
+[OutputHandlerHTML]
+Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+</pre></blockquote>
+
+<p><a name="CfgOutputHandlerExample3"><span class="exampleHeader">Example 3</span></a>:
+The output handler sections from a <i>curn</i> configuration file that
+produces HTML output to a file (but not to the user), and displays (or emails)
+the user a text summary that contains a link to the HTML file.</p>
+
+<blockquote><pre>[OutputHandlerSummary]
+Class: org.clapper.curn.SimpleSummaryOutputHandler
+# Message assumes that generated HTML is available via the web server running
+# on internal machine "foo", at the specified location.
+Message: See http://foo/rss/news.html
+
+[OutputHandlerHTML]
+Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+# Below path is assumed to correspond to URL http://foo/rss/news.html
+SaveAs: /usr/local/www/htdocs/rss/news.html
+SaveOnly: true
+</pre></blockquote>
+
+<p><a name="CfgOutputHandlerExample4"><span class="exampleHeader">Example 4</span></a>:
+The feed and output handler sections from a <i>curn</i> configuration file that
+retrieves and downloads XML feeds, caching them in a known location, without
+displaying them. (See
+<a href="#Bandwidth">Being Bandwidth Friendly</a> for reasons why you might
+want to do this.)</p>
+
+<blockquote><pre>[vars]
+feedDir: ${system:user.home}/.curn/feeds
+
+[curn]
+...
+
+[OutputHandlerNull]
+Class: org.clapper.curn.NullOutputHandler
+
+[FeedWired]
+URL: http://www.wired.com/news_drop/netcenter/netcenter.rdf
+SaveAs: ${vars:feedDir}/wired.rdf
+
+[Feed_yahoo_top]
+URL: http://rss.news.yahoo.com/rss/topstories
+SaveAs: ${vars:feedDir}/yahoo_top_stories.xml
+
+[Feed_cnn_top]
+URL: http://csociety.purdue.org/~jacoby/XML/CNN_TOP_STORIES.xml
+SaveAs: ${vars:feedDir}/CNN_TOP_STORIES.xml
+</pre></blockquote>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="SchedulingCurn">Having <i>curn</i> Run on a Schedule</a></h2>
+
+<p>You can run <i>curn</i> manually, at the command line, whenever you feel
+like checking your news feeds. However, this is less than useful. The best
+way to run <i>curn</i> to have your computer's background scheduler process
+(e.g., <i>cron</i>(8) on Unix-like systems, or the Windows Scheduler on
+Windows) run <i>curn</i> for you automatically, every so often.</p>
+
+<h3><a name="UsingCron">Running <i>curn</i> from <i>cron</i>(8) on Unix-like Systems</a></h3>
+
+<p>I typically run <i>curn</i> three times a day, via <i>cron</i>,
+on weekdays only, and I have it mail me the output. I use my personal crontab,
+rather than the system-wide <span class="path">/etc/crontab</span> file.
+Here's a sample crontab entry that does this:</p>
+
+<blockquote><pre>0 8,12,16 1,2,3,4,5 * *  java org.clapper.curn.Tool my_address@example.com</pre></blockquote>
+
+<p>Note the inclusion of an email address on the <i>curn</i> command line.
+A seasoned <i>cron</i> user will wonder why this is necessary. After all,
+<i>cron</i> handles emailing output just fine; why not let it do the
+emailing? That's certainly possible. But <i>curn</i> has emailing
+capabilities built into it (primarily for portability), and letting
+<i>curn</i> do the emailing permits me to control things like the
+<a href="#Cfg_MailSubject">email subject</a> from the <i>curn</i>
+configuration file.</p>
+
+<p>Of course, that <i>cron</i> command will fail, unless the classpath is
+set properly. You have several options here:</p>
+
+<ol>
+  <li>Set the <span class="code">CLASSPATH</span> environment variable at
+      the top of the crontab.
+  <li>Pass an explicit <span class="code">-classpath</span> parameter to the
+      <span class="code">java</span> command.
+  <li>Use a front-end <a href="curn_sh.txt">shell script</a> that contains the
+      appropriate <span class="code">CLASSPATH</span> value.
+</ol>
+
+<p>Any of those approaches will work. However, I use a shell script, for a
+couple of reasons:</p>
+
+<ul>
+  <li>Putting the <span class="code">CLASSPATH</span> ugliness in a shell
+      script makes for a cleaner and more readable crontab file.
+  <li>I occasionally invoke <i>curn</i> from the command line.
+      I'd rather type <span class="code">curn</span> than
+      <span class="code">java&nbsp;org.clapper.curn.Tool</span>.
+</ul>
+
+<p>You can find a sample shell script <a href="curn_sh.txt">here</a>. It's a
+trivial matter to customize it for your environment.</p>
+
+<h3><a name="UsingWindowsScheduler">Running <i>curn</i> via the Windows Scheduler</a></h3>
+
+<p>Currently, this task is left as an exercise to the reader. (I don't use
+Windows often enough to play with the scheduler, so I haven't gotten around
+to running <i>curn</i> that way. When I do find the time and inclination to
+experiment with running <i>curn</i> from the Windows Scheduler, I'll update
+this section. Unless, of course, someone else wants to supply the relevant
+details...)
+
+<!--------------------------------------------------------------------------->
+<h2><a name="Bandwidth">Being "Bandwidth Friendly"</a></h2>
+
+<p><i>[more to come]</i></p>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="ExtendingCurn">Extending <i>curn</i></a></h2>
+
+<p><i>curn's</i> processing is split into three phases:</p>
+
+<p>
+<table border="0" width="100%" align="left">
+  <tr valign="top"><td>
+    <table border="0" width="75%" align="left">
+      <tr valign="top">
+        <td nowrap align="right"><b>initialization and configuration</b></td>
+        <td>Read the configuration file (which includes the set RSS feeds,
+	    the output handlers to use, the RSS parser to use, various
+	    cache-control values, and other things), load the on-disk cache
+	    into memory, and initialize various data structures.</td>
+      </tr>
+
+      <tr valign="top">
+        <td nowrap align="right"><b>feed parsing</b></td>
+	<td>Download and parse the various RSS feeds, distill the
+	    information into in-memory data structures, and decide which
+	    ones to display, based on information from the cache.</td>
+      </tr>
+
+      <tr valign="top">
+        <td nowrap align="right"><b>output</b></td>
+	<td>Pass the distilled feed data to the configured output handlers.
+	</td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</p>
+
+<h3><a name="DifferentParser">Using a Different RSS Parser</a></h3>
+
+<p>Suppose you've found (or written) an RSS parser that you prefer to use
+instead of 
+<a href="http://informa.sourceforge.net/">Informa</a> or
+<i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
+
+
+<h3><a name="NewOutputHandler">Writing Your Own Output Handler</a></h3>
+
+<p>Writing a new output handler is reasonably straightforward:</p>
+
+<ul>
+  <li>First, write a Java class the implements the
+      <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+      interface.
+  <li>Compile the class and place the compiled class somewhere in your
+      CLASSPATH.
+  <li>Specify your new output handler in your <i>curn</i>
+      <a href="#ConfigFile">configuration file</a>.
+</ul>
+
+<p><i>[more to come]</i></p>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="AppendixA">Appendix A: Similar Products and Tools</a></h2>
+
+<p>Adam Sampson's <a href="http://offog.org/code/rawdog.html"><i>rawdog</i></a>
+(RSS Aggregator Without Delusions Of Grandeur) is similar in spirit,
+features, and invocation. It's written in Python. Like <i>curn</i>,
+<i>rawdog</i> is intended to be run from a scheduler such as <i>cron</i>.</p>
+
+<!--------------------------------------------------------------------------->
+<h2><a name="EndNotes">End Notes</a></h2>
+
+<table width="100%" border="0" cellpadding="4" cellspacing="0" align="left">
+  <tr valign="top">
+    <td align="left"><a name="Note1">[1]</a></td>
+    <td align="left">
+      <p>Normally, adding attachments to an email message results in a
+      "multipart/mixed" message. According to 
+      <a href="http://www.ietf.org/rfc/rfc1341.txt">RFC 1341</a>, the
+      differences between "multipart/mixed" and "multipart/alternative"
+      messages are:</p>
+      <p>
+        <table border="0">
+          <tr valign="top">
+            <td>multipart/mixed</td>
+            <td>Intended for use when the body parts (i.e., the text and the
+                attachments) are independent and intended to be displayed
+                serially. For example, to send a text message with an
+                attached image, you would use a "multipart/mixed" message.
+          </tr>
+
+          <tr valign="top">
+            <td>multipart/alternative</td>
+            <td>Each of the parts (i.e., the main text part and the
+                attachments) is an alternative version of the same
+                information. The most typical "multipart/alternative"
+                message contains a plain text part (i.e., MIME type
+                "text/plain") and an HTML text part. Both contain the same
+                text, but the HTML part has a "richer" version of it. The
+                recipient's mail client should either display the "best"
+                version of the message, based on the user's environments
+                and preferences; or, it should offer the user a choice of
+                which part to view. A mail reader that's capable of
+                displaying HTML might choose to ignore the plain text part
+                and display only the HTML attachment; by contrast, a mail
+                reader that cannot render HTML might choose to display
+                only the plain text part.</td>
+           </tr>
+        </table>
+      </p>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">[2]</td>
+    <td align="left"><i>curn</i>'s configuration file is parsed by a subclass
+      of the
+      <a href="http://www.clapper.org/software/java/util/javadocs/org/clapper/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
+      class, so it implicitly supports all the features provided by that class.
+    </td>
+  </tr>
+
+</table>
+
+<br clear="all"/>
+
+<hr>
+<p><pre>$Id$</pre></p>
+</body></html>
