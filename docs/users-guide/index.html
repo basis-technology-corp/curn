@@ -1446,7 +1446,7 @@ section names are all valid for RSS feed sections.</p>
 
 	      <p>Remove all the parameters from the URL:</p>
 
-	      <blockquote><pre>s/?.*$//</pre></blockquote>
+	      <blockquote><pre>'s/?.*$//'</pre></blockquote>
 
 	      <p>(The <a href="#Feed_PruneURLs" class="code">PruneURLs</a>
 	      parameter provides a simpler mechanism for this common
@@ -1457,16 +1457,19 @@ section names are all valid for RSS feed sections.</p>
 
 	      <blockquote><pre>s+http://www.example.com/cgi-bin/redir.cgi?++</pre></blockquote>
 
-	      <p>The substitution syntax does support perl's $1, $2, etc.,
+	      <p>The substitution syntax supports perl's $1, $2, etc.,
               grouping syntax. However, because the "$" character also
               introduces a configuration file variable reference, you must
               escape the "$" to use it in a regular expression. For
-	      instance:</p>
+	      instance, use either:</p>
 
-	      <blockquote><pre>s/^([a-z]+)foo(.*)$/\$1bar\$2/</pre></blockquote>
+	      <blockquote><pre>s/^([a-z]+)foo(.*)\$/\$1bar\$2/</pre></blockquote>
+	      <p>or</p>
 
-              <p>If there are backslashes in the string, you must escape
-	      them, preferably by single-quoting the value. See
+	      <blockquote><pre>'s/^([a-z]+)foo(.*)$/$1bar$2/'</pre></blockquote>
+
+	      <p>If there are backslashes in the string, you must escape
+	      them, as well, preferably by single-quoting the value. See
 	      <a href="#CfgRawValues">Suppressing Metacharacter Expansion and Variable Substitution</a>
 	      for more details. To get the equivalent
               of Perl 5 expression.</p>
@@ -1475,7 +1478,44 @@ section names are all valid for RSS feed sections.</p>
 
               <p>you must specify</p>
 
-	      <blockquote><pre>'s/^\*.*\$//'</pre></blockquote>
+	      <blockquote><pre>'s/^\*.*$//'</pre></blockquote>
+
+	      <p>This substitution syntax supports the following Perl-like
+	      modifiers, which are appended to the end of the substitution
+              command:</p>
+
+              <blockquote>
+              <table border="0">
+		<tr valign="top">
+		  <td align="left" class="code">g&nbsp;</td>
+		  <td>Substitute for all occurrences of the regular
+		      expression, not just the first one</td>
+		</tr>
+
+		<tr valign="top">
+		  <td align="left" class="code">i&nbsp;</td>
+		  <td>Do case-insensitive pattern matching. Case-sensitive
+		    pattern matching is the default.</td>
+		</tr>
+
+		<tr valign="top">
+		  <td align="left" class="code">m&nbsp;</td>
+		  <td>Treat the string is consisting of multiple lines.
+		      This modifier changes the meaning of "^" and "$" so that 
+		      they match just after or just before, respectively, a
+		      line terminator or the end of the input sequence. By
+		      default these expressions only match at the beginning
+		      and the end of the entire input sequence.</td>
+		</tr>
+              </table>
+              </blockquote>
+
+	      <p>The modifiers can be concatenated. Thus,</p>
+
+	      <blockquote><pre>'s/abc/xyz/ig'</pre></blockquote>
+
+	      <p>will match and replace all occurrences of the string "abc",
+	      whether upper-, lower- or mixed-case.</p>
 
               <p>Hint: When <a href="#--logging">logging is enabled</a>,
 	      <i>curn</i> will log the parsed expression at the "debug"
@@ -1529,6 +1569,104 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
         <tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="PreparseEdit">PreparseEdit<i>suffix</i></a></td>
+          <td align="left">String</td>
+	  <td align="left">
+	      <p>A parameter in a Feed section that starts with
+              <span class="code">PreparseEdit</span> (e.g.,
+	      <span class="code">PreparseEdit1</span>,
+	      <span class="code">PreparseEditFoo</span>, etc.)
+	      defines a substitution to be applied to the downloaded XML
+	      file before it is parsed. As with the
+	      <a href="#Feed_EditItemURL" class="code">EditItemURL</a>
+	      option, the value for this option this option consists of a
+	      Perl 5-style substitution.</p>
+
+	      <p>This capability is rarely needed, but it's sometimes 
+              useful for sites that serve unparseable, but easily
+              fixed, XML. For instance, one news site I read has an
+              RSS channel whose title always contains an unescaped
+              "&amp;". The XML parser will not parse that feed; however,
+              a simple preparse edit command of:</p>
+
+              <blockquote><pre>'s/&nbsp;&amp;&nbsp;/&nbsp;\&amp;amp;&nbsp;/g'</pre></blockquote>
+
+	      <p>fixes the problem.</p>
+
+	      <p>Multiple instances of this parameter are permitted, as
+              long as each instance's name begins with the string
+	      "PreparseEdit" and contains a unique suffix.</p>
+
+	      <p>The substitution syntax supports perl's $1, $2, etc.,
+              grouping syntax. However, because the "$" character also
+              introduces a configuration file variable reference, you must
+              escape the "$" to use it in a regular expression. For
+	      instance, use either:</p>
+
+	      <blockquote><pre>s/^([a-z]+)foo(.*)\$/\$1bar\$2/</pre></blockquote>
+	      <p>or</p>
+
+	      <blockquote><pre>'s/^([a-z]+)foo(.*)$/$1bar$2/'</pre></blockquote>
+
+	      <p>If there are backslashes in the string, you must escape
+	      them, as well, preferably by single-quoting the value. See
+	      <a href="#CfgRawValues">Suppressing Metacharacter Expansion and Variable Substitution</a>
+	      for more details. To get the equivalent
+              of Perl 5 expression.</p>
+
+	      <blockquote><pre>s/^\*.*$//</pre></blockquote>
+
+              <p>you must specify</p>
+
+	      <blockquote><pre>'s/^\*.*$//'</pre></blockquote>
+
+	      <p>This substitution syntax supports the following perl-like
+	      modifiers, which are appended to the end of the substitution
+              command:</p>
+
+              <blockquote>
+              <table border="0">
+		<tr valign="top">
+		  <td align="left" class="code">g&nbsp;</td>
+		  <td>Substitute for all occurrences of the regular
+		      expression, not just the first one</td>
+		</tr>
+
+		<tr valign="top">
+		  <td align="left" class="code">i&nbsp;</td>
+		  <td>Do case-insensitive pattern matching. Case-sensitive
+		    pattern matching is the default.</td>
+		</tr>
+
+		<tr valign="top">
+		  <td align="left" class="code">m&nbsp;</td>
+		  <td>Treat the string is consisting of multiple lines.
+		      This modifier changes the meaning of "^" and "$" so that 
+		      they match just after or just before, respectively, a
+		      line terminator or the end of the input sequence. By
+		      default these expressions only match at the beginning
+		      and the end of the entire input sequence.</td>
+		</tr>
+              </table>
+              </blockquote>
+
+	      <p>The modifiers can be concatenated. Thus,</p>
+
+	      <blockquote><pre>'s/abc/xyz/ig'</pre></blockquote>
+
+	      <p>will match and replace all occurrences of the string "abc",
+	      whether upper-, lower- or mixed-case.</p>
+
+              <p>Hint: When <a href="#--logging">logging is enabled</a>,
+	      <i>curn</i> will log the parsed expression at the "debug"
+	      log level.</p>
+
+	  </td>
+	  <td align="left">No</td>
+	  <td align="left">None</td>
+	</tr>
+
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code">PruneURLs</td>
           <td align="left">Boolean</td>
 	  <td align="left">Specifies a string to be used as the site's
@@ -1539,7 +1677,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
           <td align="left">File name or path name</td>
 	  <td align="left"><p>If set, this parameter specifies the path to
@@ -1567,7 +1705,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1591,7 +1729,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left" class="code">none</td>
         </tr>
 
-        <tr valign="top" class="evenrow">
+        <tr valign="top" class="oddrow">
 	  <td align="left" class="code">TitleOverride</td>
           <td align="left">String</td>
 	  <td align="left">Specifies a string to be used as the site's
