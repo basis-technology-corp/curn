@@ -48,7 +48,7 @@ public final class Version
                              Public Constants
     \*----------------------------------------------------------------------*/
 
-    public static final String VERSION = "0.6";
+    public static final String VERSION = "0.7";
 
     /**
      * The name of the resource bundle containing the build info.
