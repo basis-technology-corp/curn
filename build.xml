@@ -349,7 +349,7 @@
              packagenames="org.clapper.curn.*"
              classpathref="project.class.path"
              windowtitle="clapper.org curn utility">
-      <doctitle><![CDATA[<h1><i>curn</i>: Cacheing Utilitarian RSS Notifier</h1>]]></doctitle>
+      <doctitle><![CDATA[<h1><i>curn</i>: Customizable Utilitarian RSS Notifier</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2004 Brian M. Clapper. All Rights Reserved.</i>]]></bottom>
     </javadoc>
   </target>
