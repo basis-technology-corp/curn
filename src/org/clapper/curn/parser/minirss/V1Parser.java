@@ -12,7 +12,7 @@ import java.util.Date;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
-/*
+/**
  * <p><tt>V1Parser</tt> is a stripped down RSS parser for RSS version 1.
  * It's intended to be invoked once a <tt>MiniRSSParser</tt> has determined
  * whether the XML feed represents version 1 RSS or not.</p>
@@ -21,11 +21,12 @@ import org.xml.sax.Attributes;
  * those items that the <i>rssget</i> utility requires (plus a few more),
  * but lacks support for others. For instance, it ignores <tt>image</tt>,
  * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
- * has no interest in displaying. As such, <tt>MiniRSSParser</tt> is not
- * suitable as a general-purpose RSS parser. However, it is very suitable
- * for use with <i>rssget</i>.</p>
+ * has no interest in displaying.</p>
  *
  * @version <tt>$Revision$</tt>
+ *
+ * @see MiniRSSParser
+ * @see V2Parser
  */
 public class V1Parser extends ParserCommon
 {

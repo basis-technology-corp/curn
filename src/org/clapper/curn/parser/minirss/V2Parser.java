@@ -26,11 +26,12 @@ import org.xml.sax.Attributes;
  * those items that the <i>rssget</i> utility requires (plus a few more),
  * but lacks support for others. For instance, it ignores <tt>image</tt>,
  * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>rssget</i>
- * has no interest in displaying. As such, <tt>MiniRSSParser</tt> is not
- * suitable as a general-purpose RSS parser. However, it is very suitable
- * for use with <i>rssget</i>.</p>
+ * has no interest in displaying.</p>
  *
  * @version <tt>$Revision$</tt>
+ *
+ * @see MiniRSSParser
+ * @see V1Parser
  */
 public class V2Parser extends ParserCommon
 {
