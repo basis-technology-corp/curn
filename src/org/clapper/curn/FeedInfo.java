@@ -21,6 +21,7 @@ public class RSSFeedInfo
 
     private boolean  pruneURLsFlag = false;
     private boolean  summaryOnly   = false;
+    private boolean  enabled       = true;
     private int      daysToCache   = 0;
     private String   titleOverride = null;
     private String   itemURLEditCmd= null;
@@ -203,5 +204,33 @@ public class RSSFeedInfo
     public void setItemURLEditCommand (String cmd)
     {
         itemURLEditCmd = cmd;
+    }
+
+    /**
+     * Determine whether this feed is enabled or not. A disabled feed will
+     * not be fetched or displayed. (A feed is enabled by default.)
+
+     * @return <tt>true</tt> if the feed is enabled in the configuration,
+     *         <tt>false</tt> otherwise.
+     *
+     * @see #setEnabledFlag
+     */
+    public boolean feedIsEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Set or clear the "enabled" flag. A disabled feed will not be fetched
+     * or displayed. (A feed is enabled by default.)
+     *
+     * @param enabled <tt>true</tt> if the feed is to be enabled and
+     *                <tt>false</tt> if it is to be disabled.
+     *
+     * @see #feedIsEnabled
+     */
+    public void setEnabledFlag (boolean enabled)
+    {
+        this.enabled = enabled;
     }
 }

@@ -273,12 +273,22 @@ public class rssget implements VerboseMessagesHandler
         for (it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
             RSSFeedInfo feedInfo = (RSSFeedInfo) it.next();
-            RSSChannel  channel  = processFeed (feedInfo,
-                                                parser,
-                                                configuration);
+            if (! feedInfo.feedIsEnabled())
+            {
+                verbose (1,
+                         "Skipping disabled feed \""
+                       + feedInfo.getURL()
+                       + "\".");
+            }
 
-            if (channel != null)
-                channels.add (new ChannelFeedInfo (feedInfo, channel));
+            else
+            {
+                RSSChannel  channel  = processFeed (feedInfo,
+                                                    parser,
+                                                    configuration);
+                if (channel != null)
+                    channels.add (new ChannelFeedInfo (feedInfo, channel));
+            }
         }
 
         if (channels.size() > 0)
@@ -332,19 +342,19 @@ public class rssget implements VerboseMessagesHandler
             {
                 String s = args[i];
 
-                if (s.equals ("-u") || s.equals ("--noupdate"))
+                if (s.equals ("-u") || s.equals ("--no-update"))
                     opts.put ("u", "");
 
                 else if (s.equals ("--build-info") || s.equals ("-B"))
                     opts.put ("B", "");
 
-                else if (s.equals ("-Q") || s.equals ("--noquiet"))
+                else if (s.equals ("-Q") || s.equals ("--no-quiet"))
                     opts.put ("Q", "");
 
                 else if (s.equals ("-q") || s.equals ("--quiet"))
                     opts.put ("q", "");
 
-                else if (s.equals ("-C") || s.equals ("--nocache"))
+                else if (s.equals ("-C") || s.equals ("--no-cache"))
                     opts.put ("C", "");
 
                 else if (s.equals ("-R") || s.equals ("--no-rss-version"))
@@ -513,11 +523,11 @@ public class rssget implements VerboseMessagesHandler
 "",
 "OPTIONS",
 "-B, --build-info     Show full build information",
-"-C, --nocache        Don't use a cache file at all.",
+"-C, --no-cache       Don't use a cache file at all.",
 "-d, --show-dates     Show dates on feeds and feed items, if available",
 "-D, --no-dates       Don't show dates on feeds and feed items",
-"-u, --noupdate       Read the cache, but don't update it",
-"-Q, --noquiet        Emit information about sites with no information",
+"-u, --no-update      Read the cache, but don't update it",
+"-Q, --no-quiet       Emit information about sites with no information",
 "-q, --quiet          Be quiet about sites with no information",
 "-r, --rss-version    Display the RSS version used at each site",
 "-R, --no-rss-version Don't display the RSS version used at each site",
