@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
+ * This class contains a subset of standard RSS item data, providing
+ * only the methods necessary for <i>rssget</i> to work.
  *
  * @version <tt>$Revision$</tt>
  */
@@ -34,6 +36,10 @@ public class Item implements RSSItem
                               Public Methods
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Constructor. Objects of this type can only be created within this
+     * package.
+     */
     Item()
     {
     }

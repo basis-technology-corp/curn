@@ -15,13 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * This interface defines a simplified view of an RSS channel, providing
- * only the methods necessary for <i>rssget</i> to work. <i>rssget</i> uses
- * the {@link RSSParserFactory} class to get a specific implementation of
- * <tt>RSSParser</tt>, which returns an object that conforms to this
- * interface. This strategy isolates the bulk of the code from the
- * underlying RSS parser, making it easier to substitute different parsers
- * as more of them become available.
+ * This class contains a subset of standard RSS channel data, providing
+ * only the methods necessary for <i>rssget</i> to work.
  *
  * @see RSSParserFactory
  * @see RSSParser
@@ -47,6 +42,10 @@ public class Channel implements RSSChannel
                                 Constructor
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Constructor. Objects of this type can only be created within this
+     * package.
+     */
     Channel()
     {
     }

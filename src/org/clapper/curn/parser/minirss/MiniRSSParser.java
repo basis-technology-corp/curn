@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.Reader;
 
@@ -45,9 +46,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *    <li> If a specific XML parser class is not specified to the constructor,
  *         this class defaults to using the Apache Xerces XML parser class.
  *
- *    <li> The SAX <code>DocumentHandler</code>-required functions are
- *         <code>final</code> in this class; they cannot be overridden by
- *         subclasses.
+ *    <li> This parser does <i>not</i> handle XML Atom feeds.
  * </ol>
  *
  * @version <tt>$Revision$</tt>
@@ -74,11 +73,24 @@ public class MiniRSSParser
                                 Constructor
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Allocate a new <tt>MiniRSSParser</tt> object that uses the default
+     * Apache Xerces SAX XML parser.
+     */
     public MiniRSSParser()
     {
         this (null);
     }
 
+    /**
+     * Allocate a new <tt>MiniRSSParser</tt> object that uses the specified
+     * XML parser. The parser class must implement the SAX
+     * <tt>XMLReader</tt> interface. The class is not actually loaded and
+     * verified until one of the {@link #parse(File,String) parse} methods
+     * is called.
+     *
+     * @param parserClassName  the fully-qualified parser class name
+     */
     public MiniRSSParser (String parserClassName)
     {
 	if (parserClassName == null)
@@ -91,13 +103,50 @@ public class MiniRSSParser
                               Public Methods
     \*----------------------------------------------------------------------*/
 
-    public RSSChannel parseRSSFeed (URL url)
+    /**
+     * Parses the RSS feed located at the specified URL. This method,
+     * required by <i>rssget</i>'s <tt>RSSParser</tt> interface, is
+     * simply a front-end for {@link #parse(URL)}.
+     *
+     * @param url  the URL for the RSS feed
+     *
+     * @return the <tt>RSSChannel</tt> object containing the parsed RSS data
+     *
+     * @throws IOException        error opening or reading from the URL
+     * @throws RSSParserException error parsing the XML
+     *
+     * @see #parse(URL)
+     * @see #parse(File)
+     * @see #parse(File,String)
+     * @see #parse(Reader)
+     * @see Channel
+     * @see RSSChannel
+     */
+    public final RSSChannel parseRSSFeed (URL url)
         throws IOException,
                RSSParserException
     {
         return parse (url);
     }
 
+    /**
+     * Parses the RSS data located in the specified file, using the default
+     * encoding. To specify an encoding, use {@link #parse(File,encoding)}.
+     *
+     * @param path  the path to the file containing the RSS XML data
+     *
+     * @return the <tt>Channel</tt> object containing the parsed RSS data
+     *
+     * @throws IOException        error opening or reading from the URL
+     * @throws RSSParserException error parsing the XML
+     *
+     * @see #parse(URL)
+     * @see #parseRSSFeed(URL)
+     * @see #parse(File,String)
+     * @see #parse(Reader)
+     * @see Channel
+     * @see RSSChannel
+     */
     public final Channel parse (File path)
 	throws FileNotFoundException,
 	       IOException,
@@ -106,6 +155,24 @@ public class MiniRSSParser
 	return parse (path, null);
     }
 
+    /**
+     * Parses the RSS data located in the specified file, using the default
+     * encoding. To specify an encoding, use {@link #parse(File,encoding)}.
+     *
+     * @param path  the path to the file containing the RSS XML data
+     *
+     * @return the <tt>Channel</tt> object containing the parsed RSS data
+     *
+     * @throws IOException        error opening or reading from the URL
+     * @throws RSSParserException error parsing the XML
+     *
+     * @see #parse(URL)
+     * @see #parseRSSFeed(URL)
+     * @see #parse(File,String)
+     * @see #parse(Reader)
+     * @see Channel
+     * @see RSSChannel
+     */
     public final Channel parse (File path, String encoding)
 	throws FileNotFoundException,
 	       IOException,
@@ -122,6 +189,23 @@ public class MiniRSSParser
 	return parse (is);
     }
 
+    /**
+     * Parses the RSS feed located at the specified URL.
+     *
+     * @param url  the URL for the RSS feed
+     *
+     * @return the <tt>Channel</tt> object containing the parsed RSS data
+     *
+     * @throws IOException        error opening or reading from the URL
+     * @throws RSSParserException error parsing the XML
+     *
+     * @see #parseRSSFeed(URL)
+     * @see #parse(File)
+     * @see #parse(File,String)
+     * @see #parse(Reader)
+     * @see Channel
+     * @see RSSChannel
+     */
     public final Channel parse (URL url)
 	throws IOException,
 	       RSSParserException
@@ -129,6 +213,23 @@ public class MiniRSSParser
 	return parse (new InputStreamReader (url.openStream()));
     }
 
+    /**
+     * Parses an RSS feed from an already-open <tt>Reader</tt> object.
+     *
+     * @param reader  the <tt>Reader</tt> that will produce the RSS XML
+     *
+     * @return the <tt>Channel</tt> object containing the parsed RSS data
+     *
+     * @throws IOException        error opening or reading from the URL
+     * @throws RSSParserException error parsing the XML
+     *
+     * @see #parseRSSFeed(URL)
+     * @see #parse(File)
+     * @see #parse(File,String)
+     * @see #parse(URL)
+     * @see Channel
+     * @see RSSChannel
+     */
     public final Channel parse (Reader r)
 	throws IOException,
 	       RSSParserException
