@@ -19,8 +19,6 @@ import java.util.Iterator;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.clapper.util.text.TextUtils;
-
 import org.clapper.util.misc.OrderedHashMap;
 import org.clapper.util.misc.Logger;
 
