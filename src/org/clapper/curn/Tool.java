@@ -342,36 +342,44 @@ public class curn extends CommandLineUtility
                 useCache = false;
                 break;
 
-            case 'd':          // --show-dates
+            case 'd':           // --show-dates
                 optShowDates = Boolean.TRUE;
                 break;
 
-            case 'D':          // --no-dates
+            case 'D':           // --no-dates
                 optShowDates = Boolean.FALSE;
                 break;
 
-            case 'Q':          // --no-quiet
+            case 'Q':           // --no-quiet
                 optQuiet = Boolean.FALSE;
                 break;
 
-            case 'q':          // --quiet
+            case 'q':           // --quiet
                 optQuiet = Boolean.TRUE;
                 break;
 
-            case 'r':          // --rss-version
+            case 'r':           // --rss-version
                 optRSSVersion = Boolean.TRUE;
                 break;
 
-            case 'R':          // --no-rss-version
+            case 'R':           // --no-rss-version
                 optRSSVersion = Boolean.FALSE;
                 break;
 
-            case 't':          // --time
+            case 't':           // --time
                 currentTime = parseDateTime ((String) it.next());
                 break;
 
-            case 'u':          // --no-update
+            case 'u':           // --no-update
                 optUpdateCache = Boolean.FALSE;
+                break;
+
+            case 'z':           // --gzip
+                config.setRetrieveFeedsWithGzipFlag (true);
+                break;
+
+            case 'Z':           // --no-gzip
+                config.setRetrieveFeedsWithGzipFlag (false);
                 break;
 
             default:
@@ -467,6 +475,12 @@ public class curn extends CommandLineUtility
                         "Don't show the RSS version each site uses.");
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
+        info.addOption ('z', "gzip",
+                        "Ask remote HTTP servers to gzip content before "
+                      + "sending it.");
+        info.addOption ('Z', "no-gzip",
+                        "Don't ask remote HTTP servers to gzip content before "
+                      + "sending it.");
 
         StringWriter sw  = new StringWriter();
         PrintWriter  pw  = new PrintWriter (sw);
