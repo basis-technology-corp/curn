@@ -70,7 +70,7 @@ class TextOutputHandler:
 
         # If we didn't care about wrapping the output, we'd just use:
         #
-        #     self.__out = open (self.__outputPath, "w")
+        #     out = open (self.__outputPath, "w")
         #
         # But it'd be nice to wrap long summaries on word boundaries at
         # the end of an 80-character line. For that reason, we use the
