@@ -188,6 +188,8 @@ OPTIONS:
 -q, --quiet          Be quiet about sites with no new items.
 -R, --no-rss-version Don't show the RSS version each site uses.
 -r, --rss-version    Show the RSS version each site uses.
+-T, --threads &lt;n&gt;    Set the number of concurrent download threads to <n>. &lt;n&gt; 
+                     must be greater than 0.
 -t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current 
                      time is &lt;time&gt;. &lt;time&gt; may be in one of the following 
                      formats.
@@ -389,7 +391,23 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	</tr>
 
 	<tr valign="top" class="evenRow">
-	  <td align="left" class="code">-t</td>
+	  <td align="left" class="code">-T &lt;n&gt;</td>
+	  <td align="left" class="code"><a name="--threads">--threads &lt;n&gt;</a></td>
+          <td>Set the number of concurrent download threads to <i>n</i>.
+	      If <i>n</i> is greater than 1, then <i>curn</i> will spawn
+	      <i>n</i> worker threads to handle the downloading and parsing of
+	      the RSS feeds concurrently. If <i>n</i> is 1, <i>curn</i> will
+	      process the feeds sequentially. If <i>n</i> is greater than 1,
+	      but less than the total number of feeds, some of the worker
+	      threads will end up processing more than one feed (sequentially).
+	      Values less than 1 are illegal.
+	      This option overrides any <a href="#Cfg_MaxThreads" class="code">MaxThreads</a> setting in the
+	      configuration file.
+	  </td>
+	</tr>
+
+	<tr valign="top" class="oddRow">
+	  <td align="left" class="code">-t &lt;time&gt;</td>
 	  <td align="left" class="code">--time &lt;time&gt;</td>
           <td><p>For the purposes of cache expiration, pretend the current time
 	      is &lt;time&gt;, instead of the wall clock time. &lt;time&gt;
@@ -424,7 +442,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	  </td>
 	</tr>
 
-	<tr valign="top" class="oddRow">
+	<tr valign="top" class="evenRow">
 	  <td align="left" class="code">-u</td>
 	  <td align="left" class="code"><a name="--no-update">--no-update</a></td>
           <td>Load (and prune) the cache file before processing the RSS feeds,
@@ -433,7 +451,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	  </td>
 	</tr>
 
-	<tr valign="top" class="evenRow">
+	<tr valign="top" class="oddRow">
 	  <td align="left" class="code">-Z</td>
 	  <td align="left" class="code"><a name="--no-gzip">--no-gzip</a></td>
           <td>Do not ask remote HTTP servers to <i>gzip</i> their content
@@ -454,7 +472,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	  </td>
 	</tr>
 
-	<tr valign="top" class="oddRow">
+	<tr valign="top" class="evenRow">
 	  <td align="left" class="code">-z</td>
 	  <td align="left" class="code"><a name="--gzip">--gzip</a></td>
           <td>Ask remote HTTP servers to <i>gzip</i> their content before
@@ -664,7 +682,7 @@ are:</p>
         </tr>
 
         <tr class="evenrow" valign="top">
-          <td align="left" class="code">cwdURL</td>
+          <td align="left" class="code">cwd.url</td>
           <td align="left">The program's current working directory, as a
 	    <span class="code">file</span> URL, without the trailing "/".
 	    Useful when you need to create a URL reference to something
@@ -955,6 +973,25 @@ in detail, below.</p>
         </tr>
 
 	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_MaxThreads">MaxThreads</a></td>
+          <td align="left">Integer</td>
+	  <td align="left">Defines the number of concurrent download threads.
+	      If this value is greater than 1, then <i>curn</i> will spawn
+	      that many worker threads to handle the downloading and parsing of
+	      the RSS feeds concurrently. If this value is 1, <i>curn</i> will
+	      process the feeds sequentially. If this value is greater than 1,
+	      but less than the total number of feeds, some of the worker
+	      threads will end up processing more than one feed (sequentially).
+	      Values less than 1 are illegal.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left" class="code">false</td>
+	  <td align="left">
+	    <a href="#--threads" class="code">--threads</a>
+          </td>
+        </tr>
+
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_NoCacheUpdate">NoCacheUpdate</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">If set to "true" (and if a cache file is specified),
@@ -970,7 +1007,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_ParserClass">ParserClass</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1017,7 +1054,7 @@ in detail, below.</p>
 	  <td align="left">&nbsp;</td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_Quiet">Quiet</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1038,7 +1075,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_ShowAuthors">ShowAuthors</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1053,7 +1090,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_ShowDates">ShowDates</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1071,7 +1108,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_ShowRSSVersion">ShowRSSVersion</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">Display the RSS version for each feed.</td>
@@ -1083,7 +1120,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_SummaryOnly">SummaryOnly</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1098,7 +1135,7 @@ in detail, below.</p>
 	  <td align="left">&nbsp;</td>
         </tr>
 
-	<tr valign="top" class="oddrow">
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Cfg_SMTPHost">SMTPHost</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1115,7 +1152,7 @@ in detail, below.</p>
           </td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Cfg_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1731,12 +1768,14 @@ Windows) run <i>curn</i> for you automatically, every so often.</p>
 
 <h3><a name="UsingCron">Running <i>curn</i> from <i>cron</i>(8) on Unix-like Systems</a></h3>
 
-<p>I typically run <i>curn</i> three times a day, via <i>cron</i>,
-on weekdays only, and I have it mail me the output. I use my personal crontab,
-rather than the system-wide <span class="path">/etc/crontab</span> file.
+<p>I typically run <i>curn</i> three times a day, via <i>cron</i>, on
+weekdays and once on weekends, and I have it mail me the output. I use my
+personal crontab, rather than the system-wide
+<span class="path">/etc/crontab</span> file.
 Here's a sample crontab entry that does this:</p>
 
-<blockquote><pre>0 8,12,16 1,2,3,4,5 * *  java org.clapper.curn.Tool my_address@example.com</pre></blockquote>
+<blockquote><pre>0 8,12,16 * * 1-5  java org.clapper.curn.Tool my_address@example.com
+0 16 * * 0,6  java org.clapper.curn.Tool my_address@example.com</pre></blockquote>
 
 <p>Note the inclusion of an email address on the <i>curn</i> command line.
 A seasoned <i>cron</i> user will wonder why this is necessary. After all,
@@ -1789,6 +1828,11 @@ details...)
 
 <!--------------------------------------------------------------------------->
 <h2><a name="ExtendingCurn">Extending <i>curn</i></a></h2>
+
+<p>This section is intended for Java programmers who want to extend
+<i>curn</i>'s capabilities by writing additional output handlers, integrating
+a different RSS parser, or even writing a new command-line or GUI front-end
+to <i>curn</i>'s main logic.</p>
 
 <p><i>curn's</i> processing is split into three phases:</p>
 
