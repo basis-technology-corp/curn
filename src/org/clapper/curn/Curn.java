@@ -84,9 +84,9 @@ import org.apache.oro.text.perl.Perl5Util;
  * {@link <a target="_top" href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.</p>
  *
  * <p>The <tt>Curn</tt> class represents the API entry point into the
- * <i>curn</i> processing. Any program can invoke this class's static
- * {@link #processRSSFeeds} method to process a configuration file; in
- * practice, most people use the existing <tt>Tool</tt> command-line
+ * <i>curn</i> processing. Any program can call a <tt>Curn</tt> object's
+ * {@link #processRSSFeeds processRSSFeeds()} method to invoke a <i>curn</i>
+ * run. In practice, most people use the existing <tt>Tool</tt> command-line
  * program.</p>
  *
  * @version <tt>$Revision$</tt>
