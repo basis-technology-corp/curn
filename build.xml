@@ -58,9 +58,10 @@ source and documentation packages.
   <property name="code_jar_dir" value="${dist}/lib"/>
   <property name="code_jar_path" value="${code_jar_dir}/${code_jar_file}"/>
   <property name="docs_top_dir" value="docs"/>
-  <property name="javadocs_top_dir" value="${dist}/docs"/>
-  <property name="javadocs_api_dir" value="${javadocs_top_dir}/api"/>
+  <property name="javadocs_top_dir" value="javadocs"/>
+  <property name="javadocs_api_dir" value="${javadocs_top_dir}/curn/api"/>
   <property name="zip_dir_prefix" value="curn/"/>
+  <property name="javadoc_zip_dir_prefix" value=""/>
   <property name="release_dir" value="${dist}/release"/>
 
   <!--
@@ -575,7 +576,7 @@ source and documentation packages.
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_javadocs_zipfile}">
       <zipfileset dir="${javadocs_top_dir}"
-                  prefix="${zip_dir_prefix}"/>
+                  prefix="${javadoc_zip_dir_prefix}"/>
     </zip>
   </target>
 
