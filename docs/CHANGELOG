@@ -4,6 +4,19 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.5.3 (...)
+
+- curn now sets an appropriate "User-Agent" HTTP header on HTTP requests,
+  instead of defaulting to whatever the Java VM uses.
+
+- An exception thrown while processing a feed now contains the feed URL
+  in its exception message. This is especially useful for emailed log
+  exceptions.
+
+- Where possible, exception messages are now stored in properties files and
+  accessed via ResourceBundle objects, allowing for localization.
+
+
 Version 1.5.2 (12 October, 2004)
 
 - Simplified loading of API version, in build.xml. Instead of loading
