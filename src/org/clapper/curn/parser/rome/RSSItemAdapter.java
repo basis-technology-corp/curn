@@ -27,7 +27,9 @@
 package org.clapper.curn.parser.rome;
 
 import org.clapper.curn.util.Util;
+
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.ParserUtil;
 
 import org.clapper.util.misc.Logger;
 
@@ -97,7 +99,13 @@ public class RSSItemAdapter extends RSSItem
      */
     public String getTitle()
     {
-        return entry.getTitle();
+        // Rome leaves leading, trailing and embedded newlines in place.
+        // While this is syntactically okay, curn prefers the description
+        // to be one long line. ParserUtil.normalizeCharacterData() strips
+        // leading and trailing newlines, and converts embedded newlines to
+        // spaces.
+
+        return ParserUtil.normalizeCharacterData (entry.getTitle());
     }
 
     /**
@@ -148,7 +156,13 @@ public class RSSItemAdapter extends RSSItem
         if (content != null)
             result = content.getValue();
 
-        return result;
+        // Rome leaves leading, trailing and embedded newlines in place.
+        // While this is syntactically okay, curn prefers the description
+        // to be one long line. ParserUtil.normalizeCharacterData() strips
+        // leading and trailing newlines, and converts embedded newlines to
+        // spaces.
+
+        return ParserUtil.normalizeCharacterData (result);
     }
 
     /**

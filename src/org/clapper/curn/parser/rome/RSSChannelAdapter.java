@@ -30,6 +30,7 @@ import org.clapper.curn.util.Util;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.ParserUtil;
 
 import org.clapper.util.misc.Logger;
 
@@ -67,7 +68,7 @@ public class RSSChannelAdapter implements RSSChannel
     /**
      * The real channel object
      */
-    private SyndFeedI channel;
+    private SyndFeedI syndFeed;
 
     /**
      * For log messages
@@ -86,7 +87,7 @@ public class RSSChannelAdapter implements RSSChannel
      */
     RSSChannelAdapter (SyndFeedI syndFeed)
     {
-        this.channel = syndFeed;
+        this.syndFeed = syndFeed;
     }
 
     /*----------------------------------------------------------------------*\
@@ -104,7 +105,7 @@ public class RSSChannelAdapter implements RSSChannel
     public Collection getItems()
     {
         Collection result = new ArrayList();
-        List items  = channel.getEntries();
+        List items  = syndFeed.getEntries();
 
         for (Iterator it = items.iterator(); it.hasNext(); )
             result.add (new RSSItemAdapter ((SyndEntry) it.next()));
@@ -122,7 +123,7 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public void setItems (Collection newItems)
     {
-        channel.setEntries (new ArrayList (newItems));
+        syndFeed.setEntries (new ArrayList (newItems));
     }
 
     /**
@@ -134,7 +135,13 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public String getTitle()
     {
-        return channel.getTitle();
+        // Rome leaves leading, trailing and embedded newlines in place.
+        // While this is syntactically okay, curn prefers the description
+        // to be one long line. ParserUtil.normalizeCharacterData() strips
+        // leading and trailing newlines, and converts embedded newlines to
+        // spaces.
+
+        return ParserUtil.normalizeCharacterData (syndFeed.getTitle());
     }
 
     /**
@@ -146,7 +153,7 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public void setTitle (String newTitle)
     {
-        channel.setTitle (newTitle);
+        syndFeed.setTitle (newTitle);
     }
 
     /**
@@ -156,7 +163,13 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public String getDescription()
     {
-        return channel.getDescription();
+        // Rome leaves leading, trailing and embedded newlines in place.
+        // While this is syntactically okay, curn prefers the description
+        // to be one long line. ParserUtil.normalizeCharacterData() strips
+        // leading and trailing newlines, and converts embedded newlines to
+        // spaces.
+
+        return ParserUtil.normalizeCharacterData (syndFeed.getDescription());
     }
 
     /**
@@ -170,13 +183,13 @@ public class RSSChannelAdapter implements RSSChannel
 
         try
         {
-            url = new URL (channel.getLink());
+            url = new URL (syndFeed.getLink());
         }
 
         catch (MalformedURLException ex)
         {
             log.error ("Bad channel URL \""
-                     + channel.getLink()
+                     + syndFeed.getLink()
                      + "\" from underlying parser: "
                      + ex.toString());
         }
@@ -191,7 +204,7 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public Date getPublicationDate()
     {
-        return channel.getPublishedDate();
+        return syndFeed.getPublishedDate();
     }
 
     /**
@@ -201,7 +214,7 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public String getCopyright()
     {
-        return channel.getCopyright();
+        return syndFeed.getCopyright();
     }
 
     /**
@@ -211,7 +224,7 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public String getRSSFormat()
     {
-        return channel.getFeedType();
+        return syndFeed.getFeedType();
     }
 
     /**
@@ -221,6 +234,6 @@ public class RSSChannelAdapter implements RSSChannel
      */
     public String getAuthor()
     {
-        return channel.getAuthor();
+        return syndFeed.getAuthor();
     }
 }
