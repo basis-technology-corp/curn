@@ -126,6 +126,7 @@ public final class Version
      *
      * @see #showBuildInfo(PrintWriter)
      * @see #showBuildInfo(PrintStream)
+     * @see #getBuildInfo
      */
     public static void showBuildInfo()
     {
@@ -139,6 +140,7 @@ public final class Version
      *
      * @see #showBuildInfo()
      * @see #showBuildInfo(PrintWriter)
+     * @see #getBuildInfo
      */
     public static void showBuildInfo (PrintStream out)
     {
@@ -152,6 +154,7 @@ public final class Version
      *
      * @see #showBuildInfo()
      * @see #showBuildInfo(PrintStream)
+     * @see #getBuildInfo
      */
     public static void showBuildInfo (PrintWriter out)
     {
@@ -166,5 +169,20 @@ public final class Version
         out.println ("Build compiler: " + buildInfo.getBuildJavaCompiler());
         out.println ("Ant version:    " + buildInfo.getBuildAntVersion());
         out.flush();
+    }
+
+    /**
+     * Get the <tt>BuildInfo</tt> object that holds the build information
+     * data.
+     *
+     * @return the <tt>BuildInfo</tt> object.
+     *
+     * @see #showBuildInfo()
+     * @see #showBuildInfo(PrintStream)
+     * @see #showBuildInfo(PrintWriter)
+     */
+    public static BuildInfo getBuildInfo()
+    {
+        return new BuildInfo (BUNDLE_NAME);
     }
 }
