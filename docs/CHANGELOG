@@ -4,6 +4,13 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 1.5.5 (...)
+
+- Added "UserAgent" configuration parameter in the [curn] section and the
+  individual feed sections. See the sample configuration or the User's
+  Guide for details.
+
+
 Version 1.5.4 (20 October, 2004)
 
 - In the org.clapper.util API, org.clapper.util.misc.Logger is now in the

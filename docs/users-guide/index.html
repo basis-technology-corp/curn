@@ -1062,7 +1062,7 @@ in detail, below.</p>
         </tr>
 
 	<tr valign="top" class="evenrow">
-	  <td align="left" class="code"><a name="Curn_DaysToCache">DaysToCache</a></td>
+	  <td align="left" class="code"><a name="Cfg_DaysToCache">DaysToCache</a></td>
           <td align="left">Integer</td>
 	  <td align="left">
 	    Default maximum number of days to cache an already-read item.
@@ -1077,7 +1077,7 @@ in detail, below.</p>
           </td>
 	  <td align="left">No</td>
 	  <td align="left">5 (days)</td>
-	  <td align="left"><a href="#Feed_DaysToCache" class="code">DaysToCache</a> for an individual feed</td>
+	  <td align="left">Per-feed <a href="#Feed_DaysToCache" class="code">DaysToCache</a> parameter</td>
         </tr>
 
 	<tr valign="top" class="oddrow">
@@ -1357,6 +1357,25 @@ in detail, below.</p>
           </td>
         </tr>
 
+	<tr valign="top" class="evenrow">
+	  <td align="left" class="code"><a name="Cfg_UserAgent">UserAgent</a></td>
+          <td align="left">String</td>
+	  <td align="left">
+	    <p>Specifies the default HTTP <tt>User-Agent</tt> header to use.
+	    This configuration parameter permits you to have <i>curn</i>
+	    masquerade as a known browser, for sites that refuse access to
+	    robots and spiders and other unknown web clients. This global
+	    value is used when the section for a particular feed does not
+	    supply its own <tt>UserAgent</tt> value.</p>
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">A string that identifies <i>curn</i>
+	   as the user agent.</td>
+	  <td align="left">
+	    Per-feed <a href="#Feed_UserAgent" class="code">UserAgent</a>
+	    parameter.</td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -1413,7 +1432,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">
 	    Maximum number of days to cache an already-read item for this
 	    feed. This value locally overrides the global
-	    <a href="#Curn_DaysToCache" class="code">DaysToCache</a> default
+	    <a href="#Cft_DaysToCache" class="code">DaysToCache</a> default
 	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
             Items older than this many days are tossed from the
             cache when it's read, which means <i>curn</i> forgets that it saw
@@ -1423,7 +1442,8 @@ section names are all valid for RSS feed sections.</p>
           </td>
 	  <td align="left">No</td>
 	  <td align="left">
-	    The value of the global <span class="code">DaysToCache</span>
+	    The value of the global
+	    <a href="#Cfg_DaysToCache" class="code">DaysToCache</a>
 	    parameter in the <span class="code">[curn]</span> section.</td>
         </tr>
 
@@ -1725,7 +1745,7 @@ section names are all valid for RSS feed sections.</p>
           <td align="left">String</td>
 	  <td align="left">
 	    <p>How to sort items in this feed. This value locally overrides the
-	    global <a href="#Curn_SortBy" class="code">SortBy</a> parameter
+	    global <a href="#Cfg_SortBy" class="code">SortBy</a> parameter
 	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
 	    Legal values:</p>
 
@@ -1741,7 +1761,10 @@ section names are all valid for RSS feed sections.</p>
 	    </ul>
           </td>
 	  <td align="left">No</td>
-	  <td align="left" class="code">none</td>
+	  <td align="left">
+	    The value of the global
+	    <a href="#Cfg_SortBy" class="code">SortBy</a>
+	    parameter in the <span class="code">[curn]</span> section.</td>
         </tr>
 
         <tr valign="top" class="evenrow">
@@ -1754,6 +1777,27 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">No</td>
 	  <td align="left">None</td>
 	</tr>
+
+	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Feed_UserAgent">UserAgent</a></td>
+          <td align="left">String</td>
+	  <td align="left">
+	    <p>Specifies the HTTP <tt>User-Agent</tt> header to use when
+	    retrieving this feed. This local value overrides the global
+	    <a href="#Cfg_UserAgent" class="code">UserAgent</a> parameter
+	    in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
+	    This configuration parameter permits you to have <i>curn</i>
+	    masquerade as a known browser, and it's useful for sites that
+	    refuse access to robots and spiders and other unknown web clients.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">
+	   as the user agent.</td>
+	  <td align="left">
+	    The value of the global
+	    <a href="#Cfg_UserAgent" class="code">UserAgent</a>
+	    parameter in the <span class="code">[curn]</span> section.</td>
+        </tr>
 
       </table>
     </td>
