@@ -16,8 +16,27 @@ import java.net.MalformedURLException;
 public class Util
 {
     /*----------------------------------------------------------------------*\
+                            Private Data Items
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * The rssget version stamp
+     */
+    private static final String VERSION = "0.4";
+
+    /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the <i>rssget</i> version.
+     *
+     * @return the version stamp string
+     */
+    public static String getVersion()
+    {
+        return VERSION;
+    }
 
     /**
      * Normalize a URL, by forcing its host name and protocol to lower

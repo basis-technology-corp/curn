@@ -59,12 +59,30 @@ public class Channel implements RSSChannel
      * in the collection are of type <tt>RSSItem</tt>.
      *
      * @return a (new) <tt>Collection</tt> of <tt>RSSItem</tt> objects.
-     *         The collection will be empty (never null) if there are
-     *         no items.
+     *         The collection will be empty (never null) if there are no
+     *         items. This <tt>Collection</tt> is a copy of the underlying
+     *         <tt>collection</tt> being used.
      */
     public Collection getItems()
     {
-        return items;
+        Collection result = new ArrayList();
+
+        result.addAll (items);
+        return result;
+    }
+
+    /**
+     * Change the items the channel the ones in the specified collection.
+     * If the collection is empty, the items are cleared. The items are
+     * copied from the supplied collection. (A reference to the supplied
+     * collection is <i>not</i> saved in this object.)
+     *
+     * @param newItems  new collection of <tt>RSSItem</tt> items.
+     */
+    public void setItems (Collection newItems)
+    {
+        items.clear();
+        items.addAll (newItems);
     }
 
     /**

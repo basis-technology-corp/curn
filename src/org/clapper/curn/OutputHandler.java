@@ -5,6 +5,7 @@
 package org.clapper.rssget;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
@@ -19,31 +20,58 @@ import org.clapper.rssget.parser.RSSItem;
  * it simpler to substitute different kinds of output handlers.
  *
  * @see rssget
+ * @see OutputHandlerFactory
  * @see org.clapper.rssget.parser.RSSChannel
+ * @see org.clapper.rssget.parser.RSSItem
  *
  * @version <tt>$Revision$</tt>
  */
-public interface RSSGetOutputHandler
+public interface OutputHandler
 {
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
 
     /**
-     * Display the list of <tt>RSSItem</tt> news items to whatever output
-     * is defined for the underlying class.
+     * Initializes the output handler for another set of RSS channels.
      *
-     * @param items   array of <tt>RSSItem</tt> objects to be output, or
-     *                null if there are no items for this channel. (The
-     *                method might still want to emit a channel header with
-     *                a "no new items" message.)
-     * @param channel the items' parent <tt>RSSChannel</tt>
-     * @param config  the active <tt>RSSGetConfiguration</tt> object
+     * @param writer  the <tt>PrintWriter</tt> where the handler should send
+     *                output
+     * @param config  the parsed <i>rssget</i> configuration data
+     */
+    public void init (PrintWriter         writer,
+                      RSSGetConfiguration config);
+
+    /**
+     * Display the list of <tt>RSSItem</tt> news items to whatever output
+     * is defined for the underlying class. Output should be written to the
+     * <tt>PrintWriter</tt> that was passed to the {@ #init init()} method.
+     *
+     * @param channel The channel containing the items to emit. The method
+     *                should emit all the items in the channel; the caller
+     *                is responsible for clearing out any items that should
+     *                not be seen.
      *
      * @throws IOException  unable to write output
      */
-    public void displayChannelItems (RSSItem[]           items,
-                                     RSSChannel          channel,
-                                     RSSGetConfiguration config)
+    public void displayChannel (RSSChannel channel)
         throws IOException;
+
+    /**
+     * Flush any buffered-up output. <i>rssget</i> calls this method
+     * once, after calling <tt>displayChannelItems()</tt> for all channels.
+     * If the output handler doesn't need to flush any output, it can simply
+     * return without doing anything.
+     *
+     * @throws IOException  unable to write output
+     */
+    public void flush() throws IOException;
+
+    /**
+     * Get the content (i.e., MIME) type for output produced by this output
+     * handler.
+     *
+     * @return the content type
+     */
+    public String getContentType();
 }

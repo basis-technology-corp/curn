@@ -6,10 +6,12 @@ package org.clapper.rssget;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Calendar;
@@ -26,7 +28,7 @@ import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
 
 import org.clapper.util.misc.BadCommandLineException;
-
+import org.clapper.util.text.TextUtils;
 import org.clapper.util.config.ConfigurationException;
 
 /**
@@ -54,32 +56,34 @@ public class rssget implements VerboseMessagesHandler
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VERSION = "0.3";
+    private static Collection DATE_FORMATS;
 
-    private static final DateParseInfo[] DATE_FORMATS = new DateParseInfo[]
+    static
     {
-        new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false),
-        new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false),
-        new DateParseInfo ("yyyy/MM/dd hh:mm a", false),
-        new DateParseInfo ("yyyy/MM/dd hh:mm", false),
-        new DateParseInfo ("yyyy/MM/dd h:mm a", false),
-        new DateParseInfo ("yyyy/MM/dd h:mm", false),
-        new DateParseInfo ("yyyy/MM/dd hh a", false),
-        new DateParseInfo ("yyyy/MM/dd hh", false),
-        new DateParseInfo ("yyyy/MM/dd h a", false),
-        new DateParseInfo ("yyyy/MM/dd h", false),
-        new DateParseInfo ("yyyy/MM/dd", false),
-        new DateParseInfo ("yy/MM/dd", false),
-        new DateParseInfo ("hh:mm:ss a", true),
-        new DateParseInfo ("hh:mm:ss", true),
-        new DateParseInfo ("hh:mm a", true),
-        new DateParseInfo ("hh:mm", true),
-        new DateParseInfo ("h:mm a", true),
-        new DateParseInfo ("h:mm", true),
-        new DateParseInfo ("hh a", true),
-        new DateParseInfo ("hh", true),
-        new DateParseInfo ("h a", true),
-        new DateParseInfo ("h", true)
+        DATE_FORMATS = new ArrayList();
+
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm a", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm a", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh a", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h a", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h", false));
+        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd", false));
+        DATE_FORMATS.add (new DateParseInfo ("yy/MM/dd", false));
+        DATE_FORMATS.add (new DateParseInfo ("hh:mm:ss a", true));
+        DATE_FORMATS.add (new DateParseInfo ("hh:mm:ss", true));
+        DATE_FORMATS.add (new DateParseInfo ("hh:mm a", true));
+        DATE_FORMATS.add (new DateParseInfo ("hh:mm", true));
+        DATE_FORMATS.add (new DateParseInfo ("h:mm a", true));
+        DATE_FORMATS.add (new DateParseInfo ("h:mm", true));
+        DATE_FORMATS.add (new DateParseInfo ("hh a", true));
+        DATE_FORMATS.add (new DateParseInfo ("hh", true));
+        DATE_FORMATS.add (new DateParseInfo ("h a", true));
+        DATE_FORMATS.add (new DateParseInfo ("h", true));
     };
 
     /*----------------------------------------------------------------------*\
@@ -153,7 +157,11 @@ public class rssget implements VerboseMessagesHandler
 
         parseParams (args);
 
-        RSSGetOutputHandler outputHandler = new TextOutputHandler (System.out);
+        OutputHandler outputHandler;
+        String outputHandlerClassName = config.getOutputHandlerClassName();
+
+        outputHandler = OutputHandlerFactory.getOutputHandler
+                                                   (outputHandlerClassName);
 
         if (useCache)
         {
@@ -166,6 +174,8 @@ public class rssget implements VerboseMessagesHandler
         verbose (2, "Getting parser \"" + parserClassName + "\"");
         RSSParser parser = RSSParserFactory.getRSSParser (parserClassName);
 
+        outputHandler.init (new PrintWriter (System.out), config);
+
         for (Iterator itFeeds = config.getFeeds().iterator();
              itFeeds.hasNext(); )
         {
@@ -173,6 +183,8 @@ public class rssget implements VerboseMessagesHandler
 
             processFeed (feed, parser, outputHandler);
         }
+
+        outputHandler.flush();
 
         if ((cache != null) && config.mustUpdateCache())
             cache.saveCache();
@@ -197,33 +209,41 @@ public class rssget implements VerboseMessagesHandler
             i = 0;
             while ((i < args.length) && (args[i].startsWith ("-")))
             {
-                if (args[i].equals ("-u") || args[i].equals ("--noupdate"))
+                String s = args[i];
+
+                if (s.equals ("-u") || s.equals ("--noupdate"))
                     opts.put ("u", "");
 
-                else if (args[i].equals ("-Q") || args[i].equals ("--noquiet"))
+                else if (s.equals ("-Q") || s.equals ("--noquiet"))
                     opts.put ("Q", "");
 
-                else if (args[i].equals ("-q") || args[i].equals ("--quiet"))
+                else if (s.equals ("-q") || s.equals ("--quiet"))
                     opts.put ("q", "");
 
-                else if (args[i].equals ("-C") || args[i].equals ("--nocache"))
+                else if (s.equals ("-C") || s.equals ("--nocache"))
                     opts.put ("C", "");
 
-                else if (args[i].equals ("-s") || args[i].equals ("--summary"))
+                else if (s.equals ("-s") || s.equals ("--summary"))
                     opts.put ("s", "");
 
-                else if (args[i].equals ("-f") || args[i].equals ("--full"))
+                else if (s.equals ("-f") || s.equals ("--full"))
                     opts.put ("f", "");
 
-                else if (args[i].equals ("-t") || args[i].equals ("--time"))
+                else if (s.equals ("-R") || s.equals ("--no-rss-version"))
+                    opts.put ("R", "");
+
+                else if (s.equals ("-r") || s.equals ("--rss-version"))
+                    opts.put ("r", "");
+
+                else if (s.equals ("-t") || s.equals ("--time"))
                     opts.put ("t", args[++i]);
 
-                else if (args[i].equals ("-v") || args[i].equals ("--verbose"))
+                else if (s.equals ("-v") || s.equals ("--verbose"))
                     opts.put ("v", args[++i]);
 
                 else
                     throw new BadCommandLineException ("Unknown option: "
-                                                     + args[i]);
+                                                     + s);
 
 
                 i++;
@@ -267,6 +287,14 @@ public class rssget implements VerboseMessagesHandler
                         config.setSummarizeOnlyFlag (false);
                         break;
 
+                    case 'r':
+                        config.setShowRSSVersionFlag (true);
+                        break;
+
+                    case 'R':
+                        config.setShowRSSVersionFlag (false);
+                        break;
+
                     case 't':   // --time
                         currentTime = parseDateTime ((String) opts.get (opt));
                         break;
@@ -304,14 +332,15 @@ public class rssget implements VerboseMessagesHandler
     {
         Date date = null;
 
-        for (int i = 0; i < DATE_FORMATS.length; i++)
+        for (Iterator it = DATE_FORMATS.iterator(); it.hasNext(); )
         {
             try
             {
-                date = DATE_FORMATS[i].format.parse (s);
+                DateParseInfo dpi = (DateParseInfo) it.next();
+                date = dpi.format.parse (s);
                 if (date != null)
                 {
-                    if (DATE_FORMATS[i].timeOnly)
+                    if (dpi.timeOnly)
                     {
                         // The date pattern specified only a time, which
                         // means the date part defaulted to the epoch. Make
@@ -345,48 +374,38 @@ public class rssget implements VerboseMessagesHandler
 
     private void usage()
     {
-        String[] USAGE1 = new String[]
+        String[] USAGE = new String[]
         {
-"rssget, version " + VERSION,
+"rssget, version " + Util.getVersion(),
 "",
 "Usage: " + rssget.class.getName() + " [options] configFile",
 "",
 "OPTIONS",
-"-f, --full        For each item, display the URL, title and description.",
-"                    (The opposite of --summary.)",
-"-C, --nocache     Don't use a cache file at all.",
-"-u, --noupdate    Read the cache, but don't update it",
-"-Q, --noquiet     Emit information about sites with no information",
-"-q, --quiet       Be quiet about sites with no information",
-"-s, --summary     For each item, display only the URL and title. Omit the",
-"                    description. (The opposite of --full.)",
+"-f, --full           For each item, display the URL, title and description.",
+"                       (The opposite of --summary.)",
+"-C, --nocache        Don't use a cache file at all.",
+"-u, --noupdate       Read the cache, but don't update it",
+"-Q, --noquiet        Emit information about sites with no information",
+"-q, --quiet          Be quiet about sites with no information",
+"-r, --rss-version    Display the RSS version used at each site",
+"-R, --no-rss-version Don't display the RSS version used at each site",
+"-s, --summary        For each item, display only the URL and title. Omit the",
+"                       description. (The opposite of --full.)",
 "-t datetime",
-"--time datetime   For the purposes of cache expiration, pretend the current",
-"                    time is <datetime>. <datetime> may be specified in any",
-"                    of the following forms:"
+"--time datetime      For the purposes of cache expiration, pretend the",
+"                       current time is <datetime>. <datetime> may be in a ",
+"                       variety of forms.",
+"-v level             Set the verbosity (debug) level. Default: 0 (off)",
+"--verbose level"
         };
 
-        String[] USAGE2 = new String[]
-        {
-"-v level          Set the verbosity (debug) level. Default: 0 (off)",
-"--verbose level",
-        };
-
-        int i;
-
-        for (i = 0; i < USAGE1.length; i++)
-            System.err.println (USAGE1[i]);
-
-        for (i = 0; i < DATE_FORMATS.length; i++)
-            System.err.println ("                    " + DATE_FORMATS[i]);
-
-        for (i = 0; i < USAGE2.length; i++)
-            System.err.println (USAGE2[i]);
+        for (int i = 0; i < USAGE.length; i++)
+            System.err.println (USAGE[i]);
     }
 
-    private void processFeed (RSSFeedInfo         feedInfo,
-                              RSSParser           parser,
-                              RSSGetOutputHandler outputHandler)
+    private void processFeed (RSSFeedInfo   feedInfo,
+                              RSSParser     parser,
+                              OutputHandler outputHandler)
         throws RSSParserException
     {
         URL url = feedInfo.getURL();
@@ -448,14 +467,10 @@ public class rssget implements VerboseMessagesHandler
                 }
             }
 
-            // Now, if there's anything left, get them as an array.
+            // Now, change the channel's items to the ones that are left.
 
-            if (items.size() > 0)
-            {
-                itemArray = (RSSItem[]) items.toArray (new RSSItem[0]);
-            }
-
-            outputHandler.displayChannelItems (itemArray, channel, config);
+            channel.setItems (items);
+            outputHandler.displayChannel (channel);
 
             // Finally, add all the items to the cache.
 

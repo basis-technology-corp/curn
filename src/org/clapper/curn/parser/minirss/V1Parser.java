@@ -327,8 +327,13 @@ public class V1Parser extends ParserCommon
             // string, or (b) we reach the ":" without finding a valid URL.
 
             int iColon = url.indexOf (":");
-            if (iColon == -1)
-                throw new SAXException (ex.toString());
+            if (iColon < 0)
+            {
+                throw new SAXException ("Can't save item link \""
+                                      + url.toString()
+                                      + "\": "
+                                      + ex.toString());
+            }
 
             boolean ok = false;
             for (int i = 1; i < iColon; i++)
@@ -346,7 +351,12 @@ public class V1Parser extends ParserCommon
             }
 
             if (! ok)
-                throw new SAXException (ex);
+            {
+                throw new SAXException ("Can't save item link \""
+                                      + url.toString()
+                                      + "\": "
+                                      + ex.toString());
+            }
         }
     }
 }

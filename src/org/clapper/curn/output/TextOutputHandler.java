@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 import java.io.PrintStream;
 
 import java.util.Date;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Provides an output handler that produces plain text to a
@@ -25,39 +27,25 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-public class TextOutputHandler implements RSSGetOutputHandler
+public class TextOutputHandler implements OutputHandler
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private WordWrapWriter  out;
-    private int             indentLevel = 0;
+    private WordWrapWriter       out         = null;
+    private int                  indentLevel = 0;
+    private RSSGetConfiguration  config      = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Construct a <tt>TextOutputHandler</tt> that writes its output to the
-     * specified <tt>PrintWriter</tt>.
-     *
-     * @param writer  the <tt>PrintWriter</tt>
+     * Construct a new <tt>TextOutputHandler</tt>
      */
-    TextOutputHandler (PrintWriter writer)
+    public TextOutputHandler()
     {
-        out = new WordWrapWriter (writer, 79);
-    }
-
-    /**
-     * Construct a <tt>TextOutputHandler</tt> that writes its output to the
-     * specified <tt>PrintStream</tt>.
-     *
-     * @param os  the <tt>PrintStream</tt>
-     */
-    TextOutputHandler (PrintStream os)
-    {
-        this (new PrintWriter (os));
     }
 
     /*----------------------------------------------------------------------*\
@@ -65,26 +53,40 @@ public class TextOutputHandler implements RSSGetOutputHandler
     \*----------------------------------------------------------------------*/
 
     /**
-     * Display the list of <tt>RSSItem</tt> news items to whatever output
-     * is defined for the underlying class.
+     * Initializes the output handler for another set of RSS channels.
      *
-     * @param items   array of <tt>RSSItem</tt> objects to be output, or
-     *                null if there are no items for this channel. (The
-     *                method might still want to emit a channel header with
-     *                a "no new items" message.)
-     * @param channel the items' parent <tt>RSSChannel</tt>
-     * @param config  the active <tt>RSSGetConfiguration</tt> object
+     * @param writer  the <tt>PrintWriter</tt> where the handler should send
+     *                output
+     * @param config  the parsed <i>rssget</i> configuration data
+     */
+    public void init (PrintWriter         writer,
+                      RSSGetConfiguration config)
+    {
+        this.out    = new WordWrapWriter (writer, 79);
+        this.config = config;
+    }
+
+    /**
+     * Display the list of <tt>RSSItem</tt> news items to whatever output
+     * is defined for the underlying class. Output is written to the
+     * <tt>PrintWriter</tt> that was passed to the {@link #init init()}
+     * method.
+     *
+     * @param channel The channel containing the items to emit. The method
+     *                should emit all the items in the channel; the caller
+     *                is responsible for clearing out any items that should
+     *                not be seen.
      *
      * @throws IOException  unable to write output
      */
-    public void displayChannelItems (RSSItem[]           items,
-                                     RSSChannel          channel,
-                                     RSSGetConfiguration config)
+    public void displayChannel (RSSChannel channel)
         throws IOException
     {
+        Collection items = channel.getItems();
+
         indentLevel = setIndent (0);
 
-        if ((items != null) || (! config.beQuiet()))
+        if ((items.size() != 0) || (! config.beQuiet()))
         {
             // Emit a site (channel) header.
 
@@ -98,31 +100,37 @@ public class TextOutputHandler implements RSSGetOutputHandler
             Date date = channel.getPublicationDate();
             if (date != null)
                 out.println (date);
-            out.println ("(Format: " + channel.getRSSFormat() + ")");
+
+            if (config.showRSSVersion())
+                out.println ("(Format: " + channel.getRSSFormat() + ")");
         }
 
-        if (items != null)
+        if (items.size() != 0)
         {
             // Now, process each item.
 
-            for (int i = 0; i < items.length; i++)
+            String s;
+
+            for (Iterator it = items.iterator(); it.hasNext(); )
             {
-                RSSItem item = items[i];
+                RSSItem item = (RSSItem) it.next();
 
                 setIndent (++indentLevel);
 
                 out.println ();
-                out.println (item.getTitle());
+
+                s = item.getTitle();
+                out.println ((s == null) ? "(No Title)" : s);
                 out.println (item.getLink().toString());
 
                 if (! config.summarizeOnly())
                 {
-                    String desc = item.getDescription();
-                    if ((desc != null) && (desc.trim().length() > 0))
+                    s = item.getDescription();
+                    if ((s != null) && (s.trim().length() > 0))
                     {
                         out.println();
                         setIndent (++indentLevel);
-                        out.println (desc);
+                        out.println (s);
                         setIndent (--indentLevel);
                     }
                 }
@@ -144,7 +152,30 @@ public class TextOutputHandler implements RSSGetOutputHandler
 
         setIndent (0);
     }
+
+    /**
+     * Flush any buffered-up output. <i>rssget</i> calls this method
+     * once, after calling <tt>displayChannelItems()</tt> for all channels.
+     *
+     * @throws IOException  unable to write output
+     */
+    public void flush() throws IOException
+    {
+        out.flush();
+        out = null;
+    }
     
+    /**
+     * Get the content (i.e., MIME) type for output produced by this output
+     * handler.
+     *
+     * @return the content type
+     */
+    public String getContentType()
+    {
+        return "text/plain";
+    }
+
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/

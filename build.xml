@@ -43,65 +43,158 @@
     <exclude name="parser/*/*.java"/>
   </patternset>
 
-  <patternset id="parser.impls">
-    <include name="parser/*/*.java"/>
+  <patternset id="parser.builtin">
+    <include name="parser/minirss/*.java"/>
   </patternset>
 
-  <target name="parser_main" depends="init">
+  <patternset id="parser.informa">
+    <include name="parser/informa/*.java"/>
+  </patternset>
+
+  <patternset id="htmloutput">
+    <include name="htmloutput/*.java"/>
+  </patternset>
+
+  <target name="parser.main" depends="init">
     <!-- Compile the java code from . into ${build} -->
-    <javac srcdir="." 
-	   depend="true"
-	   listfiles="${compile.listfiles}"
-	   destdir="${build}">
+    <javac srcdir="."
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
       <classpath refid="project.class.path"/>
       <patternset refid="parser.main"/>
     </javac>
   </target>
 
-  <target name="main" depends="parser_main">
+  <target name="main" depends="parser.main">
     <!-- Compile the java code from . into ${build} -->
-    <javac srcdir="." 
-	   depend="true"
-	   listfiles="${compile.listfiles}"
-	   destdir="${build}">
+    <javac srcdir="."
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
       <classpath refid="project.class.path"/>
       <patternset refid="main.sources"/>
     </javac>
   </target>
 
-  <target name="parser_impls" depends="parser_main">
-    <!-- Compile the java code from . into ${build} -->
-    <javac srcdir="." 
-	   depend="true"
-	   listfiles="${compile.listfiles}"
-	   destdir="${build}">
+  <target name="parser.builtin" depends="parser.main">
+    <javac srcdir="."
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.impls"/>
+      <patternset refid="parser.builtin"/>
     </javac>
   </target>
 
-  <target name="rssget" depends="main, parser_impls"/>
+  <target name="-check.informa.exists">
+    <available classname="de.nava.informa.parsers.RSSParser"
+               property="informa.exists" value="true"/>
+  </target>
+
+  <target name="-check.informa" 
+          depends="-check.informa.exists"
+          unless="informa.exists">
+    <echo>
+*** The Informa parser is not currently available in the build environment.
+*** Because Informa is missing, all targets that require it will be skipped. 
+*** To enable these targets, download Informa from
+*** http://informa.sourceforge.net/ and follow the instructions in rssget's 
+*** docs/BUILDING.txt file.
+    </echo>
+  </target>
+
+  <target name="parser.informa" 
+          depends="-check.informa,parser.main"
+	  if="informa.exists">
+    <javac srcdir="."
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="parser.informa"/>
+    </javac>
+  </target>
+
+  <target name="informa" depends="parser.informa"/>
+
+  <target name="-check.xmlc.exists">
+    <available classname="org.enhydra.xml.xmlc.taskdef.Xmlc"
+               property="xmlc.exists" value="true"/>
+  </target>
+
+  <target name="-check.xmlc" depends="-check.xmlc.exists" unless="xmlc.exists">
+    <echo>
+*** XMLC is not currently available in the build environment. Because of
+*** this, all targets that require XMLC will be skipped. To enable these
+*** targets, place a copy of xmlc-taskdef.jar, from the XMLC build, in
+*** ANT_HOME/lib. XMLC is available at http://xmlc.objectweb.org/
+    </echo>
+  </target>
+
+  <target name="htmloutput" depends="main,-check.xmlc" if="xmlc.exists">
+
+    <!-- Make the <xmlc> task available -->
+
+    <taskdef name="xmlc" classname="org.enhydra.xml.xmlc.taskdef.Xmlc"/>
+
+    <!--
+    Specifying "packagename" forces <xmlc> to create the generated Java source
+    files a subdirectory. And, even then, the package name is wrong.
+    Specifying just "packagedir" causes it to create a bad "package"
+    line, but the file is at least local. Then, we edit it. (Yuck.)
+     -->
+
+    <xmlc srcdir="htmloutput"
+          sourceout="htmloutput"
+          includes="*.html"
+          keep="yes"
+          verbose="no"
+          packagedir=".">
+      <arg value="-delete-class"/>
+      <arg value="mockup"/>
+    </xmlc>
+
+    <replaceregexp match="^package.*;" 
+                   replace="package org.clapper.rssget.htmloutput;" 
+                   flags="g" 
+                   byline="true">
+      <fileset dir="." includes="htmloutput/*.java">
+        <contains text="XMLC GENERATED" casesensitive="yes"/>
+      </fileset>
+    </replaceregexp>
+
+    <javac srcdir="."
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="htmloutput"/>
+    </javac>
+  </target>
+
+  <target name="rssget" 
+          depends="main, parser.builtin, parser.informa, htmloutput"/>
 
   <target name="dist" depends="rssget"
           description="Generate the distribution">
-    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <mkdir dir="${dist}/lib"/>
-    <jar jarfile="${dist}/lib/${jarname}" basedir="${build}"/>
+    <mkdir dir="${dist}"/>
+    <jar jarfile="${dist}/${jarname}" basedir="${build}"/>
   </target>
 
   <target name="doc"
           description="Generate API Javadocs">
     <mkdir dir="dist/docs/api"/>
-    <javadoc 
+    <javadoc
              destdir="dist/docs/api"
-	     sourcepath="../../.."
+             sourcepath="../../.."
              author="true"
              version="true"
-	     splitindex="true"
+             splitindex="true"
              use="true"
-	     excludepackagenames=""
-	     packagenames="org.clapper.rssget.*"
-	     classpathref="project.class.path"
+             excludepackagenames=""
+             packagenames="org.clapper.rssget.*"
+             classpathref="project.class.path"
              windowtitle="clapper.org rssget utility">
       <doctitle><![CDATA[<h1>clapper.org rssget Documentation</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2004 Brian M. Clapper. All Rights Reserved.</i>]]></bottom>
@@ -112,9 +205,14 @@
   <target name="javadocs" depends="doc"/>
 
   <target name="clean"
-        description="clean up" >
-    <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
+          description="clean up" >
+
+    <delete failonerror="false">
+      <fileset dir="." includes="htmloutput/*HTML.java"/>
+      <fileset dir="." includes="htmloutput/*HTML.java.optionCheck"/>
+    </delete>
+
+    <delete dir="${build}" failonerror="false" includeEmptyDirs="true"/>
+    <delete dir="${dist}" failonerror="false" includeEmptyDirs="true"/>
   </target>
 </project>

@@ -34,10 +34,25 @@ public interface RSSChannel
      * in the collection are of type <tt>RSSItem</tt>.
      *
      * @return a (new) <tt>Collection</tt> of <tt>RSSItem</tt> objects.
-     *         The collection will be empty (never null) if there are
-     *         no items.
+     *         The collection will be empty (never null) if there are no
+     *         items. This <tt>Collection</tt> is expected to be a copy of
+     *         whatever the channel is really storing. (That is, if the
+     *         underlying implementation is using a <tt>Collection</tt> to
+     *         store its <tt>RSSItem</tt> objects, it should not return
+     *         that <tt>Collection</tt> directly; instead, it should return
+     *         a copy.)
      */
     public Collection getItems();
+
+    /**
+     * Change the items the channel the ones in the specified collection.
+     * If the collection is empty, the items are cleared. The items are
+     * copied from the supplied collection. (A reference to the supplied
+     * collection is <i>not</i> saved in this object.)
+     *
+     * @param newItems  new collection of <tt>RSSItem</tt> items.
+     */
+    public void setItems (Collection newItems);
 
     /**
      * Get the channel's title

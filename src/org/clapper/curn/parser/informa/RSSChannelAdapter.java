@@ -82,6 +82,26 @@ public class RSSChannelAdapter implements RSSChannel
     }
 
     /**
+     * Change the items the channel the ones in the specified collection.
+     * If the collection is empty, the items are cleared. The items are
+     * copied from the supplied collection. (A reference to the supplied
+     * collection is <i>not</i> saved in this object.)
+     *
+     * @param newItems  new collection of <tt>RSSItem</tt> items.
+     */
+    public void setItems (Collection newItems)
+    {
+        Collection items  = new ArrayList (this.channel.getItems());
+        Iterator   it;
+
+        for (it = items.iterator(); it.hasNext(); )
+            this.channel.removeItem ((ItemIF) it.next());
+
+        for (it = newItems.iterator(); it.hasNext(); )
+            this.channel.addItem (((RSSItemAdapter) it.next()).getItemIF());
+    }
+
+    /**
      * Get the channel's title
      *
      * @return the channel's title, or null if there isn't one

@@ -31,13 +31,20 @@ import org.clapper.util.config.ConfigurationException;
  *
  * @version <tt>$Revision$</tt>
  */
-class RSSGetConfiguration extends Configuration
+public class RSSGetConfiguration extends Configuration
 {
     /*----------------------------------------------------------------------*\
                                  Constants
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Main section name
+     */
     private static final String  MAIN_SECTION           = "rssget";
+
+    /**
+     * Variable names
+     */
     private static final String  VAR_CACHE_FILE         = "CacheFile";
     private static final String  VAR_NO_CACHE_UPDATE    = "NoCacheUpdate";
     private static final String  VAR_DEFAULT_CACHE_DAYS = "DefaultDaysToCache";
@@ -48,28 +55,41 @@ class RSSGetConfiguration extends Configuration
     private static final String  VAR_DEFAULT_MAIL_FROM  = "DefaultMailFrom";
     private static final String  VAR_MAIL_SUBJECT       = "Subject";
     private static final String  VAR_DAYS_TO_CACHE      = "DaysToCache";
-    private static final String  VAR_PARSER_CLASS       = "ParserClass";
+    private static final String  VAR_PARSER_CLASS_NAME  = "ParserClass";
     private static final String  VAR_PRUNE_URLS         = "PruneURLs";
+    private static final String  VAR_SHOW_RSS_VERSION   = "ShowRSSVersion";
+    private static final String  VAR_OUTPUT_CLASS_NAME  = "OutputHandlerClass";
 
-    private static final int     DEFAULT_DAYS_TO_CACHE  = 5;
-    private static final int     DEFAULT_VERBOSITY_LEVEL= 0;
-    private static final boolean DEFAULT_PRUNE_URLS     = false;
-    private static final String  DEFAULT_PARSER_CLASS   =
+    /**
+     * Default values
+     */
+    private static final int     DEF_DAYS_TO_CACHE     = 5;
+    private static final int     DEF_VERBOSITY_LEVEL   = 0;
+    private static final boolean DEF_PRUNE_URLS        = false;
+    private static final boolean DEF_QUIET             = false;
+    private static final boolean DEF_NO_CACHE_UPDATE   = false;
+    private static final boolean DEF_SUMMARY_ONLY      = false;
+    private static final boolean DEF_SHOW_RSS_VERSION  = false;
+    private static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.rssget.parser.minirss.MiniRSSParser";
+    private static final String  DEF_OUTPUT_CLASS_NAME =
+                             "org.clapper.rssget.TextOutputHandler";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
     private File        cacheFile        = null;
-    private int         defaultCacheDays = DEFAULT_DAYS_TO_CACHE;
+    private int         defaultCacheDays = DEF_DAYS_TO_CACHE;
     private boolean     updateCache      = true;
     private boolean     quiet            = false;
     private boolean     summaryOnly      = false;
+    private boolean     showRSSFormat    = false;
     private int         verboseness      = 0;
     private Collection  rssFeeds         = new ArrayList();
     private Map         rssFeedMap       = new HashMap();
-    private String      parserClassName  = DEFAULT_PARSER_CLASS;
+    private String      parserClassName  = DEF_PARSER_CLASS_NAME;
+    private String      outputClassName  = DEF_OUTPUT_CLASS_NAME;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -150,7 +170,9 @@ class RSSGetConfiguration extends Configuration
     \*----------------------------------------------------------------------*/
 
     /**
-     * Get the name of the RSS parser class to use.
+     * Get the name of the RSS parser class to use. The caller is responsible
+     * for loading the returned class name and verifying that it implements
+     * the appropriate interface(s).
      *
      * @return the full class name
      */
@@ -159,6 +181,17 @@ class RSSGetConfiguration extends Configuration
         return parserClassName;
     }
 
+    /**
+     * Get the name of the class that handles output. The caller is
+     * responsible for loading the returned class name and verifying that
+     * it implements the appropriate interface(s).
+     *
+     * @return the full class name
+     */
+    String getOutputHandlerClassName()
+    {
+        return outputClassName;
+    }
     /**
      * Get the configured cache file.
      *
@@ -233,6 +266,27 @@ class RSSGetConfiguration extends Configuration
     void setSummarizeOnlyFlag (boolean val)
     {
         this.summaryOnly = val;
+    }
+
+    /**
+     * Return the value of "show RSS version" flag.
+     *
+     * @return <tt>true</tt> if flag is set, <tt>false</tt> if it isn't
+     */
+    boolean showRSSVersion()
+    {
+        return showRSSFormat;
+    }
+
+    /**
+     * Set the value of the "show RSS version" flag.
+     *
+     * @param val <tt>true</tt> to set the flag,
+     *            <tt>false</tt> to clear it
+     */
+    void setShowRSSVersionFlag (boolean val)
+    {
+        this.showRSSFormat = val;
     }
 
     /**
@@ -371,20 +425,28 @@ class RSSGetConfiguration extends Configuration
 
             defaultCacheDays = getOptionalIntegerValue (MAIN_SECTION,
                                                         VAR_DEFAULT_CACHE_DAYS,
-                                                        DEFAULT_DAYS_TO_CACHE);
+                                                        DEF_DAYS_TO_CACHE);
             verboseness = getOptionalIntegerValue (MAIN_SECTION,
                                                    VAR_VERBOSITY_LEVEL,
-                                                   DEFAULT_VERBOSITY_LEVEL);
-            updateCache = (! getOptionalBooleanValue (MAIN_SECTION,
-                                                      VAR_NO_CACHE_UPDATE,
-                                                      false));
-            quiet = getOptionalBooleanValue (MAIN_SECTION, VAR_QUIET, false);
+                                                   DEF_VERBOSITY_LEVEL);
+            updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
+                                                     VAR_NO_CACHE_UPDATE,
+                                                     DEF_NO_CACHE_UPDATE));
+            quiet = getOptionalBooleanValue (MAIN_SECTION,
+                                             VAR_QUIET,
+                                             DEF_QUIET);
             summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
                                                    VAR_SUMMARY_ONLY,
-                                                   false);
+                                                   DEF_SUMMARY_ONLY);
+            showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
+                                                     VAR_SHOW_RSS_VERSION,
+                                                     DEF_SHOW_RSS_VERSION);
             parserClassName = getOptionalStringValue (MAIN_SECTION,
-                                                      VAR_PARSER_CLASS,
-                                                      DEFAULT_PARSER_CLASS);
+                                                      VAR_PARSER_CLASS_NAME,
+                                                      DEF_PARSER_CLASS_NAME);
+            outputClassName = getOptionalStringValue (MAIN_SECTION,
+                                                      VAR_OUTPUT_CLASS_NAME,
+                                                      DEF_OUTPUT_CLASS_NAME);
         }
 
         catch (NoSuchVariableException ex)
@@ -422,7 +484,7 @@ class RSSGetConfiguration extends Configuration
 
             boolean pruneURLs = getOptionalBooleanValue (sectionName,
                                                          VAR_PRUNE_URLS,
-                                                         DEFAULT_PRUNE_URLS);
+                                                         DEF_PRUNE_URLS);
             feedInfo.setPruneURLsFlag (pruneURLs);
 
             rssFeeds.add (feedInfo);

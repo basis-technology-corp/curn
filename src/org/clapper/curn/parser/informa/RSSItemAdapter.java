@@ -148,4 +148,19 @@ public class RSSItemAdapter implements RSSItem
     {
         return this.item.getDate();
     }
+
+    /*----------------------------------------------------------------------*\
+                          Package-visible Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the underlying Informa <tt>ItemIF</tt> object that this object
+     * contains.
+     *
+     * @return the underlying <tt>ItemIF</tt> object
+     */
+    ItemIF getItemIF()
+    {
+        return this.item;
+    }
 }
