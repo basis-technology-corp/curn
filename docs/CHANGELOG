@@ -3,11 +3,14 @@ $Id$
 
 Version 1.3:
 
-- When cacheing an item, the cache key is now computed from both the item's
-  URL and the item's ID, instead of just the ID (If the XML for the item
-  provides no ID, then the URL is used exclusively, as before.) This change
-  fixes cacheing for (broken) RSS feeds that provide different IDs for the
-  same URL.
+- Fixed some cacheing bugs and problems. First, cache lookups are now
+  consistent. Second, the cache now supports lookups by item ID and item
+  URL, not just ID, and curn will check for the URL if the item isn't
+  cached by ID. (Some RSS feeds provide a unique ID for each item. Some
+  don't.) This change fixes cacheing for (broken) RSS feeds that provide
+  different IDs for the same URL. I've seen at least one site where the
+  ID for a given item changes daily, even though the item and its link do
+  not.
 
 
 Version 1.2:
