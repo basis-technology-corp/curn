@@ -4,12 +4,24 @@
 
 package org.clapper.rssget;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import org.clapper.util.text.*;
-import org.clapper.util.config.*;
-import org.clapper.util.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import java.net.URL;
+import java.net.MalformedURLException;
+
+import org.clapper.util.config.Configuration;
+import org.clapper.util.config.NoSuchVariableException;
+import org.clapper.util.config.ConfigurationException;
 
 /**
  * <p><tt>RSSGetConfiguration</tt> uses the <tt>Configuration</tt>
@@ -43,7 +55,7 @@ class RSSGetConfiguration extends Configuration
     private static final int     DEFAULT_VERBOSITY_LEVEL= 0;
     private static final boolean DEFAULT_PRUNE_URLS     = false;
     private static final String  DEFAULT_PARSER_CLASS   =
-                                  "org.clapper.rssget.informa.RSSParserImpl";
+                             "org.clapper.rssget.parser.minirss.MiniRSSParser";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
