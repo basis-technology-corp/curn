@@ -615,11 +615,12 @@ section name; the whitespace is ignored. That is.
 <p>Each section contains zero or more variable settings. Similar to a Java
 properties file, the variables are specified as name/value pairs, separated
 by an equals sign ("=") or a colon (":"). Variable names are case-sensitive
-and mayu contain alphanumerics and periods. Variable values may contain
-anything at all. The parser ignores whitespace on either side of the "=" or
-":"; that is, leading whitespace in the value is skipped. The way to
-include leading whitespace in a value is escape the whitespace characters
-with backslashes. (See below).</p>
+and may contain any printable character (including white space), other than
+'$' '{', and '}'. Variable values may contain anything at all. The parser
+ignores whitespace on either side of the "=" or ":"; that is, leading
+whitespace in the value is skipped. The way to include leading whitespace
+in a value is escape the whitespace characters with backslashes. (See
+below).</p>
 
 <h4><a name="CfgContinuationLines"></a></h4>
 
@@ -716,6 +717,50 @@ are:</p>
 	  </td>
         </tr>
 
+	<tr class="oddrow" valign="top">
+	  <td align="left" class="code">now</td>
+	  <td align="left">The current time, formatted by calling
+          <tt>java.util.Date.toString()</tt> with the default locale.
+	    The program's current working directory. For example,
+	    <span class="code">${program:now}</span> would produce something
+	    like "Fri Aug 20 15:18:56 EDT 2004" on a machine with a default
+	    English locale.
+          </td>
+        </tr>
+
+        <tr class="evenrow" valign="top">
+          <td align="left">now</tt>&nbsp;<i>delim</i>&nbsp;<i>fmt</i>&nbsp;[<i>delim</i>&nbsp;<i>lang&nbsp;delim&nbsp;country</i>]]</td>
+          <td align="left">
+	    The current date/time, formatted with the specified
+            <span class="code">java.text.SimpleDateFormat</span>
+	    format string. If specified, the given locale and country code
+            will be used; otherwise, the default system locale will be
+            used. <i>lang</i> is a Java language code, such as "en", "fr",
+            etc. <i>country</i> is a 2-letter country code, e.g., "UK",
+            "US", "CA", etc. <i>delim</i> is a user-chosen delimiter that
+            separates the variable name ("<span class="code">now</span>")
+            from the format and the optional locale fields. The delimiter
+            can be anything that doesn't appear in the format string, the
+            variable name, or the locale. For example:
+
+            <blockquote>
+            <table border="0" align="center">
+	      <tr valign="top">
+	        <td class="code" nowrap>${program:now|yyyy.MM.dd 'at' hh:mm:ss z}</td>
+	        <td>2004.08.20 at 03:26:27 EDT</td>
+              </tr>
+	      <tr valign="top">
+	        <td class="code" nowrap>${program:now/yyyy.MM.dd 'at' HH:mm:ss z/en/US}</td>
+	        <td>2004/08/20 at 15:28:37 EDT</td>
+              </tr>
+	      <tr valign="top">
+	        <td class="code" nowrap>${program:now|dd MMM, yyyy HH:mm:ss z|fr|FR}</td>
+	        <td>20 ao&auml;t, 2004 at 03:30:29 EDT</td>
+              </tr>
+	    </table>
+	    </blockquote>
+	  </td>
+        </tr>
       </table>
     </td>
   </tr>
