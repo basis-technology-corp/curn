@@ -75,46 +75,6 @@ source and documentation packages.
     <pathelement path="classes/"/>
   </path>
 
-  <patternset id="main.sources">
-    <include name="*.java"/>
-    <exclude name="parser/*/*.java"/>
-    <exclude name="parser/*.java"/>
-  </patternset>
-
-  <patternset id="util">
-    <include name="util/*.java"/>
-  </patternset>
-
-  <patternset id="parser.main">
-    <include name="parser/*.java"/>
-    <exclude name="parser/*/*.java"/>
-    <exclude name="parser/tester.java"/>
-  </patternset>
-
-  <patternset id="parser.builtin">
-    <include name="parser/minirss/*.java"/>
-  </patternset>
-
-  <patternset id="parser.informa">
-    <include name="parser/informa/*.java"/>
-  </patternset>
-
-  <patternset id="parser.rome">
-    <include name="parser/rome/*.java"/>
-  </patternset>
-
-  <patternset id="parser.testers">
-    <include name="parser/tester.java"/>
-  </patternset>
-
-  <patternset id="htmloutput">
-    <include name="htmloutput/*.java"/>
-  </patternset>
-
-  <patternset id="email">
-    <include name="email/*.java"/>
-  </patternset>
-
   <!--
   ***************************************************************************
 			  Initialization Targets
@@ -141,41 +101,59 @@ source and documentation packages.
   <target name="all" depends="curn"/>
 
   <target name="curn"
-          depends="main,parsers,htmloutput,email,-build.info,parser.testers"
+          depends="main, parsers,output,-build.info,parser.testers"
           description="Compiles the source"/>
+
+  <target name="parsers"
+          depends="parser.builtin,parser.informa,parser.rome"/>
+
+  <!--
+  ***************************************************************************
+			       "util" Target
+  ***************************************************************************
+  -->
 
   <target name="util" depends="init">
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
+
       <classpath refid="project.class.path"/>
-      <patternset refid="util"/>
+
+      <patternset id="util">
+        <include name="util/*.java"/>
+      </patternset>
+
     </javac>
   </target>
 
-  <target name="parsers"
-          depends="parser.builtin,parser.informa,parser.rome"/>
+  <!--
+  ***************************************************************************
+		      Main (Top-level) Sources Target
+  ***************************************************************************
+  -->
 
-  <target name="parser.main" depends="util">
+  <target name="main" depends="util,bundles,parser.main">
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
+
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.main"/>
+
+      <patternset id="main.sources">
+        <include name="*.java"/>
+      </patternset>
+
     </javac>
   </target>
 
-  <target name="main" depends="bundles,parser.main">
-    <javac srcdir="${src.dir}"
-           depend="true"
-           listfiles="${compile.listfiles}"
-           destdir="${build}">
-      <classpath refid="project.class.path"/>
-      <patternset refid="main.sources"/>
-    </javac>
-  </target>
+  <!--
+  ***************************************************************************
+			  Resource Bundle Target
+  ***************************************************************************
+  -->
 
   <target name="bundles">
     <copy todir="${build}">
@@ -183,6 +161,28 @@ source and documentation packages.
         <include name="**/*.properties"/>
       </fileset>
     </copy>
+  </target>
+
+  <!--
+  ***************************************************************************
+			Top-level Parser API Target
+  ***************************************************************************
+  -->
+
+  <target name="parser.main" depends="util">
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+
+      <patternset id="parser.main">
+        <include name="parser/*.java"/>
+        <exclude name="parser/*/*.java"/>
+        <exclude name="parser/tester.java"/>
+      </patternset>
+
+    </javac>
   </target>
 
   <!--
@@ -197,7 +197,11 @@ source and documentation packages.
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.testers"/>
+
+      <patternset id="parser.testers">
+        <include name="parser/tester.java"/>
+      </patternset>
+
     </javac>
   </target>
 
@@ -213,7 +217,11 @@ source and documentation packages.
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.builtin"/>
+
+      <patternset id="parser.builtin">
+        <include name="parser/minirss/*.java"/>
+      </patternset>
+
     </javac>
   </target>
 
@@ -248,7 +256,11 @@ source and documentation packages.
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.informa"/>
+
+      <patternset id="parser.informa">
+        <include name="parser/informa/*.java"/>
+      </patternset>
+
     </javac>
   </target>
 
@@ -284,7 +296,11 @@ source and documentation packages.
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="parser.rome"/>
+
+      <patternset id="parser.rome">
+        <include name="parser/rome/*.java"/>
+      </patternset>
+
     </javac>
   </target>
 
@@ -292,9 +308,84 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			       XMLC Targets
+			Main Output Handler Targets
   ***************************************************************************
   -->
+
+  <target name="output" depends="main">
+    <!--
+      First the local targets.
+    -->
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+
+      <patternset id="output">
+         <include name="output/*.java"/>
+      </patternset>
+
+    </javac>
+
+    <!--
+     Now the subtargets.
+    -->
+    <antcall target="output.html"/>
+    <antcall target="output.script"/>
+    <antcall target="email"/>
+  </target>
+
+  <!--
+  ***************************************************************************
+			HTML Output Handler Targets
+  ***************************************************************************
+  -->
+
+  <target name="output.html" depends="main,-check.xmlc" if="xmlc.exists">
+
+    <!-- Make the <xmlc> task available -->
+
+    <taskdef name="xmlc" classname="org.enhydra.xml.xmlc.taskdef.Xmlc"/>
+
+    <!--
+    Specifying "packagename" forces <xmlc> to create the generated Java source
+    files a subdirectory. And, even then, the package name is wrong.
+    Specifying just "packagedir" causes it to create a bad "package"
+    line, but the file is at least local. Then, we edit it. (Yuck.)
+     -->
+
+    <xmlc srcdir="${src.dir}/output/html"
+          sourceout="${src.dir}/output/html"
+          includes="*.html"
+          keep="yes"
+          verbose="no"
+          packagedir=".">
+      <arg value="-delete-class"/>
+      <arg value="mockup"/>
+    </xmlc>
+
+    <replaceregexp match="^package.*;"
+                   replace="package org.clapper.curn.output.html;"
+                   flags="g"
+                   byline="true">
+      <fileset dir="${src.dir}" includes="output/html/*.java">
+        <contains text="XMLC GENERATED" casesensitive="yes"/>
+      </fileset>
+    </replaceregexp>
+
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+
+      <patternset id="output.html">
+        <include name="output/html/*.java"/>
+      </patternset>
+
+    </javac>
+  </target>
 
   <target name="-check.xmlc.exists">
     <available classname="org.enhydra.xml.xmlc.taskdef.Xmlc"
@@ -313,49 +404,39 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			HTML Output Handler Targets
+		       Script Output Handler Targets
   ***************************************************************************
   -->
 
-  <target name="htmloutput" depends="main,-check.xmlc" if="xmlc.exists">
-
-    <!-- Make the <xmlc> task available -->
-
-    <taskdef name="xmlc" classname="org.enhydra.xml.xmlc.taskdef.Xmlc"/>
-
-    <!--
-    Specifying "packagename" forces <xmlc> to create the generated Java source
-    files a subdirectory. And, even then, the package name is wrong.
-    Specifying just "packagedir" causes it to create a bad "package"
-    line, but the file is at least local. Then, we edit it. (Yuck.)
-     -->
-
-    <xmlc srcdir="${src.dir}/htmloutput"
-          sourceout="${src.dir}/htmloutput"
-          includes="*.html"
-          keep="yes"
-          verbose="no"
-          packagedir=".">
-      <arg value="-delete-class"/>
-      <arg value="mockup"/>
-    </xmlc>
-
-    <replaceregexp match="^package.*;"
-                   replace="package org.clapper.curn.htmloutput;"
-                   flags="g"
-                   byline="true">
-      <fileset dir="${src.dir}" includes="htmloutput/*.java">
-        <contains text="XMLC GENERATED" casesensitive="yes"/>
-      </fileset>
-    </replaceregexp>
+  <target name="output.script" depends="main,-check.bsf" if="bsf.exists">
 
     <javac srcdir="${src.dir}"
            depend="true"
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="htmloutput"/>
+
+      <patternset id="output.script">
+        <include name="output/script/*.java"/>
+      </patternset>
+
     </javac>
+
+  </target>
+
+  <target name="-check.bsf.exists">
+    <available classname="org.apache.bsf.BSFManager"
+               property="bsf.exists" value="true"/>
+  </target>
+
+  <target name="-check.bsf" depends="-check.bsf.exists" unless="bsf.exists">
+    <echo>
+*** The Jakarta Apache Bean Scripting Framework (BSF) is not currently
+*** available in the build environment. Because of this, all targets that
+*** require BSF will be skipped. To enable these targets, place a copy of
+*** bsf.jar in ANT_HOME/lib or in the CLASSPATH. BSF is available at
+*** http://jakarta.apache.org/bsf/
+    </echo>
   </target>
 
   <!--
@@ -385,7 +466,11 @@ source and documentation packages.
            listfiles="${compile.listfiles}"
            destdir="${build}">
       <classpath refid="project.class.path"/>
-      <patternset refid="email"/>
+
+      <patternset id="output.email">
+        <include name="output/email/*.java"/>
+      </patternset>
+
     </javac>
   </target>
 
@@ -537,8 +622,8 @@ source and documentation packages.
           description="clean up" >
 
     <delete failonerror="false">
-      <fileset dir="${src.dir}" includes="htmloutput/*HTML.java"/>
-      <fileset dir="${src.dir}" includes="htmloutput/*HTML.java.optionCheck"/>
+      <fileset dir="${src.dir}" includes="output/html/*HTML.java"/>
+      <fileset dir="${src.dir}" includes="output/html/*HTML.java.optionCheck"/>
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
