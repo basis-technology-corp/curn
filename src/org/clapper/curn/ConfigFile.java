@@ -26,10 +26,10 @@ import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
 
 /**
- * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt>
- * class (part of the <i>clapper.org</i> Java Utility library) to parse
- * and validate the <i>rssget</i> configuration file, holding the results
- * in memory for easy access.</p>
+ * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt> class (part of
+ * the <i>clapper.org</i> Java Utility library) to parse and validate the
+ * <i>rssget</i> configuration file, holding the results in memory for easy
+ * access.</p>
  *
  * @version <tt>$Revision$</tt>
  */
@@ -98,8 +98,8 @@ public class ConfigFile extends Configuration
     private boolean     showRSSFormat    = false;
     private boolean     showDates        = false;
     private int         verboseness      = 0;
-    private Collection  rssFeeds         = new ArrayList();
-    private Map         rssFeedMap       = new HashMap();
+    private Collection  feeds            = new ArrayList();
+    private Map         feedMap          = new HashMap();
     private String      parserClassName  = DEF_PARSER_CLASS_NAME;
     private Collection  outputClassNames = new ArrayList();
     private String      smtpHost         = DEF_SMTP_HOST;
@@ -434,7 +434,7 @@ public class ConfigFile extends Configuration
      */
     public Collection getFeeds()
     {
-        return Collections.unmodifiableCollection (rssFeeds);
+        return Collections.unmodifiableCollection (feeds);
     }
 
     /**
@@ -451,7 +451,7 @@ public class ConfigFile extends Configuration
      */
     public boolean hasFeed (URL url)
     {
-        return rssFeedMap.containsKey (url);
+        return feedMap.containsKey (url);
     }
 
     /**
@@ -469,7 +469,7 @@ public class ConfigFile extends Configuration
      */
     public FeedInfo getFeedInfoFor (URL url)
     {
-        return (FeedInfo) rssFeedMap.get (url);
+        return (FeedInfo) feedMap.get (url);
     }
 
     /**
@@ -489,7 +489,7 @@ public class ConfigFile extends Configuration
     {
         try
         {
-            return (FeedInfo) rssFeedMap.get (new URL (url));
+            return (FeedInfo) feedMap.get (new URL (url));
         }
 
         catch (MalformedURLException ex)
@@ -653,8 +653,8 @@ public class ConfigFile extends Configuration
             if (s != null)
                 feedInfo.setItemURLEditCommand (s);
 
-            rssFeeds.add (feedInfo);
-            rssFeedMap.put (url, feedInfo);
+            feeds.add (feedInfo);
+            feedMap.put (url, feedInfo);
         }
 
         catch (MalformedURLException ex)
