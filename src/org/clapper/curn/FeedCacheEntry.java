@@ -46,8 +46,11 @@ class FeedCacheEntry implements Serializable
 
     /**
      * See JDK 1.5 version of java.io.Serializable
+     *
+     * Temporarily disabled. Interferes with existing caches. Must have a way
+     * to convert existing caches.
      */
-    private static final long serialVersionUID = 1L;
+    //private static final long serialVersionUID = 1L;
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -72,9 +75,9 @@ class FeedCacheEntry implements Serializable
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
     FeedCacheEntry (String entryID,
-                   URL    channelURL,
-                   URL    entryURL,
-                   long   timestamp)
+                    URL    channelURL,
+                    URL    entryURL,
+                    long   timestamp)
     {
         this.entryID    = entryID;
         this.channelURL = channelURL;

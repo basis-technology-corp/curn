@@ -62,8 +62,11 @@ public class FeedCache implements Serializable
 
     /**
      * See JDK 1.5 version of java.io.Serializable
+     *
+     * Temporarily disabled. Interferes with existing caches. Must have a way
+     * to convert existing caches.
      */
-    private static final long serialVersionUID = 1L;
+    //private static final long serialVersionUID = 1L;
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
