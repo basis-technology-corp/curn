@@ -121,7 +121,6 @@ public class Tool extends CommandLineUtility
     private boolean     optShowVersion   = false;
     private Boolean     optShowDates     = null;
     private Boolean     optShowAuthors   = null;
-    private Boolean     optQuiet         = null;
     private Boolean     optRSSVersion    = null;
     private Boolean     optUpdateCache   = null;
     private int         maxThreads       = 0;
@@ -227,14 +226,6 @@ public class Tool extends CommandLineUtility
 
             case 'D':           // --no-dates
                 optShowDates = Boolean.FALSE;
-                break;
-
-            case 'Q':           // --no-quiet
-                optQuiet = Boolean.FALSE;
-                break;
-
-            case 'q':           // --quiet
-                optQuiet = Boolean.TRUE;
                 break;
 
             case 'r':           // --rss-version
@@ -380,10 +371,6 @@ public class Tool extends CommandLineUtility
                         "Show dates on feeds and feed items, if available.");
         info.addOption ('D', "no-dates",
                         "Don't show dates on feeds and feed items.");
-        info.addOption ('Q', "no-quiet",
-                        "Emit messages about sites with no new items.");
-        info.addOption ('q', "quiet",
-                        "Be quiet about sites with no new items.");
         info.addOption ('r', "rss-version",
                         "Show the RSS version each site uses.");
         info.addOption ('R', "no-rss-version",
@@ -520,9 +507,6 @@ public class Tool extends CommandLineUtility
 
         if (optShowAuthors != null)
             config.setShowAuthorsFlag (optShowAuthors.booleanValue());
-
-        if (optQuiet != null)
-            config.setQuietFlag (optQuiet.booleanValue());
 
         if (optRSSVersion != null)
             config.setShowRSSVersionFlag (optRSSVersion.booleanValue());

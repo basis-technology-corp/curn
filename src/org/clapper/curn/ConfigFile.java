@@ -84,7 +84,6 @@ public class ConfigFile extends Configuration
      */
     private static final String VAR_CACHE_FILE        = "CacheFile";
     private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
-    private static final String VAR_QUIET             = "Quiet";
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
     private static final String VAR_SMTPHOST          = "SMTPHost";
     private static final String VAR_DEFAULT_MAIL_FROM = "DefaultMailFrom";
@@ -128,7 +127,6 @@ public class ConfigFile extends Configuration
      */
     private static final int     DEF_DAYS_TO_CACHE     = 30;
     private static final boolean DEF_PRUNE_URLS        = false;
-    private static final boolean DEF_QUIET             = false;
     private static final boolean DEF_NO_CACHE_UPDATE   = false;
     private static final boolean DEF_SUMMARY_ONLY      = false;
     private static final boolean DEF_SHOW_RSS_VERSION  = false;
@@ -148,25 +146,24 @@ public class ConfigFile extends Configuration
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private File            cacheFile             = null;
-    private int             defaultCacheDays      = DEF_DAYS_TO_CACHE;
-    private boolean         updateCache           = true;
-    private boolean         quiet                 = false;
-    private boolean         summaryOnly           = false;
-    private boolean         showRSSFormat         = false;
-    private boolean         showDates             = false;
-    private Collection      feeds                 = new ArrayList();
-    private Map             feedMap               = new HashMap();
-    private String          parserClassName       = DEF_PARSER_CLASS_NAME;
-    private List            outputHandlers        = new ArrayList();
-    private Map             outputHandlerSections = new HashMap();
-    private String          smtpHost              = DEF_SMTP_HOST;
-    private String          emailSender           = null;
-    private String          emailSubject          = DEF_EMAIL_SUBJECT;
-    private boolean         showAuthors           = false;
-    private boolean         getGzippedFeeds       = true;
-    private int             defaultSortBy         = DEF_SORT_BY;
-    private int             maxThreads            = DEF_MAX_THREADS;
+    private File        cacheFile             = null;
+    private int         defaultCacheDays      = DEF_DAYS_TO_CACHE;
+    private boolean     updateCache           = true;
+    private boolean     summaryOnly           = false;
+    private boolean     showRSSFormat         = false;
+    private boolean     showDates             = false;
+    private Collection  feeds                 = new ArrayList();
+    private Map         feedMap               = new HashMap();
+    private String      parserClassName       = DEF_PARSER_CLASS_NAME;
+    private List        outputHandlers        = new ArrayList();
+    private Map         outputHandlerSections = new HashMap();
+    private String      smtpHost              = DEF_SMTP_HOST;
+    private String      emailSender           = null;
+    private String      emailSubject          = DEF_EMAIL_SUBJECT;
+    private boolean     showAuthors           = false;
+    private boolean     getGzippedFeeds       = true;
+    private int         defaultSortBy         = DEF_SORT_BY;
+    private int         maxThreads            = DEF_MAX_THREADS;
 
     /**
      * For log messages
@@ -366,32 +363,6 @@ public class ConfigFile extends Configuration
     public void setMustUpdateCacheFlag (boolean val)
     {
         updateCache = val;
-    }
-
-    /**
-     * Return the value of the "quiet" flag.
-     *
-     * @return <tt>true</tt> if "quiet" flag is set, <tt>false</tt>
-     *         otherwise
-     *
-     * @see #setQuietFlag
-     */
-    public boolean beQuiet()
-    {
-        return quiet;
-    }
-
-    /**
-     * Set the value of the "quiet" flag.
-     *
-     * @param val <tt>true</tt> to set the "quiet" flag, <tt>false</tt>
-     *            to clear it
-     *
-     * @see #beQuiet
-     */
-    public void setQuietFlag (boolean val)
-    {
-        this.quiet = val;
     }
 
     /**
@@ -712,9 +683,6 @@ public class ConfigFile extends Configuration
             updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_NO_CACHE_UPDATE,
                                                      DEF_NO_CACHE_UPDATE));
-            quiet = getOptionalBooleanValue (MAIN_SECTION,
-                                             VAR_QUIET,
-                                             DEF_QUIET);
             summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
                                                    VAR_SUMMARY_ONLY,
                                                    DEF_SUMMARY_ONLY);

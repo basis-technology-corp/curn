@@ -14,10 +14,6 @@ Version 1.4:
   TextOutputHandler           org.clapper.curn        org.clapper.curn.output
   ---------------------------------------------------------------------------
 
-- When parsed from the config, output handlers are now wrapped in
-  ConfiguredOutputHandler objects, which contain all the config data for
-  the handler, and provide a means to instantiate a handler easily.
-
 - Curn now supports multiple output handlers of the same class in the same
   configuration file.
 
@@ -27,6 +23,18 @@ Version 1.4:
   "http://jakarta.apache.org/bsf/". It's basically a shim that uses BSF
   to permit output handlers to be written in any BSF-supported scripting
   language (e.g., Jython, JRuby, Rhino Javascript, etc.)
+
+- The "Quiet" configuration option is no longer supported. If it appears
+  in a configuration file, it will be silently ignored. Similarly, the
+  --quiet (-q) and --no-quiet (-Q) command line options no longer exist.
+
+- (API) When parsed from the config, output handlers are now wrapped in
+  ConfiguredOutputHandler objects, which contain all the config data for
+  the handler, and provide a means to instantiate a handler easily.
+
+- (API) The ConfigFile class no longer supports the Quiet configuration
+  option, and the methods used to test for the value of that option have
+  been removed.
 
 
 Version 1.3.3:

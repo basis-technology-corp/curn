@@ -168,7 +168,7 @@ public class TextOutputHandler extends FileOutputHandler
 
         indentLevel = setIndent (0);
 
-        if ((items.size() != 0) || (! config.beQuiet()))
+        if (items.size() != 0)
         {
             // Emit a site (channel) header.
 
@@ -258,17 +258,6 @@ public class TextOutputHandler extends FileOutputHandler
                     }
                 }
 
-                setIndent (--indentLevel);
-            }
-        }
-
-        else
-        {
-            if (! config.beQuiet())
-            {
-                setIndent (++indentLevel);
-                out.println ();
-                out.println ("No new items");
                 setIndent (--indentLevel);
             }
         }
