@@ -29,6 +29,8 @@ package org.clapper.curn;
 import java.net.URL;
 import java.io.File;
 
+import org.clapper.curn.util.Util;
+
 import org.clapper.curn.parser.RSSChannel;
 
 /**
@@ -114,7 +116,7 @@ public class FeedInfo
      */
     public int hashCode()
     {
-        return getCacheKey().hashCode();
+        return getURL().hashCode();
     }
 
     /**
@@ -127,16 +129,6 @@ public class FeedInfo
     public URL getURL()
     {
         return siteURL;
-    }
-
-    /**
-     * Get the unique key to use to cache information about the feed.
-     *
-     * @return the unique ID
-     */
-    public String getCacheKey()
-    {
-        return getURL().toExternalForm();
     }
 
     /**

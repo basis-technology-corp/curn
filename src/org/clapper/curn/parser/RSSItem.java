@@ -26,8 +26,6 @@
 
 package org.clapper.curn.parser;
 
-import org.clapper.curn.Util;
-
 import org.clapper.util.text.TextUtil;
 
 import java.net.URL;
@@ -200,30 +198,4 @@ public abstract class RSSItem
      * @return the ID field, or null if not set
      */
     public abstract String getID();
-
-    /**
-     * Get the unique ID for this item. The unique ID might be just the
-     * URL (for feeds that don't support an ID field), or it might be a
-     * combination of the URL and the ID field. (Combining the two fields
-     * is necessary to handle broken sites that produce different IDs for
-     * the same feed item.) This unique ID is intended to be used as the
-     * cache identifier for the item.
-     *
-     * @return the unique ID string
-     */
-    public final String getUniqueID()
-    {
-        StringBuffer uniqueID = new StringBuffer();
-        String       idField  = getID();
-
-        if (idField != null)
-        {
-            uniqueID.append (idField);
-            uniqueID.append (" ");
-        }
-
-        uniqueID.append (Util.normalizeURL (getLink()).toExternalForm());
-
-        return uniqueID.toString();
-    }
 }

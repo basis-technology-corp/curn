@@ -50,6 +50,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
 
+import org.clapper.curn.util.Util;
+
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
@@ -288,13 +290,6 @@ class FeedDownloadThread extends Thread
                 log.debug ("Feed may have changed. "
                          + "Downloading and processing it.");
 
-                if (cache != null)
-                {
-                    cache.addToCache (feedInfo.getCacheKey(),
-                                      feedURL,
-                                      feedInfo);
-                }
-
                 InputStream is = getURLInputStream (conn);
 
                 // Download the feed to a file. We'll parse the file.
@@ -426,28 +421,32 @@ class FeedDownloadThread extends Thread
     {
         long     lastSeen = 0;
         boolean  hasChanged = false;
-        String   cacheKey = feedInfo.getCacheKey();
         URL      feedURL = feedInfo.getURL();
 
-        if ((cache != null) && (cache.contains (cacheKey)))
+        if (cache != null)
         {
-            FeedCacheEntry entry = (FeedCacheEntry) cache.getItem (cacheKey);
-            lastSeen = entry.getTimestamp();
+            FeedCacheEntry entry = cache.getItemByURL (feedURL);
 
-            if (lastSeen > 0)
+            if (entry != null)
             {
-                if (log.isDebugEnabled())
-                {
-                    log.debug ("Setting If-Modified-Since header for feed \""
-                             + feedURL.toString()
-                             + "\" to: "
-                             + String.valueOf (lastSeen)
-                             + " ("
-                             + new Date (lastSeen).toString()
-                             + ")");
-                }
+                lastSeen = entry.getTimestamp();
 
-                conn.setIfModifiedSince (lastSeen);
+                if (lastSeen > 0)
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug ("Setting If-Modified-Since header for "
+                                 + "feed \""
+                                 + feedURL.toString()
+                                 + "\" to: "
+                                 + String.valueOf (lastSeen)
+                                 + " ("
+                                 + new Date (lastSeen).toString()
+                                 + ")");
+                    }
+
+                    conn.setIfModifiedSince (lastSeen);
+                }
             }
         }
     }
@@ -458,13 +457,14 @@ class FeedDownloadThread extends Thread
         long     lastSeen = 0;
         long     lastModified = 0;
         boolean  hasChanged = false;
-        String   cacheKey = feedInfo.getCacheKey();
         URL      feedURL = feedInfo.getURL();
 
-        if ((cache != null) && (cache.contains (cacheKey)))
+        if (cache != null)
         {
-            FeedCacheEntry entry = (FeedCacheEntry) cache.getItem (cacheKey);
-            lastSeen = entry.getTimestamp();
+            FeedCacheEntry entry = cache.getItemByURL (feedURL);
+
+            if (entry != null)
+                lastSeen = entry.getTimestamp();
         }
 
         if (lastSeen == 0)
@@ -577,18 +577,33 @@ class FeedDownloadThread extends Thread
 
             // Normalize the URL and save it.
 
-            item.setLink (Util.normalizeURL (itemURL));
+            itemURL = Util.normalizeURL (itemURL);
+            item.setLink (itemURL);
 
             // Skip it if it's cached.
 
-            String cacheKey = item.getUniqueID();
+            String itemID = item.getID();
             log.debug ("Item link: " + itemURL);
-            log.debug ("Item ID: " + cacheKey);
-            if ((cache != null) && cache.contains (cacheKey))
+            log.debug ("Item ID: " + ((itemID == null) ? "<null>" : itemID));
+            if (cache != null)
             {
-                log.debug ("Skipping cached URL: " + itemURL.toString());
-                it.remove();
-                continue;
+                if ((itemID != null) && (cache.containsID (itemID)))
+                {
+                    log.debug ("Skipping cached ID \""
+                             + itemID
+                             + "\" (item URL \""
+                             + itemURL.toString()
+                             + "\")");
+                    it.remove();
+                }
+
+                else if (cache.containsURL (itemURL))
+                {
+                    log .debug ("Skipping cached URL \""
+                             + itemURL.toString()
+                             + "\")");
+                    it.remove();
+                }
             }
         }
 
@@ -601,7 +616,7 @@ class FeedDownloadThread extends Thread
                 RSSItem item = (RSSItem) it.next();
 
                 log.debug ("Cacheing URL: " + item.getLink().toString());
-                cache.addToCache (item.getUniqueID(),
+                cache.addToCache (item.getID(),
                                   item.getLink(),
                                   feedInfo);
             }

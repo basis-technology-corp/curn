@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.clapper.curn.util.Util;
+
 import org.clapper.util.misc.Logger;
 
 /**
@@ -65,9 +67,15 @@ public class FeedCache implements Serializable
     private ConfigFile config;
 
     /**
-     * The actual cache
+     * The actual cache, indexed by unique ID.
      */
-    private Map cacheMap;
+    private Map cacheByID;
+
+    /**
+     * Alternate cache (not saved, but regenerated on the fly), indexed
+     * by URL.
+     */
+    private Map cacheByURL;
 
     /**
      * Whether or not the cache has been modified since saved or loaded
@@ -112,13 +120,14 @@ public class FeedCache implements Serializable
         throws IOException
     {
         File cacheFile = config.getCacheFile();
+        this.cacheByURL = new HashMap();
 
         log.debug ("Reading cache from \"" + cacheFile.getPath() + "\"");
 
         if (! cacheFile.exists())
         {
             log.debug ("Cache \"" + cacheFile.getPath() + "\" doesn't exist.");
-            this.cacheMap = new HashMap();
+            this.cacheByID  = new HashMap();
         }
 
         else
@@ -128,7 +137,7 @@ public class FeedCache implements Serializable
 
             try
             {
-                this.cacheMap = (Map) objIn.readObject();
+                this.cacheByID = (Map) objIn.readObject();
                 if (log.isDebugEnabled())
                     dumpCache ("before pruning");
                 pruneCache();
@@ -166,28 +175,46 @@ public class FeedCache implements Serializable
                                            (new FileOutputStream (cacheFile));
 
             log.debug ("Saving cache to \"" + cacheFile.getPath() + "\"");
-            objOut.writeObject (cacheMap);
+            objOut.writeObject (cacheByID);
             objOut.close();
             this.modified = false;
         }
     }
 
     /**
-     * Determine whether a given ID is cached.
+     * Determine whether the cache contains an entry with the specified
+     * unique ID.
      *
-     * @param id  the uniqueID to check.
+     * @param id  the ID to check.
      *
-     * @return <tt>true</tt> if cached, <tt>false</tt> if not
+     * @return <tt>true</tt> if the ID is present in the cache,
+     *         <tt>false</tt> if not
      */
-    public boolean contains (String id)
+    public boolean containsID (String id)
     {
-        boolean hasKey = cacheMap.containsKey (id);
+        boolean hasKey = cacheByID.containsKey (id);
         log.debug ("Cache contains \"" + id + "\"? " + hasKey);
         return hasKey;
     }
 
     /**
-     * Get an item from the cache.
+     * Determine whether the cache contains the specified URL.
+     *
+     * @param url  the URL to check. This method normalizes it.
+     *
+     * @return <tt>true</tt> if the ID is present in the cache,
+     *         <tt>false</tt> if not
+     */
+    public boolean containsURL (URL url)
+    {
+        String  urlKey = Util.urlToLookupKey (url);
+        boolean hasURL = cacheByURL.containsKey (urlKey);
+        log.debug ("Cache contains \"" + urlKey + "\"? " + hasURL);
+        return hasURL;
+    }
+
+    /**
+     * Get an item from the cache by its unique ID.
      *
      * @param id  the unique ID to check
      *
@@ -196,13 +223,27 @@ public class FeedCache implements Serializable
      */
     public FeedCacheEntry getItem (String id)
     {
-        return (FeedCacheEntry) cacheMap.get (id);
+        return (FeedCacheEntry) cacheByID.get (id);
+    }
+
+    /**
+     * Get an item from the cache by its URL.
+     *
+     * @param url the URL
+     *
+     * @return the corresponding <tt>FeedCacheEntry</tt> object, or null if
+     *         not found
+     */
+    public FeedCacheEntry getItemByURL (URL url)
+    {
+        return (FeedCacheEntry) cacheByURL.get (Util.urlToLookupKey (url));
     }
 
     /**
      * Add (or replace) a cached URL.
      *
-     * @param uniqueID   the unique ID string for the cache entry
+     * @param uniqueID   the unique ID string for the cache entry, or null.
+     *                   If null, the URL is used as the unique ID.
      * @param url        the URL to cache. May be an individual item URL, or
      *                   the URL for an entire feed.
      * @param parentFeed the associated feed
@@ -213,6 +254,11 @@ public class FeedCache implements Serializable
                                          URL      url,
                                          FeedInfo parentFeed)
     {
+        String urlKey = Util.urlToLookupKey (url);
+
+        if (uniqueID == null)
+            uniqueID = urlKey;
+
         URL parentURL = parentFeed.getURL();
         FeedCacheEntry entry = new FeedCacheEntry (uniqueID,
                                                  parentURL,
@@ -226,7 +272,8 @@ public class FeedCache implements Serializable
                   + "\", channel URL: \""
                   + entry.getChannelURL().toExternalForm()
                   + "\"");
-        cacheMap.put (uniqueID, entry);
+        cacheByID.put (uniqueID, entry);
+        cacheByURL.put (urlKey, entry);
         modified = true;
     }
 
@@ -256,12 +303,13 @@ public class FeedCache implements Serializable
         log.debug ("Cache's notion of current time: "
                  + new Date (currentTime));
 
-        for (Iterator itKeys = cacheMap.keySet().iterator();
+        for (Iterator itKeys = cacheByID.keySet().iterator();
              itKeys.hasNext(); )
         {
             String itemKey = (String) itKeys.next();
-            FeedCacheEntry entry = (FeedCacheEntry) cacheMap.get (itemKey);
+            FeedCacheEntry entry = (FeedCacheEntry) cacheByID.get (itemKey);
             URL channelURL = entry.getChannelURL();
+            boolean removed = false;
 
             if (log.isDebugEnabled())
                 dumpCacheEntry (itemKey, entry, "");
@@ -280,6 +328,7 @@ public class FeedCache implements Serializable
                          + "\" no longer corresponds to a configured feed. "
                          + "Tossing it.");
                 itKeys.remove();
+                removed = true;
             }
 
             else
@@ -307,7 +356,7 @@ public class FeedCache implements Serializable
                              + "notion of current time. Setting its "
                              + "timestamp to the current time.");
                     entry.setTimestamp (currentTime);
-                    modified = true;
+                    this.modified = true;
                 }
 
                 else if (expires < currentTime)
@@ -316,8 +365,20 @@ public class FeedCache implements Serializable
                              + itemKey
                              + "\" has expired. Deleting cache entry.");
                     itKeys.remove();
-                    modified = true;
+                    this.modified = true;
+                    removed = true;
                 }
+            }
+
+            if (! removed)
+            {
+                // Add to URL cache.
+
+                String urlKey = Util.urlToLookupKey (entry.getEntryURL());
+                log.debug ("Loading URL \""
+                         + urlKey
+                         + "\" into in-memory lookup cache.");
+                cacheByURL.put (urlKey, entry);
             }
         }
 
@@ -332,11 +393,11 @@ public class FeedCache implements Serializable
     private void dumpCache (String label)
     {
         log.debug ("CACHE DUMP: " + label);
-        Set sortedKeys = new TreeSet (cacheMap.keySet());
+        Set sortedKeys = new TreeSet (cacheByID.keySet());
         for (Iterator itKeys = sortedKeys.iterator(); itKeys.hasNext(); )
         {
             String itemKey = (String) itKeys.next();
-            dumpCacheEntry (itemKey, (FeedCacheEntry) cacheMap.get (itemKey),
+            dumpCacheEntry (itemKey, (FeedCacheEntry) cacheByID.get (itemKey),
                             "");
         }
     }   
