@@ -218,8 +218,8 @@ public final class Version
     {
         BuildInfo buildInfo = new BuildInfo (BUILD_INFO_BUNDLE_NAME);
 
-        out.println ();
         showVersion (out);
+        out.println ();
         out.println ("Build date:     " + buildInfo.getBuildDate());
         out.println ("Built by:       " + buildInfo.getBuildUserID());
         out.println ("Built on:       " + buildInfo.getBuildOperatingSystem());
