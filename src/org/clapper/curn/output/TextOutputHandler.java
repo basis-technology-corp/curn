@@ -44,6 +44,14 @@ import java.util.Iterator;
 public class TextOutputHandler extends FileOutputHandler
 {
     /*----------------------------------------------------------------------*\
+                             Private Constants
+    \*----------------------------------------------------------------------*/
+
+    private static final String HORIZONTAL_RULE =
+                      "---------------------------------------"
+                    + "---------------------------------------";
+
+    /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
@@ -130,8 +138,7 @@ public class TextOutputHandler extends FileOutputHandler
             // Emit a site (channel) header.
 
             out.println();
-            out.println ("---------------------------------------" +
-                         "---------------------------------------");
+            out.println (HORIZONTAL_RULE);
 
             out.println (convert (channel.getTitle()));
             out.println (channel.getLink().toString());
@@ -241,6 +248,10 @@ public class TextOutputHandler extends FileOutputHandler
      */
     public void flush() throws CurnException
     {
+        out.println ();
+        out.println (HORIZONTAL_RULE);
+        out.println ("curn, version " + Version.VERSION);
+        out.println ("Generated " + new Date().toString());
         out.flush();
         out = null;
     }
