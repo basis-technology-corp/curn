@@ -1,8 +1,29 @@
 <!--
+  Ant build file for clapper.org Java rssget utility
 
-Ant build file for clapper.org Java rssget utility
+  $Id$
+  ===========================================================================
+  This software is released under a Berkeley-style license:
 
-$Id$
+  Copyright (c) 2004 Brian M. Clapper. All rights reserved.
+
+  Redistribution and use in source and binary forms are permitted provided
+  that: (1) source distributions retain this entire copyright notice and
+  comment; and (2) modifications made to the software are prominently
+  mentioned, and a copy of the original software (or a pointer to its
+  location) are included. The name of the author may not be used to endorse
+  or promote products derived from this software without specific prior
+  written permission.
+
+  THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+  Effectively, this means you can do what you want with the software except
+  remove this notice or take advantage of the author's name. If you modify
+  the software and redistribute your modified version, you must indicate that
+  your version is a modification of the original, and you must provide either
+  a pointer to or a copy of the original.
 
 -->
 
@@ -23,13 +44,16 @@ $Id$
   <property name="dist"  location="dist"/>
   <property name="build.compiler" value="jikes"/>
   <property name="build.compiler.emacs" value="true"/>
+  <property name="build.info.file" 
+            value="${build}/org/clapper/rssget/BuildInfoBundle.properties"/>
   <property name="compile.listfiles" value="no"/>
-  <property name="code_jarfile" value="rssget.jar"/>
-  <property name="docs_zipfile" value="javadocs.zip"/>
+  <property name="code_jar_name" value="rssget"/>
+  <property name="code_jar_file" value="${code_jar_name}.jar"/>
+  <property name="code_jar_path" value="${dist}/${code_jar_file}"/>
   <property name="docs_top_dir" value="${dist}/docs"/>
   <property name="docs_api_dir" value="${docs_top_dir}/api"/>
-  <property name="src_zipfile" value="src.zip"/>
   <property name="zip_dir_prefix" value="org/clapper/util/"/>
+  <property name="release_dir" value="${dist}/release"/>
 
   <!--
   ***************************************************************************
@@ -78,7 +102,10 @@ $Id$
 
   <target name="init">
     <!-- Create the time stamp -->
-    <tstamp/>
+    <tstamp>
+      <format property="build.date" pattern="dd MMMM, yyyy HH:mm:ss z"
+              locale="en"/>
+    </tstamp>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
     <depend srcdir="." destdir="${build}"/>
@@ -90,8 +117,10 @@ $Id$
   ***************************************************************************
   -->
 
+  <target name="all" depends="rssget"/>
+
   <target name="rssget" 
-          depends="main, parser.builtin, parser.informa, htmloutput, email"/>
+          depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info"/>
 
   <target name="parser.main" depends="init">
     <!-- Compile the java code from . into ${build} -->
@@ -237,6 +266,41 @@ $Id$
     </javac>
   </target>
 
+  <!-- Load the API version from the org.clapper.rssget.Util class -->
+
+  <target name="-get.version" description="Get the version stamp">
+    <loadproperties srcfile="${build}/org/clapper/rssget/Util.class">
+      <filterchain>
+        <classconstants/>
+      </filterchain>
+    </loadproperties>
+
+    <echo>Version: ${VERSION}</echo>
+  </target>
+
+  <target name="version" depends="-get.version"/>
+
+  <target name="-build.info" depends="-get.version"
+          description="Create build info properties file">
+
+    <taskdef name="make_build_info" 
+             classname="org.clapper.util.ant.MakeBuildInfoTask"/>
+
+    <condition property="compiler" value="${build.compiler}">
+      <isset property="build.compiler"/>
+    </condition>
+
+    <condition property="compiler" value="javac">
+      <not>
+        <isset property="build.compiler"/>
+      </not>
+    </condition>
+
+    <make_build_info file="${build.info.file}" 
+                     antversion="${ant.version}"
+                     compiler="${compiler}"/>
+  </target>
+
   <!--
   ***************************************************************************
 			      Javadoc targets
@@ -271,34 +335,56 @@ $Id$
   ***************************************************************************
   -->
 
-  <target name="dist" depends="rssget"
-          description="Generate the distribution">
-    <mkdir dir="${dist}"/>
-    <jar destfile="${dist}/${code_jarfile}" basedir="${build}"/>
+  <target name="-set.version.properties" depends="-get.version">
+    <property name="versioned_src_zipfile"
+              value="src-${VERSION}.zip"/>
+
+    <property name="versioned_code_jar_file" 
+              value="${code_jar_name}-${VERSION}.jar"/>
+
+    <property name="versioned_docs_zipfile" 
+              value="javadocs-${VERSION}.zip"/>
   </target>
 
-  <target name="doczip" depends="doc"
+  <target name="code.jar" depends="all"
+          description="Generate the distribution">
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${code_jar_path}" basedir="${build}"/>
+  </target>
+  <target name="dist" depends="code.jar"/>
+
+  <target name="-doczip" depends="doc"
           description="Builds the javadocs zip file">
-    <mkdir dir="${dist}"/>
-    <zip destfile="${dist}/${docs_zipfile}">
+    <mkdir dir="${release_dir}"/>
+    <zip destfile="${release_dir}/${versioned_docs_zipfile}">
       <zipfileset dir="${docs_top_dir}"
                   prefix="${zip_dir_prefix}"/>
     </zip>
   </target>
 
-  <target name="srcjar" depends="clean"
-          description="Generate the source jar">
-    <mkdir dir="${dist}"/>
-    <zip destfile="${dist}/${src_zipfile}">
+  <target name="-srczip" depends=""
+          description="Generate the source zip">
+    <mkdir dir="${release_dir}"/>
+    <zip destfile="${release_dir}/${versioned_src_zipfile}">
       <zipfileset dir="." 
-                  includes="**/*.java,**/*.html,**/*.xml"
-                  excludes="**/CVS,${dist}/**,${build}/*"
-                  prefix="${zip_dir_prefix}"/>
+                  prefix="${zip_dir_prefix}" casesensitive="yes">
+        <exclude name="${dist}/**"/>
+        <exclude name="${build}"/>
+        <exclude name="**/CVS"/>
+        <include name="**/*.java"/>
+        <include name="**/package.html"/>
+        <include name="overview.html"/>
+        <include name="**/*.xml"/>
+      </zipfileset>
     </zip>
   </target>
 
-  <target name="fulldist" depends="srcjar,doczip,dist"
-          description="Generate the distribution and source jars"/>
+  <target name="fulldist" 
+          depends="dist,-set.version.properties,-srczip,-doczip"
+          description="Generate the distribution and source jars">
+    <copy file="${code_jar_path}" 
+          tofile="${release_dir}/${versioned_code_jar_file}"/>
+  </target>
 
   <!--
   ***************************************************************************

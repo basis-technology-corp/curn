@@ -115,6 +115,7 @@ public class rssget implements VerboseMessagesHandler
     private Date                currentTime    = new Date();
     private Collection          outputHandlers = new ArrayList();
     private Collection          emailAddresses = new ArrayList();
+    private boolean             showBuildInfo  = false;
 
     /*----------------------------------------------------------------------*\
                                Main Program
@@ -199,13 +200,26 @@ public class rssget implements VerboseMessagesHandler
                BadCommandLineException
         
     {
+        parseParams (args);
+        if (showBuildInfo)
+            Version.showBuildInfo();
+
+        getFeeds();
+
+    }
+
+    private void getFeeds()
+        throws RSSGetException,
+               IOException,
+               ConfigurationException,
+               RSSParserException,
+               RSSGetException
+    {
         Iterator     it;
         String       parserClassName;
         RSSParser    parser;
         Collection   channels;
         PrintWriter  out;
-
-        parseParams (args);
 
         loadOutputHandlers();
 
@@ -283,6 +297,9 @@ public class rssget implements VerboseMessagesHandler
                 if (s.equals ("-u") || s.equals ("--noupdate"))
                     opts.put ("u", "");
 
+                else if (s.equals ("--build-info") || s.equals ("-B"))
+                    opts.put ("B", "");
+
                 else if (s.equals ("-Q") || s.equals ("--noquiet"))
                     opts.put ("Q", "");
 
@@ -331,6 +348,10 @@ public class rssget implements VerboseMessagesHandler
                 {
                     case 'u':   // --noupdate
                         config.setMustUpdateCacheFlag (false);
+                        break;
+
+                    case 'B':
+                        showBuildInfo = true;
                         break;
 
                     case 'C':   // --nocache
@@ -434,11 +455,12 @@ public class rssget implements VerboseMessagesHandler
     {
         String[] USAGE = new String[]
         {
-"rssget, version " + Util.getVersion(),
+"rssget, version " + Version.VERSION,
 "",
 "Usage: " + rssget.class.getName() + " [options] configFile [email_addr ...]",
 "",
 "OPTIONS",
+"-B, --build-info     Show full build information",
 "-C, --nocache        Don't use a cache file at all.",
 "-u, --noupdate       Read the cache, but don't update it",
 "-Q, --noquiet        Emit information about sites with no information",

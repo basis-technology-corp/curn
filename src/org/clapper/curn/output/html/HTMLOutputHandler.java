@@ -7,6 +7,7 @@ package org.clapper.rssget.htmloutput;
 import org.clapper.rssget.OutputHandler;
 import org.clapper.rssget.RSSGetException;
 import org.clapper.rssget.Util;
+import org.clapper.rssget.Version;
 import org.clapper.rssget.RSSFeedInfo;
 import org.clapper.rssget.RSSGetConfiguration;
 import org.clapper.rssget.parser.RSSChannel;
@@ -198,7 +199,7 @@ public class HTMLOutputHandler implements OutputHandler
 
         // Add configuration info, if available.
 
-        doc.setTextVersion (Util.getVersion());
+        doc.setTextVersion (Version.VERSION);
 
         URL configFileURL = config.getConfigurationFileURL();
         if (configFileURL == null)

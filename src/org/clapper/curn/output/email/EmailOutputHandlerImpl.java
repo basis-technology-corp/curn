@@ -7,6 +7,7 @@ package org.clapper.rssget.email;
 import org.clapper.rssget.OutputHandler;
 import org.clapper.rssget.EmailOutputHandler;
 import org.clapper.rssget.Util;
+import org.clapper.rssget.Version;
 import org.clapper.rssget.RSSFeedInfo;
 import org.clapper.rssget.RSSGetConfiguration;
 import org.clapper.rssget.RSSGetException;
@@ -252,7 +253,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                 message.addTo ((EmailAddress) it.next());
 
             message.addHeader ("X-Mailer",
-                               "rssget, version " + Util.getVersion());
+                               "rssget, version " + Version.VERSION);
             message.setSubject (config.getEmailSubject());
 
             // Add the output. If there's only one handler, and its output
