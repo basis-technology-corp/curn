@@ -91,7 +91,7 @@ public class RSSChannelImpl
      */
     public URL getURL()
     {
-        return this.channel.getLocation();
+        return this.channel.getSite();
     }
 
     /**
