@@ -804,15 +804,22 @@ public class curn extends CommandLineUtility
                      + "\" to temporary file \""
                      + temp.getPath());
             OutputStream os = new FileOutputStream (temp);
-            FileUtils.copyStream (urlStream, os);
+            int totalBytes = FileUtils.copyStream (urlStream, os);
             os.close();
 
-            log.debug ("Copying temporary file \""
-                     + temp.getPath()
-                     + "\" to \""
-                     + saveAsFile.getPath()
-                     + "\"");
-            FileUtils.copyFile (temp, saveAsFile);
+            // It's possible for totalBytes to be zero if, for instance,
+            // the use of the If-Modified-Since header caused an HTTP server
+            // to return no content.
+
+            if (totalBytes > 0)
+            {
+                log.debug ("Copying temporary file \""
+                         + temp.getPath()
+                         + "\" to \""
+                         + saveAsFile.getPath()
+                         + "\"");
+                FileUtils.copyFile (temp, saveAsFile);
+            }
         }
 
         finally
