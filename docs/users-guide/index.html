@@ -227,7 +227,7 @@ OPTIONS:
 -C, --no-cache       Don't use a cache file at all.
 -D, --no-dates       Don't show dates on feeds and feed items.
 -d, --show-dates     Show dates on feeds and feed items, if available.
---logging            Enable logging via Jakarta Commons Logging API.
+--logging            Enable logging via java.util.logging API.
 -Q, --no-quiet       Emit messages about sites with no new items.
 -q, --quiet          Be quiet about sites with no new items.
 -R, --no-rss-version Don't show the RSS version each site uses.
@@ -383,22 +383,11 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	<tr valign="top" class="oddRow">
 	  <td align="left">&nbsp;</td>
 	  <td><a name="--logging" class="code">--logging</a></td>
-          <td>Enable logging via the
-	      <a href="http://jakarta.apache.org/commons/logging/">Jakarta Commons Logging API</a>.
-	      Specifying this option will cause <i>curn</i> to abort with
-	      an error if the Commons Logging classes are not in the CLASSPATH.
-	      Depending on the underlying logging technology, you will
-	      probably also have to specify a configuration file via a
-	      <span class="code">-D</span> parameter to the
-	      <span class="code">java</span> command. For instance, if you're
-	      using Apache's
-	      <a href="http://logging.apache.org/log4j/docs/">Log4J</a> logging
-	      API, you'll have to specify the path to a valid Log4J
-	      configuration file, e.g.,
-	      <blockquote><pre>java -Dlog4j.configuration=file:///tmp/log4j.properties org.clapper.curn.Tool --logging ...</pre></blockquote>
-	      See the <a href="http://jakarta.apache.org/commons/logging/">Jakarta Commons Logging API</a>
-	      web site for more details on how Commons Logging interacts with
-	      various underlying logging APIs.
+          <td>Enable logging via the <span class="code">java.util.logging</span>
+	      API. You will also have to specify a logging configuration file
+	      via a <span class="code">-Djava.util.logging.config.file</span>
+	      system property. For instance,
+	      <blockquote><pre>java -Djava.util.logging.config.file=/tmp/logging.properties org.clapper.curn.Tool --logging ...</pre></blockquote>
 	  </td>
 	</tr>
 
