@@ -437,8 +437,8 @@
           description="clean up" >
 
     <delete failonerror="false">
-      <fileset dir="." includes="htmloutput/*HTML.java"/>
-      <fileset dir="." includes="htmloutput/*HTML.java.optionCheck"/>
+      <fileset dir="${src.dir}" includes="htmloutput/*HTML.java"/>
+      <fileset dir="${src.dir}" includes="htmloutput/*HTML.java.optionCheck"/>
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
