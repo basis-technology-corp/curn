@@ -36,11 +36,14 @@ public interface OutputHandler
      * Initializes the output handler for another set of RSS channels.
      *
      * @param writer  the <tt>PrintWriter</tt> where the handler should send
-     *                output
+     *                output, if applicable.
      * @param config  the parsed <i>rssget</i> configuration data
+     *
+     * @throws RSSGetException  initialization error
      */
     public void init (PrintWriter         writer,
-                      RSSGetConfiguration config);
+                      RSSGetConfiguration config)
+        throws RSSGetException;
 
     /**
      * Display the list of <tt>RSSItem</tt> news items to whatever output
@@ -52,10 +55,10 @@ public interface OutputHandler
      *                is responsible for clearing out any items that should
      *                not be seen.
      *
-     * @throws IOException  unable to write output
+     * @throws RSSGetException  unable to write output
      */
     public void displayChannel (RSSChannel channel)
-        throws IOException;
+        throws RSSGetException;
 
     /**
      * Flush any buffered-up output. <i>rssget</i> calls this method
@@ -63,9 +66,10 @@ public interface OutputHandler
      * If the output handler doesn't need to flush any output, it can simply
      * return without doing anything.
      *
-     * @throws IOException  unable to write output
+     * @throws RSSGetException  unable to write output
      */
-    public void flush() throws IOException;
+    public void flush()
+        throws RSSGetException;
 
     /**
      * Get the content (i.e., MIME) type for output produced by this output

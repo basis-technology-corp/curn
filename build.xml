@@ -55,6 +55,10 @@
     <include name="htmloutput/*.java"/>
   </patternset>
 
+  <patternset id="email">
+    <include name="email/*.java"/>
+  </patternset>
+
   <target name="parser.main" depends="init">
     <!-- Compile the java code from . into ${build} -->
     <javac srcdir="."
@@ -127,8 +131,9 @@
     <echo>
 *** XMLC is not currently available in the build environment. Because of
 *** this, all targets that require XMLC will be skipped. To enable these
-*** targets, place a copy of xmlc-taskdef.jar, from the XMLC build, in
-*** ANT_HOME/lib. XMLC is available at http://xmlc.objectweb.org/
+*** targets, place a copy of xmlc-taskdef.jar and the XMLC runtime jars
+*** in ANT_HOME/lib or in the CLASSPATH. XMLC is available at 
+*** http://xmlc.objectweb.org/
     </echo>
   </target>
 
@@ -173,8 +178,33 @@
     </javac>
   </target>
 
+  <target name="-check.email.exists">
+    <available classname="org.clapper.util.mail.EmailMessage"
+               property="email.exists" value="true"/>
+  </target>
+
+  <target name="-check.email" depends="-check.email.exists" 
+          unless="email.exists">
+    <echo>
+*** The email classes from the org.clapper.util.mail package are not
+*** currently available in the build environment. Rssget will build without
+*** internal email support.
+    </echo>
+  </target>
+
+  <target name="email" depends="main,-check.email" if="email.exists">
+
+    <javac srcdir="."
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="email"/>
+    </javac>
+  </target>
+
   <target name="rssget" 
-          depends="main, parser.builtin, parser.informa, htmloutput"/>
+          depends="main, parser.builtin, parser.informa, htmloutput, email"/>
 
   <target name="dist" depends="rssget"
           description="Generate the distribution">

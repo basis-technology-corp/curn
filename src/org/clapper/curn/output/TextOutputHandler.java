@@ -58,9 +58,12 @@ public class TextOutputHandler implements OutputHandler
      * @param writer  the <tt>PrintWriter</tt> where the handler should send
      *                output
      * @param config  the parsed <i>rssget</i> configuration data
+     *
+     * @throws RSSGetException  initialization error
      */
     public void init (PrintWriter         writer,
                       RSSGetConfiguration config)
+        throws RSSGetException
     {
         this.out    = new WordWrapWriter (writer, 79);
         this.config = config;
@@ -77,10 +80,10 @@ public class TextOutputHandler implements OutputHandler
      *                is responsible for clearing out any items that should
      *                not be seen.
      *
-     * @throws IOException  unable to write output
+     * @throws RSSGetException  unable to write output
      */
     public void displayChannel (RSSChannel channel)
-        throws IOException
+        throws RSSGetException
     {
         Collection items = channel.getItems();
 
@@ -157,9 +160,9 @@ public class TextOutputHandler implements OutputHandler
      * Flush any buffered-up output. <i>rssget</i> calls this method
      * once, after calling <tt>displayChannelItems()</tt> for all channels.
      *
-     * @throws IOException  unable to write output
+     * @throws RSSGetException  unable to write output
      */
-    public void flush() throws IOException
+    public void flush() throws RSSGetException
     {
         out.flush();
         out = null;

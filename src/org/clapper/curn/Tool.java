@@ -86,13 +86,23 @@ public class rssget implements VerboseMessagesHandler
         DATE_FORMATS.add (new DateParseInfo ("h", true));
     };
 
+    private static final String EMAIL_HANDLER_CLASS =
+                            "org.clapper.rssget.email.EmailOutputHandlerImpl";
+
     /*----------------------------------------------------------------------*\
+                           Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private RSSGetConfiguration config        = null;
-    private boolean             useCache      = true;
-    private RSSGetCache         cache         = null;
-    private Date                currentTime   = new Date();
+    private RSSGetConfiguration config         = null;
+    private boolean             useCache       = true;
+    private RSSGetCache         cache          = null;
+    private Date                currentTime    = new Date();
+    private Collection          outputHandlers = new ArrayList();
+    private Collection          emailAddresses = new ArrayList();
+
+    /*----------------------------------------------------------------------*\
+                               Main Program
+    \*----------------------------------------------------------------------*/
 
     public static void main (String[] args) throws Exception
     {
@@ -105,13 +115,20 @@ public class rssget implements VerboseMessagesHandler
 
         catch (ConfigurationException ex)
         {
-            System.err.println (ex.getMessage());
+            System.err.println (ex.getMessages());
+            ex.printStackTrace();
             System.exit (1);
         }
 
         catch (IOException ex)
         {
             System.err.println (ex.getMessage());
+            System.exit (1);
+        }
+
+        catch (RSSGetException ex)
+        {
+            System.err.println (ex.getMessages());
             System.exit (1);
         }
 
@@ -135,9 +152,17 @@ public class rssget implements VerboseMessagesHandler
         }
     }
 
-    rssget()
+    /*----------------------------------------------------------------------*\
+                                Constructor
+    \*----------------------------------------------------------------------*/
+
+    private rssget()
     {
     }
+
+    /*----------------------------------------------------------------------*\
+                              Public Methods
+    \*----------------------------------------------------------------------*/
 
     public void verbose (int level, String msg)
     {
@@ -145,23 +170,28 @@ public class rssget implements VerboseMessagesHandler
             System.out.println ("[V:" + level + "] " + msg);
     }
 
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
     private void runProgram (String[] args)
-        throws IOException,
+        throws RSSGetException,
+               IOException,
                ConfigurationException,
                RSSParserException,
+               RSSGetException,
                BadCommandLineException
         
     {
-        //File inpFile = new File(args[0]);
-        //ChannelIF channel = RSSParser.parse(new ChannelBuilder(), inpFile);
+        Iterator     it;
+        String       parserClassName;
+        RSSParser    parser;
+        Collection   channels;
+        PrintWriter  out;
 
         parseParams (args);
 
-        OutputHandler outputHandler;
-        String outputHandlerClassName = config.getOutputHandlerClassName();
-
-        outputHandler = OutputHandlerFactory.getOutputHandler
-                                                   (outputHandlerClassName);
+        loadOutputHandlers();
 
         if (useCache)
         {
@@ -170,21 +200,35 @@ public class rssget implements VerboseMessagesHandler
             cache.loadCache();
         }
 
-        String parserClassName = config.getRSSParserClassName();
+        // Parse the RSS feeds
+
+        parserClassName = config.getRSSParserClassName();
         verbose (2, "Getting parser \"" + parserClassName + "\"");
-        RSSParser parser = RSSParserFactory.getRSSParser (parserClassName);
+        parser = RSSParserFactory.getRSSParser (parserClassName);
 
-        outputHandler.init (new PrintWriter (System.out), config);
+        channels = new ArrayList();
 
-        for (Iterator itFeeds = config.getFeeds().iterator();
-             itFeeds.hasNext(); )
+        for (it = config.getFeeds().iterator(); it.hasNext(); )
+            processFeed ((RSSFeedInfo) it.next(), parser, channels);
+
+        // Dump the output to each output handler
+
+        out = new PrintWriter (System.out);
+
+        for (it = outputHandlers.iterator(); it.hasNext(); )
         {
-            RSSFeedInfo feed = (RSSFeedInfo) itFeeds.next();
+            OutputHandler outputHandler = (OutputHandler) it.next();
 
-            processFeed (feed, parser, outputHandler);
+            outputHandler.init (out, config);
+            for (Iterator itChannel = channels.iterator();
+                 itChannel.hasNext(); )
+            {
+                RSSChannel channel = (RSSChannel) itChannel.next();
+                outputHandler.displayChannel (channel);
+            }
+
+            outputHandler.flush();
         }
-
-        outputHandler.flush();
 
         if ((cache != null) && config.mustUpdateCache())
             cache.saveCache();
@@ -245,14 +289,17 @@ public class rssget implements VerboseMessagesHandler
                     throw new BadCommandLineException ("Unknown option: "
                                                      + s);
 
-
                 i++;
             }
 
-            if ((args.length - i) > 1)
-                throw new BadCommandLineException ("Too many parameters.");
+            config = new RSSGetConfiguration (args[i++]);
+
+            if ((args.length - i) > 0)
+            {
+                while (i < args.length)
+                    emailAddresses.add (args[i++]);
+            }
                 
-            config = new RSSGetConfiguration (args[i]);
 
             // Now, process the options.
 
@@ -378,7 +425,7 @@ public class rssget implements VerboseMessagesHandler
         {
 "rssget, version " + Util.getVersion(),
 "",
-"Usage: " + rssget.class.getName() + " [options] configFile",
+"Usage: " + rssget.class.getName() + " [options] configFile [email_addr ...]",
 "",
 "OPTIONS",
 "-f, --full           For each item, display the URL, title and description.",
@@ -403,25 +450,86 @@ public class rssget implements VerboseMessagesHandler
             System.err.println (USAGE[i]);
     }
 
+    private void loadOutputHandlers()
+        throws ConfigurationException,
+               RSSGetException
+    {
+        String         className;
+        OutputHandler  handler;
+        Iterator       it;
+
+        for (it = config.getOutputHandlerClassNames().iterator();
+             it.hasNext(); )
+        {
+            className = (String) it.next();
+            handler   = OutputHandlerFactory.getOutputHandler (className);
+            outputHandlers.add (handler);
+        }
+
+        // If there are email addresses, then attempt to load that handler,
+        // and wrap the other output handlers inside it.
+
+        if (emailAddresses.size() > 0)
+        {
+            EmailOutputHandler emailHandler;
+
+            emailHandler = (EmailOutputHandler)
+                             OutputHandlerFactory.getOutputHandler
+                                          (EMAIL_HANDLER_CLASS);
+
+            // Place all the other handlers inside the EmailOutputHandler
+
+            for (it = outputHandlers.iterator(); it.hasNext(); )
+                emailHandler.addOutputHandler ((OutputHandler) it.next());
+
+            // Add the email addresses to the handler
+
+            for (it = emailAddresses.iterator(); it.hasNext(); )
+                emailHandler.addRecipient ((String) it.next());
+
+            // Clear the existing set of output handlers and replace it
+            // with the email handler.
+
+            outputHandlers.clear();
+            outputHandlers.add (emailHandler);
+        }
+
+        else
+        {
+            // If there are multiple handlers, nuke all but the first. It
+            // doesn't make sense to use multiple handlers when going to
+            // standard output.
+
+            verbose (3,
+                     "No email addresses. Nuking all but the first "
+                   + "output handler.");
+            handler = (OutputHandler) outputHandlers.iterator().next();
+            outputHandlers.clear();
+            outputHandlers.add (handler);
+        }
+    }
+
     private void processFeed (RSSFeedInfo   feedInfo,
                               RSSParser     parser,
-                              OutputHandler outputHandler)
+                              Collection    channels)
         throws RSSParserException
     {
-        URL url = feedInfo.getURL();
+        URL         url = feedInfo.getURL();
+        boolean     pruneURLs = feedInfo.pruneURLs();
+        Iterator    it;
+        RSSChannel  channel;
+        Collection  items;
 
         try
         {
             verbose (3, "Parsing feed at " + url.toString());
-            RSSChannel channel = parser.parseRSSFeed (url);
-            Collection items = channel.getItems();
-            RSSItem[] itemArray = null;
-            boolean pruneURLs = feedInfo.pruneURLs();
+            channel = parser.parseRSSFeed (url);
+            items = channel.getItems();
 
             // First, weed out the ones we don't care about.
 
             verbose (3, String.valueOf (items.size()) + " total items");
-            for (Iterator it = items.iterator(); it.hasNext(); )
+            for (it = items.iterator(); it.hasNext(); )
             {
                 RSSItem item = (RSSItem) it.next();
                 URL itemURL = item.getLink();
@@ -470,20 +578,25 @@ public class rssget implements VerboseMessagesHandler
             // Now, change the channel's items to the ones that are left.
 
             channel.setItems (items);
-            outputHandler.displayChannel (channel);
+
+            // Add the channel to the list of channels.
+
+            channels.add (channel);
 
             // Finally, add all the items to the cache.
 
-            if (itemArray != null)
+            if (items.size() > 0)
             {
-                for (int i = 0; i < itemArray.length; i++)
+                for (it = items.iterator(); it.hasNext(); )
                 {
+                    RSSItem item = (RSSItem) it.next();
+
                     verbose (3,
                              "Cacheing URL \""
-                           + itemArray[i].getLink().toString()
+                           + item.getLink().toString()
                            + "\"");
                     if (cache != null)
-                        cache.addToCache (itemArray[i].getLink(), feedInfo);
+                        cache.addToCache (item.getLink(), feedInfo);
                 }
             }
         }

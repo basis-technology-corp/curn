@@ -79,6 +79,5 @@ public class OutputHandlerFactory
         {
             throw new ConfigurationException (ex);
         }
-
     }
 }
