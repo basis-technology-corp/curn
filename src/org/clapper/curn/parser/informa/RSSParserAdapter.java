@@ -18,11 +18,11 @@ import java.io.*;
  *
  * @see RSSParserFactory
  * @see RSSParser
- * @see RSSChannelImpl
+ * @see RSSChannelAdapter
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSParserImpl implements org.clapper.rssget.RSSParser
+public class RSSParserAdapter implements org.clapper.rssget.RSSParser
 {
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -31,7 +31,7 @@ public class RSSParserImpl implements org.clapper.rssget.RSSParser
     /**
      * Default constructor.
      */
-    public RSSParserImpl()
+    public RSSParserAdapter()
     {
         // Disable Informa logging for now.
 
@@ -61,7 +61,7 @@ public class RSSParserImpl implements org.clapper.rssget.RSSParser
     {
         try
         {
-            return new RSSChannelImpl (de.nava.informa.parsers.RSSParser.parse
+            return new RSSChannelAdapter (de.nava.informa.parsers.RSSParser.parse
                                               (new ChannelBuilder(), url));
         }
 

@@ -20,11 +20,11 @@ import java.util.*;
  * @see RSSParser
  * @see RSSChannel
  * @see RSSItem
- * @see RSSItemImpl
+ * @see RSSItemAdapter
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSChannelImpl
+public class RSSChannelAdapter
     implements org.clapper.rssget.RSSChannel
 {
     /*----------------------------------------------------------------------*\
@@ -41,12 +41,12 @@ public class RSSChannelImpl
     \*----------------------------------------------------------------------*/
 
     /**
-     * Allocate a new <tt>RSSChannelImpl</tt> object that wraps the specified
+     * Allocate a new <tt>RSSChannelAdapter</tt> object that wraps the specified
      * Informa <tt>ChannelIF</tt> object.
      *
      * @param channelIF  the <tt>ChannelIF</tt> object
      */
-    RSSChannelImpl (ChannelIF channelIF)
+    RSSChannelAdapter (ChannelIF channelIF)
     {
         this.channel = channelIF;
     }
@@ -69,7 +69,7 @@ public class RSSChannelImpl
         Collection items  = this.channel.getItems();
 
         for (Iterator it = items.iterator(); it.hasNext(); )
-            result.add (new RSSItemImpl ((ItemIF) it.next()));
+            result.add (new RSSItemAdapter ((ItemIF) it.next()));
 
         return result;
     }
@@ -85,11 +85,21 @@ public class RSSChannelImpl
     }
 
     /**
-     * Get the channel's published URL.
+     * Get the channel's description
+     *
+     * @return the channel's description, or null if there isn't one
+     */
+    public String getDescription()
+    {
+        return this.channel.getDescription();
+    }
+
+    /**
+     * Get the channel's published link (its URL).
      *
      * @return the URL, or null if not available
      */
-    public URL getURL()
+    public URL getLink()
     {
         return this.channel.getSite();
     }
@@ -102,6 +112,16 @@ public class RSSChannelImpl
     public Date getPublicationDate()
     {
         return this.channel.getPubDate();
+    }
+
+    /**
+     * Get the channel's copyright string
+     *
+     * @return the copyright string, or null if not available
+     */
+    public String getCopyright()
+    {
+        return this.channel.getCopyright();
     }
 
     /**
