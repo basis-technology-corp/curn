@@ -8,6 +8,8 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
 
+import org.clapper.util.misc.Logger;
+
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -19,10 +21,12 @@ import java.io.Reader;
 
 import java.net.URL;
 
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.Attributes;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -56,7 +60,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @version <tt>$Revision$</tt>
  */
 public class MiniRSSParser
-    extends DefaultHandler implements RSSParser
+    extends DefaultHandler
+    implements RSSParser, ErrorHandler
 {
     /*----------------------------------------------------------------------*\
 			     Private Constants
@@ -72,6 +77,11 @@ public class MiniRSSParser
     private Channel   channel         = null;
     private String    parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
     private XMLReader xmlReader       = null;
+
+    /**
+     * For logging
+     */
+    private static Logger log = new Logger (MiniRSSParser.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -242,6 +252,7 @@ public class MiniRSSParser
         {
             xmlReader = XMLReaderFactory.createXMLReader (parserClassName);
             xmlReader.setContentHandler (this);
+            xmlReader.setErrorHandler (this);
 
             xmlReader.parse (new InputSource (r));
         }
@@ -252,6 +263,50 @@ public class MiniRSSParser
         }
 
         return channel;
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Public Methods
+                    Implementing ErrorHandler Interface
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Handle a recoverable error from the SAX XML parser.
+     *
+     * @param ex  the parser exception
+     *
+     * @throws SAXException on error
+     */
+    public void error (SAXParseException ex)
+        throws SAXException
+    {
+        log.error ("Recoverable SAX parser error", ex);
+    }
+
+    /**
+     * Handle a non-recoverable error from the SAX XML parser.
+     *
+     * @param ex  the parser exception
+     *
+     * @throws SAXException on error
+     */
+    public void fatalError (SAXParseException ex)
+        throws SAXException
+    {
+        throw new SAXException ("Fatal SAX parser error: " + ex.toString());
+    }
+
+    /**
+     * Handle a warning from the SAX XML parser.
+     *
+     * @param ex  the parser exception
+     *
+     * @throws SAXException on error
+     */
+    public void warning (SAXParseException ex)
+        throws SAXException
+    {
+        log.error ("SAX parser warning", ex);
     }
 
     /*----------------------------------------------------------------------*\

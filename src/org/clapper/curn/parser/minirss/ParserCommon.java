@@ -112,7 +112,7 @@ class ParserCommon extends DefaultHandler
      *
      * @throws SAXException parsing error
      */
-    public void characters(char[] ch, int start, int length)
+    public void characters (char[] ch, int start, int length)
         throws SAXException
     {
         if (! elementStack.empty())
@@ -221,7 +221,16 @@ class ParserCommon extends DefaultHandler
         for (int i = 0; i < formats.length; i++)
         {
             formats[i].setTimeZone (timeZone);
-            result = formats[i].parse (sDate, new ParsePosition (0));
+            try
+            {
+                result = formats[i].parse (sDate, new ParsePosition (0));
+            }
+
+            catch (NumberFormatException ex)
+            {
+                result = null;
+            }
+
             if (result != null)
                 break;
         }
