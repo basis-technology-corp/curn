@@ -21,7 +21,7 @@ import java.util.Iterator;
  * Provides an output handler that produces plain text to a
  * <tt>PrintWriter</tt>.
  *
- * @see RSSGetOutputHandler
+ * @see OutputHandler
  * @see rssget
  * @see org.clapper.rssget.parser.RSSChannel
  *

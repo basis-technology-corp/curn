@@ -29,8 +29,8 @@ import org.w3c.dom.html.*;
  * Provides an output handler that produces plain text to a
  * <tt>PrintWriter</tt>.
  *
- * @see RSSGetOutputHandler
- * @see rssget
+ * @see OutputHandler
+ * @see org.clapper.rssget.rssget
  * @see org.clapper.rssget.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>

@@ -18,8 +18,8 @@ import java.util.Date;
  * This class contains a subset of standard RSS channel data, providing
  * only the methods necessary for <i>rssget</i> to work.
  *
- * @see RSSParserFactory
- * @see RSSParser
+ * @see org.clapper.rssget.parser.RSSParserFactory
+ * @see org.clapper.rssget.parser.RSSParser
  * @see RSSItem
  *
  * @version <tt>$Revision$</tt>

@@ -131,7 +131,7 @@ public class MiniRSSParser
 
     /**
      * Parses the RSS data located in the specified file, using the default
-     * encoding. To specify an encoding, use {@link #parse(File,encoding)}.
+     * encoding. To specify an encoding, use {@link #parse(File,String)}.
      *
      * @param path  the path to the file containing the RSS XML data
      *
@@ -157,7 +157,7 @@ public class MiniRSSParser
 
     /**
      * Parses the RSS data located in the specified file, using the default
-     * encoding. To specify an encoding, use {@link #parse(File,encoding)}.
+     * encoding. To specify an encoding, use {@link #parse(File,String)}.
      *
      * @param path  the path to the file containing the RSS XML data
      *
