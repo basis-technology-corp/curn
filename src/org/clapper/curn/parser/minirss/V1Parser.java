@@ -264,6 +264,9 @@ public class V1Parser extends ParserCommon
 
             else if (elementName.equals ("description"))
                 channel.setDescription (chars);
+
+            else if (elementName.equals ("dc:date"))
+                channel.setPublicationDate (parseW3CDate (chars));
         }
 
         catch (MalformedURLException ex)
@@ -301,6 +304,9 @@ public class V1Parser extends ParserCommon
 
         else if (elementName.equals ("description"))
             item.setDescription (chars);
+
+        else if (elementName.equals ("dc:date"))
+            item.setPublicationDate (parseW3CDate (chars));
     }
 
     /**
