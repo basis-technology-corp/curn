@@ -28,6 +28,7 @@ package org.clapper.curn.output.html;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
+import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
@@ -212,9 +213,10 @@ public class HTMLOutputHandler extends FileOutputHandler
 
         catch (IOException ex)
         {
-            throw new CurnException ("Can't open file \""
-                                   + outputFile
-                                   + "\" for output",
+            throw new CurnException (Curn.BUNDLE_NAME,
+                                     "OutputHandler.cantOpenFile",
+                                     "Cannot open file \"{0}\" for output",
+                                     new Object[] {outputFile.getPath()},
                                      ex);
         }
     }

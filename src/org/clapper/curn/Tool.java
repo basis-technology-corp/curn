@@ -45,12 +45,12 @@ import java.text.SimpleDateFormat;
 
 import org.clapper.util.misc.BuildInfo;
 import org.clapper.util.misc.Logger;
-import org.clapper.util.config.ConfigurationException;
-
 import org.clapper.util.cmdline.CommandLineUtility;
 import org.clapper.util.cmdline.CommandLineException;
 import org.clapper.util.cmdline.CommandLineUsageException;
 import org.clapper.util.cmdline.UsageInfo;
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.io.WordWrapWriter;
 
 /**
  * <p><i>curn</i>: Customizable Utilitarian RSS Notifier.</p>
@@ -161,8 +161,9 @@ public class Tool extends CommandLineUtility
 
         catch (CommandLineException ex)
         {
-            System.err.println (ex.getMessage());
-            ex.printStackTrace();
+            WordWrapWriter err = new WordWrapWriter (System.err);
+
+            err.println (ex.getMessage());
             System.exit (1);
         }
 
@@ -258,17 +259,25 @@ public class Tool extends CommandLineUtility
                     if (maxThreads < 1)
                     {
                         throw new CommandLineUsageException
-                            ("Value for -T or --threads option must be "
-                           + "greater than 0.");
+                            (Curn.BUNDLE_NAME, "Tool.negNumericOption",
+                             "Value for \"{0}\" (\"{1}\") option must be "
+                           + "greater than 0",
+                             new Object[] {"-t", "--threads"});
                     }
                 }
 
                 catch (NumberFormatException ex)
                 {
-                    throw new CommandLineUsageException ("Bad numeric value \""
-                                                       + arg
-                                                       + "for -T or --threads "
-                                                       + "option.");
+                    throw new CommandLineUsageException
+                        (Curn.BUNDLE_NAME, "Tool.badNumericOption",
+                         "Bad numeric value \"{0}\" for \"{1}\" (\"{2}\") "
+                       + "option",
+                         new Object[]
+                         {
+                             arg,
+                             "-T",
+                             "--threads"
+                         });
                 }
                 break;
 
@@ -524,10 +533,11 @@ public class Tool extends CommandLineUtility
 
         catch (FileNotFoundException ex)
         {
-            throw new CommandLineUsageException ("Cannot find configuration "
-                                               + "file \""
-                                               + configPath
-                                               + "\".");
+            throw new CommandLineUsageException (Curn.BUNDLE_NAME,
+                                                 "Tool.cantFindConfig",
+                                                 "Cannot find configuration "
+                                               + "file \"{0}\"",
+                                                 new Object[] {configPath});
         }
 
         // Adjust the configuration, if necessary, based on the command-line
@@ -590,9 +600,10 @@ public class Tool extends CommandLineUtility
 
         if (date == null)
         {
-            throw new CommandLineUsageException ("Bad date/time: \""
-                                               + s
-                                               + "\"");
+            throw new CommandLineUsageException (Curn.BUNDLE_NAME,
+                                                 "Tool.badDateTime",
+                                                 "Bad date/time: \"{0}\"",
+                                                 new Object[] {s});
         }
 
         return date;

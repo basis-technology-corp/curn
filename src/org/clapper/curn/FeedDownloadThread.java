@@ -372,6 +372,24 @@ class FeedDownloadThread extends Thread
 
             setGzipHeader (conn, configuration);
 
+            // Set the user-agent header.
+
+            StringBuffer userAgent = new StringBuffer();
+
+            // Standard format seems to be:
+            //
+            // tool/version (+url)
+            //
+            // e.g.: Googlebot/2.1 (+http://www.google.com/bot.htm
+
+            userAgent.append (Version.getUtilityName());
+            userAgent.append ('/');
+            userAgent.append (Version.getVersionNumber());
+            userAgent.append (" (+");
+            userAgent.append (Version.getWebSite());
+            userAgent.append (')');
+            conn.setRequestProperty ("User-Agent", userAgent.toString());
+
             // If the feed has actually changed, process it.
 
             if (! feedHasChanged (conn, feedInfo, cache))

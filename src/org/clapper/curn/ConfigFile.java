@@ -341,13 +341,17 @@ public class ConfigFile extends Configuration
     {
         if (newValue <= 0)
         {
-            throw new ConfigurationException ("\""
-                                            + VAR_MAX_THREADS
-                                            + "\" configuration value "
-                                            + "cannot be set to "
-                                            + String.valueOf (newValue)
-                                            + ". It must be a positive "
-                                            + "integer.");
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.badPositiveInteger",
+                                              "The \"{0}\" configuration "
+                                            + "parameter cannot be set to "
+                                            + "{1}. It must have a positive "
+                                            + "integer value.",
+                                              new Object[]
+                                              {
+                                                  VAR_MAX_THREADS,
+                                                  String.valueOf (newValue)
+                                              });
         }
 
         this.maxThreads = newValue;
@@ -656,10 +660,12 @@ public class ConfigFile extends Configuration
     {
         if (! this.containsSection (MAIN_SECTION))
         {
-            throw new ConfigurationException ("Configuration file is missing "
-                                            + "required \""
-                                            + MAIN_SECTION
-                                            + "\" section.");
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.missingReqSection",
+                                              "The configuration file is "
+                                            + "missing the required \"{0}\" "
+                                            + "section.",
+                                              new Object[] {MAIN_SECTION});
         }
 
         try
@@ -673,9 +679,15 @@ public class ConfigFile extends Configuration
 
                 if (cacheFile.isDirectory())
                 {
-                    throw new ConfigurationException ("Specified cache file \""
-                                                    + cacheFile.getPath()
-                                                    + "\" is a directory.");
+                    throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                                      "ConfigFile.cacheIsDir",
+                                                      "Configured cache file "
+                                                    + "\"{0}\" is really a "
+                                                    + "directory.",
+                                                      new Object[]
+                                                      {
+                                                          cacheFile.getPath()
+                                                      });
                 }
             }
 
@@ -724,12 +736,16 @@ public class ConfigFile extends Configuration
 
         catch (NoSuchVariableException ex)
         {
-            throw new ConfigurationException ("Missing required variable \""
-                                            + ex.getVariableName()
-                                            + "\" in section \""
-                                            + ex.getSectionName()
-                                            + "\".");
-        
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.missingReqVar",
+                                              "The configuration file is "
+                                            + "missing required variable "
+                                            + "\"{0}\" in section \"{1}\".",
+                                              new Object[]
+                                              {
+                                                  ex.getVariableName(),
+                                                  ex.getSectionName()
+                                              });
         }
     }
 
@@ -747,6 +763,8 @@ public class ConfigFile extends Configuration
         String      feedURLString = null;
         Collection  varNames = getVariableNames (sectionName, new ArrayList());
         Collection  preparseEditCommands = new ArrayList();
+        String      saveAs = null;
+        boolean     saveOnly = false;
         String      s;
         URL         url = null;
 
@@ -761,9 +779,16 @@ public class ConfigFile extends Configuration
 
         catch (MalformedURLException ex)
         {
-            throw new ConfigurationException ("Bad RSS site URL: \""
-                                            + feedURLString
-                                            + "\"");
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.badFeedURL",
+                                              "Configuration file section "
+                                            + "\"{0}\" specifies a bad RSS "
+                                            + "feed URL \"{1}\"",
+                                              new Object[]
+                                              {
+                                                  sectionName,
+                                                  feedURLString
+                                              });
         }
 
         feedInfo.setPruneURLsFlag (DEF_PRUNE_URLS);
@@ -820,15 +845,15 @@ public class ConfigFile extends Configuration
 
             else if (varName.equals (VAR_SAVE_FEED_AS))
             {
-                s = getConfigurationValue (sectionName, VAR_SAVE_FEED_AS);
-                feedInfo.setSaveAsFile (new File (s));
+                saveAs = getConfigurationValue (sectionName, VAR_SAVE_FEED_AS);
+                feedInfo.setSaveAsFile (new File (saveAs));
             }
 
             else if (varName.equals (VAR_SAVE_ONLY))
             {
-                feedInfo.setSaveOnlyFlag
-                    (getRequiredBooleanValue (sectionName, VAR_SAVE_ONLY));
-                log.debug ("Feed save-only=" + feedInfo.saveOnly());
+                saveOnly = getRequiredBooleanValue (sectionName,
+                                                    VAR_SAVE_ONLY);
+                feedInfo.setSaveOnlyFlag (saveOnly);
             }
 
             else if (varName.equals (VAR_FORCE_ENCODING))
@@ -859,12 +884,31 @@ public class ConfigFile extends Configuration
 
         if (url == null)
         {
-            throw new ConfigurationException ("Section ["
-                                            + sectionName
-                                            + "]: Missing value for "
-                                            + "required \""
-                                            + VAR_FEED_URL
-                                            + "\" parameter.");
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.missingReqVar",
+                                              "The configuration file is "
+                                            + "missing required variable "
+                                            + "\"{0}\" in section \"{1}\"",
+                                              new Object[]
+                                              {
+                                                  VAR_FEED_URL,
+                                                  sectionName
+                                              });
+        }
+
+        if (saveOnly && (saveAs == null))
+        {
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.saveOnlyButNoSaveAs",
+                                              "Configuration section \"{0}\": "
+                                            + "\"[1}\" may only be specified "
+                                            + "if \"{2}\" is set.",
+                                              new Object[]
+                                              {
+                                                  sectionName,
+                                                  VAR_SAVE_ONLY,
+                                                  VAR_SAVE_FEED_AS
+                                              });
         }
 
         feeds.add (feedInfo);
@@ -940,13 +984,18 @@ public class ConfigFile extends Configuration
 
         if (val == null)
         {
-            throw new ConfigurationException ("Section ["
-                                            + sectionName
-                                            + "]: Bad value \""
-                                            + value
-                                            + "\" for \""
-                                            + VAR_SORT_BY
-                                            + "\" parameter.");
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "ConfigFile.badVarValue",
+                                              "Section \"{0}\" in the "
+                                            + "configuration file has a bad "
+                                            + "value (\"{1}\") for the \"{2}\""
+                                            + "parameter",
+                                              new Object[]
+                                              {
+                                                  sectionName,
+                                                  value,
+                                                  VAR_SORT_BY
+                                              });
         }
 
         return val.intValue();

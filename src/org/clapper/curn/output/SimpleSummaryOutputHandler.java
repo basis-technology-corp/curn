@@ -28,6 +28,7 @@ package org.clapper.curn.output;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
+import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 
@@ -171,9 +172,10 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
 
         catch (IOException ex)
         {
-            throw new CurnException ("Can't open file \""
-                                   + outputFile.getPath()
-                                   + "\" for output",
+            throw new CurnException (Curn.BUNDLE_NAME,
+                                     "OutputHandler.cantOpenFile",
+                                     "Cannot open file \"{0}\" for output",
+                                     new Object[] {outputFile.getPath()},
                                      ex);
         }
 

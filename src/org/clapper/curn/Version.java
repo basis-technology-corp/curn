@@ -27,9 +27,9 @@
 package org.clapper.curn;
 
 import java.lang.System;
-
 import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.util.Locale;
 
 import org.clapper.util.misc.BuildInfo;
 import org.clapper.util.misc.BundleUtil;
@@ -80,9 +80,55 @@ public final class Version
     }
 
     /**
+     * Get <i>curn</i>'s official name, for display purposes.
+     *
+     * @return the official name
+     */
+    public static String getUtilityName()
+    {
+        return BundleUtil.getString (Curn.BUNDLE_NAME, "curn.name", "curn");
+    }
+
+    /**
+     * Get the web site where <i>curn</i> can be found.
+     *
+     * @return the web site string
+     */
+    public static String getWebSite()
+    {
+        return BundleUtil.getString (Curn.BUNDLE_NAME, "curn.website", "?");
+    }
+
+    /**
      * Get the full program version string, which contains the program name
      * and the version number. This is the string that the
      * {@link #showVersion()} method displays.
+     *
+     * @param locale the locale to use, or null for the default
+     *
+     * @return the full version string
+     *
+     * @see #showVersion()
+     * @see #showVersion(PrintWriter)
+     * @see #showVersion(PrintStream)
+     * @see #getVersionNumber
+     */
+    public static String getFullVersion (Locale locale)
+    {
+        String name = getUtilityName();
+        String version = getVersionNumber();
+
+        return BundleUtil.getMessage (Curn.BUNDLE_NAME, locale,
+                                      "curn.fullVersion",
+                                      "{0}, version {1}",
+                                      new Object[] {name, version});
+    }
+
+    /**
+     * Get the full program version string, which contains the program name
+     * and the version number. This is the string that the
+     * {@link #showVersion()} method displays. This method assumes the default
+     * locale.
      *
      * @return the full version string
      *
@@ -93,7 +139,7 @@ public final class Version
      */
     public static String getFullVersion()
     {
-        return "curn, version " + getVersionNumber();
+        return getFullVersion (null);
     }
 
     /**
@@ -117,7 +163,7 @@ public final class Version
      */
     public static void showVersion (PrintWriter out)
     {
-        out.println (getFullVersion());
+        out.println (getFullVersion (null));
     }
 
     /**
@@ -130,7 +176,7 @@ public final class Version
      */
     public static void showVersion (PrintStream out)
     {
-        out.println (getFullVersion());
+        out.println (getFullVersion (null));
     }
 
     /**

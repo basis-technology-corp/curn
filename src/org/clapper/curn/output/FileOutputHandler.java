@@ -28,6 +28,7 @@ package org.clapper.curn.output;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
+import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
@@ -141,13 +142,11 @@ public abstract class FileOutputHandler implements OutputHandler
                                                            "SaveOnly",
                                                            false);
 
-                if (saveOnly && (saveAs == null))
-                {
-                    throw new ConfigurationException (sectionName,
-                                                      "SaveOnly can only be "
-                                                    + "specified if SaveAs "
-                                                    + "is defined.");
-                }
+                // saveOnly cannot be set unless saveAs is non-null. The
+                // ConfigFile class is supposed to trap for this, so an
+                // assertion is fine here.
+
+                assert ((! saveOnly) || (saveAs != null));
             }
         }
 
@@ -169,7 +168,10 @@ public abstract class FileOutputHandler implements OutputHandler
 
             catch (IOException ex)
             {
-                throw new CurnException ("Can't create temporary file.");
+                throw new CurnException (Curn.BUNDLE_NAME,
+                                         "FileOutputHandler.cantMakeTempFile",
+                                         "Cannot create temporary file",
+                                         ex);
             }
         }
 
@@ -253,9 +255,10 @@ public abstract class FileOutputHandler implements OutputHandler
 
             catch (FileNotFoundException ex)
             {
-                throw new CurnException ("Can't re-open file \""
-                                       + outputFile
-                                       + "\"",
+                throw new CurnException (Curn.BUNDLE_NAME,
+                                         "FileOutputHandler.cantReopenFile",
+                                         "Cannot reopen file \"{0}\".",
+                                         new Object[] {outputFile},
                                          ex);
             }
         }

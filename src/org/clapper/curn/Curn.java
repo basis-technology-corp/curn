@@ -83,13 +83,13 @@ public class Curn
                         "org.clapper.curn.output.email.EmailOutputHandlerImpl";
 
     /*----------------------------------------------------------------------*\
-                         Package-visible Constants
+                             Public Constants
     \*----------------------------------------------------------------------*/
 
     /**
      * Resource bundle for this package
      */
-    static final String BUNDLE_NAME = "org.clapper.curn.Curn";
+    public static final String BUNDLE_NAME = "org.clapper.curn.Curn";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -179,7 +179,11 @@ public class Curn
 
         Collection feeds = configuration.getFeeds();
         if (feeds.size() == 0)
-            throw new ConfigurationException ("No configured RSS feed URLs.");
+        {
+            throw new ConfigurationException (Curn.BUNDLE_NAME,
+                                              "Curn.noConfiguredFeeds",
+                                              "No configured RSS feed URLs.");
+        }
 
         if ((configuration.getMaxThreads() == 1) || (feeds.size() == 1))
             channels = doSingleThreadedFeedDownload (parsingEnabled,
@@ -385,7 +389,11 @@ public class Curn
         }
 
         if (feedQueue.size() == 0)
-            throw new CurnException ("All configured feeds are disabled.");
+        {
+            throw new CurnException (Curn.BUNDLE_NAME,
+                                     "Curn.allFeedsDisabled",
+                                     "All configured RSS feeds are disabled.");
+        }
 
         feedQueue = Collections.synchronizedList (feedQueue);
 
@@ -558,11 +566,17 @@ public class Curn
 
                 catch (IOException ex)
                 {
-                    throw new CurnException ("Failed to copy output from "
-                                           + "handler "
-                                           + firstOutput.getClassName()
-                                           + " to standard output.",
+                    throw new CurnException (Curn.BUNDLE_NAME,
+                                             "Curn.outputCopyFailed",
+                                             "Failed to copy output from "
+                                           + "handler \"{0}\" to standard "
+                                           + "output.",
+                                             new Object[]
+                                             {
+                                                 firstOutput.getClassName()
+                                             },
                                              ex);
+
                 }
             }
         }
