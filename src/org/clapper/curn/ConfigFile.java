@@ -109,6 +109,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_MAX_THREADS       = "MaxThreads";
     private static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
     private static final String VAR_FORCE_ENCODING    = "ForceCharacterEncoding";
+    private static final String VAR_USER_AGENT        = "UserAgent";
 
     /**
      * Legal values
@@ -165,6 +166,7 @@ public class ConfigFile extends Configuration
     private boolean     getGzippedFeeds       = true;
     private int         defaultSortBy         = DEF_SORT_BY;
     private int         maxThreads            = DEF_MAX_THREADS;
+    private String      defaultUserAgent      = null;
 
     /**
      * For log messages
@@ -731,6 +733,28 @@ public class ConfigFile extends Configuration
             setMaxThreads (getOptionalIntegerValue (MAIN_SECTION,
                                                     VAR_MAX_THREADS,
                                                     DEF_MAX_THREADS));
+
+            defaultUserAgent = getOptionalStringValue (MAIN_SECTION,
+                                                       VAR_USER_AGENT,
+                                                       null);
+            if (defaultUserAgent == null)
+            {
+                StringBuffer buf = new StringBuffer();
+
+                // Standard format seems to be:
+                //
+                // tool/version (+url)
+                //
+                // e.g.: Googlebot/2.1 (+http://www.google.com/bot.htm
+
+                buf.append (Version.getUtilityName());
+                buf.append ('/');
+                buf.append (Version.getVersionNumber());
+                buf.append (" (+");
+                buf.append (Version.getWebSite());
+                buf.append (')');
+                defaultUserAgent = buf.toString();
+            }
         }
 
         catch (NoSuchVariableException ex)
@@ -794,6 +818,7 @@ public class ConfigFile extends Configuration
         feedInfo.setDaysToCache (defaultCacheDays);
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
         feedInfo.setSortBy (defaultSortBy);
+        feedInfo.setUserAgent (defaultUserAgent);
 
         for (Iterator it = varNames.iterator(); it.hasNext(); )
         {
@@ -871,6 +896,12 @@ public class ConfigFile extends Configuration
             {
                 s = getConfigurationValue (sectionName, varName);
                 preparseEditCommands.add (s);
+            }
+
+            else if (varName.equals (VAR_USER_AGENT))
+            {
+                feedInfo.setUserAgent
+                    (getConfigurationValue (sectionName, VAR_USER_AGENT));
             }
         }
 

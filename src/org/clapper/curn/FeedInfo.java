@@ -89,6 +89,7 @@ public class FeedInfo
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
     private String[]    preparseEditCommands  = null;
+    private String      userAgent             = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -526,6 +527,32 @@ public class FeedInfo
     public void setIgnoreItemsWithDuplicateTitlesFlag (boolean val)
     {
         this.ignoreDuplicateTitles = val;
+    }
+
+    /**
+     * Get the configured user agent for this feed. Returns a default if
+     * none has been configured.
+     *
+     * @return the user agent header to use
+     *
+     * @see #setUserAgent
+     */
+    public String getUserAgent()
+    {
+        assert (userAgent != null);
+        return userAgent;
+    }
+
+    /**
+     * Set the configured user agent for this feed.
+     *
+     * @param userAgent the user agent header to use
+     *
+     * @see #getUserAgent
+     */
+    public void setUserAgent (String userAgent)
+    {
+        this.userAgent = userAgent;
     }
 
     /*----------------------------------------------------------------------*\
