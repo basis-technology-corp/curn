@@ -42,7 +42,12 @@ public class ConfigFile extends Configuration
     /**
      * Main section name
      */
-    private static final String  MAIN_SECTION           = "curn";
+    private static final String  MAIN_SECTION         = "curn";
+
+    /**
+     * Prefix for sections that describing individual feeds.
+     */
+    private static final String FEED_SECTION_PREFIX   = "feed";
 
     /**
      * Variable names
@@ -68,6 +73,8 @@ public class ConfigFile extends Configuration
     private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
     private static final String VAR_DISABLE_FEED      = "Disabled";
     private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
+    private static final String VAR_SAVE_FEED_AS      = "SaveAs";
+    private static final String VAR_FEED_URL          = "URL";
 
     /**
      * Default values
@@ -552,10 +559,8 @@ public class ConfigFile extends Configuration
         {
             String sectionName = (String) it.next();
 
-            if (sectionName.equals (MAIN_SECTION))
-                continue;
-
-            processSiteURLSection (sectionName);
+            if (sectionName.startsWith (FEED_SECTION_PREFIX))
+                processSiteURLSection (sectionName);
         }
     }
 
@@ -655,8 +660,8 @@ public class ConfigFile extends Configuration
     {
         try
         {
-            URL url = new URL (sectionName);
-            url = Util.normalizeURL (url);
+            String s = getVariableValue (sectionName, VAR_FEED_URL);
+            URL url = Util.normalizeURL (s);
 
             FeedInfo feedInfo = new FeedInfo (url);
 
@@ -677,15 +682,17 @@ public class ConfigFile extends Configuration
                                                           VAR_DISABLE_FEED,
                                                           false));
 
-            String s = getOptionalStringValue (sectionName,
-                                               VAR_TITLE_OVERRIDE,
-                                               null);
+            s = getOptionalStringValue (sectionName, VAR_TITLE_OVERRIDE, null);
             if (s != null)
                 feedInfo.setTitleOverride (s);
 
             s = getOptionalStringValue (sectionName, VAR_EDIT_ITEM_URL, null);
             if (s != null)
                 feedInfo.setItemURLEditCommand (s);
+
+            s = getOptionalStringValue (sectionName, VAR_SAVE_FEED_AS, null);
+            if (s != null)
+                feedInfo.setSaveAsFile (new File (s));
 
             feeds.add (feedInfo);
             feedMap.put (url, feedInfo);
