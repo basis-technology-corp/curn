@@ -13,7 +13,17 @@ Before building curn, you'll need:
 
 3. The prerequisite jar files for the clapper.org utility library.
 
-4. A SAX2 XML parser library. Apache Xerces (http://xerces.apache.org/)
+4. The Apache Jakarta Commons Logging API. See 
+   http://jakarta.apache.org/commons/logging/
+
+5. The Apache Jakarta ORO regular expression library. See
+   http://jakarta.apache.org/oro/
+
+6. The Java Mail API, which, in turn, requires the Java Activation Framework.
+   See http://java.sun.com/products/javamail/ 
+   and http://java.sun.com/products/javabeans/jaf/index.jsp
+
+7. A SAX2 XML parser library. Apache Xerces (http://xerces.apache.org/)
    is a good choice. The appropriate jar files must be in the CLASSPATH.
 
 
@@ -41,15 +51,12 @@ build the adapter classes. To install Informa:
 - Download the Informa library, available at http://informa.sourceforge.net/
   (curn has been tested with version 0.5.5.)
 
-- From the Informa distribution, locate informa.jar, jdom.jar and
-  commons-logging.jar, and place them in your CLASSPATH.
+- From the Informa distribution, locate informa.jar and jdom.jar.
+  and place them in your CLASSPATH.
 
-  + commons-logging.jar is the Apache Jakarta Commons Logging module. If
-    you already have a reasonably up-to-date version of Jakarta Commons
-    Logging in your CLASSPATH, you can skip the one shipped with Informa.
-  + Similarly, jdom.jar is the jdom.org Java Document Object Module
-    library. If you already have a reasonably up-to-date version in your
-    CLASSPATH, you can skip the one shipped with Informa.
+  + jdom.jar is the jdom.org Java Document Object Module library. If you
+    already have a reasonably up-to-date version in your CLASSPATH, you can
+    skip the one shipped with Informa.
 
 To use the Informa parser, instead of the built-in RSS parser, you must
 specify the Informa adapter class in your curn configuration file. See the
