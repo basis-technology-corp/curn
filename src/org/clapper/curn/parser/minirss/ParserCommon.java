@@ -106,35 +106,7 @@ class ParserCommon extends DefaultHandler
 
             ElementStackEntry entry = (ElementStackEntry) elementStack.peek();
             StringBuffer      buf   = entry.getCharBuffer();
-            boolean           lastWasNewline = false;
-
-            int end = start + length;
-            while (start < end)
-            {
-                char c = ch[start++];
-
-                // Substitute a space for each newline sequence. Be sure to
-                // handle all combinations of newline sequences (e.g.,
-                // \n, \r, \r\n, \n\r). We want just one space to replace
-                // a given newline sequence. The easiest solution is to
-                // replace all consecutive newline (\n or \r) characters with
-                // one space. This has the effect of nuking blank lines, but
-                // blank lines are meaningless within character data anyway,
-                // at least in this context.
-                if ((c == '\n') || (c == '\r'))
-                {
-                    if (! lastWasNewline)
-                        buf.append (' ');
-                    lastWasNewline = true;
-                }
-
-                else
-                {
-                    lastWasNewline = false;
-                    if (! Character.isISOControl (c))
-                        buf.append (c);
-                }
-            }
+            ParserUtil.normalizeCharacterData (ch, start, length, buf);
         }
     }
 
