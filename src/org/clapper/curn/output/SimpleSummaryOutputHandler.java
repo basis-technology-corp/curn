@@ -24,9 +24,56 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 /**
- * Provides an output handler that produces plain text to a file.
+ * <p>Provides an output handler that produces a summary of the number of new
+ * items in a configuration file, without actually displaying the items
+ * or their URLs. In addition, the summary contains a user-defined string
+ * from the configuration file. The user-defined string is configured via
+ * the <tt>Message</tt> configuration item. For example:</p>
+ *
+ * <blockquote><pre>
+ * [OutputHandlerSummary]
+ * Class: org.clapper.curn.SimpleSummaryOutputHandler
+ * Message: Full details at http://localhost/rss/feeds.html
+ * </pre></blockquote>
+ *
+ * <p>This handler is particularly useful in conjunction with a true output
+ * handler. For instance, my mail reader does not support HTML (and I like
+ * it that way); however, I prefer the output produced by the
+ * {@link org.clapper.curn.htmloutput.HTMLOutputHandler HTMLOutputHandler}
+ * class to the output produced by the
+ * {@link TextOutputHandler TextOutputHandler}
+ * class. So, my configuration file contains the following output handlers:</p>
+ *
+ * <blockquote><pre>
+ * [OutputHandlerSummary]
+ * Class: org.clapper.curn.SimpleSummaryOutputHandler
+ * Message: Full details at http://localhost/rss/feeds.html
+ *
+ * [OutputHandlerHTML]
+ * Class: org.clapper.curn.htmloutput.HTMLOutputHandler
+ * SaveAs: /usr/local/www/htdocs/rss/feeds.html
+ * SaveOnly: true
+ * </pre></blockquote>
+ *
+ * <p>When <i>curn</i> runs, it parses the RSS feeds and passes the resulting
+ * {@link org.clapper.curn.parser.RSSChannel RSSChannel} objects to each
+ * output handler. Because its <tt>SaveOnly</tt> configuration parameter is
+ * set, the <tt>HTMLOutputHandler</tt> object does not return any output to
+ * <i>curn</i>; instead, it simply saves the HTML output to the specified file.
+ * The <tt>SimpleSummaryOutputHandler</tt> object returns a brief summary
+ * of the feeds, along with the message:</p>
+ *
+ * <blockquote>
+ * <pre>Full details at http://localhost/rss/feeds.html</pre>
+ * </blockquote>
+ *
+ * <p>When I look at <i>curn</i>'s output in my mail reader, I can click on
+ * the link (my mail reader <i>will</i> highlight HTML links, even though it
+ * won't render full HTML), and view the resulting HTML document in my
+ * browser.</p>
  *
  * @see OutputHandler
+ * @see FileOutputHandler
  * @see curn
  * @see org.clapper.curn.parser.RSSChannel
  *

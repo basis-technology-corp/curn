@@ -28,9 +28,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Provides an output handler that produces plain text to a file.
+ * Provides an output handler that writes the RSS channel and item summaries
+ * as plain text. This handler supports the additional configuration items
+ * that its parent {@link FileOutputHandler} class supports. It has no
+ * class-specific configuration items of its own. It produces output only
+ * if the channels contain
  *
  * @see OutputHandler
+ * @see FileOutputHandler
  * @see curn
  * @see org.clapper.curn.parser.RSSChannel
  *

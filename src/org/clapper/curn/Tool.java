@@ -34,16 +34,19 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Calendar;
+import java.util.ResourceBundle;
+import java.util.NoSuchElementException;
 
 import java.text.ParseException;
+import java.text.MessageFormat;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -56,10 +59,15 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtils;
-import org.clapper.util.misc.BadCommandLineException;
 import org.clapper.util.misc.Logger;
 import org.clapper.util.text.TextUtils;
+import org.clapper.util.text.XStringBuffer;
 import org.clapper.util.config.ConfigurationException;
+
+import org.clapper.util.cmdline.CommandLineUtility;
+import org.clapper.util.cmdline.CommandLineException;
+import org.clapper.util.cmdline.CommandLineUsageException;
+import org.clapper.util.cmdline.UsageInfo;
 
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -84,7 +92,7 @@ import org.apache.oro.text.perl.Perl5Util;
  *
  * @version <tt>$Revision$</tt>
  */
-public class curn
+public class curn extends CommandLineUtility
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -115,13 +123,13 @@ public class curn
         DATE_FORMATS.add (new DateParseInfo ("h:mm a", true));
         DATE_FORMATS.add (new DateParseInfo ("h:mm", true));
         DATE_FORMATS.add (new DateParseInfo ("hh a", true));
-        DATE_FORMATS.add (new DateParseInfo ("hh", true));
         DATE_FORMATS.add (new DateParseInfo ("h a", true));
-        DATE_FORMATS.add (new DateParseInfo ("h", true));
     };
 
     private static final String EMAIL_HANDLER_CLASS =
                             "org.clapper.curn.email.EmailOutputHandlerImpl";
+
+    private static final String BUNDLE_NAME = "org.clapper.curn.curn";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -145,14 +153,15 @@ public class curn
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private ConfigFile  config         = null;
-    private boolean     useCache       = true;
-    private FeedCache   cache          = null;
-    private Date        currentTime    = new Date();
-    private Collection  outputHandlers = new ArrayList();
-    private Collection  emailAddresses = new ArrayList();
-    private boolean     showBuildInfo  = false;
-    private Perl5Util   perl5Util      = new Perl5Util();
+    private ConfigFile      config         = null;
+    private boolean         useCache       = true;
+    private FeedCache       cache          = null;
+    private Date            currentTime    = new Date();
+    private Collection      outputHandlers = new ArrayList();
+    private Collection      emailAddresses = new ArrayList();
+    private boolean         showBuildInfo  = false;
+    private Perl5Util       perl5Util      = new Perl5Util();
+    private ResourceBundle  bundle         = null;
 
     /**
      * For log messages
@@ -169,37 +178,12 @@ public class curn
 
         try
         {
-            tool.runProgram (args);
+            tool.execute (args);
         }
 
-        catch (ConfigurationException ex)
-        {
-            System.err.println (ex.getMessages());
-            System.exit (1);
-        }
-
-        catch (IOException ex)
+        catch (CommandLineException ex)
         {
             System.err.println (ex.getMessage());
-            System.exit (1);
-        }
-
-        catch (CurnException ex)
-        {
-            System.err.println (ex.getMessages());
-            System.exit (1);
-        }
-
-        catch (BadCommandLineException ex)
-        {
-            System.err.println (ex.getMessage());
-            tool.usage();
-            System.exit (1);
-        }
-
-        catch (RSSParserException ex)
-        {
-            ex.printStackTrace (System.err);
             System.exit (1);
         }
 
@@ -221,36 +205,6 @@ public class curn
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Run the curn tool. Parses the command line arguments, storing the
-     * results in an internal configuration; then, calls the
-     * {@link #processRSSFeeds} method.
-     *
-     * @param args  the command-line parameters
-     *
-     * @throws IOException              unable to open or read a required file
-     * @throws ConfigurationException   error in configuration file
-     * @throws RSSParserException       error parsing XML feed(s)
-     * @throws BadCommandLineException  command-line error
-     * @throws CurnException          any other error
-     *
-     * @see #processRSSFeeds
-     */
-    public void runProgram (String[] args)
-        throws CurnException,
-               IOException,
-               ConfigurationException,
-               RSSParserException,
-               BadCommandLineException
-        
-    {
-        parseParams (args);
-        if (showBuildInfo)
-            Version.showBuildInfo();
-
-        processRSSFeeds (this.config, this.emailAddresses);
-    }
 
     /**
      * Read the RSS feeds specified in a parsed configuration, writing them
@@ -325,160 +279,242 @@ public class curn
     }
 
     /*----------------------------------------------------------------------*\
-                              Private Methods
+                             Protected Methods
     \*----------------------------------------------------------------------*/
 
-    private void parseParams (String[] args)
-        throws ConfigurationException,
-               IOException,
-               FileNotFoundException,
-               BadCommandLineException
+    /**
+     * Called by <tt>parseParams()</tt> to handle any option it doesn't
+     * recognize. If the option takes any parameters, the overridden
+     * method must extract the parameter by advancing the supplied
+     * <tt>Iterator</tt> (which returns <tt>String</tt> objects). This
+     * default method simply throws an exception.
+     *
+     * @param option   the option, including the leading '-'
+     * @param it       the <tt>Iterator</tt> for the remainder of the
+     *                 command line
+     *
+     * @throws CommandLineUsageException  on error
+     * @throws NoSuchElementException     overran the iterator (i.e., missing
+     *                                    parameter) 
+     */
+    protected void parseCustomOption (String option, Iterator it)
+        throws CommandLineUsageException,
+               NoSuchElementException
+    {
+        if (option.equals ("-a") || option.equals ("--show-authors"))
+            config.setShowAuthorsFlag (true);
+
+        else if (option.equals ("-A") || option.equals ("--no-authors"))
+            config.setShowAuthorsFlag (false);
+
+        else if (option.equals ("-B") || option.equals ("--build-info"))
+            showBuildInfo = true;
+
+        else if (option.equals ("-C") || option.equals ("--no-cache"))
+            useCache = false;
+
+        else if (option.equals ("-d") || option.equals ("--show-dates"))
+            config.setShowDatesFlag (true);
+
+        else if (option.equals ("-D") || option.equals ("--no-dates"))
+            config.setShowDatesFlag (false);
+
+        else if (option.equals ("-Q") || option.equals ("--no-quiet"))
+            config.setQuietFlag (false);
+
+        else if (option.equals ("-q") || option.equals ("--quiet"))
+            config.setQuietFlag (true);
+
+        else if (option.equals ("-r") || option.equals ("--rss-version"))
+            config.setShowRSSVersionFlag (true);
+
+        else if (option.equals ("-R") || option.equals ("--no-rss-version"))
+            config.setShowRSSVersionFlag (false);
+
+        else if (option.equals ("-t") || option.equals ("--time"))
+            currentTime = parseDateTime ((String) it.next());
+
+        else if (option.equals ("-u") || option.equals ("--no-update"))
+            config.setMustUpdateCacheFlag (false);
+
+        else
+            throw new CommandLineUsageException ("Unknown option: " + option);
+    }
+
+    /**
+     * <p>Called by <tt>parseParams()</tt> once option parsing is complete,
+     * this method must handle any additional parameters on the command
+     * line. It's not necessary for the method to ensure that the iterator
+     * has the right number of strings left in it. If you attempt to pull
+     * too many parameters from the iterator, it'll throw a
+     * <tt>NoSuchElementException</tt>, which <tt>parseParams()</tt> traps
+     * and converts into a suitable error message. Similarly, if there are
+     * any parameters left in the iterator when this method returns,
+     * <tt>parseParams()</tt> throws an exception indicating that there are
+     * too many parameters on the command line.</p>
+     *
+     * <p>This method is called unconditionally, even if there are no
+     * parameters left on the command line, so it's a useful place to do
+     * post-option consistency checks, as well.</p>
+     *
+     * @param it   the <tt>Iterator</tt> for the remainder of the
+     *             command line
+     *
+     * @throws CommandLineUsageException  on error
+     * @throws NoSuchElementException     attempt to iterate past end of args;
+     *                                    <tt>parseParams()</tt> automatically
+     *                                    handles this exception, so it's
+     *                                    safe for subclass implementations of
+     *                                    this method not to handle it
+     */
+    protected void processPostOptionCommandLine (Iterator it)
+        throws CommandLineUsageException,
+               NoSuchElementException
+    {
+        while (it.hasNext())
+            emailAddresses.add ((String) it.next());
+    }
+
+    /**
+     * Called by <tt>parseParams()</tt> to get the custom command-line
+     * options and parameters handled by the subclass. This list is used
+     * solely to build a usage message. The overridden method must fill the
+     * supplied <tt>UsageInfo</tt> object:
+     *
+     * <ul>
+     *   <li> Each parameter must be added to the object, via the
+     *        <tt>UsageInfo.addParameter()</tt> method. The first argument
+     *        to <tt>addParameter()</tt> is the parameter string (e.g.,
+     *        "<dbCfg>" or "input_file"). The second parameter is the
+     *        one-line description. The description may be of any length,
+     *        but it should be a single line.
+     *
+     *   <li> Each option must be added to the object, via the
+     *        <tt>UsageInfo.addOption()</tt> method. The first argument to
+     *        <tt>addOption()</tt> is the option string (e.g., "-x" or
+     *        "-version"). The second parameter is the one-line
+     *        description. The description may be of any length, but it
+     *        should be a single line.
+     * </ul>
+     *
+     * That information will be combined with the common options supported
+     * by the base class, and used to build a usage message.
+     *
+     * @param info   The <tt>UsageInfo</tt> object to fill.
+     */
+    protected void getCustomUsageInfo (UsageInfo info)
+    {
+        info.addOption ("-a, --show-authors",
+                        "Show the authors for each item, if available.");
+        info.addOption ("-A, --show-authors",
+                        "Don't the authors for each item, if available.");
+        info.addOption ("-B, --build-info",
+                        "Show full build information.");
+        info.addOption ("-C, --no-cache", "Don't use a cache file at all.");
+        info.addOption ("-d, --show-dates",
+                        "Show dates on feeds and feed items, if available.");
+        info.addOption ("-D, --no-dates",
+                        "Don't show dates on feeds and feed items.");
+        info.addOption ("-Q, --no-quiet",
+                        "Emit messages about sites with no new items.");
+        info.addOption ("-q, --quiet",
+                        "Be quiet about sites with no new items.");
+        info.addOption ("-r, --rss-version",
+                        "Show the RSS version each site uses.");
+        info.addOption ("-R, --no-rss-version",
+                        "Don't show the RSS version each site uses.");
+        info.addOption ("-u, --no-update",
+                        "Read the cache, but don't update it.");
+
+        StringWriter sw  = new StringWriter();
+        PrintWriter  pw  = new PrintWriter (sw);
+        Date         now = new Date();
+
+        for (Iterator it = DATE_FORMATS.iterator(); it.hasNext(); )
+        {
+            pw.println();
+            DateParseInfo dpi = (DateParseInfo) it.next();
+            pw.print ("    " + dpi.formatDate (now));
+        }
+
+        info.addOption ("-t <time>, --time <time>",
+                        "For the purposes of cache expiration, pretend the "
+                      + "current time is <time>. <time> may be in one of the "
+                      + "following formats."
+                      + sw.toString());
+    }
+
+    /**
+     * Run the curn tool. Parses the command line arguments, storing the
+     * results in an internal configuration; then, calls the
+     * {@link #processRSSFeeds} method.
+     *
+     * @param args  the command-line parameters
+     *
+     * @throws CommandLineException error occurred
+     */
+    protected void runCommand()
+        throws CommandLineException
     {
         try
         {
-            String  prog = this.getClass().getName();
-            Map     opts = new HashMap();
-            int     i;
-
-            // First, find the config file. We want to load it before
-            // processing the options, since they might override config
-            // values.
-
-            i = 0;
-            while ((i < args.length) && (args[i].startsWith ("-")))
-            {
-                String s = args[i];
-
-                if (s.equals ("-u") || s.equals ("--no-update"))
-                    opts.put ("u", "");
-
-                else if (s.equals ("-B") || s.equals ("--build-info"))
-                    opts.put ("B", "");
-
-                else if (s.equals ("-Q") || s.equals ("--no-quiet"))
-                    opts.put ("Q", "");
-
-                else if (s.equals ("-q") || s.equals ("--quiet"))
-                    opts.put ("q", "");
-
-                else if (s.equals ("-C") || s.equals ("--no-cache"))
-                    opts.put ("C", "");
-
-                else if (s.equals ("-R") || s.equals ("--no-rss-version"))
-                    opts.put ("R", "");
-
-                else if (s.equals ("-r") || s.equals ("--rss-version"))
-                    opts.put ("r", "");
-
-                else if (s.equals ("-t") || s.equals ("--time"))
-                    opts.put ("t", args[++i]);
-
-                else if (s.equals ("-d") || s.equals ("--show-dates"))
-                    opts.put ("d", "");
-
-                else if (s.equals ("-a") || s.equals ("--show-authors"))
-                    opts.put ("a", "");
-
-                else if (s.equals ("-A") || s.equals ("--no-authors"))
-                    opts.put ("A", "");
-
-                else if (s.equals ("-D") || s.equals ("--no-dates"))
-                    opts.put ("D", "");
-
-                else if (s.equals ("-l") || (s.equals ("--logging")))
-                    opts.put ("l", "");
-
-                else
-                    throw new BadCommandLineException ("Unknown option: "
-                                                     + s);
-
-                i++;
-            }
-
-            config = new ConfigFile (args[i++]);
-
-            if ((args.length - i) > 0)
-            {
-                while (i < args.length)
-                    emailAddresses.add (args[i++]);
-            }
-                
-
-            // Now, process the options.
-
-            for (Iterator it = opts.keySet().iterator(); it.hasNext(); )
-            {
-                String opt = (String) it.next();
-                int    c   = opt.charAt (0);
-
-                switch (c)
-                {
-                    case 'a':   // --show-authors
-                        config.setShowAuthorsFlag (true);
-                        break;
-
-                    case 'A':   // --no-authors
-                        config.setShowAuthorsFlag (false);
-                        break;
-
-                    case 'u':   // --noupdate
-                        config.setMustUpdateCacheFlag (false);
-                        break;
-
-                    case 'B':   // --build-info
-                        showBuildInfo = true;
-                        break;
-
-                    case 'C':   // --nocache
-                        useCache = false;
-                        break;
-
-                    case 'd':   // --show-dates
-                        config.setShowDatesFlag (true);
-                        break;
-
-                    case 'D':   // --no-dates
-                        config.setShowDatesFlag (false);
-                        break;
-
-                    case 'l':   // --logging
-                        Logger.enableLogging();
-                        break;
-
-                    case 'Q':   // --no-quiet
-                        config.setQuietFlag (false);
-                        break;
-
-                    case 'q':   // --quiet
-                        config.setQuietFlag (true);
-                        break;
-
-                    case 'r':   // --rss-version
-                        config.setShowRSSVersionFlag (true);
-                        break;
-
-                    case 'R':   // --no-rss-version
-                        config.setShowRSSVersionFlag (false);
-                        break;
-
-                    case 't':   // --time
-                        currentTime = parseDateTime ((String) opts.get (opt));
-                        break;
-
-                    default:
-                        // Already handled.
-                }
-            }
+            runCurn();
         }
 
-        catch (ArrayIndexOutOfBoundsException ex)
+        catch (ConfigurationException ex)
         {
-            throw new BadCommandLineException ("Missing parameter(s)");
+            throw new CommandLineException (ex);
+        }
+
+        catch (IOException ex)
+        {
+            throw new CommandLineException (ex);
+        }
+
+        catch (CurnException ex)
+        {
+            throw new CommandLineException (ex);
+        }
+
+        catch (RSSParserException ex)
+        {
+            throw new CommandLineException (ex);
+        }
+
+        catch (Exception ex)
+        {
+            ex.printStackTrace (System.err);
+            throw new CommandLineException (ex);
         }
     }
 
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    private void runCurn()
+        throws CurnException,
+               IOException,
+               ConfigurationException,
+               RSSParserException,
+               CommandLineException
+        
+    {
+        bundle = ResourceBundle.getBundle (BUNDLE_NAME);
+        if (bundle == null)
+        {
+            throw new CurnException ("Can't locate resource bundle "
+                                   + BUNDLE_NAME);
+        }
+
+        if (showBuildInfo)
+            Version.showBuildInfo();
+
+        processRSSFeeds (this.config, this.emailAddresses);
+    }
+
     private Date parseDateTime (String s)
-        throws BadCommandLineException
+        throws CommandLineUsageException
     {
         Date date = null;
 
@@ -517,40 +553,13 @@ public class curn
         }
 
         if (date == null)
-            throw new BadCommandLineException ("Bad date/time: \"" + s + "\"");
+        {
+            throw new CommandLineUsageException ("Bad date/time: \""
+                                               + s
+                                               + "\"");
+        }
 
         return date;
-    }
-
-    private void usage()
-    {
-        String[] USAGE = new String[]
-        {
-"curn, version " + Version.VERSION,
-"",
-"Usage: " + curn.class.getName() + " [options] configFile [email_addr ...]",
-"",
-"OPTIONS",
-"-a, --show-authors   Show the authors for each item, if available",
-"-A, --no-authors     Don't show the authors for each item",
-"-B, --build-info     Show full build information",
-"-C, --no-cache       Don't use a cache file at all.",
-"-d, --show-dates     Show dates on feeds and feed items, if available",
-"-D, --no-dates       Don't show dates on feeds and feed items",
-"-Q, --no-quiet       Emit information about sites with no information",
-"-l, --logging        Enable logging via the Jakarta Commons Logging API",
-"-q, --quiet          Be quiet about sites with no information",
-"-r, --rss-version    Display the RSS version used at each site",
-"-R, --no-rss-version Don't display the RSS version used at each site",
-"-t datetime",
-"--time datetime      For the purposes of cache expiration, pretend the",
-"                       current time is <datetime>. <datetime> may be in a ",
-"                       variety of forms.",
-"-u, --no-update      Read the cache, but don't update it"
-        };
-
-        for (int i = 0; i < USAGE.length; i++)
-            System.err.println (USAGE[i]);
     }
 
     private void loadOutputHandlers (ConfigFile configuration,
