@@ -173,7 +173,7 @@ produced output, and displays it on standard output.</p>
              width="100%">
         <tr valign="top">
           <td align="left">
-<pre>Usage: java org.clapper.curn.curn [options] config [emailAddress ...]
+<pre>Usage: java org.clapper.curn.Tool [options] config [emailAddress ...]
 
 OPTIONS:
 
@@ -333,9 +333,11 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
 	<tr valign="top" class="oddRow">
 	  <td align="left">&nbsp;</td>
-	  <td> class="code">--logging</td>
+	  <td><a name="--logging" class="code">--logging</td>
           <td>Enable logging via the
-	      <a href="http://jakarta.apache.org/commones/logging/">Jakarta Commons Logging API</a>.
+	      <a href="http://jakarta.apache.org/commons/logging/">Jakarta Commons Logging API</a>.
+	      Specifying this option will cause <i>curn</i> to abort with
+	      an error if the Commons Logging classes are not in the CLASSPATH.
 	      Depending on the underlying logging technology, you will
 	      probably also have to specify a configuration file via a
 	      <span class="code">-D</span> parameter to the
@@ -344,7 +346,10 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 	      <a href="http://logging.apache.org/log4j/docs/">Log4J</a> logging
 	      API, you'll have to specify the path to a valid Log4J
 	      configuration file, e.g.,
-	      <blockquote><pre>java -Dlog4j.configuration=file:///tmp/log4j.properties org.clapper.curn.curn --logging ...</pre></blockquote>
+	      <blockquote><pre>java -Dlog4j.configuration=file:///tmp/log4j.properties org.clapper.curn.Tool --logging ...</pre></blockquote>
+	      See the <a href="http://jakarta.apache.org/commons/logging/">Jakarta Commons Logging API</a>
+	      web site for more details on how Commons Logging interacts with
+	      various underlying logging APIs.
 	  </td>
 	</tr>
 
@@ -1577,10 +1582,20 @@ Disabled: false</pre></blockquote>
 	        <td align="left">If "true" and if
 	        <span class="code">SaveAs</span> is defined, then save a copy
 	        of the generated HTML, but don't make it available to the user.
-	        (i.e., Don't display it on standard output, and don't email it.)
+	        (i.e., Don't display it on standard output, and don't email
+	        it.)
 	        </td>
 	        <td align="left">No</td>
 		<td align="left" class="code">false</td>
+	      </tr>
+	      <tr valign="top">
+		<td align="left" class="code">Title</td>
+	        <td align="left">String</td>
+	        <td align="left">If set, this string overrides the title
+	        and the topmost heading in the generated HTML.
+	        </td>
+	        <td align="left">No</td>
+		<td align="left" class="code">RSS Feeds</td>
 	      </tr>
 	    </table>
 	  </td>
@@ -1885,8 +1900,11 @@ to <i>curn</i>'s main logic.</p>
 instead of 
 <a href="http://informa.sourceforge.net/">Informa</a> or
 <i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
+Integrating that parser with <i>curn</i> requires writing some adapter classes
+that implement some interfaces and extend some classes provided with the
+<i>curn</i> software. Those classes are:</p>
 
-<p><i>[more to come]</i></p>
+<p></p>
 
 <h3><a name="NewOutputHandler">Writing Your Own Output Handler</a></h3>
 

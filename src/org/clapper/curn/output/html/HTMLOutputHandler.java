@@ -41,10 +41,11 @@ import java.text.SimpleDateFormat;
 import java.net.URL;
 
 import org.w3c.dom.Node;
-
 import org.w3c.dom.html.HTMLTableRowElement;
 import org.w3c.dom.html.HTMLTableCellElement;
 import org.w3c.dom.html.HTMLAnchorElement;
+
+import org.enhydra.xml.xmlc.XMLCUtil;
 
 /**
  * Provides an output handler that produces HTML output.
@@ -82,6 +83,7 @@ public class HTMLOutputHandler extends FileOutputHandler
     private HTMLTableCellElement  itemTitleTD         = null;
     private HTMLTableCellElement  itemDescTD          = null;
     private HTMLTableCellElement  channelTD           = null;
+    private String                title               = null;
 
     /**
      * For logging
@@ -127,6 +129,25 @@ public class HTMLOutputHandler extends FileOutputHandler
         this.itemTitleTD         = doc.getElementItemTitleTD();
         this.itemDescTD          = doc.getElementItemDescTD();
         this.channelTD           = doc.getElementChannelTD();
+        this.title               = null;
+
+        // Parse handler-specific configuration variables
+
+        String section = config.getOutputHandlerSectionName (this.getClass());
+
+        try
+        {
+            if (section != null)
+                title = config.getOptionalStringValue (section, "Title", null);
+                                                       
+        }
+        
+        catch (NoSuchSectionException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+
+        // Open the output file.
 
         File outputFile = super.getOutputFile();
         doc.setTextTimestamp (OUTPUT_DATE_FORMAT.format (new Date()));
@@ -297,6 +318,14 @@ public class HTMLOutputHandler extends FileOutputHandler
         // Remove the cloneable row.
 
         removeElement (doc.getElementChannelRow());
+
+        // Set the title and the top header.
+
+        if (title != null)
+        {
+            XMLCUtil.getFirstText (doc.getElementTitle()).setData (title);
+            doc.setTextTitleHeading (title);
+        }
 
         // Add configuration info, if available.
 
