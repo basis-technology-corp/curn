@@ -119,7 +119,8 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
+    public final void init (ConfigFile              config,
+                            ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -243,7 +244,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @throws CurnException an error occurred
      */
-    public InputStream getGeneratedOutput()
+    public final InputStream getGeneratedOutput()
         throws CurnException
     {
         InputStream result = null;
@@ -278,7 +279,7 @@ public abstract class FileOutputHandler implements OutputHandler
      * @see #getGeneratedOutput
      * @see #getContentType
      */
-    public boolean hasGeneratedOutput()
+    public final boolean hasGeneratedOutput()
     {
         boolean hasOutput = false;
 
@@ -303,7 +304,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @return the output file, or none if not created yet
      */
-    protected File getOutputFile()
+    protected final File getOutputFile()
     {
         return outputFile;
     }
@@ -315,7 +316,7 @@ public abstract class FileOutputHandler implements OutputHandler
      * @return <tt>true</tt> if saving output only, <tt>false</tt> if also
      *         reporting output to <i>curn</i>
      */
-    protected boolean savingOutputOnly()
+    protected final boolean savingOutputOnly()
     {
         return saveOnly;
     }
