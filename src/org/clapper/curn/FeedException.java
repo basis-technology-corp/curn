@@ -106,12 +106,12 @@ public class FeedException extends CurnException
      * Constructs an exception containing a resource bundle name, a message
      * key, and a default message (in case the resource bundle can't be
      * found). Using this constructor is equivalent to calling the
-     * {@link #FeedException(String,String,String,Object[])} constructor,
-     * with a null pointer for the <tt>Object[]</tt> parameter.
-     * Calls to {@link NestedException#getMessage(Locale)} will attempt to
-     * retrieve the top-most message (i.e., the message from this exception,
-     * not from nested exceptions) by querying the named resource bundle.
-     * Calls to {@link NestedException#printStackTrace(PrintWriter,Locale)}
+     * {@link #FeedException(FeedInfo,String,String,String,Object[])}
+     * constructor, with a null pointer for the <tt>Object[]</tt>
+     * parameter. Calls to <tt>getMesage(Locale)</tt> will attempt to
+     * retrieve the top-most message (i.e., the message from this
+     * exception, not from nested exceptions) by querying the named
+     * resource bundle. Calls to <tt>printStackTrace(PrintWriter,Locale)</tt>
      * will do the same, where applicable. The message is not retrieved
      * until one of those methods is called, because the desired locale is
      * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
@@ -122,8 +122,7 @@ public class FeedException extends CurnException
      * @param messageKey  the key to the message to find in the bundle
      * @param defaultMsg  the default message
      *
-     * @see #FeedException(String,String,String,Object[])
-     * @see NestedException#getMessage(Locale)
+     * @see #FeedException(FeedInfo,String,String,String,Object[])
      */
     public FeedException (FeedInfo feedInfo,
                           String   bundleName,
@@ -138,12 +137,12 @@ public class FeedException extends CurnException
      * Constructs an exception containing a resource bundle name, a message
      * key, and a default message (in case the resource bundle can't be
      * found). Using this constructor is equivalent to calling the
-     * {@link #FeedException(String,String,String,Object[],Throwable)}
+     * {@link #FeedException(FeedInfo,String,String,String,Object[],Throwable)}
      * constructor, with a null pointer for the <tt>Object[]</tt> parameter.
-     * Calls to {@link NestedException#getMessage(Locale)} will attempt to
+     * Calls to <tt>getMessage(Locale)</tt> will attempt to
      * retrieve the top-most message (i.e., the message from this exception,
      * not from nested exceptions) by querying the named resource bundle.
-     * Calls to {@link NestedException#printStackTrace(PrintWriter,Locale)}
+     * Calls to <tt>printStackTrace(PrintWriter,Locale)</tt>
      * will do the same, where applicable. The message is not retrieved
      * until one of those methods is called, because the desired locale is
      * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
@@ -155,8 +154,7 @@ public class FeedException extends CurnException
      * @param defaultMsg  the default message
      * @param msgParams   parameters to the message, if any, or null
      *
-     * @see #FeedException(String,String,String,Object[],Throwable)
-     * @see NestedException#getMessage(Locale)
+     * @see #FeedException(FeedInfo,String,String,String,Object[],Throwable)
      */
     public FeedException (FeedInfo feedInfo,
                           String   bundleName,
@@ -172,17 +170,16 @@ public class FeedException extends CurnException
      * Constructs an exception containing a resource bundle name, a message
      * key, a default message (in case the resource bundle can't be found), and
      * another exception. Using this constructor is equivalent to calling the
-     * {@link #FeedException(String,String,String,Object[],Throwable)}
+     * {@link #FeedException(FeedInfo,String,String,String,Object[],Throwable)}
      * constructor, with a null pointer for the <tt>Object[]</tt>
-     * parameter. Calls to {@link #getMessage(Locale)} will attempt to
+     * parameter. Calls to <tt>getMessage(Locale)</tt> will attempt to
      * retrieve the top-most message (i.e., the message from this
      * exception, not from nested exceptions) by querying the named
-     * resource bundle. Calls to
-     * {@link #printStackTrace(PrintWriter,Locale)} will do the same, where
-     * applicable. The message is not retrieved until one of those methods
-     * is called, because the desired locale is passed into
-     * <tt>getMessage()</tt> and <tt>printStackTrace()</tt>, not this
-     * constructor.
+     * resource bundle. Calls to <tt>printStackTrace(PrintWriter,Locale)</tt>
+     * will do the same, where applicable. The message is not retrieved
+     * until one of those methods is called, because the desired locale is
+     * passed into <tt>getMessage()</tt> and <tt>printStackTrace()</tt>,
+     * not this constructor.
      *
      * @param feedInfo    the <tt>FeedInfo</tt> object for the feed
      * @param bundleName  resource bundle name
@@ -190,8 +187,7 @@ public class FeedException extends CurnException
      * @param defaultMsg  the default message
      * @param exception   the exception to nest
      *
-     * @see #FeedException(String,String,String,Object[],Throwable)
-     * @see NestedException#getMessage(Locale)
+     * @see #FeedException(FeedInfo,String,String,String,Object[],Throwable)
      */
     public FeedException (FeedInfo  feedInfo,
                           String    bundleName,
@@ -208,10 +204,10 @@ public class FeedException extends CurnException
      * key, a default message format (in case the resource bundle can't be
      * found), arguments to be incorporated in the message via
      * <tt>java.text.MessageFormat</tt>, and another exception.
-     * Calls to {@link #getMessage(Locale)} will attempt to retrieve the
+     * Calls to <tt>getMessage(Locale)</tt> will attempt to retrieve the
      * top-most message (i.e., the message from this exception, not from
      * nested exceptions) by querying the named resource bundle. Calls to
-     * {@link #printStackTrace(PrintWriter,Locale)} will do the same, where
+     * <tt>printStackTrace(PrintWriter,Locale)</tt> will do the same, where
      * applicable. The message is not retrieved until one of those methods
      * is called, because the desired locale is passed into
      * <tt>getMessage()</tt> and <tt>printStackTrace()</tt>, not this
@@ -224,8 +220,7 @@ public class FeedException extends CurnException
      * @param msgParams   parameters to the message, if any, or null
      * @param exception   exception to be nested
      *
-     * @see #FeedException(String,String,String,Object[])
-     * @see NestedException#getMessage(Locale)
+     * @see #FeedException(FeedInfo,String,String,String,Object[])
      */
     public FeedException (FeedInfo  feedInfo,
                           String    bundleName,
