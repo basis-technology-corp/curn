@@ -156,7 +156,7 @@ public class RSSGetCache implements Serializable
      *
      * @return <tt>true</tt> if cached, <tt>false</tt> if not
      *
-     * @see Util#normalizeURL
+     * @see Util#normalizeURL(URL)
      */
     public boolean containsURL (URL url)
     {
@@ -177,7 +177,7 @@ public class RSSGetCache implements Serializable
      * @return the corresponding <tt>RSSCacheEntry</tt> object, or null if
      *         not found
      *
-     * @see #Util#normalizeURL
+     * @see Util#normalizeURL(URL)
      */
     public RSSCacheEntry getItem (URL url)
     {
