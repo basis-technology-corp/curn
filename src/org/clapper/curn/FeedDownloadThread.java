@@ -417,7 +417,16 @@ class FeedDownloadThread extends Thread
                     }
 
                     if (parser == null)
+                    {
                         log.debug ("No RSS parser. Skipping XML parse phase.");
+                    }
+
+                    else if (feedInfo.saveOnly())
+                    {
+                        log.debug ("Feed is marked 'save only'. Skipping "
+                                 + "XML parse phase.");
+                    }
+
                     else
                     {
                         if (feedInfo.getPreparseEditCommands() != null)

@@ -385,8 +385,13 @@ public class Curn
 
         for (int i = 0; i < maxThreads; i++)
         {
+            RSSParser parser = null;
+
+            if (parsingEnabled)
+                parser = getRSSParser (configuration);
+
             thread = new FeedDownloadThread (String.valueOf (i),
-                                             getRSSParser (configuration),
+                                             parser,
                                              feedCache,
                                              configuration,
                                              feedQueue);

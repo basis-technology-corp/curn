@@ -102,6 +102,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_DISABLED          = "Disabled";
     private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     private static final String VAR_SAVE_FEED_AS      = "SaveAs";
+    private static final String VAR_SAVE_ONLY         = "SaveOnly";
     private static final String VAR_FEED_URL          = "URL";
     private static final String VAR_CLASS             = "Class";
     private static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
@@ -135,6 +136,7 @@ public class ConfigFile extends Configuration
     private static final boolean DEF_SHOW_DATES        = false;
     private static final boolean DEF_SHOW_AUTHORS      = false;
     private static final boolean DEF_GET_GZIPPED_FEEDS = true;
+    private static final boolean DEF_SAVE_ONLY         = false;
     private static final String  DEF_SMTP_HOST         = "localhost";
     private static final String  DEF_EMAIL_SUBJECT     = "curn output";
     private static final String  DEF_PARSER_CLASS_NAME =
@@ -820,6 +822,13 @@ public class ConfigFile extends Configuration
             {
                 s = getConfigurationValue (sectionName, VAR_SAVE_FEED_AS);
                 feedInfo.setSaveAsFile (new File (s));
+            }
+
+            else if (varName.equals (VAR_SAVE_ONLY))
+            {
+                feedInfo.setSaveOnlyFlag
+                    (getRequiredBooleanValue (sectionName, VAR_SAVE_ONLY));
+                log.debug ("Feed save-only=" + feedInfo.saveOnly());
             }
 
             else if (varName.equals (VAR_FORCE_ENCODING))

@@ -78,6 +78,7 @@ public class FeedInfo
     private boolean     pruneURLsFlag         = false;
     private boolean     summaryOnly           = false;
     private boolean     enabled               = true;
+    private boolean     saveOnly              = false;
     private int         daysToCache           = 0;
     private String      titleOverride         = null;
     private String      itemURLEditCmd        = null;
@@ -395,6 +396,35 @@ public class FeedInfo
     public void setSaveAsFile (File f)
     {
         this.saveAsFile = f;
+    }
+
+    /**
+     * Get the value of the "save only" flag. If this flag is set, then the
+     * feed is retrieved and saved (provided a "save as" value is specified),
+     * but not parsed.
+     *
+     * @return <tt>true</tt> if "save only" is set, <tt>false</tt> otherwise
+     *
+     * @see #setSaveOnlyFlag
+     */
+    public boolean saveOnly()
+    {
+        return saveOnly;
+    }
+
+    /**
+     * Set the value of the "save only" flag. If this flag is set, then the
+     * feed is retrieved and saved (provided a "save as" value is specified),
+     * but not parsed.
+     *
+     * @param newValue <tt>true</tt> to set the "save only" flag,
+     *                 <tt>false</tt> to clear it
+     *
+     * @see #saveOnly
+     */
+    public void setSaveOnlyFlag (boolean newValue)
+    {
+        this.saveOnly = newValue;
     }
 
     /**
