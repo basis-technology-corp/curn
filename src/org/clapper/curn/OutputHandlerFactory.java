@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.clapper.util.config.ConfigurationException;
 
+import org.clapper.util.misc.Logger;
+
 /**
  * This class provides a factory for retrieving a specific
  * <tt>OutputHandler</tt> implementation.

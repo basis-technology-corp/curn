@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.clapper.util.misc.Logger;
+
 /**
  * Defines the in-memory format of the <i>curn</i> cache, and provides
  * methods for saving and restoring the cache.

@@ -57,6 +57,7 @@ import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtils;
 import org.clapper.util.misc.BadCommandLineException;
+import org.clapper.util.misc.Logger;
 import org.clapper.util.text.TextUtils;
 import org.clapper.util.config.ConfigurationException;
 
@@ -441,7 +442,7 @@ public class curn
                         break;
 
                     case 'l':   // --logging
-                        Logger.enableAllLoggers();
+                        Logger.enableLogging();
                         break;
 
                     case 'Q':   // --no-quiet

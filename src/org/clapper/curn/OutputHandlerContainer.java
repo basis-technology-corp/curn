@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 
 import org.clapper.util.config.ConfigurationException;
 
+import org.clapper.util.misc.Logger;
+
 /**
  * Wraps an <tt>OutputHandler</tt>, holding the temporary file and other
  * housekeeping information about an individual output handler.

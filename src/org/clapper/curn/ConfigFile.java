@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import org.clapper.util.text.TextUtils;
 
 import org.clapper.util.misc.OrderedHashMap;
+import org.clapper.util.misc.Logger;
 
 import org.clapper.util.config.Configuration;
 import org.clapper.util.config.NoSuchVariableException;
