@@ -53,9 +53,10 @@
   <property name="code_jar_name" value="curn"/>
   <property name="code_jar_file" value="${code_jar_name}.jar"/>
   <property name="code_jar_path" value="${dist}/${code_jar_file}"/>
-  <property name="docs_top_dir" value="${dist}/docs"/>
-  <property name="docs_api_dir" value="${docs_top_dir}/api"/>
-  <property name="zip_dir_prefix" value="org/clapper/curn/"/>
+  <property name="docs_top_dir" value="docs"/>
+  <property name="javadocs_top_dir" value="${dist}/docs"/>
+  <property name="javadocs_api_dir" value="${javadocs_top_dir}/api"/>
+  <property name="zip_dir_prefix" value="curn/"/>
   <property name="release_dir" value="${dist}/release"/>
 
   <!--
@@ -319,11 +320,11 @@
   ***************************************************************************
   -->
 
-  <target name="doc"
+  <target name="javadocs"
           description="Generate API Javadocs">
-    <mkdir dir="${docs_api_dir}"/>
+    <mkdir dir="${javadocs_api_dir}"/>
     <javadoc
-             destdir="${docs_api_dir}"
+             destdir="${javadocs_api_dir}"
              sourcepath="${src.top}"
              author="true"
              version="true"
@@ -339,8 +340,7 @@
     </javadoc>
   </target>
 
-  <target name="docs" depends="doc"/>
-  <target name="javadocs" depends="doc"/>
+  <target name="javadoc" depends="javadocs"/>
 
   <!--
   ***************************************************************************
@@ -356,6 +356,9 @@
               value="${code_jar_name}-${VERSION}.jar"/>
 
     <property name="versioned_docs_zipfile" 
+              value="docs-${VERSION}.zip"/>
+
+    <property name="versioned_javadocs_zipfile" 
               value="javadocs-${VERSION}.zip"/>
   </target>
 
@@ -366,8 +369,17 @@
   </target>
   <target name="dist" depends="code.jar"/>
 
-  <target name="-doczip" depends="doc"
+  <target name="-javadoczip" depends="javadocs"
           description="Builds the javadocs zip file">
+    <mkdir dir="${release_dir}"/>
+    <zip destfile="${release_dir}/${versioned_javadocs_zipfile}">
+      <zipfileset dir="${javadocs_top_dir}"
+                  prefix="${zip_dir_prefix}"/>
+    </zip>
+  </target>
+
+  <target name="-doczip"
+          description="Builds the non-Javadocs documentation zip file">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_docs_zipfile}">
       <zipfileset dir="${docs_top_dir}"
@@ -393,7 +405,7 @@
   </target>
 
   <target name="fulldist" 
-          depends="dist,-set.version.properties,-srczip,-doczip"
+          depends="dist,-set.version.properties,-srczip,-doczip,-javadoczip"
           description="Generate the distribution and source jars">
     <copy file="${code_jar_path}" 
           tofile="${release_dir}/${versioned_code_jar_file}"/>

@@ -112,7 +112,7 @@ you can take to be more bandwidth-friendly.)</p>
 
 <p><i>curn</i>
 can be extended to use any RSS parser; its built-in RSS parser, the
-<a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
 class, can handle files in
 <a target="_top" href="http://www.atomenabled.org/developers/">Atom</a>
 format (0.3) and RSS formats
@@ -993,7 +993,7 @@ in detail, below.</p>
 	  <td align="left">
             <p>The full name of the underlying RSS parser class to be used.
             This class must implement the
-	    <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+	    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
             interface. It can be a first-class parser of its own, or
             it can be nothing more than an adapter for a third party
             RSS parser class.</p>
@@ -1001,7 +1001,7 @@ in detail, below.</p>
             <p>Two parsers are bundled with <i>curn</i>:</p>
 
             <dl>
-	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
+	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
 
 	      <dd>A minimal SAX-based RSS parser that handles files in
 		  <a href="http://www.atomenabled.org/developers/">Atom</a>
@@ -1015,7 +1015,7 @@ in detail, below.</p>
 		  RSS parser (though it's perfectly suited for use in
 		  <i>curn</i>).
 
-	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
+	      <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
 		  
 	      <dd>An adapter class that makes the
 		  <a href="http://informa.sourceforge.net/">Informa RSS parser</a>
@@ -1026,7 +1026,7 @@ in detail, below.</p>
 	    </dl>
 
             <p>Any class that implements
-	    <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+	    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
             may be used as a value for <span class="code">ParserClass</span>.
           </td>
 	  <td align="left">No</td>
@@ -1343,7 +1343,7 @@ variables common to all output handlers are described below.</p>
 	  <td>String</td>
 	  <td align="left">Identifies Java class that implements the output
 	  handler. (The class must implement the
-	  <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+	  <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
 	  interface. See
 	  <a href="#NewOutputHandler">Writing Your Own Output Handler</a>
 	  for details.) 
@@ -1759,7 +1759,7 @@ instead of
 
 <ul>
   <li>First, write a Java class the implements the
-      <a href="http://www.clapper.org/software/java/curn/javadocs/org/clapper/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
       interface.
   <li>Compile the class and place the compiled class somewhere in your
       CLASSPATH.
@@ -1825,7 +1825,7 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
     <td align="left">[2]</td>
     <td align="left"><i>curn</i>'s configuration file is parsed by a subclass
       of the
-      <a href="http://www.clapper.org/software/java/util/javadocs/org/clapper/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
+      <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
       class, so it implicitly supports all the features provided by that class.
     </td>
   </tr>
