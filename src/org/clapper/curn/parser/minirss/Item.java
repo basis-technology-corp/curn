@@ -4,6 +4,8 @@
 
 package org.clapper.rssget.parser.minirss;
 
+import org.clapper.rssget.Util;
+
 import org.clapper.rssget.parser.RSSItem;
 
 import java.net.URL;
@@ -32,6 +34,7 @@ public class Item implements RSSItem
     private Collection  categories  = null;
     private String      author      = null;
     private Channel     channel     = null;
+    private String      uniqueID    = null;
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -49,7 +52,7 @@ public class Item implements RSSItem
     }
 
     /*----------------------------------------------------------------------*\
-                              Methods
+                              Public Methods
     \*----------------------------------------------------------------------*/
 
     /**
@@ -174,5 +177,49 @@ public class Item implements RSSItem
     public Collection getCategories()
     {
         return categories;
+    }
+
+    /**
+     * Get a unique string that can be used to store this item in the
+     * cache and retrieve it later. Possibilities for this value include
+     * (but are not limited to):
+     *
+     * <ul>
+     *   <li> Unique ID. Some RSS formats support a unique per-item
+     *        ID. For instance,
+     *        {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+     *        supports an optional <tt>&lt;id&gt;</tt> element nested within
+     *        its <tt>&lt;entry&gt;</tt> element. (The <tt>&lt;entry&gt;</tt>
+     *        element represent an item in Atom.)
+     *   <li> The URI for the item. This value can be less reliable than a
+     *        unique ID, because there's no guarantee that it won't change.
+     *        However, sometimes it's all that's available.
+     *   <li> A calculated hash string of some kind.
+     * </ul>
+     *
+     * @return the cache key
+     */
+    public String getCacheKey()
+    {
+        String result = uniqueID;
+
+        if (result == null)
+            result = Util.normalizeURL (getLink()).toExternalForm();
+
+        return result;
+    }
+
+    /*----------------------------------------------------------------------*\
+                          Package-visible Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Set the unique ID for this item.
+     *
+     * @param id  the unique ID
+     */
+    void setUniqueID (String id)
+    {
+        this.uniqueID = id;
     }
 }

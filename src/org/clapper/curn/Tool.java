@@ -619,12 +619,13 @@ public class rssget implements VerboseMessagesHandler
             // Don't download the channel if it hasn't been modified since
             // we last checked it.
 
-            feedURL = Util.normalizeURL (feedURL);
             URLConnection conn = feedURL.openConnection();
-            if (feedHasChanged (conn, feedURL))
+            if (feedHasChanged (conn, feedInfo))
             {
                 if (cache != null)
-                    cache.addToCache (feedURL, feedInfo);
+                    cache.addToCache (feedInfo.getCacheKey(),
+                                      feedURL,
+                                      feedInfo);
 
                 channel = parser.parseRSSFeed (conn.getInputStream());
                 processChannelItems (channel, feedInfo);
@@ -660,16 +661,18 @@ public class rssget implements VerboseMessagesHandler
         return channel;
     }
 
-    private boolean feedHasChanged (URLConnection conn, URL feedURL)
+    private boolean feedHasChanged (URLConnection conn, RSSFeedInfo feedInfo)
         throws IOException
     {
         long     lastSeen = 0;
         long     lastModified = 0;
         boolean  hasChanged = false;
+        String   cacheKey = feedInfo.getCacheKey();
+        URL      feedURL = feedInfo.getURL();
 
-        if ((cache != null) && (cache.containsURL (feedURL)))
+        if ((cache != null) && (cache.contains (cacheKey)))
         {
-            RSSCacheEntry entry = (RSSCacheEntry) cache.getItem (feedURL);
+            RSSCacheEntry entry = (RSSCacheEntry) cache.getItem (cacheKey);
             lastSeen = entry.getTimestamp();
         }
 
@@ -787,7 +790,7 @@ public class rssget implements VerboseMessagesHandler
 
             // Skip it if it's cached.
 
-            if ((cache != null) && cache.containsURL (itemURL))
+            if ((cache != null) && cache.contains (item.getCacheKey()))
             {
                 verbose (3,
                          "Skipping cached URL \"" + itemURL.toString() + "\"");
@@ -813,7 +816,11 @@ public class rssget implements VerboseMessagesHandler
                        + item.getLink().toString()
                        + "\"");
                 if (cache != null)
-                    cache.addToCache (item.getLink(), feedInfo);
+                {
+                    cache.addToCache (item.getCacheKey(),
+                                      item.getLink(),
+                                      feedInfo);
+                }
             }
         }
     }

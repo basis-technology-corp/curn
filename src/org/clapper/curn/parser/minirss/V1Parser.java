@@ -88,10 +88,7 @@ public class V1Parser extends ParserCommon
 
         else if (elementName.equals ("item"))
         {
-            Item item = new Item (channel);
-
-            channel.addItem (item);
-            elementStack.push (new ElementStackEntry (elementName, item));
+            channel.addItem (startItem (elementName, attributes));
         }
 
         else if (container instanceof Channel)
@@ -163,7 +160,7 @@ public class V1Parser extends ParserCommon
     \*----------------------------------------------------------------------*/
 
     /**
-     * Handle the start of the channel element.
+     * Handle the start of a channel element.
      *
      * @param elementName  the element name, which is pushed onto the stack
      *                     along with the <tt>Channel</tt> object
@@ -171,24 +168,41 @@ public class V1Parser extends ParserCommon
      *
      * @throws SAXException on error
      */
-    private void startChannel (String     elementName,
-                               Attributes attributes)
+    private void startChannel (String elementName, Attributes attributes)
         throws SAXException
     {
-        try
-        {
-            String url = attributes.getValue ("rdf:about");
+        String id = attributes.getValue ("rdf:about");
 
-            if (url != null)
-                channel.setLink (new URL (url));
+        if (id != null)
+            channel.setUniqueID (id);
 
-            elementStack.push (new ElementStackEntry (elementName, channel));
-        }
+        elementStack.push (new ElementStackEntry (elementName, channel));
+    }
 
-        catch (MalformedURLException ex)
-        {
-            throw new SAXException (ex.toString());
-        }
+    /**
+     * Handle the start of an item element.
+     *
+     * @param elementName  the element name, which is pushed onto the stack
+     *                     along with the <tt>Item</tt> object
+     * @param attributes   the attributes
+     *
+     * @return the <tt>Item</tt> element that was created and pushed on the
+     *         stack
+     *
+     * @throws SAXException on error
+     */
+    private Item startItem (String elementName, Attributes attributes)
+        throws SAXException
+    {
+        Item    item = new Item (channel);
+        String  id   = attributes.getValue ("rdf:about");
+
+        if (id != null)
+            item.setUniqueID (id);
+
+        elementStack.push (new ElementStackEntry (elementName, item));
+
+        return item;
     }
 
     /**

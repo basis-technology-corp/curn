@@ -4,6 +4,8 @@
 
 package org.clapper.rssget.parser.informa;
 
+import org.clapper.rssget.Util;
+
 import org.clapper.rssget.parser.RSSItem;
 
 import de.nava.informa.core.ItemIF;
@@ -147,6 +149,31 @@ public class RSSItemAdapter implements RSSItem
     public Date getPublicationDate()
     {
         return this.item.getDate();
+    }
+
+    /**
+     * Get a unique string that can be used to store this item in the
+     * cache and retrieve it later. Possibilities for this value include
+     * (but are not limited to):
+     *
+     * <ul>
+     *   <li> Unique ID. Some RSS formats support a unique per-item
+     *        ID. For instance,
+     *        {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
+     *        supports an optional <tt>&lt;id&gt;</tt> element nested within
+     *        its <tt>&lt;entry&gt;</tt> element. (The <tt>&lt;entry&gt;</tt>
+     *        element represent an item in Atom.)
+     *   <li> The URI for the item. This value can be less reliable than a
+     *        unique ID, because there's no guarantee that it won't change.
+     *        However, sometimes it's all that's available.
+     *   <li> A calculated hash string of some kind.
+     * </ul>
+     *
+     * @return the cache key
+     */
+    public String getCacheKey()
+    {
+        return Util.normalizeURL (getLink()).toExternalForm();
     }
 
     /*----------------------------------------------------------------------*\

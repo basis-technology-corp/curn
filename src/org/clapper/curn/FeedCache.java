@@ -149,54 +149,50 @@ public class RSSGetCache implements Serializable
     }
 
     /**
-     * Determine whether a given URL is cached.
+     * Determine whether a given ID is cached.
      *
-     * @param url  the URL to check. The URL should already have
-     *             been normalized.
+     * @param id  the uniqueID to check.
      *
      * @return <tt>true</tt> if cached, <tt>false</tt> if not
-     *
-     * @see Util#normalizeURL(URL)
      */
-    public boolean containsURL (URL url)
+    public boolean contains (String id)
     {
-        String key = url.toExternalForm();
         vh.verbose (3,
                     "Cache contains \""
-                  + key
+                  + id
                   + "\"? "
-                  + cacheMap.containsKey (key));
-        return cacheMap.containsKey (key);
+                  + cacheMap.containsKey (id));
+        return cacheMap.containsKey (id);
     }
 
     /**
      * Get an item from the cache.
      *
-     * @param url  the URL, which must be normalized.
+     * @param id  the unique ID to check
      *
      * @return the corresponding <tt>RSSCacheEntry</tt> object, or null if
      *         not found
-     *
-     * @see Util#normalizeURL(URL)
      */
-    public RSSCacheEntry getItem (URL url)
+    public RSSCacheEntry getItem (String id)
     {
-        return (RSSCacheEntry) cacheMap.get (url.toExternalForm());
+        return (RSSCacheEntry) cacheMap.get (id);
     }
 
     /**
      * Add (or replace) a cached URL.
      *
+     * @param uniqueID   the unique ID string for the cache entry
      * @param url        the URL to cache. May be an individual item URL, or
      *                   the URL for an entire feed.
      * @param parentFeed the associated feed
      *
      * @see Util#normalizeURL
      */
-    public void addToCache (URL url, RSSFeedInfo parentFeed)
+    public void addToCache (String uniqueID, URL url, RSSFeedInfo parentFeed)
     {
         URL parentURL = parentFeed.getURL();
-        RSSCacheEntry entry = new RSSCacheEntry (parentURL,
+        RSSCacheEntry entry = new RSSCacheEntry (uniqueID,
+                                                 parentURL,
                                                  url,
                                                  System.currentTimeMillis());
 

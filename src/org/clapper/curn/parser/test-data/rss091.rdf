@@ -1,1 +1,88 @@
-<?xml version="1.0" ?><!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd"><rss version="0.91"><channel><title>Wired News</title><link>http://www.wired.com/</link><description>Technology, and the way we do business, is changing the world we know. Wired News is a technology - and business-oriented news service feeding an intelligent, discerning audience. What role does technology play in the day-to-day living of your life? Wired News tells you. How has evolving technology changed the face of the international business world? Wired News puts you in the picture.</description><language>en-us</language><pubDate>Thu, 10 Jun 2004 02:32:39 PST</pubDate><image><title>Wired News</title><url>http://static.wired.com/news/images/netcenterb.gif</url><link>http://www.wired.com/</link></image><item><title>A Jet-Powered PDA for Astronauts</title><link>http://www.wired.com/news/technology/0,1282,63782,00.html</link><description>NASA engineers are working on a robotic sphere that would propel itself around the space station, check the quality of the air and relay handy information to astronauts. Think of it as a cross between a tricorder and a lightsaber training droid. By Noah Shachtman.</description></item><item><title>Nintendo Changing Game Plans?</title><link>http://www.wired.com/news/games/0,2101,63784,00.html</link><description>The president of the Japanese video-game console maker says it's not enough to dazzle gamers with badass graphics anymore, so the company will try something different with its next generation of machines. By Cydney Gillis.</description></item><item><title>Gmail Invitation Prices Crash</title><link>http://www.wired.com/news/infostructure/0,1377,63786,00.html</link><description>Not too long ago, people were willing to pay top dollar to snag an invitation to set up an account on Google's Gmail Web e-mail service. But Google seems to have become more generous with the invitations. Demand, meet supply. By Chris Ulbrich.</description></item><item><title>Food Makers Changing Genes</title><link>http://www.wired.com/news/technology/0,1282,63779,00.html</link><description>Better flavor and genetically altered livestock are on the agenda at the BIO conference. Also: Protestors drop in.... Personalized medicine not dead yet.... Do-it-yourself DNA extraction. Wired News reports from San Francisco.</description></item><item><title>You'll Never Get Cable a la Carte</title><link>http://www.wired.com/news/wiredmag/1,2167,63747,00.html</link><description>Cable TV is like a crappy pizza joint: You can order a small, medium or large pie, but you can't design your own -- and no slices. Wired magazine asked Time Warner Cable's Glenn Britt to get in front of any regulation and give his customers the option now.</description></item><item><title>TiVo Breaks Into Home Networks</title><link>http://www.wired.com/news/digiwood/0,1412,63776,00.html</link><description>TiVo wants to be more than a digital video recorder. Now subscribers can hook their box to the Net and download content. The company wants to give its service an edge over cable and satellite providers, analysts say. By Katie Dean.</description></item><item><title>Embryos Yield New Stem Cell Lines</title><link>http://www.wired.com/news/technology/0,1282,63783,00.html</link><description>Scientists at a Chicago fertility clinic isolate 12 new lines from genetically flawed human embryos. The research could lead to increased understanding of genetic diseases.</description></item><item><title>Apple Touts Super-Cooled G5s</title><link>http://www.wired.com/news/mac/0,2125,63774,00.html</link><description>Apple unveils 'the world's coolest personal computer' -- a new liquid-cooled, dual-processor G5. By Leander Kahney.</description></item></channel></rss>
+<?xml version="1.0" ?>
+<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+<rss version="0.91">
+<channel>
+<title>
+Wired News</title>
+<link>
+http://www.wired.com/</link>
+<description>
+Technology, and the way we do business, is changing the world we know. Wired News is a technology - and business-oriented news service feeding an intelligent, discerning audience. What role does technology play in the day-to-day living of your life? Wired News tells you. How has evolving technology changed the face of the international business world? Wired News puts you in the picture.</description>
+<language>
+en-us</language>
+<pubDate>
+Thu, 10 Jun 2004 02:32:39 PST</pubDate>
+<image>
+<title>
+Wired News</title>
+<url>
+http://static.wired.com/news/images/netcenterb.gif</url>
+<link>
+http://www.wired.com/</link>
+</image>
+<item>
+<title>
+A Jet-Powered PDA for Astronauts</title>
+<link>
+http://www.wired.com/news/technology/0,1282,63782,00.html</link>
+<description>
+NASA engineers are working on a robotic sphere that would propel itself around the space station, check the quality of the air and relay handy information to astronauts. Think of it as a cross between a tricorder and a lightsaber training droid. By Noah Shachtman.</description>
+</item>
+<item>
+<title>
+Nintendo Changing Game Plans?</title>
+<link>
+http://www.wired.com/news/games/0,2101,63784,00.html</link>
+<description>
+The president of the Japanese video-game console maker says it's not enough to dazzle gamers with badass graphics anymore, so the company will try something different with its next generation of machines. By Cydney Gillis.</description>
+</item>
+<item>
+<title>
+Gmail Invitation Prices Crash</title>
+<link>
+http://www.wired.com/news/infostructure/0,1377,63786,00.html</link>
+<description>
+Not too long ago, people were willing to pay top dollar to snag an invitation to set up an account on Google's Gmail Web e-mail service. But Google seems to have become more generous with the invitations. Demand, meet supply. By Chris Ulbrich.</description>
+</item>
+<item>
+<title>
+Food Makers Changing Genes</title>
+<link>
+http://www.wired.com/news/technology/0,1282,63779,00.html</link>
+<description>
+Better flavor and genetically altered livestock are on the agenda at the BIO conference. Also: Protestors drop in.... Personalized medicine not dead yet.... Do-it-yourself DNA extraction. Wired News reports from San Francisco.</description>
+</item>
+<item>
+<title>
+You'll Never Get Cable a la Carte</title>
+<link>
+http://www.wired.com/news/wiredmag/1,2167,63747,00.html</link>
+<description>
+Cable TV is like a crappy pizza joint: You can order a small, medium or large pie, but you can't design your own -- and no slices. Wired magazine asked Time Warner Cable's Glenn Britt to get in front of any regulation and give his customers the option now.</description>
+</item>
+<item>
+<title>
+TiVo Breaks Into Home Networks</title>
+<link>
+http://www.wired.com/news/digiwood/0,1412,63776,00.html</link>
+<description>
+TiVo wants to be more than a digital video recorder. Now subscribers can hook their box to the Net and download content. The company wants to give its service an edge over cable and satellite providers, analysts say. By Katie Dean.</description>
+</item>
+<item>
+<title>
+Embryos Yield New Stem Cell Lines</title>
+<link>
+http://www.wired.com/news/technology/0,1282,63783,00.html</link>
+<description>
+Scientists at a Chicago fertility clinic isolate 12 new lines from genetically flawed human embryos. The research could lead to increased understanding of genetic diseases.</description>
+</item>
+<item>
+<title>
+Apple Touts Super-Cooled G5s</title>
+<link>
+http://www.wired.com/news/mac/0,2125,63774,00.html</link>
+<description>
+Apple unveils 'the world's coolest personal computer' -- a new liquid-cooled, dual-processor G5. By Leander Kahney.</description>
+</item>
+</channel>
+</rss>

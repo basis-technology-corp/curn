@@ -26,9 +26,10 @@ class RSSCacheEntry implements Serializable
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private long  timestamp  = 0;
-    private URL   entryURL   = null;
-    private URL   channelURL = null;
+    private long    timestamp  = 0;
+    private String  entryID    = null;
+    private URL     entryURL   = null;
+    private URL     channelURL = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -37,13 +38,18 @@ class RSSCacheEntry implements Serializable
     /**
      * Default constructor. Only accessible within this package.
      *
+     * @param entryID     the entry's unique ID.
      * @param channelURL  the main URL for the site's RSS feed
      * @param entryURL    the URL to be cached. May be an individual item URL,
      *                    or the channel URL (again).
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
-    RSSCacheEntry (URL channelURL, URL entryURL, long timestamp)
+    RSSCacheEntry (String entryID,
+                   URL    channelURL,
+                   URL    entryURL,
+                   long   timestamp)
     {
+        this.entryID    = entryID;
         this.channelURL = channelURL;
         this.entryURL   = entryURL;
         this.timestamp  = timestamp;
@@ -52,6 +58,16 @@ class RSSCacheEntry implements Serializable
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the unique ID (i.e., cache key) associated with this item.
+     *
+     * @return the unique ID
+     */
+    String getUniqueID()
+    {
+        return entryID;
+    }
 
     /**
      * Get the main (channel) RSS URL for the site. This URL is the main

@@ -51,11 +51,23 @@ public class RSSFeedInfo
     /**
      * Get the main RSS URL for the site.
      *
-     * @return the site's main RSS URL
+     * @return the site's main RSS URL, guaranteed to be normalized
+     *
+     * @see Util#normalizeURL
      */
     public URL getURL()
     {
         return siteURL;
+    }
+
+    /**
+     * Get the unique key to use to cache information about the feed.
+     *
+     * @return the unique ID
+     */
+    public String getCacheKey()
+    {
+        return getURL().toExternalForm();
     }
 
     /**

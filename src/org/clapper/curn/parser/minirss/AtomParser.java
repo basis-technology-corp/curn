@@ -264,6 +264,9 @@ public class AtomParser extends ParserCommon
 
         else if (elementName.equals ("created"))
             channel.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("id"))
+            channel.setUniqueID (chars);
     }
 
     /**
@@ -379,5 +382,8 @@ public class AtomParser extends ParserCommon
 
         else if (elementName.equals ("issued"))
             item.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("id"))
+            channel.setUniqueID (chars);
     }
 }
