@@ -28,12 +28,9 @@ package org.clapper.curn.parser.minirss;
 
 import org.clapper.util.text.Unicode;
 
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.PatternMatcherInput;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  *
@@ -48,6 +45,8 @@ class ElementStackEntry
     private String        elementName = null;
     private StringBuffer  charBuffer  = null;
     private Object        container   = null;
+
+    private static Pattern demoronizePattern = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -112,7 +111,7 @@ class ElementStackEntry
      */
     String getCharacters()
     {
-        return demoronize (getCharBuffer().toString());
+        return demoronize (getCharBuffer ().toString());
     }
 
     /**
@@ -154,103 +153,139 @@ class ElementStackEntry
      */
     private String demoronize (String s)
     {
-        Perl5Compiler compiler = new Perl5Compiler();
-        Perl5Matcher  matcher  = new Perl5Matcher();
-        Pattern       pattern  = null;
-        StringBuffer  buf      = new StringBuffer();
+        StringBuffer buf = new StringBuffer();
 
-        try
+        synchronized (ElementStackEntry.class)
         {
-            pattern = compiler.compile ("^(.*)&#([0-9]+);(.*)$");
-        }
-
-        catch (MalformedPatternException ex)
-        {
-            // If this happens, there's a code bug.
-
-            throw new IllegalStateException (ex.toString());
-        }
-
-        buf.setLength (0);
-        buf.append (s);
-
-        PatternMatcherInput input = new PatternMatcherInput (s);
-
-        while (matcher.contains (input, pattern))
-        {
-            MatchResult result = matcher.getMatch();
-
-            buf.setLength (0);
-            buf.append (result.group (1));
-            int code = Integer.parseInt (result.group (2));
-            switch (code)
+            try
             {
-                // Windows 1252 character set escapes
-
-                case 0x85:      // ellipsis
-                    buf.append ("...");
-                    break;
-
-                case 0x91:      // smart open single quote
-                    buf.append (Unicode.LEFT_SINGLE_QUOTE);
-                    break;
-
-                case 0x92:      // smart close single quote
-                    buf.append (Unicode.RIGHT_SINGLE_QUOTE);
-                    break;
-
-                case 0x93:      // smart open double quote
-                    buf.append (Unicode.LEFT_DOUBLE_QUOTE);
-                    break;
-
-                case 0x94:      // smart close double quote
-                    buf.append (Unicode.RIGHT_DOUBLE_QUOTE);
-                    break;
-
-                case 0x96:      // en dash
-                    buf.append (Unicode.EM_DASH);
-                    break;
-
-                case 0x97:      // em dash
-                    buf.append (Unicode.EN_DASH);
-                    break;
-
-                case 0x98:      // tilde (~)
-                    buf.append ('~');
-                    break;
-
-                case 0x99:      // trademark
-                    buf.append (Unicode.TRADEMARK);
-                    break;
-
-                default:
-                    // Is this a valid Unicode sequence?
-
-                    if (Character.isDefined ((char) code))
-                    {
-                        buf.append ((char) code);
-                    }
-
-                    else
-                    {
-                        // Put it back, but with a different escape
-                        // sequence, so it doesn't match the regular
-                        // expression.
-
-                        buf.append ('[');
-                        buf.append (String.valueOf (code));
-                        buf.append (']');
-                    }
-                    break;
+                if (demoronizePattern == null)
+                    demoronizePattern = Pattern.compile ("&(#?[^; \t]+);");
             }
 
-            buf.append (result.group (3));
-            input = new PatternMatcherInput (buf.toString());
+            catch (PatternSyntaxException ex)
+            {
+                // If this happens, there's a code bug.
+
+                assert (false);
+            }
         }
 
-        if (buf.length() > 0)
-            s = buf.toString();
+        Matcher matcher = null;
 
-        return s;
+        synchronized (ElementStackEntry.class)
+        {
+            matcher = demoronizePattern.matcher (s);
+        }
+
+        for (;;)
+        {
+            String match = null;
+            String preMatch = null;
+            String postMatch = null;
+
+            if (! matcher.find())
+                break;
+
+            match = matcher.group (1);
+            preMatch = s.substring (0, matcher.start (1) - 1);
+            postMatch = s.substring (matcher.end (1) + 1);
+
+            if (preMatch != null)
+                buf.append (preMatch);
+
+            if (match.charAt (0) != '#')
+            {
+                buf.append ('&');
+                buf.append (match);
+                buf.append (';');
+            }
+                
+            else
+            {
+                int code = -1;
+
+                try
+                {
+                    code = Integer.parseInt (match.substring (1));
+                }
+
+                catch (NumberFormatException ex)
+                {
+                    code = -1;
+                }
+
+                switch (code)
+                {
+                    // Windows 1252 character set escapes
+
+                    case 0x85:      // ellipsis
+                        buf.append ("...");
+                        break;
+
+                    case 0x91:      // smart open single quote
+                        buf.append (Unicode.LEFT_SINGLE_QUOTE);
+                        break;
+
+                    case 0x92:      // smart close single quote
+                        buf.append (Unicode.RIGHT_SINGLE_QUOTE);
+                        break;
+
+                    case 0x93:      // smart open double quote
+                        buf.append (Unicode.LEFT_DOUBLE_QUOTE);
+                        break;
+
+                    case 0x94:      // smart close double quote
+                        buf.append (Unicode.RIGHT_DOUBLE_QUOTE);
+                        break;
+
+                    case 0x96:      // em dash
+                        //buf.append (Unicode.EM_DASH);
+                        buf.append ("--");
+                        break;
+
+                    case 0x97:      // en dash
+                        buf.append (Unicode.EN_DASH);
+                        break;
+
+                    case 0x98:      // tilde (~)
+                        buf.append ('~');
+                        break;
+
+                    case 0x99:      // trademark
+                        buf.append (Unicode.TRADEMARK);
+                        break;
+
+                    default:
+                        // Is this a valid Unicode sequence?
+
+                        if (Character.isDefined ((char) code))
+                        {
+                            buf.append ((char) code);
+                        }
+
+                        else
+                        {
+                            // Put it back.
+
+                            buf.append ('&');
+                            buf.append (match);
+                            buf.append (';');
+                        }
+                    break;
+                }
+            }
+
+            if (postMatch == null)
+                break;
+
+            s = postMatch;
+            matcher.reset (s);
+        }
+
+        if (s.length() > 0)
+            buf.append (s);
+
+        return buf.toString();
     }
 }

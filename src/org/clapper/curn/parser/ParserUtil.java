@@ -33,10 +33,9 @@ import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Common utility routines that can be used by all parser implementations.
@@ -76,6 +75,12 @@ public final class ParserUtil
             new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss")
         };
     };
+
+    /*----------------------------------------------------------------------*\
+                            Private Data Items
+    \*----------------------------------------------------------------------*/
+
+    private static Pattern w3cTZPattern = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -291,6 +296,21 @@ public final class ParserUtil
     {
         TimeZone timeZone = null;
 
+        synchronized (ParserUtil.class)
+        {
+            try
+            {
+                w3cTZPattern = Pattern.compile ("^[+-][0-9][0-9]:[0-9][0-9]$");
+            }
+
+            catch (PatternSyntaxException ex)
+            {
+                // Should not happen.
+
+                assert (false);
+            }
+        }
+
         // Do we have a time zone?
 
         switch (tz.charAt (0))
@@ -303,23 +323,8 @@ public final class ParserUtil
             case '+':
                 // +hh:mm -hh:mm
 
-                Perl5Compiler reCompiler = new Perl5Compiler();
-                Perl5Matcher reMatcher = new Perl5Matcher();
-                Pattern re = null;
-
-                try
-                {
-                    re = reCompiler.compile ("^[+-][0-9][0-9]:[0-9][0-9]$");
-                }
-
-                catch (MalformedPatternException ex)
-                {
-                    // Shouldn't happen.
-
-                    throw new IllegalStateException (ex.toString());
-                }
-
-                if (reMatcher.contains (tz, re))
+                Matcher matcher = w3cTZPattern.matcher (tz);
+                if (matcher.matches())
                     timeZone = TimeZone.getTimeZone ("GMT" + tz);
 
                 if (timeZone == null)
