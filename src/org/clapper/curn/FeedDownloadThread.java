@@ -985,18 +985,22 @@ class FeedDownloadThread extends Thread
             }
         }
 
-        // Add all the items to the cache.
+        // Add all the items to the cache, and adjust whatever items are to
+        // be adjusted.
 
-        if ((items.size() > 0) && (cache != null))
+        if (items.size() > 0)
         {
             for (it = items.iterator(); it.hasNext(); )
             {
                 RSSItem item = (RSSItem) it.next();
 
-                log.debug ("Cacheing URL: " + item.getLink().toString());
-                cache.addToCache (item.getID(),
-                                  item.getLink(),
-                                  feedInfo);
+                if (cache != null)
+                {
+                    log.debug ("Cacheing URL: " + item.getLink().toString());
+                    cache.addToCache (item.getID(),
+                                      item.getLink(),
+                                      feedInfo);
+                }
             }
         }
 
