@@ -28,8 +28,11 @@
 -->
 
 <project name="curn" default="curn" basedir=".">
+
   <description>
-    Build file for "curn" Java classes
+This Ant build file builds the "curn" (Customizable Utilitarian RSS Notifier)
+tool and its associated libraries. It can also be used to build binary,
+source and documentation packages.
   </description>
 
   <!--
