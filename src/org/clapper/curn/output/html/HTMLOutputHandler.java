@@ -189,7 +189,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             {
                 // First row in channel has channel title and link.
 
-                String s = Util.stripHTMLTags (channel.getTitle());
+                String s = Util.htmlToText (channel.getTitle());
                 doc.setTextChannelTitle (s);
 
                 date = null;
@@ -248,7 +248,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             if (desc == null)
                 desc = String.valueOf (Unicode.NBSP);
 
-            doc.setTextItemDescription (Util.stripHTMLTags (desc));
+            doc.setTextItemDescription (Util.htmlToText (desc));
 
             itemAnchor.setHref (item.getLink().toExternalForm());
 

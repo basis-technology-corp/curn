@@ -279,7 +279,10 @@ public abstract class FileOutputHandler implements OutputHandler
     protected String convert (String s)
     {
         StringBuffer buf = new StringBuffer();
-        char[]       ch  = s.toCharArray();
+        char[]       ch;
+
+        s = Util.htmlToText (s);
+        ch = s.toCharArray();
 
         buf.setLength (0);
         for (int i = 0; i < ch.length; i++)
@@ -314,6 +317,6 @@ public abstract class FileOutputHandler implements OutputHandler
             }
         }
 
-        return Util.stripHTMLTags (buf.toString());
+        return buf.toString();
     }
 }
