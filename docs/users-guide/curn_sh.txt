@@ -6,7 +6,23 @@ JAVA_HOME=$JAVA_ROOT/jdk
 UNPKG_JAVA_CLASS_DIR=$JAVA_ROOT/classes
 PKG_JAVA_CLASS_DIR=/usr/local/share/java/classes
 
-exec $JAVA_HOME/bin/java -classpath \
+vm_opts=
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        -D*|-X*)
+            vm_opts="$vm_opts $1"
+	    shift
+	    ;;
+        *)
+	    break
+	    ;;
+    esac
+done
+
+exec $JAVA_HOME/bin/java \
+$vm_opts \
+-classpath \
 $UNPKG_JAVA_CLASS_DIR/ocutil.jar:\
 $UNPKG_JAVA_CLASS_DIR/informa.jar:\
 $PKG_JAVA_CLASS_DIR/commons-logging.jar:\
