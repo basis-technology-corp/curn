@@ -17,6 +17,11 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Defines the in-memory format of the <i>curn</i> cache, and provides
@@ -32,11 +37,6 @@ public class FeedCache implements Serializable
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Where to emit verbose messages
-     */
-    private VerboseMessagesHandler vh;
 
     /**
      * The configuration
@@ -58,6 +58,11 @@ public class FeedCache implements Serializable
      */
     private long currentTime = System.currentTimeMillis();
 
+    /**
+     * Commons logging: For log messages
+     */
+    private static Log log = LogFactory.getLog (FeedCache.class);
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -65,13 +70,10 @@ public class FeedCache implements Serializable
     /**
      * Construct a new, empty cache object.
      *
-     * @param verboseHandler  the verbose messages handler to use
-     * @param config          the <i>curn</i> configuration
+     * @param config  the <i>curn</i> configuration
      */
-    FeedCache (VerboseMessagesHandler vh,
-                 ConfigFile    config)
+    FeedCache (ConfigFile config)
     {
-        this.vh     = vh;
         this.config = config;
     }
 
@@ -90,14 +92,11 @@ public class FeedCache implements Serializable
     {
         File cacheFile = config.getCacheFile();
 
-        vh.verbose (3, "Reading cache from \"" + cacheFile.getPath() + "\"");
+        log.debug ("Reading cache from \"" + cacheFile.getPath() + "\"");
 
         if (! cacheFile.exists())
         {
-            vh.verbose (2,
-                        "Cache \""
-                      + cacheFile.getPath()
-                      + "\" doesn't exist.");
+            log.debug ("Cache \"" + cacheFile.getPath() + "\" doesn't exist.");
             this.cacheMap = new HashMap();
         }
 
@@ -109,7 +108,11 @@ public class FeedCache implements Serializable
             try
             {
                 this.cacheMap = (Map) objIn.readObject();
+                if (log.isDebugEnabled())
+                    dumpCache ("before pruning");
                 pruneCache();
+                if (log.isDebugEnabled())
+                    dumpCache ("after pruning");
                 modified = false;
             }
 
@@ -141,7 +144,7 @@ public class FeedCache implements Serializable
             ObjectOutputStream objOut = new ObjectOutputStream
                                            (new FileOutputStream (cacheFile));
 
-            vh.verbose (3, "Saving cache to \"" + cacheFile.getPath() + "\"");
+            log.debug ("Saving cache to \"" + cacheFile.getPath() + "\"");
             objOut.writeObject (cacheMap);
             objOut.close();
             this.modified = false;
@@ -157,12 +160,9 @@ public class FeedCache implements Serializable
      */
     public boolean contains (String id)
     {
-        vh.verbose (3,
-                    "Cache contains \""
-                  + id
-                  + "\"? "
-                  + cacheMap.containsKey (id));
-        return cacheMap.containsKey (id);
+        boolean hasKey = cacheMap.containsKey (id);
+        log.debug ("Cache contains \"" + id + "\"? " + hasKey);
+        return hasKey;
     }
 
     /**
@@ -196,8 +196,7 @@ public class FeedCache implements Serializable
                                                  url,
                                                  System.currentTimeMillis());
 
-        vh.verbose (3,
-                    "Adding cache entry for URL \""
+        log.debug ("Adding cache entry for URL \""
                   + entry.getEntryURL().toExternalForm()
                   + "\". Channel URL: \""
                   + entry.getChannelURL().toExternalForm()
@@ -228,19 +227,19 @@ public class FeedCache implements Serializable
      */
     private void pruneCache()
     {
-        vh.verbose (3,
-                    "Cache's notion of current time: "
-                  + new Date (currentTime));
+        log.debug ("PRUNING CACHE");
+        log.debug ("Cache's notion of current time: "
+                 + new Date (currentTime));
 
         for (Iterator itKeys = cacheMap.keySet().iterator();
              itKeys.hasNext(); )
         {
-            String itemUrlString = (String) itKeys.next();
-            FeedCacheEntry entry = (FeedCacheEntry) cacheMap.get (itemUrlString);
+            String itemKey = (String) itKeys.next();
+            FeedCacheEntry entry = (FeedCacheEntry) cacheMap.get (itemKey);
             URL channelURL = entry.getChannelURL();
 
-            vh.verbose (3, "Checking cached URL \"" + itemUrlString + "\"");
-            vh.verbose (3, "    Channel URL: " + channelURL.toString());
+            if (log.isDebugEnabled())
+                dumpCacheEntry (itemKey, entry, "");
 
             FeedInfo feedInfo = config.getFeedInfoFor (channelURL);
 
@@ -249,13 +248,12 @@ public class FeedCache implements Serializable
                 // Cached URL no longer corresponds to a configured site
                 // URL. Kill it.
 
-                vh.verbose (2,
-                            "Cached URL \""
-                          + itemUrlString
-                          + "\", with base URL \""
-                          + channelURL.toString()
-                          + "\" no longer corresponds to a configured feed. "
-                          + "tossing it.");
+                log.debug ("Cached item \""
+                         + itemKey
+                         + "\", with base URL \""
+                         + channelURL.toString()
+                         + "\" no longer corresponds to a configured feed. "
+                         + "Tossing it.");
                 itKeys.remove();
             }
 
@@ -265,37 +263,80 @@ public class FeedCache implements Serializable
                 long maxCacheMS = feedInfo.getMillisecondsToCache();
                 long expires    = timestamp + maxCacheMS;
 
-                vh.verbose (3,
-                            "\tcached on:  "
-                          + new Date (timestamp).toString());
-                vh.verbose (3,
-                            "\tcache days: " + feedInfo.getDaysToCache());
-                vh.verbose (3,
-                            "\tcache ms:   " + maxCacheMS);
-                vh.verbose (3, "\texpires: " + new Date (expires).toString());
+                if (log.isDebugEnabled())
+                {
+                    log.debug ("    Cache time: "
+                             + feedInfo.getDaysToCache()
+                             + " days ("
+                             + maxCacheMS
+                             + " ms)");
+                    log.debug ("    Expires: "
+                             + new Date (expires).toString());
+                }
 
                 if (timestamp > currentTime)
                 {
-                    vh.verbose (2,
-                                "Cache time for URL \""
-                              + itemUrlString
-                              + "\" is in the future, relative to cache's "
-                              + "notion of current time. Setting its "
-                              + "timestamp to the current time.");
+                    log.debug ("Cache time for item \""
+                             + itemKey
+                             + "\" is in the future, relative to cache's "
+                             + "notion of current time. Setting its "
+                             + "timestamp to the current time.");
                     entry.setTimestamp (currentTime);
                     modified = true;
                 }
 
                 else if (expires < currentTime)
                 {
-                    vh.verbose (2,
-                                "Cache time for URL \""
-                              + itemUrlString
-                              + "\" has expired. Deleting cache entry.");
+                    log.debug ("Cache time for item \""
+                             + itemKey
+                             + "\" has expired. Deleting cache entry.");
                     itKeys.remove();
                     modified = true;
                 }
             }
         }
+
+        log.debug ("DONE PRUNING CACHE");
+    }
+
+    /**
+     * Dump the contents of the cache, via the "debug" log facility.
+     *
+     * @param label  a label, or initial message, to identify the dump
+     */
+    private void dumpCache (String label)
+    {
+        log.debug ("CACHE DUMP: " + label);
+        Set sortedKeys = new TreeSet (cacheMap.keySet());
+        for (Iterator itKeys = sortedKeys.iterator(); itKeys.hasNext(); )
+        {
+            String itemKey = (String) itKeys.next();
+            dumpCacheEntry (itemKey, (FeedCacheEntry) cacheMap.get (itemKey),
+                            "");
+        }
+    }   
+
+    /**
+     * Dump a single cache entry via the "debug" log facility.
+     *
+     * @param itemKey the hash table key for the item
+     * @param entry   the cache entry
+     * @param indent  string to use to indent output, if desired
+     */
+    private void dumpCacheEntry (Object         itemKey ,
+                                 FeedCacheEntry entry,
+                                 String         indent)
+    {
+        long timestamp  = entry.getTimestamp();
+
+        if (indent == null)
+            indent = "";
+
+        log.debug (indent + "Cached item \"" + itemKey.toString() + "\"");
+        log.debug (indent + "    Item URL: " + entry.getEntryURL().toString());
+        log.debug (indent + "    Channel URL: "
+                 + entry.getChannelURL().toString());
+        log.debug (indent + "    Cached on: "
+                 + new Date (timestamp).toString());
     }
 }
