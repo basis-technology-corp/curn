@@ -89,8 +89,46 @@ import org.apache.bsf.BSFManager;
  *
  *   <tr>
  *     <td><tt>Language</tt></td>
- *     <td>The scripting language, as recognized by BSF. Examples:
- *         "jython", "jruby", "javascript"
+ *     <td><p>The scripting language, as recognized by BSF. This handler
+ *         supports all the scripting language engines that are registered
+ *         with the BSF software. Some of the scripting language engines
+ *         are actually bundled with BSF. Some are not. Regardless, of
+ *         course, the actual the jar files for the scripting
+ *         languages themselves must be in the CLASSPATH at runtime, for those
+ *         languages to be available.</p>
+ * 
+ *         <p>If you want to use a BSF scripting language engine that isn't
+ *         one of the above, simply extend this class and override the
+ *         {@link #registerAdditionalScriptingEngines} method. In that method,
+ *         call <tt>BSFManager.registerScriptingEngine()</tt> for each
+ *         additional language you want to support. For example, to provide
+ *         a handler that supports
+ *         {@link <a href="http://www.judoscript.com/">JudoScript</a>},
+ *         you might write an output handler that looks like this:</p>
+ * <blockquote><pre>
+ * import org.clapper.curn.CurnException;
+ * import org.clapper.curn.output.script.ScriptOutputHandler;
+ * import org.apache.bsf.BSFManager;
+ *
+ * public class MyOutputHandler extends ScriptOutputHandler
+ * {
+ *     public JudoScriptOutputHandler()
+ *     {
+ *         super();
+ *     }
+ *
+ *     public void registerAdditionalScriptingEngines()
+ *         throws CurnException
+ *     {
+ *         BSFManager.registerScriptingLanguage ("judoscript",
+ *                                               "com.judoscript.BSFJudoEngine",
+ *                                               new String[] {"judo", "jud"});
+ *     }
+ * }
+ * </pre></blockquote>
+ *
+ *         Then, simply use your class instead of <tt>ScriptOutputHandler</tt>
+ *         in your configuration file.
  *     </td>
  *   </tr>
  * </table>
@@ -103,7 +141,7 @@ import org.apache.bsf.BSFManager;
  * the {@link RSSChannel} and {@link FeedInfo} objects for a given channel.
  * See below for a more complete description.</p>
  *
- * <p>The complete list of objects bound into the BSF beanspace follows.
+ * <p>The complete list of objects bound into the BSF beanspace follows.</p>
  *
  * <table border="0">
  *   <tr valign="top">
@@ -165,7 +203,7 @@ import org.apache.bsf.BSFManager;
  *     <td>A <tt>Logger</tt> object, useful for logging messages to
  *         the <i>curn</i> log file.</td>
  *   </tr>
-
+ *
  *   <tr valign="top">
  *     <td>version</td>
  *     <td><tt>java.lang.String</tt></td>
@@ -181,20 +219,64 @@ import org.apache.bsf.BSFManager;
  * <pre>
  * import sys
  *
- * def main():
- *     channels = bsf.lookupBean ("channels")
- *     channel_iterator = channels.iterator()
- *     outputPath = bsf.lookupBean ("outputPath")
- *     mimeTypeBuf = bsf.lookupBean ("mimeType")
- *     mimeTypeBuf.append ("text/html") # or whatever
+ * def __init__ (self):
+ *     """
+ *     Initialize a new TextOutputHandler object.
+ *     """
+ *     self.__channels    = bsf.lookupBean ("channels")
+ *     self.__outputPath  = bsf.lookupBean ("outputPath")
+ *     self.__mimeTypeBuf = bsf.lookupBean ("mimeType")
+ *     self.__config      = bsf.lookupBean ("config")
+ *     self.__sectionName = bsf.lookupBean ("configSection")
+ *     self.__logger      = bsf.lookupBean ("logger");
+ *     self.__version     = bsf.lookupBean ("version")
+ *     self.__message     = None
  *
- *     out = open (outputPath, "w")
+ * def processChannels (self):
+ *     """
+ *     Process the channels passed in through the Bean Scripting Framework.
+ *     """
  *
- *     while channel_iterator.hasNext():
- *         channel_wrapper = channel_iterator.next()
+ *     out = open (self.__outputPath, "w")
+ *     msg = self.__config.getOptionalStringValue (self.__sectionName,
+ *                                                 "Message",
+ *                                                 None)
+ *
+ *     totalNew = 0
+ *
+ *     # First, count the total number of new items
+ *
+ *     iterator = self.__channels.iterator()
+ *     while iterator.hasNext():
+ *         channel_wrapper = iterator.next()
  *         channel = channel_wrapper.getChannel()
- *         feed_info = channel_wrapper.getFeedInfo()
- *         process_channel (channel_iterator.next())
+ *         totalNew = totalNew + channel.getItems().size()
+ *
+ *     if totalNew > 0:
+ *         # If the config file specifies a message for this handler,
+ *         # display it.
+ *
+ *         if msg != None:
+ *             out.println (msg)
+ *             out.println ()
+ *
+ *         # Now, process the items
+ *
+ *         iterator = self.__channels.iterator()
+ *         while iterator.hasNext():
+ *             channel_wrapper = iterator.next()
+ *             channel = channel_wrapper.getChannel()
+ *             feed_info = channel_wrapper.getFeedInfo()
+ *             self.__process_channel (out, channel, feed_info, indentation)
+ *
+ *         self.__mimeTypeBuf.append ("text/plain")
+ *
+ *         # Output a footer
+ *
+ *         self.__indent (out, indentation)
+ *         out.write ("\n")
+ *         out.write (self.__version + "\n")
+ *         out.close ()
  *
  * def process_channel (channel, feed_info):
  *     item_iterator = channel.getItems().iterator()
@@ -207,6 +289,7 @@ import org.apache.bsf.BSFManager;
  * </blockquote>
  *
  * @see OutputHandler
+ * @see FileOutputHandler
  * @see org.clapper.curn.Curn
  * @see org.clapper.curn.parser.RSSChannel
  *
@@ -217,18 +300,6 @@ public class ScriptOutputHandler extends FileOutputHandler
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
-
-    /**
-     * External scripting languages that don't come bundled with BSF.
-     * The language is the index, and the value is the class name.
-     */
-    private static Map OTHER_SCRIPT_ENGINES = new HashMap();
-
-    static
-    {
-        OTHER_SCRIPT_ENGINES.put ("jruby",
-                                  "org.jruby.javasupport.bsf.JRubyEngine");
-    }
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -304,8 +375,8 @@ public class ScriptOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile              config,
-                                   ConfiguredOutputHandler cfgHandler)
+    public final void initOutputHandler (ConfigFile              config,
+                                         ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -351,22 +422,10 @@ public class ScriptOutputHandler extends FileOutputHandler
                                             + "\" is not a regular file.");
         }
 
-        // Register popular BSF languages that don't come bundled with the BSF
-        // jar. It doesn't matter whether these languages are actually present
-        // in the environment, since BSFManager.registerScriptingEngine() does
-        // not actually attempt to load the referenced class. The referenced
-        // class is loaded only when BSFManager.loadScriptingEngine() is called
-        // (which happens in the ScriptOutputHandler.flush() method).
+        // Call the registerAdditionalScriptingEngines() method, which
+        // subclasses can override to provide their own bindings.
 
-        for (Iterator it = OTHER_SCRIPT_ENGINES.keySet().iterator();
-             it.hasNext(); )
-        {
-            String otherLang   = (String) it.next();
-            String otherEngine = (String) OTHER_SCRIPT_ENGINES.get (otherLang);
-
-            BSFManager.registerScriptingEngine (otherLang, otherEngine,
-                                                new String[] {"rb"});
-        }
+        registerAdditionalScriptingEngines();
 
         // Allocate a new BSFManager. This must happen after all the extra
         // scripting engines are registered.
@@ -417,8 +476,8 @@ public class ScriptOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (RSSChannel  channel,
-                                FeedInfo    feedInfo)
+    public final void displayChannel (RSSChannel  channel,
+                                      FeedInfo    feedInfo)
         throws CurnException
     {
         // Do some textual conversion on the channel data.
@@ -453,7 +512,7 @@ public class ScriptOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void flush() throws CurnException
+    public final void flush() throws CurnException
     {
         try
         {
@@ -485,9 +544,24 @@ public class ScriptOutputHandler extends FileOutputHandler
      *
      * @return the content type
      */
-    public String getContentType()
+    public final String getContentType()
     {
         return mimeTypeBuffer.toString();
+    }
+
+    /**
+     * Register additional scripting language engines that are not
+     * supported by this class. By default, this method does nothing.
+     * Subclasses that wish to register additional BSF scripting engine
+     * bindings should override this method and use
+     * <tt>BSFManager.registerScriptingEngine()</tt> to register the
+     * engined. See the class documentation, above, for additional details.
+     *
+     * @throws CurnException on error
+     */
+    public void registerAdditionalScriptingEngines()
+        throws CurnException
+    {
     }
 
     /*----------------------------------------------------------------------*\
