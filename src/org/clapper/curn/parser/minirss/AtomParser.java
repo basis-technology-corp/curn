@@ -384,9 +384,6 @@ public class AtomParser extends ParserCommon
             item.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("id"))
-        {
-            System.out.println ("*** id=" + chars);
             item.setUniqueID (chars);
-        }
     }
 }
