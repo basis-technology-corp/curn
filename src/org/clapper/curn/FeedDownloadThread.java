@@ -28,10 +28,15 @@ package org.clapper.curn;
 
 import java.io.IOException;
 import java.io.File;
-import java.io.InputStream;
 import java.io.FileInputStream;
-import java.io.OutputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,12 +63,21 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtil;
+import org.clapper.util.text.TextUtil;
 import org.clapper.util.misc.Logger;
 
 import org.apache.oro.text.perl.Perl5Util;
 
 class FeedDownloadThread extends Thread
 {
+    /*----------------------------------------------------------------------*\
+                             Private Constants
+    \*----------------------------------------------------------------------*/ 
+    
+    private final String HTTP_CONTENT_TYPE_CHARSET_FIELD = "charset=";
+    private final int    HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN =
+                                      HTTP_CONTENT_TYPE_CHARSET_FIELD.length();
+
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/ 
@@ -137,10 +151,41 @@ class FeedDownloadThread extends Thread
         }
     }
 
+    /**
+     * Encapsulates information about a downloaded feed.
+     */
+    private class DownloadedTempFile
+    {
+        File    file;
+        String  encoding;
+        int     bytesDownloaded;
+
+        DownloadedTempFile (File   tempFile,
+                            String encoding,
+                            int    bytesDownloaded)
+        {
+            this.file = tempFile;
+            this.encoding = encoding;
+            this.bytesDownloaded = bytesDownloaded;
+        }
+    }
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/ 
 
+    /**
+     * Create a new <tt>FeedDownloadThread</tt> object to download feeds.
+     *
+     * @param threadId   the unique identifier for the thread, for log messages
+     * @param parser     the RSS parser to use
+     * @param feedCache  the feed cache to save cache data to
+     * @param configFile the parsed configuration file
+     * @param feedQueue  list of feeds to be processed. This list must contain
+     *                   contain <tt>FeedInfo</tt> objects. The list is assumed
+     *                   to be shared across multiple threads, and should be
+     *                   thread safe.
+     */
     FeedDownloadThread (String     threadId,
                         RSSParser  parser,
                         FeedCache  feedCache,
@@ -166,6 +211,12 @@ class FeedDownloadThread extends Thread
                               Public Methods
     \*----------------------------------------------------------------------*/ 
 
+    /**
+     * Run the thread. Pulls the next <tt>FeedInfo</tt> object from the
+     * feed queue (the list passed to the constructor) and processes it.
+     * The thread stops running when it has finished downloading a feed and
+     * it finds that the feed queue is empty.
+     */
     public void run()
     {
         log.info ("Thread is alive at priority " + getPriority());
@@ -198,6 +249,19 @@ class FeedDownloadThread extends Thread
                           Package-visible Methods
     \*----------------------------------------------------------------------*/ 
 
+    /**
+     * Processes the specified feed. This method is called by {@link #run}.
+     * It's also intended to be called directly, when <i>curn</i> is
+     * running in non-threaded mode. Once this method returns, use the
+     * {@link #errorOccurred} method to determine whether a feed-processing
+     * error occurred, and the {@link #getException} method to receive the
+     * exception if an error did occur.
+     *
+     * @param feed  The <tt>FeedInfo</tt> object for the feed to be processed
+     *
+     * @see #errorOccurred
+     * @see #getException
+     */
     void processFeed (FeedInfo feed)
     {
         this.exception = null;
@@ -216,14 +280,35 @@ class FeedDownloadThread extends Thread
         }
     }
 
-    RSSParserException getException()
-    {
-        return this.exception;
-    }
-
+    /**
+     * Determine whether an error occurred during processing of the most
+     * recent feed. If an error did occur, you can use {@link #getException}
+     * to get the corresponding exception.
+     *
+     * @return <tt>true</tt> if an error occurred while processing the last
+     *         feed, <tt>false</tt> if no error occurred
+     *
+     * @see #processFeed
+     * @see #getException
+     */
     boolean errorOccurred()
     {
         return (this.exception != null);
+    }
+
+    /**
+     * If an error occurred during processing of the most recent feed,
+     * this method will return the exception associated with the error.
+     *
+     * @return the exception associated with the most recent error, or
+     *         null if no error has occurred
+     *
+     * @see #processFeed
+     * @see #errorOccurred
+     */
+    RSSParserException getException()
+    {
+        return this.exception;
     }
 
     /*----------------------------------------------------------------------*\
@@ -271,7 +356,7 @@ class FeedDownloadThread extends Thread
             // newer, we don't bother to parse and process the returned
             // XML.
 
-            setIfModifiedSinceHeader (conn, feedInfo);
+            setIfModifiedSinceHeader (conn, feedInfo, cache);
 
             // If the config allows us to transfer gzipped content, then
             // set that header, too.
@@ -280,7 +365,7 @@ class FeedDownloadThread extends Thread
 
             // If the feed has actually changed, process it.
 
-            if (! feedHasChanged (conn, feedInfo))
+            if (! feedHasChanged (conn, feedInfo, cache))
             {
                 log.info ("Feed has not changed. Skipping it.");
             }
@@ -290,17 +375,12 @@ class FeedDownloadThread extends Thread
                 log.debug ("Feed may have changed. "
                          + "Downloading and processing it.");
 
-                InputStream is = getURLInputStream (conn);
 
                 // Download the feed to a file. We'll parse the file.
 
-                File temp = File.createTempFile ("curn", ".xml", null);
-                temp.deleteOnExit();
+                DownloadedTempFile tempFile = downloadFeed (conn, feedURL);
 
-                int totalBytes = downloadFeed (is, feedURLString, temp);
-                is.close();
-
-                if (totalBytes == 0)
+                if (tempFile.bytesDownloaded == 0)
                 {
                     log.debug ("Feed \""
                              + feedURLString
@@ -314,11 +394,14 @@ class FeedDownloadThread extends Thread
                     if (saveAsFile != null)
                     {
                         log.debug ("Copying temporary file \""
-                                 + temp.getPath()
+                                 + tempFile.file.getPath()
                                  + "\" to \""
                                  + saveAsFile.getPath()
                                  + "\"");
-                        FileUtil.copyFile (temp, saveAsFile);
+                        FileUtil.copyTextFile (tempFile.file,
+                                               tempFile.encoding,
+                                               saveAsFile,
+                                               null);
                     }
 
                     if (parser == null)
@@ -329,8 +412,8 @@ class FeedDownloadThread extends Thread
                                  + parser.getClass().getName()
                                  + " to parse the feed.");
 
-                        is = new FileInputStream (temp);
-                        channel = parser.parseRSSFeed (is, null);
+                        InputStream is = new FileInputStream (tempFile.file);
+                        channel = parser.parseRSSFeed (is, tempFile.encoding);
                         is.close();
 
                         processChannelItems (channel, feedInfo);
@@ -339,7 +422,7 @@ class FeedDownloadThread extends Thread
                     }
                 }
 
-                temp.delete();
+                tempFile.file.delete();
             }
         }
 
@@ -361,26 +444,110 @@ class FeedDownloadThread extends Thread
         return channel;
     }
 
-    private int downloadFeed (InputStream urlStream, String feedURL, File file)
+    /**
+     * Download a feed.
+     *
+     * @param conn    the <tt>URLConnection</tt> for the feed
+     * @param feedURL the URL for the feed
+     *
+     * @return the <tt>DownloadedTempFile</tt> object that captures the
+     *         details about the downloaded file
+     */
+    private DownloadedTempFile downloadFeed (URLConnection conn, URL feedURL)
         throws IOException
     {
         int totalBytes = 0;
+        File tempFile = File.createTempFile ("curn", ".xml", null);
+        tempFile.deleteOnExit();
 
         log.debug ("Downloading \""
-                 + feedURL
+                 + feedURL.toString()
                  + "\" to file \""
-                 + file.getPath());
-        OutputStream os = new FileOutputStream (file);
-        totalBytes = FileUtil.copyStream (urlStream, os);
-        os.close();
+                 + tempFile.getPath());
+
+        InputStream urlStream = getURLInputStream (conn);
+        Reader      reader;
+        Writer      writer;
+
+        // Determine the character set encoding to use.
+
+        String protocol = feedURL.getProtocol();
+        String encoding = null;
+
+        if (protocol.equals ("http") || protocol.equals("https"))
+        {
+            String contentTypeHeader = conn.getContentType();
+
+            if (contentTypeHeader != null)
+                encoding = contentTypeCharSet (contentTypeHeader);
+        }
+
+        if (encoding != null)
+        {
+            log.debug ("Encoding is \"" + encoding + "\"");
+            reader = new InputStreamReader (urlStream, encoding);
+            writer = new OutputStreamWriter (new FileOutputStream (tempFile),
+                                             encoding);
+            /*
+            // Cheat by writing an encoding line to the temp file.
+            writer.write ("<?xml version=\"1.0\" encoding=\""
+                        + encoding
+                        + "\"> ");
+            */
+        }
+
+        else
+        {
+            log.debug ("No encoding for document. Using default.");
+            reader = new InputStreamReader (urlStream);
+            writer = new FileWriter (tempFile);
+        }
+        
+        totalBytes = FileUtil.copyReader (reader, writer);
+        writer.close();
+        urlStream.close();
 
         // It's possible for totalBytes to be zero if, for instance, the
         // use of the If-Modified-Since header caused an HTTP server to
         // return no content.
 
-        return totalBytes;
+        return new DownloadedTempFile (tempFile, encoding, totalBytes);
     }
 
+    /**
+     * Given a content-type header, extract the character set information.
+     *
+     * @param contentType  the content type header
+     *
+     * @return the character set, or null if not available
+     */
+    private String contentTypeCharSet (String contentType)
+    {
+        String result = null;
+        String[] fields = TextUtil.split (contentType, "; \t");
+
+
+        for (int i = 0; i < fields.length; i++)
+        {
+            if (fields[i].startsWith (HTTP_CONTENT_TYPE_CHARSET_FIELD) &&
+                (fields[i].length() > HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN))
+            {
+                result = fields[i].substring
+                                         (HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN);
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Get the input stream for a URL. Handles compressed data.
+     *
+     * @param conn the <tt>URLConnection</tt> to process
+     *
+     * @return the <tt>InputStream</tt>
+     */
     private InputStream getURLInputStream (URLConnection conn)
         throws IOException
     {
@@ -407,6 +574,16 @@ class FeedDownloadThread extends Thread
         return is;
     }
 
+    /**
+     * Conditionally set the header that requests a compressed (gzipped)
+     * feed. Must be called on a <tt>URLConnection</tt> before the
+     * <tt>InputStream</tt> is retrieved.
+     *
+     * @param conn          the <tt>URLConnection</tt> on which to set the
+     *                      header
+     * @param configuration the parsed configuration, which indicates whether
+     *                      or not to request gzipping of downloaded data
+     */
     private void setGzipHeader (URLConnection conn, ConfigFile configuration)
     {
         if (configuration.retrieveFeedsWithGzip())
@@ -416,8 +593,20 @@ class FeedDownloadThread extends Thread
         }
     }
 
+    /**
+     * Conditionally set the header that "If-Modified-Since" header for a
+     * feed. Must be called on a <tt>URLConnection</tt> before the
+     * <tt>InputStream</tt> is retrieved. Uses the feed cache to set the
+     * value.
+     *
+     * @param conn     the <tt>URLConnection</tt> on which to set the
+     *                 header
+     * @param feedInfo the information on the feed
+     * @param cache    the cache
+     */
     private void setIfModifiedSinceHeader (URLConnection conn,
-                                           FeedInfo      feedInfo)
+                                           FeedInfo      feedInfo,
+                                           FeedCache     cache)
     {
         long     lastSeen = 0;
         boolean  hasChanged = false;
@@ -451,7 +640,21 @@ class FeedDownloadThread extends Thread
         }
     }
 
-    private boolean feedHasChanged (URLConnection conn, FeedInfo feedInfo)
+    /**
+     * Query the appropriate URL connection headers to determine whether
+     * the remote server thinks feed data has changed since the last time
+     * the feed was downloaded. Must be called on a <tt>URLConnection</tt>
+     * after the <tt>InputStream</tt> is retrieved. Uses the feed cache to
+     * set the value.
+     *
+     * @param conn     the <tt>URLConnection</tt> whose headers are to be
+     *                 checked
+     * @param feedInfo the information on the feed
+     * @param cache    the cache
+     */
+    private boolean feedHasChanged (URLConnection conn,
+                                    FeedInfo      feedInfo,
+                                    FeedCache     cache)
         throws IOException
     {
         long     lastSeen = 0;
@@ -509,6 +712,15 @@ class FeedDownloadThread extends Thread
         return hasChanged;
     }
 
+    /**
+     * Process all the items for a channel.
+     *
+     * @param channel   the channel
+     * @param feedInfo  the feed information for the channel
+     *
+     * @throws RSSParserException    parser exception
+     * @throws MalformedURLException bad URL
+     */
     private void processChannelItems (RSSChannel  channel,
                                       FeedInfo    feedInfo)
         throws RSSParserException,
@@ -634,6 +846,15 @@ class FeedDownloadThread extends Thread
         channel.setItems (items);
     }
 
+    /**
+     * Sort downloaded items according to the sort criteria for the feed
+     *
+     * @param items    the downloaded items
+     * @param feedInfo info about the feed, used to determine the desired
+     *                 sort criteria
+     *
+     * @return a new <tt>Collection</tt> of the same items, possibly sorted
+     */
     private Collection sortChannelItems (Collection items, FeedInfo feedInfo)
     {
         Collection result = items;
@@ -669,6 +890,13 @@ class FeedDownloadThread extends Thread
         return result;
     }
 
+    /**
+     * Prune all items with duplicate titles.
+     *
+     * @param items the list of items
+     *
+     * @return a new <tt>Collection</tt> of items, possibly pruned
+     */
     private Collection pruneDuplicateTitles (Collection items)
     {
         Set         titlesSeen = new HashSet();
