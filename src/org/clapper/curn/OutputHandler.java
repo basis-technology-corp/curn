@@ -19,7 +19,7 @@ import org.clapper.rssget.parser.RSSItem;
  * it simpler to substitute different kinds of output handlers.
  *
  * @see rssget
- * @see RSSChannel
+ * @see org.clapper.rssget.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */

@@ -7,8 +7,8 @@ package org.clapper.rssget.parser;
 import org.clapper.util.misc.NestedException;
 
 /**
- * A <tt>RSSParserException</tt> is thrown by the
- * {@link Configuration} class to signify errors in a configuration file.
+ * A <tt>RSSParserException</tt> is thrown by parser implementations
+ * to signify parser errors.
  *
  * @see NestedException
  *

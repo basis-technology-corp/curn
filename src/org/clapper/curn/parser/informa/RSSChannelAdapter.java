@@ -21,13 +21,13 @@ import java.util.Date;
 
 /**
  * This class implements the <tt>RSSChannel</tt> interface and defines an
- * adapter for the {@link <a href="http://informa.sourceforge.net/" Informa}
+ * adapter for the <a href="http://informa.sourceforge.net/">Informa</a>
  * RSS Parser's <tt>ChannelIF</tt> type.
  *
- * @see RSSParserFactory
- * @see RSSParser
- * @see RSSChannel
- * @see RSSItem
+ * @see org.clapper.rssget.parser.RSSParserFactory
+ * @see org.clapper.rssget.parser.RSSParser
+ * @see org.clapper.rssget.parser.RSSChannel
+ * @see org.clapper.rssget.parser.RSSItem
  * @see RSSItemAdapter
  *
  * @version <tt>$Revision$</tt>
@@ -48,8 +48,8 @@ public class RSSChannelAdapter implements RSSChannel
     \*----------------------------------------------------------------------*/
 
     /**
-     * Allocate a new <tt>RSSChannelAdapter</tt> object that wraps the specified
-     * Informa <tt>ChannelIF</tt> object.
+     * Allocate a new <tt>RSSChannelAdapter</tt> object that wraps the
+     * specified Informa <tt>ChannelIF</tt> object.
      *
      * @param channelIF  the <tt>ChannelIF</tt> object
      */

@@ -21,7 +21,7 @@ import java.util.Date;
  *
  * @see RSSGetOutputHandler
  * @see rssget
- * @see RSSChannel
+ * @see org.clapper.rssget.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */

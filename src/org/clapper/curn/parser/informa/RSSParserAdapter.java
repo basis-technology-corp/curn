@@ -19,11 +19,11 @@ import java.io.IOException;
 
 /**
  * This class implements the <tt>RSSParser</tt> interface and defines an
- * adapter for the {@link <a href="http://informa.sourceforge.net/" Informa}
+ * adapter for the <a href="http://informa.sourceforge.net/">Informa</a>
  * RSS Parser.
  *
- * @see RSSParserFactory
- * @see RSSParser
+ * @see org.clapper.rssget.parser.RSSParserFactory
+ * @see org.clapper.rssget.parser.RSSParser
  * @see RSSChannelAdapter
  *
  * @version <tt>$Revision$</tt>

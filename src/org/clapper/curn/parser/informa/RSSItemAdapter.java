@@ -19,14 +19,13 @@ import java.util.Iterator;
 
 /**
  * This class implements the <tt>RSSItem</tt> interface and defines an
- * adapter for the {@link <a href="http://informa.sourceforge.net/" Informa}
+ * adapter for the <a href="http://informa.sourceforge.net/">Informa</a>
  * RSS Parser's <tt>ItemIF</tt> type.
  *
- * @see RSSParserFactory
- * @see RSSParser
- * @see RSSItem
+ * @see org.clapper.rssget.parser.RSSParserFactory
+ * @see org.clapper.rssget.parser.RSSParser
+ * @see org.clapper.rssget.parser.RSSItem
  * @see RSSItemAdapter
- * @see RSSItem
  *
  * @version <tt>$Revision$</tt>
  */

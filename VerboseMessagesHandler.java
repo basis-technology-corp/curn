@@ -9,7 +9,6 @@ package org.clapper.rssget;
  * handler.
  *
  * @see rssget
- * @see RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */

@@ -23,7 +23,7 @@ import java.util.Iterator;
  * methods for saving and restoring the cache.
  *
  * @see rssget
- * @see RSSChannel
+ * @see org.clapper.rssget.parser.RSSChannel
  *
  * @version <tt>$Revision$</tt>
  */
