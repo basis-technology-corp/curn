@@ -34,16 +34,16 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.clapper.curn.util.Util;
 
-import org.clapper.util.misc.OrderedHashMap;
 import org.clapper.util.misc.Logger;
 
 import org.clapper.util.config.Configuration;
@@ -158,7 +158,7 @@ public class ConfigFile extends Configuration
     private Collection      feeds                 = new ArrayList();
     private Map             feedMap               = new HashMap();
     private String          parserClassName       = DEF_PARSER_CLASS_NAME;
-    private OrderedHashMap  outputHandlers        = new OrderedHashMap();
+    private List            outputHandlers        = new ArrayList();
     private Map             outputHandlerSections = new HashMap();
     private String          smtpHost              = DEF_SMTP_HOST;
     private String          emailSender           = null;
@@ -264,95 +264,16 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Get the names of the classes that handle output. The caller is
-     * responsible for loading the returned class names and verifying that
-     * they implements the appropriate interface(s).
+     * Gets the list of output handlers from the configuration, in the order
+     * they appeared in the configuration.
      *
-     * @return a <tt>Collection</tt> of strings containing full class names.
-     *         The collection will be empty (but never null) if there are no
-     *         configured output handlers.
+     * @return an unmodifiable <tt>Collection</tt> of
+     *         <tt>ConfiguredOutputHandler</tt> objects. The collection will
+     *         be empty, but never null, if no output handlers were configured.
      */
-    public Collection getOutputHandlerClassNames()
+    public Collection getOutputHandlers()
     {
-        return outputHandlers.keysInInsertionOrder();
-    }
-
-    /**
-     * Get the output handler-specific parameters for an output handler.
-     *
-     * @param className  the output handler class name
-     *
-     * @return a <tt>Map</tt>, where each key is a variable name and each
-     *         value is the string value for the key. The map will be empty,
-     *         but not null, if there are no additional handler-specific
-     *         variables.
-     *
-     * @see #getOutputHandlerClassNames()
-     * @see #getOutputHandlerSpecificVariables(Class)
-     * @see #getOutputHandlerSectionName(String)
-     * @see #getOutputHandlerSectionName(Class)
-     */
-    public Map getOutputHandlerSpecificVariables (String className)
-    {
-        return (Map) outputHandlers.get (className);
-    }
-
-    /**
-     * Get the output handler-specific parameters for an output handler.
-     *
-     * @param cls  the output handler class
-     *
-     * @return a <tt>Map</tt>, where each key is a variable name and each
-     *         value is the string value for the key. The map will be empty,
-     *         but not null, if there are no additional handler-specific
-     *         variables
-     *
-     * @see #getOutputHandlerClassNames()
-     * @see #getOutputHandlerSpecificVariables(String)
-     * @see #getOutputHandlerSectionName(String)
-     * @see #getOutputHandlerSectionName(Class)
-     */
-    public Map getOutputHandlerSpecificVariables (Class cls)
-    {
-        return (Map) outputHandlers.get (cls.getName());
-    }
-
-    /**
-     * Gets the configuration section name for a specific output handler.
-     * This makes it easier for the output handler to ask for its variables.
-     *
-     * @param className  the output handler class name
-     *
-     * @return the name of the configuration section where the output handler
-     *         was defined
-     *
-     * @see #getOutputHandlerClassNames()
-     * @see #getOutputHandlerSpecificVariables(String)
-     * @see #getOutputHandlerSpecificVariables(Class)
-     * @see #getOutputHandlerSectionName(Class)
-     */
-    public String getOutputHandlerSectionName (String className)
-    {
-        return (String) outputHandlerSections.get (className);
-    }
-
-    /**
-     * Gets the configuration section name for a specific output handler.
-     * This makes it easier for the output handler to ask for its variables.
-     *
-     * @param cls  the output handler class
-     *
-     * @return the name of the configuration section where the output handler
-     *         was defined
-     *
-     * @see #getOutputHandlerClassNames()
-     * @see #getOutputHandlerSpecificVariables(String)
-     * @see #getOutputHandlerSpecificVariables(Class)
-     * @see #getOutputHandlerSectionName(String)
-     */
-    public String getOutputHandlerSectionName (Class cls)
-    {
-        return getOutputHandlerSectionName (cls.getName());
+        return Collections.unmodifiableList (outputHandlers);
     }
 
     /**
@@ -919,7 +840,11 @@ public class ConfigFile extends Configuration
     {
         // Get the required class name.
 
-        String className = getConfigurationValue (sectionName, VAR_CLASS);
+        String                   className;
+        ConfiguredOutputHandler  handlerWrapper;
+
+        className = getConfigurationValue (sectionName, VAR_CLASS);
+        handlerWrapper = new ConfiguredOutputHandler (sectionName, className);
 
         // Only process the rest if it's not disabled.
 
@@ -927,7 +852,6 @@ public class ConfigFile extends Configuration
         {
             Iterator it = getVariableNames (sectionName, new ArrayList())
                         .iterator();
-            Map extraVariables = new HashMap();
 
             while (it.hasNext())
             {
@@ -941,13 +865,12 @@ public class ConfigFile extends Configuration
                 if (variableName.equals (VAR_CLASS))
                     continue;
 
-                extraVariables.put (variableName,
-                                    getConfigurationValue (sectionName,
-                                                           variableName));
+                String value = getConfigurationValue (sectionName,
+                                                      variableName);
+                handlerWrapper.addExtraVariable (variableName, value);
             }
 
-            outputHandlers.put (className, extraVariables);
-            outputHandlerSections.put (className, sectionName);
+            outputHandlers.add (handlerWrapper);
         }
     }
 

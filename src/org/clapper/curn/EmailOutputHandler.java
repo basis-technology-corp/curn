@@ -34,7 +34,7 @@ import java.util.Collection;
  * exists is to permit conditional building of the actual implementing
  * class, which depends on third-party APIs that might not be present.
  *
- * @see Curn
+ * @see org.clapper.curn.Curn
  *
  * @version <tt>$Revision$</tt>
  */

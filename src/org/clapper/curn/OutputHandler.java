@@ -69,10 +69,14 @@ public interface OutputHandler
     /**
      * Initializes the output handler for another set of RSS channels.
      *
-     * @param config  the parsed <i>curn</i> configuration data. The
-     *                output handler is responsible for retrieving its
-     *                own parameters from the configuration, by calling
-     *                <tt>config.getOutputHandlerSpecificVariables()</tt>
+     * @param config     the parsed <i>curn</i> configuration data. The
+     *                   output handler is responsible for retrieving its
+     *                   own parameters from the configuration, by calling
+     *                   <tt>config.getOutputHandlerSpecificVariables()</tt>
+     * @param cfgHandler the <tt>ConfiguredOutputHandler</tt> wrapper
+     *                   containing this object; the wrapper has some useful
+     *                   metadata, such as the object's configuration section
+     *                   name and extra variables.
      *
      * @throws ConfigurationException configuration error
      * @throws CurnException          some other initialization error
@@ -80,7 +84,7 @@ public interface OutputHandler
      * @see ConfigFile#getOutputHandlerSpecificVariables(Class)
      * @see ConfigFile#getOutputHandlerSpecificVariables(String)
      */
-    public void init (ConfigFile config)
+    public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException;
 
