@@ -2,14 +2,22 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.informa;
+package org.clapper.rssget.parser.informa;
 
-import org.clapper.rssget.*;
-import de.nava.informa.core.*;
+import org.clapper.rssget.parser.RSSChannel;
+import org.clapper.rssget.parser.RSSItem;
+
+import de.nava.informa.core.ChannelIF;
+import de.nava.informa.core.ItemIF;
 import de.nava.informa.impl.basic.ChannelBuilder;
 import de.nava.informa.parsers.RSSParser;
-import java.net.*;
-import java.util.*;
+
+import java.net.URL;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This class implements the <tt>RSSChannel</tt> interface and defines an
@@ -24,8 +32,7 @@ import java.util.*;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSChannelAdapter
-    implements org.clapper.rssget.RSSChannel
+public class RSSChannelAdapter implements RSSChannel
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data

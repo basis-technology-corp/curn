@@ -2,14 +2,20 @@
   $Id$
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.rssget.informa;
+package org.clapper.rssget.parser.informa;
 
-import org.clapper.rssget.*;
-import de.nava.informa.core.*;
+import org.clapper.rssget.parser.RSSParser;
+import org.clapper.rssget.parser.RSSChannel;
+import org.clapper.rssget.parser.RSSParserException;
+
+import de.nava.informa.core.ChannelIF;
+import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.ChannelBuilder;
-import org.apache.commons.logging.*;
-import java.net.*;
-import java.io.*;
+
+import org.apache.commons.logging.LogFactory;
+
+import java.net.URL;
+import java.io.IOException;
 
 /**
  * This class implements the <tt>RSSParser</tt> interface and defines an
@@ -22,7 +28,7 @@ import java.io.*;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSParserAdapter implements org.clapper.rssget.RSSParser
+public class RSSParserAdapter implements RSSParser
 {
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -61,8 +67,12 @@ public class RSSParserAdapter implements org.clapper.rssget.RSSParser
     {
         try
         {
-            return new RSSChannelAdapter (de.nava.informa.parsers.RSSParser.parse
-                                              (new ChannelBuilder(), url));
+            ChannelBuilder builder = new ChannelBuilder();
+            ChannelIF      channel;
+
+            channel = de.nava.informa.parsers.RSSParser.parse (builder, url);
+
+            return new RSSChannelAdapter (channel);
         }
 
         catch (ParseException ex)
