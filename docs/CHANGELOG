@@ -4,11 +4,24 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 1.5.5 (...)
+Version 1.5.5 (10 November, 2004)
+
+- NOTE: You MUST have version 1.1.4 (or better) of the org.clapper.util
+  library, or this version of curn WILL NOT WORK!
 
 - Added "UserAgent" configuration parameter in the [curn] section and the
   individual feed sections. See the sample configuration or the User's
   Guide for details.
+
+- Added "SaveAsEncoding" configuration parameter to individual feed
+  sections. Allows specification of encoding for output file. Encoding can
+  later be used via the ForceEncoding parameter for an instance of curn
+  that reads a saved file. See the sample configuration or the User's Guide
+  for details.
+
+- Curn now gives email attachments names with reasonable extensions.
+  Previously, default names (ending in ".tmp") were used, which gave some 
+  mail clients (e.g., some versions of Outlook) fits.
 
 
 Version 1.5.4 (20 October, 2004)
