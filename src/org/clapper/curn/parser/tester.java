@@ -1,21 +1,32 @@
-package org.clapper.rssget.parser.minirss;
+package org.clapper.rssget.parser;
 
 import java.io.*;
 import java.util.*;
+import java.lang.reflect.Constructor;
 
 public class tester
 {
     public static void main (String args[]) throws Throwable
     {
-        MiniRSSParser parser = new MiniRSSParser();
+        if (args.length < 2)
+        {
+            System.err.println ("Usage: java " + tester.class.getName() +
+                                " parserClass XMLfile [XMLfile] ...");
+            System.exit (1);
+        }
 
-        for (int i = 0; i < args.length; i++)
+        Class parserClass = Class.forName (args[0]);
+        Constructor constructor = parserClass.getConstructor (null);
+        RSSParser parser = (RSSParser) constructor.newInstance (null);
+
+        for (int i = 1; i < args.length; i++)
         {
             System.out.println ();
             System.out.println (args[i] + ":");
             System.out.println ();
 
-            Channel channel = parser.parse (new File (args[i]));
+            FileInputStream is = new FileInputStream (args[i]);
+            RSSChannel channel = parser.parseRSSFeed (is);
             if (channel != null)
                 show (channel);
         }
@@ -23,7 +34,7 @@ public class tester
         System.exit (0);
     }
 
-    private static void show (Channel channel)
+    private static void show (RSSChannel channel)
         throws Throwable
     {
         System.out.println ("Channel title: " + channel.getTitle());
@@ -39,7 +50,7 @@ public class tester
 
         for (Iterator it = channel.getItems().iterator(); it.hasNext(); )
         {
-            Item item = (Item) it.next();
+            RSSItem item = (RSSItem) it.next();
 
             System.out.println ();
             System.out.println ("Item title: " + item.getTitle());
