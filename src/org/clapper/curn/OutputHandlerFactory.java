@@ -29,8 +29,6 @@ package org.clapper.curn;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.clapper.util.config.ConfigurationException;
-
 import org.clapper.util.misc.Logger;
 
 /**
@@ -44,7 +42,7 @@ import org.clapper.util.misc.Logger;
 public class OutputHandlerFactory
 {
     /*----------------------------------------------------------------------*\
-                            Instance Data Items
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     /**
@@ -66,16 +64,11 @@ public class OutputHandlerFactory
      *
      * @return an <tt>OutputHandler</tt> object
      *
-     * @throws ConfigurationException Error instantiating class. The
-     *                                exception will contain (i.e., nest)
-     *                                the real underlying exception.
-     *                                (<tt>ConfigurationException</tt> is
-     *                                thrown because it's unlikely to get
-     *                                here unless an incorrect class name
-     *                                was placed in the config file.)
+     * @throws CurnException Error instantiating class. The exception will
+     *                       contain the real underlying exception.
      */
     public static OutputHandler getOutputHandler (Class cls)
-        throws ConfigurationException
+        throws CurnException
     {
         try
         {
@@ -87,22 +80,22 @@ public class OutputHandlerFactory
 
         catch (NoSuchMethodException ex)
         {
-            throw new ConfigurationException (ex);
+            throw new CurnException (ex);
         }
 
         catch (InvocationTargetException ex)
         {
-            throw new ConfigurationException (ex);
+            throw new CurnException (ex);
         }
 
         catch (InstantiationException ex)
         {
-            throw new ConfigurationException (ex);
+            throw new CurnException (ex);
         }
 
         catch (IllegalAccessException ex)
         {
-            throw new ConfigurationException (ex);
+            throw new CurnException (ex);
         }
     }
 
@@ -116,16 +109,11 @@ public class OutputHandlerFactory
      *
      * @return an <tt>OutputHandler</tt> object
      *
-     * @throws ConfigurationException Error instantiating class. The
-     *                                exception will contain (i.e., nest)
-     *                                the real underlying exception.
-     *                                (<tt>ConfigurationException</tt> is
-     *                                thrown because it's unlikely to get
-     *                                here unless an incorrect class name
-     *                                was placed in the config file.)
+     * @throws CurnException Error instantiating class. The exception will
+     *                       contain the real underlying exception.
      */
     public static OutputHandler getOutputHandler (String className)
-        throws ConfigurationException
+        throws CurnException
     {
         try
         {
@@ -134,7 +122,7 @@ public class OutputHandlerFactory
 
         catch (ClassNotFoundException ex)
         {
-            throw new ConfigurationException (ex);
+            throw new CurnException (ex);
         }
     }
 }
