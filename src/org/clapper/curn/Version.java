@@ -48,7 +48,7 @@ public final class Version
                              Public Constants
     \*----------------------------------------------------------------------*/
 
-    public static final String VERSION = "1.4.1";
+    public static final String VERSION = "1.5";
 
     /**
      * The name of the resource bundle containing the build info.
@@ -165,5 +165,6 @@ public final class Version
         out.println ("Build Java VM:  " + buildInfo.getBuildJavaVM());
         out.println ("Build compiler: " + buildInfo.getBuildJavaCompiler());
         out.println ("Ant version:    " + buildInfo.getBuildAntVersion());
+        out.flush();
     }
 }
