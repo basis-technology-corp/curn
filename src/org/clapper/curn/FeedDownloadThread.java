@@ -62,8 +62,8 @@ import org.clapper.curn.parser.RSSItem;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.text.TextUtil;
 import org.clapper.util.misc.Logger;
-
-import org.apache.oro.text.perl.Perl5Util;
+import org.clapper.util.regex.RegexUtil;
+import org.clapper.util.regex.RegexException;
 
 class FeedDownloadThread extends Thread
 {
@@ -79,14 +79,14 @@ class FeedDownloadThread extends Thread
                            Private Instance Data
     \*----------------------------------------------------------------------*/ 
 
-    private Logger              log             = null;
-    private String              id              = null;
-    private ConfigFile          configuration   = null;
-    private RSSParser           rssParser       = null;
-    private FeedCache           cache           = null;
-    private RSSParserException  exception       = null;  
-    private Perl5Util           perl5Util       = new Perl5Util();
-    private List                feedQueue       = null;
+    private Logger         log             = null;
+    private String         id              = null;
+    private ConfigFile     configuration   = null;
+    private RSSParser      rssParser       = null;
+    private FeedCache      cache           = null;
+    private CurnException  exception       = null;  
+    private RegexUtil      regexUtil       = new RegexUtil();
+    private List           feedQueue       = null;
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -280,6 +280,11 @@ class FeedDownloadThread extends Thread
         {
             this.exception = ex;
         }
+
+        catch (RegexException ex)
+        {
+            this.exception = new CurnException (ex);
+        }
     }
 
     /**
@@ -308,7 +313,7 @@ class FeedDownloadThread extends Thread
      * @see #processFeed
      * @see #errorOccurred
      */
-    RSSParserException getException()
+    CurnException getException()
     {
         return this.exception;
     }
@@ -331,11 +336,13 @@ class FeedDownloadThread extends Thread
      *         parsing was enabled; otherwise, null.
      *
      * @throws RSSParserException parser error
+     * @throws RegexException     substitution error
      */
     private RSSChannel handleFeed (FeedInfo   feedInfo,
                                    RSSParser  parser,
                                    ConfigFile configuration)
-        throws RSSParserException
+        throws RSSParserException,
+               RegexException
     {
         URL         feedURL = feedInfo.getURL();
         String      feedURLString = feedURL.toString();
@@ -736,11 +743,13 @@ class FeedDownloadThread extends Thread
      *
      * @throws RSSParserException    parser exception
      * @throws MalformedURLException bad URL
+     * @throws RegexException        substitution error
      */
     private void processChannelItems (RSSChannel  channel,
                                       FeedInfo    feedInfo)
         throws RSSParserException,
-               MalformedURLException
+               MalformedURLException,
+               RegexException
     {
         Collection  items;
         Iterator    it;
@@ -798,7 +807,11 @@ class FeedDownloadThread extends Thread
                 }
 
                 if (editCmd != null)
-                    sURL = perl5Util.substitute (editCmd, sURL);
+                {
+                    log.debug ("Before editing, item URL=" + sURL);
+                    sURL = regexUtil.substitute (editCmd, sURL);
+                    log.debug ("After editing, item URL=" + sURL);
+                }
 
                 itemURL = new URL (sURL);
             }
@@ -851,7 +864,7 @@ class FeedDownloadThread extends Thread
         }
 
         // If we're to ignore items with duplicate titles, now is the time
-        // to do it. It must be done AFTER cacheing, to be sure we don't show
+        // to do it. It must be done AFTER caching, to be sure we don't show
         // the weeded-out duplicates during the next run.
 
         if (feedInfo.ignoreItemsWithDuplicateTitles())
