@@ -1,5 +1,22 @@
+---------------------------------------------------------------------------
+CHANGELOG: curn
+
 $Id$
 ---------------------------------------------------------------------------
+
+Version 1.5.1 (10 October, 2004)
+
+- Fixed bug with PreparseEdit per-feed configuration directive (introduced
+  in version 1.5). Multiple edit commands would cause duplication of lines
+  in feeds XML file.
+
+- If there are no output handlers defined, feeds are not run through the
+  XML parser (since there's no point). This was already supposed to be
+  happening, but there was this small bug...
+
+- Added "SaveOnly" configuration option to Feed sections. See User's Guide
+  or sample config for details.
+
 
 Version 1.5 (07 October, 2004)
 
