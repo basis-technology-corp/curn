@@ -145,8 +145,8 @@ public abstract class RSSItem
      * {@link FeedInfo} object to determine whether to truncate the
      * summary, use the description (i.e., content) if the summary isn't
      * available, etc. Strips HTML by default. (Use the
-     * {@link #getItemSummary(FeedInfo,boolean) alternate version} of
-     * this method to control the HTML-stripping behavior.
+     * {@link #getSummaryToDisplay(FeedInfo,String[],boolean) alternate version}
+     * of this method to control the HTML-stripping behavior.
      *
      * @param feedInfo  the corresponding feed's <tt>FeedInfo</tt> object
      * @param mimeTypes desired MIME types; used only if no summary is
