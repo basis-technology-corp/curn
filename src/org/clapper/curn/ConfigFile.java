@@ -25,6 +25,9 @@ import org.clapper.util.config.Configuration;
 import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt> class (part of
  * the <i>clapper.org</i> Java Utility library) to parse and validate the
@@ -56,7 +59,6 @@ public class ConfigFile extends Configuration
     private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
     private static final String VAR_QUIET             = "Quiet";
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
-    private static final String VAR_VERBOSITY_LEVEL   = "Verbosity";
     private static final String VAR_SMTPHOST          = "SMTPHost";
     private static final String VAR_DEFAULT_MAIL_FROM = "DefaultMailFrom";
     private static final String VAR_MAIL_SUBJECT      = "Subject";
@@ -79,8 +81,7 @@ public class ConfigFile extends Configuration
     /**
      * Default values
      */
-    private static final int     DEF_DAYS_TO_CACHE     = 5;
-    private static final int     DEF_VERBOSITY_LEVEL   = 0;
+    private static final int     DEF_DAYS_TO_CACHE     = 30;
     private static final boolean DEF_PRUNE_URLS        = false;
     private static final boolean DEF_QUIET             = false;
     private static final boolean DEF_NO_CACHE_UPDATE   = false;
@@ -106,7 +107,6 @@ public class ConfigFile extends Configuration
     private boolean     summaryOnly      = false;
     private boolean     showRSSFormat    = false;
     private boolean     showDates        = false;
-    private int         verboseness      = 0;
     private Collection  feeds            = new ArrayList();
     private Map         feedMap          = new HashMap();
     private String      parserClassName  = DEF_PARSER_CLASS_NAME;
@@ -115,6 +115,11 @@ public class ConfigFile extends Configuration
     private String      emailSender      = null;
     private String      emailSubject     = DEF_EMAIL_SUBJECT;
     private boolean     showAuthors      = false;
+
+    /**
+     * Commons logging: For log messages
+     */
+    private static Log log = LogFactory.getLog (ConfigFile.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -438,30 +443,6 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Get the verbosity level.
-     *
-     * @return the verbosity level
-     *
-     * @see #setVerbosityLevel
-     */
-    public int verbosityLevel()
-    {
-        return verboseness;
-    }
-
-    /**
-     * Set the verbosity level
-     *
-     * @param val the new level
-     *
-     * @see #verbosityLevel
-     */
-    public void setVerbosityLevel (int val)
-    {
-        this.verboseness = val;
-    }
-
-    /**
      * Get the configured RSS feeds.
      *
      * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects.
@@ -489,7 +470,7 @@ public class ConfigFile extends Configuration
      */
     public boolean hasFeed (URL url)
     {
-        return feedMap.containsKey (url);
+        return feedMap.containsKey (url.toString());
     }
 
     /**
@@ -507,13 +488,13 @@ public class ConfigFile extends Configuration
      */
     public FeedInfo getFeedInfoFor (URL url)
     {
-        return (FeedInfo) feedMap.get (url);
+        return (FeedInfo) feedMap.get (url.toString());
     }
 
     /**
      * Get the feed data for a given URL.
      *
-     * @param url   the URL, as a string
+     * @param urlString   the URL, as a string
      *
      * @return the corresponding <tt>FeedInfo</tt> object, or null
      *         if not found
@@ -523,17 +504,9 @@ public class ConfigFile extends Configuration
      * @see #getFeedInfoFor(URL)
      * @see FeedInfo
      */
-    public FeedInfo getFeedInfoFor (String url)
+    public FeedInfo getFeedInfoFor (String urlString)
     {
-        try
-        {
-            return (FeedInfo) feedMap.get (new URL (url));
-        }
-
-        catch (MalformedURLException ex)
-        {
-            return null;
-        }
+        return (FeedInfo) feedMap.get (urlString);
     }
 
     /*----------------------------------------------------------------------*\
@@ -596,9 +569,6 @@ public class ConfigFile extends Configuration
             defaultCacheDays = getOptionalIntegerValue (MAIN_SECTION,
                                                         VAR_DAYS_TO_CACHE,
                                                         DEF_DAYS_TO_CACHE);
-            verboseness = getOptionalIntegerValue (MAIN_SECTION,
-                                                   VAR_VERBOSITY_LEVEL,
-                                                   DEF_VERBOSITY_LEVEL);
             updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_NO_CACHE_UPDATE,
                                                      DEF_NO_CACHE_UPDATE));
@@ -666,6 +636,7 @@ public class ConfigFile extends Configuration
         try
         {
             url = Util.normalizeURL (feedURLString);
+            log.debug ("Configured feed: URL=\"" + url.toString() + "\"");
             feedInfo = new FeedInfo (url);
         }
 
@@ -704,6 +675,6 @@ public class ConfigFile extends Configuration
             feedInfo.setSaveAsFile (new File (s));
 
         feeds.add (feedInfo);
-        feedMap.put (url, feedInfo);
+        feedMap.put (url.toString(), feedInfo);
     }
 }
