@@ -84,7 +84,7 @@ public class RSSGetCache implements Serializable
 
         if (! cacheFile.exists())
         {
-            vh.verbose (1,
+            vh.verbose (2,
                         "Cache \""
                       + cacheFile.getPath()
                       + "\" doesn't exist.");
@@ -141,12 +141,16 @@ public class RSSGetCache implements Serializable
     /**
      * Determine whether a given item's URL is cached.
      *
-     * @param url  the URL to check
+     * @param url  the URL to check. The URL should already have
+     *             been normalized.
      *
      * @return <tt>true</tt> if cached, <tt>false</tt> if not
+     *
+     * @see Util#normalizeURL
      */
     public boolean containsItemURL (URL itemURL)
     {
+        itemURL = itemURL;
         String key = itemURL.toExternalForm();
         vh.verbose (3,
                     "Cache contains \""
@@ -159,12 +163,16 @@ public class RSSGetCache implements Serializable
     /**
      * Add (or replace) a cached RSS item.
      *
-     * @param itemURL       the URL for the item
-     * @param parentChannel the parent RSS channel
+     * @param itemURL    the URL for the item. The URL should already have
+     *                   been normalized
+     * @param parentFeed the associated feed
+     *
+     * @see Util#normalizeURL
      */
-    public void addToCache (URL itemURL, RSSChannel parentChannel)
+    public void addToCache (URL itemURL, RSSFeedInfo parentFeed)
     {
-        RSSCacheEntry entry = new RSSCacheEntry (parentChannel.getURL(),
+        URL parentURL = parentFeed.getURL();
+        RSSCacheEntry entry = new RSSCacheEntry (parentURL,
                                                  itemURL,
                                                  System.currentTimeMillis());
 
@@ -238,7 +246,12 @@ public class RSSGetCache implements Serializable
                 long expires    = timestamp + maxCacheMS;
 
                 vh.verbose (3,
-                            "\tcached on: " + new Date (timestamp).toString());
+                            "\tcached on:  "
+                          + new Date (timestamp).toString());
+                vh.verbose (3,
+                            "\tcache days: " + feedInfo.getDaysToCache());
+                vh.verbose (3,
+                            "\tcache ms:   " + maxCacheMS);
                 vh.verbose (3, "\texpires: " + new Date (expires).toString());
 
                 if (timestamp > currentTime)
@@ -263,5 +276,4 @@ public class RSSGetCache implements Serializable
             }
         }
     }
-
 }

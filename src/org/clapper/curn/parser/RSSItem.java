@@ -46,6 +46,11 @@ public interface RSSItem
     public URL getURL();
 
     /**
+     * Change the item's URL
+     */
+    public void setURL (URL url);
+
+    /**
      * Get the item's description.
      *
      * @return the description, or null if not available

@@ -28,8 +28,9 @@ class RSSFeedInfo
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private int  daysToCache = 0;
-    private URL  siteURL     = null;
+    private boolean  pruneURLsFlag = false;
+    private int      daysToCache   = 0;
+    private URL      siteURL       = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -38,11 +39,14 @@ class RSSFeedInfo
     /**
      * Default constructor. Only accessible within this package.
      *
-     * @param siteURL  the main URL for the site's RSS feed.
+     * @param siteURL  the main URL for the site's RSS feed. This constructor
+     *                 normalizes the URL.
+     *
+     * @see Util#normalizeURL
      */
     RSSFeedInfo (URL siteURL)
     {
-        this.siteURL = siteURL;
+        this.siteURL = Util.normalizeURL (siteURL);
     }
 
     /*----------------------------------------------------------------------*\
@@ -82,7 +86,8 @@ class RSSFeedInfo
      */
     long getMillisecondsToCache()
     {
-        return getDaysToCache() * 25 * 60 * 60 * 1000;
+        long days = (long) getDaysToCache();
+        return days * 25 * 60 * 60 * 1000;
     }
    
     /**
@@ -96,5 +101,33 @@ class RSSFeedInfo
     void setDaysToCache (int cacheDays)
     {
         this.daysToCache = cacheDays;
+    }
+
+    /**
+     * Get the "prune URLs" flag. If this flag is set, then URLs from this
+     * feed should be displayed without any HTTP parameter information.
+     * Otherwise, they should be displayed as is.
+     *
+     * @return <tt>true</tt> if the flag is set, <tt>false</tt> otherwise
+     *
+     * @see #setPruneURLsFlag
+     */
+    boolean pruneURLs()
+    {
+        return pruneURLsFlag;
+    }
+
+    /**
+     * Set the "prune URLs" flag. If this flag is set, then URLs from this
+     * feed should be displayed without any HTTP parameter information.
+     * Otherwise, they should be displayed as is.
+     *
+     * @param val <tt>true</tt> to set the flag, <tt>false</tt> to clear it
+     *
+     * @see #pruneURLs
+     */
+    void setPruneURLsFlag (boolean val)
+    {
+        pruneURLsFlag = val;
     }
 }

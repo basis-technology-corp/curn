@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------*\
+  $Id$
+\*---------------------------------------------------------------------------*/
+
 package org.clapper.rssget;
 
 import java.io.*;
@@ -26,11 +30,47 @@ import org.clapper.util.config.*;
 */
 public class rssget implements VerboseMessagesHandler
 {
+    /*----------------------------------------------------------------------*\
+                               Inner Classes
+    \*----------------------------------------------------------------------*/
+
+    /*----------------------------------------------------------------------*\
+                             Private Constants
+    \*----------------------------------------------------------------------*/
+
     private static final String VERSION = "0.2";
+
+    private static final DateParseInfo[] DATE_FORMATS = new DateParseInfo[]
+    {
+        new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false),
+        new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false),
+        new DateParseInfo ("yyyy/MM/dd hh:mm a", false),
+        new DateParseInfo ("yyyy/MM/dd hh:mm", false),
+        new DateParseInfo ("yyyy/MM/dd h:mm a", false),
+        new DateParseInfo ("yyyy/MM/dd h:mm", false),
+        new DateParseInfo ("yyyy/MM/dd hh a", false),
+        new DateParseInfo ("yyyy/MM/dd hh", false),
+        new DateParseInfo ("yyyy/MM/dd h a", false),
+        new DateParseInfo ("yyyy/MM/dd h", false),
+        new DateParseInfo ("yyyy/MM/dd", false),
+        new DateParseInfo ("yy/MM/dd", false),
+        new DateParseInfo ("hh:mm:ss a", true),
+        new DateParseInfo ("hh:mm:ss", true),
+        new DateParseInfo ("hh:mm a", true),
+        new DateParseInfo ("hh:mm", true),
+        new DateParseInfo ("h:mm a", true),
+        new DateParseInfo ("h:mm", true),
+        new DateParseInfo ("hh a", true),
+        new DateParseInfo ("hh", true),
+        new DateParseInfo ("h a", true),
+        new DateParseInfo ("h", true)
+    };
+
+    /*----------------------------------------------------------------------*\
+    \*----------------------------------------------------------------------*/
 
     private RSSGetConfiguration config        = null;
     private boolean             useCache      = true;
-    private boolean             showVersion   = false;
     private RSSGetCache         cache         = null;
     private Date                currentTime   = new Date();
 
@@ -82,7 +122,7 @@ public class rssget implements VerboseMessagesHandler
     public void verbose (int level, String msg)
     {
         if (config.verbosityLevel() >= level)
-            System.out.println (msg);
+            System.out.println ("[V:" + level + "] " + msg);
     }
 
     private void runProgram (String[] args)
@@ -96,9 +136,6 @@ public class rssget implements VerboseMessagesHandler
         //ChannelIF channel = RSSParser.parse(new ChannelBuilder(), inpFile);
 
         parseParams (args);
-
-        if (showVersion)
-            System.out.println ("rssget, version " + VERSION);
 
         RSSGetOutputHandler outputHandler = new TextOutputHandler (System.out);
 
@@ -117,7 +154,7 @@ public class rssget implements VerboseMessagesHandler
             processFeed (feed, outputHandler);
         }
 
-        if (useCache && config.mustUpdateCache())
+        if ((cache != null) && config.mustUpdateCache())
             cache.saveCache();
     }
 
@@ -160,9 +197,6 @@ public class rssget implements VerboseMessagesHandler
 
                 else if (args[i].equals ("-t") || args[i].equals ("--time"))
                     opts.put ("t", args[++i]);
-
-                else if (args[i].equals ("-V") || args[i].equals ("--version"))
-                    opts.put ("V", "");
 
                 else if (args[i].equals ("-v") || args[i].equals ("--verbose"))
                     opts.put ("v", args[++i]);
@@ -217,10 +251,6 @@ public class rssget implements VerboseMessagesHandler
                         currentTime = parseDateTime ((String) opts.get (opt));
                         break;
 
-                    case 'V':   // --version
-                        showVersion = true;
-                        break;
-
                     case 'v':   // --verbose
                         String arg = (String) opts.get (opt);
                         try
@@ -252,54 +282,16 @@ public class rssget implements VerboseMessagesHandler
     private Date parseDateTime (String s)
         throws BadCommandLineException
     {
-        class DateParseInfo
-        {
-            DateFormat format;
-            boolean    timeOnly;
-
-            DateParseInfo (String fmtString, boolean timeOnly)
-            {
-                this.format   = new SimpleDateFormat (fmtString);
-                this.timeOnly = timeOnly;
-            }
-        }
-
-        DateParseInfo[] formats = new DateParseInfo[]
-        {
-            new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false),
-            new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false),
-            new DateParseInfo ("yyyy/MM/dd hh:mm a", false),
-            new DateParseInfo ("yyyy/MM/dd hh:mm", false),
-            new DateParseInfo ("yyyy/MM/dd h:mm a", false),
-            new DateParseInfo ("yyyy/MM/dd h:mm", false),
-            new DateParseInfo ("yyyy/MM/dd hh a", false),
-            new DateParseInfo ("yyyy/MM/dd hh", false),
-            new DateParseInfo ("yyyy/MM/dd h a", false),
-            new DateParseInfo ("yyyy/MM/dd h", false),
-            new DateParseInfo ("yyyy/MM/dd", false),
-            new DateParseInfo ("yy/MM/dd", false),
-            new DateParseInfo ("hh:mm:ss a", true),
-            new DateParseInfo ("hh:mm:ss", true),
-            new DateParseInfo ("hh:mm a", true),
-            new DateParseInfo ("hh:mm", true),
-            new DateParseInfo ("h:mm a", true),
-            new DateParseInfo ("h:mm", true),
-            new DateParseInfo ("hh a", true),
-            new DateParseInfo ("hh", true),
-            new DateParseInfo ("h a", true),
-            new DateParseInfo ("h", true)
-        };
-
         Date date = null;
 
-        for (int i = 0; i < formats.length; i++)
+        for (int i = 0; i < DATE_FORMATS.length; i++)
         {
             try
             {
-                date = formats[i].format.parse (s);
+                date = DATE_FORMATS[i].format.parse (s);
                 if (date != null)
                 {
-                    if (formats[i].timeOnly)
+                    if (DATE_FORMATS[i].timeOnly)
                     {
                         // The date pattern specified only a time, which
                         // means the date part defaulted to the epoch. Make
@@ -333,8 +325,10 @@ public class rssget implements VerboseMessagesHandler
 
     private void usage()
     {
-        String[] USAGE = new String[]
+        String[] USAGE1 = new String[]
         {
+"rssget, version " + VERSION,
+"",
 "Usage: " + rssget.class.getName() + " [options] configFile",
 "",
 "OPTIONS",
@@ -349,34 +343,25 @@ public class rssget implements VerboseMessagesHandler
 "-t datetime",
 "--time datetime   For the purposes of cache expiration, pretend the current",
 "                    time is <datetime>. <datetime> may be specified in any",
-"                    of the following forms:",
-"                    yyyy/mm/dd hh:mm:ss [am/pm]",
-"                    yyyy/mm/dd hh:mm:ss",
-"                    yyyy/mm/dd hh:mm [am/pm]",
-"                    yyyy/mm/dd hh:mm",
-"                    yyyy/mm/dd h:mm [am/pm]",
-"                    yyyy/mm/dd h:mm",
-"                    yyyy/mm/dd hh",
-"                    yyyy/mm/dd h",
-"                    yyyy/mm/dd",
-"                    yy/mm/dd",
-"                    hh:mm:ss a",
-"                    hh:mm:ss",
-"                    hh:mm a",
-"                    hh:mm",
-"                    h:mm a",
-"                    h:mm",
-"                    hh a",
-"                    hh",
-"                    h a",
-"                    h",
-"-v level          Set the verbosity (debug) level. Default: 0 (off)",
-"--verbose level",
-"-V, --version     Display this tool's version"
+"                    of the following forms:"
         };
 
-        for (int i = 0; i < USAGE.length; i++)
-            System.err.println (USAGE[i]);
+        String[] USAGE2 = new String[]
+        {
+"-v level          Set the verbosity (debug) level. Default: 0 (off)",
+"--verbose level",
+        };
+
+        int i;
+
+        for (i = 0; i < USAGE1.length; i++)
+            System.err.println (USAGE1[i]);
+
+        for (i = 0; i < DATE_FORMATS.length; i++)
+            System.err.println ("                    " + DATE_FORMATS[i]);
+
+        for (i = 0; i < USAGE2.length; i++)
+            System.err.println (USAGE2[i]);
     }
 
     private void processFeed (RSSFeedInfo         feedInfo,
@@ -395,6 +380,7 @@ public class rssget implements VerboseMessagesHandler
             RSSChannel channel = parser.parseRSSFeed (url);
             Collection items = channel.getItems();
             RSSItem[] itemArray = null;
+            boolean pruneURLs = feedInfo.pruneURLs();
 
             // First, weed out the ones we don't care about.
 
@@ -404,20 +390,53 @@ public class rssget implements VerboseMessagesHandler
                 RSSItem item = (RSSItem) it.next();
                 URL itemURL = item.getURL();
 
-                if (useCache && cache.containsItemURL (itemURL))
+                if (itemURL == null)
+                {
+                    verbose (3, "Skipping item with null URL.");
+                    it.remove();
+                    continue;
+                }
+
+                // Prune the URL of its parameters, if configured for this
+                // site. This must be done before checking the cache,
+                // because the pruned URLs are what end up in the cache.
+
+                if (pruneURLs)
+                {
+                    String s = itemURL.toExternalForm();
+                    int    i = s.indexOf ("?");
+
+                    if (i != -1)
+                    {
+                        s = s.substring (0, i);
+                        itemURL = new URL (s);
+                    }
+                }
+                
+                // Normalize the URL.
+
+                itemURL = Util.normalizeURL (itemURL);
+                item.setURL (itemURL);
+
+                // Skip it if it's cached.
+
+                if ((cache != null) && cache.containsItemURL (itemURL))
                 {
                     verbose (3,
                              "Skipping cached URL \""
                            + itemURL.toString()
                            + "\"");
                     it.remove();
+                    continue;
                 }
             }
 
             // Now, if there's anything left, get them as an array.
 
             if (items.size() > 0)
+            {
                 itemArray = (RSSItem[]) items.toArray (new RSSItem[0]);
+            }
 
             outputHandler.displayChannelItems (itemArray, channel, config);
 
@@ -431,9 +450,18 @@ public class rssget implements VerboseMessagesHandler
                              "Cacheing URL \""
                            + itemArray[i].getURL().toString()
                            + "\"");
-                    cache.addToCache (itemArray[i].getURL(), channel);
+                    if (cache != null)
+                        cache.addToCache (itemArray[i].getURL(), feedInfo);
                 }
             }
+        }
+
+        catch (MalformedURLException ex)
+        {
+            if (config.verbosityLevel() > 1)
+                ex.printStackTrace();
+            else
+                verbose (1, ex.getMessage());
         }
 
         catch (RSSParserException ex)

@@ -76,6 +76,16 @@ public class RSSItemImpl
     }
 
     /**
+     * Set (change) the item's published URL.
+     *
+     * @param url the URL, or null if not available
+     */
+    public void setURL (URL url)
+    {
+        this.item.setLink (url);
+    }
+
+    /**
      * Get the item's description.
      *
      * @return the description, or null if not available

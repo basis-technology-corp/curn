@@ -25,22 +25,24 @@ class RSSGetConfiguration extends Configuration
                                  Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String MAIN_SECTION           = "rssget";
-    private static final String VAR_CACHE_FILE         = "CacheFile";
-    private static final String VAR_NO_CACHE_UPDATE    = "NoCacheUpdate";
-    private static final String VAR_DEFAULT_CACHE_DAYS = "DefaultDaysToCache";
-    private static final String VAR_QUIET              = "Quiet";
-    private static final String VAR_SUMMARY_ONLY       = "SummaryOnly";
-    private static final String VAR_VERBOSITY_LEVEL    = "Verbosity";
-    private static final String VAR_SMTPHOST           = "SMTPHost";
-    private static final String VAR_DEFAULT_MAIL_FROM  = "DefaultMailFrom";
-    private static final String VAR_MAIL_SUBJECT       = "Subject";
-    private static final String VAR_DAYS_TO_CACHE      = "DaysToCache";
-    private static final String VAR_PARSER_CLASS       = "ParserClass";
+    private static final String  MAIN_SECTION           = "rssget";
+    private static final String  VAR_CACHE_FILE         = "CacheFile";
+    private static final String  VAR_NO_CACHE_UPDATE    = "NoCacheUpdate";
+    private static final String  VAR_DEFAULT_CACHE_DAYS = "DefaultDaysToCache";
+    private static final String  VAR_QUIET              = "Quiet";
+    private static final String  VAR_SUMMARY_ONLY       = "SummaryOnly";
+    private static final String  VAR_VERBOSITY_LEVEL    = "Verbosity";
+    private static final String  VAR_SMTPHOST           = "SMTPHost";
+    private static final String  VAR_DEFAULT_MAIL_FROM  = "DefaultMailFrom";
+    private static final String  VAR_MAIL_SUBJECT       = "Subject";
+    private static final String  VAR_DAYS_TO_CACHE      = "DaysToCache";
+    private static final String  VAR_PARSER_CLASS       = "ParserClass";
+    private static final String  VAR_PRUNE_URLS         = "PruneURLs";
 
-    private static final int    DEFAULT_DAYS_TO_CACHE  = 5;
-    private static final int    DEFAULT_VERBOSITY_LEVEL= 0;
-    private static final String DEFAULT_PARSER_CLASS   =
+    private static final int     DEFAULT_DAYS_TO_CACHE  = 5;
+    private static final int     DEFAULT_VERBOSITY_LEVEL= 0;
+    private static final boolean DEFAULT_PRUNE_URLS     = false;
+    private static final String  DEFAULT_PARSER_CLASS   =
                                   "org.clapper.rssget.informa.RSSParserImpl";
 
     /*----------------------------------------------------------------------*\
@@ -397,12 +399,20 @@ class RSSGetConfiguration extends Configuration
         try
         {
             URL url = new URL (sectionName);
+            url = Util.normalizeURL (url);
+
             RSSFeedInfo feedInfo = new RSSFeedInfo (url);
 
             int cacheDays = getOptionalIntegerValue (sectionName,
                                                      VAR_DAYS_TO_CACHE,
                                                      defaultCacheDays);
             feedInfo.setDaysToCache (cacheDays);
+
+            boolean pruneURLs = getOptionalBooleanValue (sectionName,
+                                                         VAR_PRUNE_URLS,
+                                                         DEFAULT_PRUNE_URLS);
+            feedInfo.setPruneURLsFlag (pruneURLs);
+
             rssFeeds.add (feedInfo);
             rssFeedMap.put (url, feedInfo);
         }
