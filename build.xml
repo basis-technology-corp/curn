@@ -124,7 +124,8 @@
   <target name="all" depends="curn"/>
 
   <target name="curn" 
-          depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info"/>
+          depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info"
+          description="Compiles the source"/>
 
   <target name="parser.main" depends="init">
     <!-- Compile the java code from . into ${build} -->
@@ -148,8 +149,7 @@
     </javac>
   </target>
 
-  <target name="bundles" 
-          description="Copies resource bundle property files to build dir">
+  <target name="bundles">
     <copy todir="${build}">
       <fileset dir="${src.top}">
         <include name="**/*.properties"/>
@@ -281,7 +281,7 @@
 
   <!-- Load the API version from the org.clapper.curn.Util class -->
 
-  <target name="-get.version" description="Get the version stamp">
+  <target name="-get.version">
     <loadproperties srcfile="${build}/org/clapper/curn/Version.class">
       <filterchain>
         <classconstants/>
@@ -293,8 +293,7 @@
 
   <target name="version" depends="-get.version"/>
 
-  <target name="-build.info" depends="-get.version"
-          description="Create build info properties file">
+  <target name="-build.info" depends="-get.version">
 
     <taskdef name="make_build_info" 
              classname="org.clapper.util.ant.MakeBuildInfoTask"/>
@@ -320,8 +319,7 @@
   ***************************************************************************
   -->
 
-  <target name="javadocs"
-          description="Generate API Javadocs">
+  <target name="javadocs" description="Generate API Javadocs">
     <mkdir dir="${javadocs_api_dir}"/>
     <javadoc
              destdir="${javadocs_api_dir}"
@@ -363,11 +361,13 @@
   </target>
 
   <target name="code.jar" depends="all"
-          description="Generate the distribution">
+          description="Generate the binary jar file">
     <mkdir dir="${dist}/lib"/>
     <jar jarfile="${code_jar_path}" basedir="${build}"/>
   </target>
-  <target name="dist" depends="code.jar"/>
+
+  <target name="dist" depends="code.jar" 
+          description="Synonym for code.jar"/>
 
   <target name="javadoczip" depends="javadocs"
           description="Builds the javadocs zip file">
