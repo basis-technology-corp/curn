@@ -75,14 +75,16 @@ public class TextOutputHandler implements OutputHandler
      * <tt>PrintWriter</tt> that was passed to the {@link #init init()}
      * method.
      *
-     * @param channel The channel containing the items to emit. The method
-     *                should emit all the items in the channel; the caller
-     *                is responsible for clearing out any items that should
-     *                not be seen.
+     * @param channel  The channel containing the items to emit. The method
+     *                 should emit all the items in the channel; the caller
+     *                 is responsible for clearing out any items that should
+     *                 not be seen.
+     * @param feedInfo Information about the feed, from the configuration
      *
      * @throws RSSGetException  unable to write output
      */
-    public void displayChannel (RSSChannel channel)
+    public void displayChannel (RSSChannel  channel,
+                                RSSFeedInfo feedInfo)
         throws RSSGetException
     {
         Collection items = channel.getItems();
@@ -126,7 +128,7 @@ public class TextOutputHandler implements OutputHandler
                 out.println ((s == null) ? "(No Title)" : s);
                 out.println (item.getLink().toString());
 
-                if (! config.summarizeOnly())
+                if (! feedInfo.summarizeOnly())
                 {
                     s = item.getDescription();
                     if ((s != null) && (s.trim().length() > 0))

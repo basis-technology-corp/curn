@@ -40,9 +40,6 @@ import org.clapper.util.config.ConfigurationException;
 * <i>rssget</i> keeps track of URLs it's seen before, using an on-disk
 * cache; when using the cache, it will suppress displaying URLs it has
 * already reported (though that behavior can be disabled).</p>
-* 
-* <p><i>rssget</i> requires the <i>Informa</i> parsing library, which is
-* available at {@link <a href="http://orchard.sourceforge.net/">}.</p>
 *
 * @version <tt>$Revision$</tt>
 */
@@ -88,6 +85,24 @@ public class rssget implements VerboseMessagesHandler
 
     private static final String EMAIL_HANDLER_CLASS =
                             "org.clapper.rssget.email.EmailOutputHandlerImpl";
+
+    /*----------------------------------------------------------------------*\
+                              Private Classes
+    \*----------------------------------------------------------------------*/
+
+    // Used to associate a parsed channel with its RSSFeedInfo data
+
+    class ChannelFeedInfo
+    {
+        RSSFeedInfo feedInfo;
+        RSSChannel  channel;
+
+        ChannelFeedInfo (RSSFeedInfo feedInfo, RSSChannel channel)
+        {
+            this.feedInfo = feedInfo;
+            this.channel  = channel;
+        }
+    }
 
     /*----------------------------------------------------------------------*\
                            Private Instance Data
@@ -209,7 +224,13 @@ public class rssget implements VerboseMessagesHandler
         channels = new ArrayList();
 
         for (it = config.getFeeds().iterator(); it.hasNext(); )
-            processFeed ((RSSFeedInfo) it.next(), parser, channels);
+        {
+            RSSFeedInfo feedInfo = (RSSFeedInfo) it.next();
+            RSSChannel  channel  = processFeed (feedInfo, parser);
+
+            if (channel != null)
+                channels.add (new ChannelFeedInfo (feedInfo, channel));
+        }
 
         // Dump the output to each output handler
 
@@ -223,8 +244,8 @@ public class rssget implements VerboseMessagesHandler
             for (Iterator itChannel = channels.iterator();
                  itChannel.hasNext(); )
             {
-                RSSChannel channel = (RSSChannel) itChannel.next();
-                outputHandler.displayChannel (channel);
+                ChannelFeedInfo cfi = (ChannelFeedInfo) itChannel.next();
+                outputHandler.displayChannel (cfi.channel, cfi.feedInfo);
             }
 
             outputHandler.flush();
@@ -266,12 +287,6 @@ public class rssget implements VerboseMessagesHandler
 
                 else if (s.equals ("-C") || s.equals ("--nocache"))
                     opts.put ("C", "");
-
-                else if (s.equals ("-s") || s.equals ("--summary"))
-                    opts.put ("s", "");
-
-                else if (s.equals ("-f") || s.equals ("--full"))
-                    opts.put ("f", "");
 
                 else if (s.equals ("-R") || s.equals ("--no-rss-version"))
                     opts.put ("R", "");
@@ -324,14 +339,6 @@ public class rssget implements VerboseMessagesHandler
 
                     case 'q':   // --quiet
                         config.setQuietFlag (true);
-                        break;
-
-                    case 's':   // --summary
-                        config.setSummarizeOnlyFlag (true);
-                        break;
-
-                    case 'f':   // --full
-                        config.setSummarizeOnlyFlag (false);
                         break;
 
                     case 'r':
@@ -428,16 +435,12 @@ public class rssget implements VerboseMessagesHandler
 "Usage: " + rssget.class.getName() + " [options] configFile [email_addr ...]",
 "",
 "OPTIONS",
-"-f, --full           For each item, display the URL, title and description.",
-"                       (The opposite of --summary.)",
 "-C, --nocache        Don't use a cache file at all.",
 "-u, --noupdate       Read the cache, but don't update it",
 "-Q, --noquiet        Emit information about sites with no information",
 "-q, --quiet          Be quiet about sites with no information",
 "-r, --rss-version    Display the RSS version used at each site",
 "-R, --no-rss-version Don't display the RSS version used at each site",
-"-s, --summary        For each item, display only the URL and title. Omit the",
-"                       description. (The opposite of --full.)",
 "-t datetime",
 "--time datetime      For the purposes of cache expiration, pretend the",
 "                       current time is <datetime>. <datetime> may be in a ",
@@ -509,15 +512,13 @@ public class rssget implements VerboseMessagesHandler
         }
     }
 
-    private void processFeed (RSSFeedInfo   feedInfo,
-                              RSSParser     parser,
-                              Collection    channels)
+    private RSSChannel processFeed (RSSFeedInfo feedInfo, RSSParser parser)
         throws RSSParserException
     {
         URL         url = feedInfo.getURL();
         boolean     pruneURLs = feedInfo.pruneURLs();
         Iterator    it;
-        RSSChannel  channel;
+        RSSChannel  channel = null;
         Collection  items;
 
         try
@@ -579,10 +580,6 @@ public class rssget implements VerboseMessagesHandler
 
             channel.setItems (items);
 
-            // Add the channel to the list of channels.
-
-            channels.add (channel);
-
             // Finally, add all the items to the cache.
 
             if (items.size() > 0)
@@ -624,5 +621,7 @@ public class rssget implements VerboseMessagesHandler
             else
                 verbose (1, ex.getMessage());
         }
+
+        return channel;
     }
 }

@@ -7,6 +7,7 @@ package org.clapper.rssget.htmloutput;
 import org.clapper.rssget.OutputHandler;
 import org.clapper.rssget.RSSGetException;
 import org.clapper.rssget.Util;
+import org.clapper.rssget.RSSFeedInfo;
 import org.clapper.rssget.RSSGetConfiguration;
 import org.clapper.rssget.parser.RSSChannel;
 import org.clapper.rssget.parser.RSSItem;
@@ -26,8 +27,7 @@ import org.w3c.dom.*;
 import org.w3c.dom.html.*;
 
 /**
- * Provides an output handler that produces plain text to a
- * <tt>PrintWriter</tt>.
+ * Provides an output handler that produces HTML output.
  *
  * @see OutputHandler
  * @see org.clapper.rssget.rssget
@@ -102,14 +102,16 @@ public class HTMLOutputHandler implements OutputHandler
      * Display the list of <tt>RSSItem</tt> news items to whatever output
      * is defined for the underlying class.
      *
-     * @param channel The channel containing the items to emit. The method
-     *                should emit all the items in the channel; the caller
-     *                is responsible for clearing out any items that should
-     *                not be seen.
+     * @param channel  The channel containing the items to emit. The method
+     *                 should emit all the items in the channel; the caller
+     *                 is responsible for clearing out any items that should
+     *                 not be seen.
+     * @param feedInfo Information about the feed, from the configuration
      *
      * @throws RSSGetException  unable to write output
      */
-    public void displayChannel (RSSChannel channel)
+    public void displayChannel (RSSChannel  channel,
+                                RSSFeedInfo feedInfo)
         throws RSSGetException
     {
         Collection items = channel.getItems();
@@ -147,9 +149,12 @@ public class HTMLOutputHandler implements OutputHandler
             }
 
             String desc  = item.getDescription();
+            if (feedInfo.summarizeOnly())
+                desc = "";
             String title = item.getTitle();
 
             doc.setTextItemTitle ((title == null) ? "(No Title)" : title);
+
             doc.setTextItemDescription ((desc == null) ? "" : desc);
             itemAnchor.setHref (item.getLink().toExternalForm());
 

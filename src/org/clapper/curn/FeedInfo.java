@@ -13,17 +13,14 @@ import java.net.URL;
  *
  * @version <tt>$Revision$</tt>
  */
-class RSSFeedInfo
+public class RSSFeedInfo
 {
-    /*----------------------------------------------------------------------*\
-                                 Constants
-    \*----------------------------------------------------------------------*/
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
     private boolean  pruneURLsFlag = false;
+    private boolean  summaryOnly   = false;
     private int      daysToCache   = 0;
     private URL      siteURL       = null;
 
@@ -45,7 +42,7 @@ class RSSFeedInfo
     }
 
     /*----------------------------------------------------------------------*\
-                          Package-visible Methods
+                              Public Methods
     \*----------------------------------------------------------------------*/
 
     /**
@@ -53,7 +50,7 @@ class RSSFeedInfo
      *
      * @return the site's main RSS URL
      */
-    URL getURL()
+    public URL getURL()
     {
         return siteURL;
     }
@@ -65,7 +62,7 @@ class RSSFeedInfo
      *
      * @see #setDaysToCache
      */
-    int getDaysToCache()
+    public int getDaysToCache()
     {
         return daysToCache;
     }
@@ -79,7 +76,7 @@ class RSSFeedInfo
      * @see #getDaysToCache
      * @see #setDaysToCache
      */
-    long getMillisecondsToCache()
+    public long getMillisecondsToCache()
     {
         long days = (long) getDaysToCache();
         return days * 25 * 60 * 60 * 1000;
@@ -93,7 +90,7 @@ class RSSFeedInfo
      * @see #getDaysToCache
      * @see #getMillisecondsToCache
      */
-    void setDaysToCache (int cacheDays)
+    public void setDaysToCache (int cacheDays)
     {
         this.daysToCache = cacheDays;
     }
@@ -107,7 +104,7 @@ class RSSFeedInfo
      *
      * @see #setPruneURLsFlag
      */
-    boolean pruneURLs()
+    public boolean pruneURLs()
     {
         return pruneURLsFlag;
     }
@@ -121,8 +118,32 @@ class RSSFeedInfo
      *
      * @see #pruneURLs
      */
-    void setPruneURLsFlag (boolean val)
+    public void setPruneURLsFlag (boolean val)
     {
         pruneURLsFlag = val;
+    }
+
+    /**
+     * Return the value of "summary only" flag. If this flag is set, then
+     * any description for this feed should be suppressed. If this flag is
+     * not set, then this feed's description (if any) should be displayed.
+     *
+     * @return <tt>true</tt> if "summary only" flag is set, <tt>false</tt>
+     *         otherwise
+     */
+    public boolean summarizeOnly()
+    {
+        return summaryOnly;
+    }
+
+    /**
+     * Set the value of the "summary only" flag.
+     *
+     * @param val <tt>true</tt> to set the "summary only" flag,
+     *            <tt>false</tt> to clear it
+     */
+    public void setSummarizeOnlyFlag (boolean val)
+    {
+        this.summaryOnly = val;
     }
 }

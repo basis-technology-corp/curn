@@ -49,7 +49,6 @@ public class RSSGetConfiguration extends Configuration
      */
     private static final String VAR_CACHE_FILE        = "CacheFile";
     private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
-    private static final String VAR_DEFAULT_CACHE_DAYS= "DefaultDaysToCache";
     private static final String VAR_QUIET             = "Quiet";
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
     private static final String VAR_VERBOSITY_LEVEL   = "Verbosity";
@@ -254,28 +253,6 @@ public class RSSGetConfiguration extends Configuration
     public void setQuietFlag (boolean val)
     {
         this.quiet = val;
-    }
-
-    /**
-     * Return the value of "summary only" flag.
-     *
-     * @return <tt>true</tt> if "summary only" flag is set, <tt>false</tt>
-     *         otherwise
-     */
-    public boolean summarizeOnly()
-    {
-        return summaryOnly;
-    }
-
-    /**
-     * Set the value of the "summary only" flag.
-     *
-     * @param val <tt>true</tt> to set the "summary only" flag,
-     *            <tt>false</tt> to clear it
-     */
-    public void setSummarizeOnlyFlag (boolean val)
-    {
-        this.summaryOnly = val;
     }
 
     /**
@@ -496,7 +473,7 @@ public class RSSGetConfiguration extends Configuration
             }
 
             defaultCacheDays = getOptionalIntegerValue (MAIN_SECTION,
-                                                        VAR_DEFAULT_CACHE_DAYS,
+                                                        VAR_DAYS_TO_CACHE,
                                                         DEF_DAYS_TO_CACHE);
             verboseness = getOptionalIntegerValue (MAIN_SECTION,
                                                    VAR_VERBOSITY_LEVEL,
@@ -561,16 +538,18 @@ public class RSSGetConfiguration extends Configuration
 
             RSSFeedInfo feedInfo = new RSSFeedInfo (url);
 
-            int cacheDays = getOptionalIntegerValue (sectionName,
-                                                     VAR_DAYS_TO_CACHE,
-                                                     defaultCacheDays);
-            feedInfo.setDaysToCache (cacheDays);
-
-            boolean pruneURLs = getOptionalBooleanValue (sectionName,
-                                                         VAR_PRUNE_URLS,
-                                                         DEF_PRUNE_URLS);
-            feedInfo.setPruneURLsFlag (pruneURLs);
-
+            feedInfo.setDaysToCache
+                              (getOptionalIntegerValue (sectionName,
+                                                        VAR_DAYS_TO_CACHE,
+                                                        defaultCacheDays));
+            feedInfo.setPruneURLsFlag
+                              (getOptionalBooleanValue (sectionName,
+                                                        VAR_PRUNE_URLS,
+                                                        DEF_PRUNE_URLS));
+            feedInfo.setSummarizeOnlyFlag
+                              (getOptionalBooleanValue (sectionName,
+                                                        VAR_SUMMARY_ONLY,
+                                                        summaryOnly));
             rssFeeds.add (feedInfo);
             rssFeedMap.put (url, feedInfo);
         }

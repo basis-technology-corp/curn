@@ -7,6 +7,7 @@ package org.clapper.rssget.email;
 import org.clapper.rssget.OutputHandler;
 import org.clapper.rssget.EmailOutputHandler;
 import org.clapper.rssget.Util;
+import org.clapper.rssget.RSSFeedInfo;
 import org.clapper.rssget.RSSGetConfiguration;
 import org.clapper.rssget.RSSGetException;
 import org.clapper.rssget.parser.RSSChannel;
@@ -128,21 +129,23 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      * Display the list of <tt>RSSItem</tt> news items to whatever output
      * is defined for the underlying class.
      *
-     * @param channel The channel containing the items to emit. The method
-     *                should emit all the items in the channel; the caller
-     *                is responsible for clearing out any items that should
-     *                not be seen.
+     * @param channel  The channel containing the items to emit. The method
+     *                 should emit all the items in the channel; the caller
+     *                 is responsible for clearing out any items that should
+     *                 not be seen.
+     * @param feedInfo Information about the feed, from the configuration
      *
      * @throws RSSGetException  unable to write output
      */
-    public void displayChannel (RSSChannel channel)
+    public void displayChannel (RSSChannel  channel,
+                                RSSFeedInfo feedInfo)
         throws RSSGetException
     {
 	for (Iterator it = handlers.iterator(); it.hasNext(); )
         {
             HandlerTableEntry entry = (HandlerTableEntry) it.next();
 
-            entry.handler.displayChannel (channel);
+            entry.handler.displayChannel (channel, feedInfo);
         }
     }
     
