@@ -1,0 +1,33 @@
+$Id$
+---------------------------------------------------------------------------
+
+PREREQUISITES:
+
+Before running rssget, you'll need:
+
+1. The Informa library, available at http://informa.sourceforge.net/
+   Rssget has been tested with version 0.5.0.
+
+2. A version of the Jakarta Commons logging library. A version comes
+   with Informa, and it works fine. The official distribution is here:
+   http://jakarta.apache.org/commons/logging.html
+
+3. JDOM. Just use the jdom.jar that comes with Informa.
+
+4. An XML parser. Xerces or JAXP will do.
+
+5. The clapper.org utility library, available at
+   http://www.clapper.org/software/java/util/
+
+6. rssget.jar. (See BUILDING.txt)
+
+Put these jars/classes somewhere, and make sure they're in your CLASSPATH.
+
+To run rssget:
+
+	java org.clapper.rssget.rssget [options] configFile
+
+Run with no arguments for a usage summary.
+
+See the sample configuration file for more details on configuring.
+

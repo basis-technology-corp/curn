@@ -1,0 +1,116 @@
+/*---------------------------------------------------------------------------*\
+  $Id$
+\*---------------------------------------------------------------------------*/
+
+package org.clapper.rssget.informa;
+
+import org.clapper.rssget.*;
+import de.nava.informa.core.*;
+import de.nava.informa.impl.basic.ChannelBuilder;
+import de.nava.informa.parsers.RSSParser;
+import java.net.*;
+import java.util.*;
+
+/**
+ * This class implements the <tt>RSSChannel</tt> interface and defines an
+ * adapter for the {@link <a href="http://informa.sourceforge.net/" Informa}
+ * RSS Parser's <tt>ChannelIF</tt> type.
+ *
+ * @see RSSParserFactory
+ * @see RSSParser
+ * @see RSSChannel
+ * @see RSSItem
+ * @see RSSItemImpl
+ *
+ * @version <tt>$Revision$</tt>
+ */
+public class RSSChannelImpl
+    implements org.clapper.rssget.RSSChannel
+{
+    /*----------------------------------------------------------------------*\
+                           Private Instance Data
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * The real channel object
+     */
+    private ChannelIF channel;
+
+    /*----------------------------------------------------------------------*\
+                                Constructor
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Allocate a new <tt>RSSChannelImpl</tt> object that wraps the specified
+     * Informa <tt>ChannelIF</tt> object.
+     *
+     * @param channelIF  the <tt>ChannelIF</tt> object
+     */
+    RSSChannelImpl (ChannelIF channelIF)
+    {
+        this.channel = channelIF;
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Public Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get a <tt>Collection</tt> of the items in this channel. All objects
+     * in the collection are of type <tt>RSSItem</tt>.
+     *
+     * @return a (new) <tt>Collection</tt> of <tt>RSSItem</tt> objects.
+     *         The collection will be empty (never null) if there are
+     *         no items.
+     */
+    public Collection getItems()
+    {
+        Collection result = new ArrayList();
+        Collection items  = this.channel.getItems();
+
+        for (Iterator it = items.iterator(); it.hasNext(); )
+            result.add (new RSSItemImpl ((ItemIF) it.next()));
+
+        return result;
+    }
+
+    /**
+     * Get the channel's title
+     *
+     * @return the channel's title, or null if there isn't one
+     */
+    public String getTitle()
+    {
+        return this.channel.getTitle();
+    }
+
+    /**
+     * Get the channel's published URL.
+     *
+     * @return the URL, or null if not available
+     */
+    public URL getURL()
+    {
+        return this.channel.getLocation();
+    }
+
+    /**
+     * Get the channel's publication date.
+     *
+     * @return the date, or null if not available
+     */
+    public Date getPublicationDate()
+    {
+        return this.channel.getPubDate();
+    }
+
+    /**
+     * Get the RSS format the channel is using.
+     *
+     * @return the format, or null if not available
+     */
+    public String getRSSFormat()
+    {
+        return this.channel.getFormat().toString();
+    }
+}

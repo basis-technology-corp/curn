@@ -1,0 +1,13 @@
+#!/bin/sh
+
+: ${JAVA_ROOT:=/usr/local/java}
+
+exec $JAVA_HOME/bin/java -classpath \
+$JAVA_ROOT/classes/org-clapper-util.jar:\
+$JAVA_ROOT/classes/informa.jar:\
+$JAVA_ROOT/classes/commons-logging.jar:\
+$JAVA_ROOT/classes/jdom.jar:\
+$JAVA_ROOT/classes/xerces.jar:\
+$JAVA_ROOT/classes/rssget.jar \
+org.clapper.rssget.rssget "${@}"
+

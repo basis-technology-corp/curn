@@ -1,0 +1,20 @@
+$Id$
+---------------------------------------------------------------------------
+
+PREREQUISITES:
+
+Before building rssget, you'll need:
+
+1. ant, version 1.5 or better, available at http://ant.apache.org/
+
+2. The Informa library, available at http://informa.sourceforge.net/
+   Rssget has been tested with version 0.5.0.
+
+3. The clapper.org utility library, available at
+   http://www.clapper.org/software/java/util/
+
+
+BUILDING:
+
+Type "ant dist" in the top-level directory. The code will be compiled to
+the "classes" subdirectory, and you'll get an "rssget.jar" in "dist/lib".

@@ -1,0 +1,103 @@
+<!--
+   Ant build file for clapper.org Java rssget utility
+
+   $Id$
+-->
+
+<project name="util" default="rssget" basedir=".">
+  <description>
+    Build file for "util" Java classes
+  </description>
+
+  <!-- set global properties for this build -->
+
+  <property name="jarname" value="rssget.jar"/>
+  <property name="build" location="classes"/>
+  <property name="dist"  location="dist"/>
+  <property name="build.compiler" value="jikes"/>
+  <property name="build.compiler.emacs" value="true"/>
+  <property name="compile.listfiles" value="no"/>
+
+  <path id="project.class.path">
+    <pathelement location="lib/"/>
+    <pathelement path="${java.class.path}/"/>
+    <pathelement path="classes/"/>
+  </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <depend srcdir="." destdir="${build}"/>
+  </target>
+
+  <patternset id="main.sources">
+    <include name="src/*.java"/>
+    <exclude name="src/*/*.java"/>
+  </patternset>
+
+  <patternset id="parser.impls">
+    <include name="src/*/*.java"/>
+  </patternset>
+
+  <target name="main" depends="init">
+    <!-- Compile the java code from . into ${build} -->
+    <javac srcdir="." 
+	   depend="true"
+	   listfiles="${compile.listfiles}"
+	   destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="main.sources"/>
+    </javac>
+  </target>
+
+  <target name="parser_impls" depends="main">
+    <!-- Compile the java code from . into ${build} -->
+    <javac srcdir="." 
+	   depend="true"
+	   listfiles="${compile.listfiles}"
+	   destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="parser.impls"/>
+    </javac>
+  </target>
+
+  <target name="rssget" depends="parser_impls"/>
+
+  <target name="dist" depends="rssget"
+          description="Generate the distribution">
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/lib/${jarname}" basedir="${build}"/>
+  </target>
+
+  <target name="doc"
+          description="Generate API Javadocs">
+    <mkdir dir="dist/docs/api"/>
+    <javadoc 
+             destdir="dist/docs/api"
+	     sourcepath="../../.."
+             author="true"
+             version="true"
+	     splitindex="true"
+             use="true"
+	     excludepackagenames=""
+	     packagenames="org.clapper.rssget.*"
+	     classpathref="project.class.path"
+             windowtitle="clapper.org rssget utility">
+      <doctitle><![CDATA[<h1>clapper.org rssget Documentation</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2004 Brian M. Clapper. All Rights Reserved.</i>]]></bottom>
+    </javadoc>
+  </target>
+
+  <target name="docs" depends="doc"/>
+  <target name="javadocs" depends="doc"/>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
