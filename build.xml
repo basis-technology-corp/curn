@@ -136,7 +136,7 @@
     </javac>
   </target>
 
-  <target name="main" depends="parser.main">
+  <target name="main" depends="bundles,parser.main">
     <!-- Compile the java code from . into ${build} -->
     <javac srcdir="${src.dir}"
            depend="true"
@@ -145,6 +145,15 @@
       <classpath refid="project.class.path"/>
       <patternset refid="main.sources"/>
     </javac>
+  </target>
+
+  <target name="bundles" 
+          description="Copies resource bundle property files to build dir">
+    <copy todir="${build}">
+      <fileset dir="${src.top}">
+        <include name="**/*.properties"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="parser.builtin" depends="parser.main">
@@ -404,7 +413,12 @@
       <fileset dir="." includes="htmloutput/*HTML.java.optionCheck"/>
     </delete>
 
-    <delete dir="${build}" failonerror="false" includeEmptyDirs="true"/>
-    <delete dir="${dist}" failonerror="false" includeEmptyDirs="true"/>
+    <delete failonerror="false" includeEmptyDirs="true">
+      <fileset dir="${build}"/>
+    </delete>
+
+    <delete failonerror="false" includeEmptyDirs="true">
+      <fileset dir="${dist}"/>
+    </delete>
   </target>
 </project>
