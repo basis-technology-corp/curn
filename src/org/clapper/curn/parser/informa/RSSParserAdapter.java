@@ -32,12 +32,15 @@ import org.clapper.curn.parser.RSSParserException;
 
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ParseException;
+import de.nava.informa.parsers.FeedParser;
 import de.nava.informa.impl.basic.ChannelBuilder;
 
 import org.apache.commons.logging.LogFactory;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * This class implements the <tt>RSSParser</tt> interface and defines an
@@ -99,9 +102,14 @@ public class RSSParserAdapter implements RSSParser
         {
             ChannelBuilder builder = new ChannelBuilder();
             ChannelIF      channel;
+            Reader         reader;
 
-            channel = de.nava.informa.parsers.FeedParser.parse (builder,
-                                                                stream);
+            if (encoding == null)
+                reader = new InputStreamReader (stream);
+            else
+                reader = new InputStreamReader (stream, encoding);
+
+            channel = FeedParser.parse (builder, reader);
 
             return new RSSChannelAdapter (channel);
         }
