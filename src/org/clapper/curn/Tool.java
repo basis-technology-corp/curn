@@ -3,8 +3,10 @@ package org.clapper.rssget;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import java.text.*;
 import org.clapper.util.io.*;
 import org.clapper.util.text.*;
+import org.clapper.util.misc.*;
 import org.clapper.util.config.*;
 
 /**
@@ -24,12 +26,13 @@ import org.clapper.util.config.*;
 */
 public class rssget implements VerboseMessagesHandler
 {
-    private static final String VERSION = "0.1";
+    private static final String VERSION = "0.2";
 
     private RSSGetConfiguration config        = null;
     private boolean             useCache      = true;
     private boolean             showVersion   = false;
     private RSSGetCache         cache         = null;
+    private Date                currentTime   = new Date();
 
     public static void main (String[] args) throws Exception
     {
@@ -52,7 +55,7 @@ public class rssget implements VerboseMessagesHandler
             System.exit (1);
         }
 
-        catch (IllegalArgumentException ex)
+        catch (BadCommandLineException ex)
         {
             System.err.println (ex.getMessage());
             tool.usage();
@@ -86,7 +89,7 @@ public class rssget implements VerboseMessagesHandler
         throws IOException,
                ConfigurationException,
                RSSParserException,
-               IllegalArgumentException
+               BadCommandLineException
         
     {
         //File inpFile = new File(args[0]);
@@ -102,6 +105,7 @@ public class rssget implements VerboseMessagesHandler
         if (useCache)
         {
             cache = new RSSGetCache (this, config);
+            cache.setCurrentTime (currentTime);
             cache.loadCache();
         }
 
@@ -121,7 +125,7 @@ public class rssget implements VerboseMessagesHandler
         throws ConfigurationException,
                IOException,
                FileNotFoundException,
-               IllegalArgumentException
+               BadCommandLineException
     {
         try
         {
@@ -154,6 +158,9 @@ public class rssget implements VerboseMessagesHandler
                 else if (args[i].equals ("-f") || args[i].equals ("--full"))
                     opts.put ("f", "");
 
+                else if (args[i].equals ("-t") || args[i].equals ("--time"))
+                    opts.put ("t", args[++i]);
+
                 else if (args[i].equals ("-V") || args[i].equals ("--version"))
                     opts.put ("V", "");
 
@@ -161,15 +168,15 @@ public class rssget implements VerboseMessagesHandler
                     opts.put ("v", args[++i]);
 
                 else
-                    throw new IllegalArgumentException ("Unknown option: "
-                                                      + args[i]);
+                    throw new BadCommandLineException ("Unknown option: "
+                                                     + args[i]);
 
 
                 i++;
             }
 
             if ((args.length - i) > 1)
-                throw new IllegalArgumentException ("Too many parameters.");
+                throw new BadCommandLineException ("Too many parameters.");
                 
             config = new RSSGetConfiguration (args[i]);
 
@@ -206,6 +213,10 @@ public class rssget implements VerboseMessagesHandler
                         config.setSummarizeOnlyFlag (false);
                         break;
 
+                    case 't':   // --time
+                        currentTime = parseDateTime ((String) opts.get (opt));
+                        break;
+
                     case 'V':   // --version
                         showVersion = true;
                         break;
@@ -219,7 +230,7 @@ public class rssget implements VerboseMessagesHandler
 
                         catch (NumberFormatException ex)
                         {
-                            throw new IllegalArgumentException
+                            throw new BadCommandLineException
                                                ("Bad parameter \""
                                               + arg
                                               + "\" to --verbose (-v) option");
@@ -234,8 +245,90 @@ public class rssget implements VerboseMessagesHandler
 
         catch (ArrayIndexOutOfBoundsException ex)
         {
-            throw new IllegalArgumentException ("Missing parameter(s)");
+            throw new BadCommandLineException ("Missing parameter(s)");
         }
+    }
+
+    private Date parseDateTime (String s)
+        throws BadCommandLineException
+    {
+        class DateParseInfo
+        {
+            DateFormat format;
+            boolean    timeOnly;
+
+            DateParseInfo (String fmtString, boolean timeOnly)
+            {
+                this.format   = new SimpleDateFormat (fmtString);
+                this.timeOnly = timeOnly;
+            }
+        }
+
+        DateParseInfo[] formats = new DateParseInfo[]
+        {
+            new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false),
+            new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false),
+            new DateParseInfo ("yyyy/MM/dd hh:mm a", false),
+            new DateParseInfo ("yyyy/MM/dd hh:mm", false),
+            new DateParseInfo ("yyyy/MM/dd h:mm a", false),
+            new DateParseInfo ("yyyy/MM/dd h:mm", false),
+            new DateParseInfo ("yyyy/MM/dd hh a", false),
+            new DateParseInfo ("yyyy/MM/dd hh", false),
+            new DateParseInfo ("yyyy/MM/dd h a", false),
+            new DateParseInfo ("yyyy/MM/dd h", false),
+            new DateParseInfo ("yyyy/MM/dd", false),
+            new DateParseInfo ("yy/MM/dd", false),
+            new DateParseInfo ("hh:mm:ss a", true),
+            new DateParseInfo ("hh:mm:ss", true),
+            new DateParseInfo ("hh:mm a", true),
+            new DateParseInfo ("hh:mm", true),
+            new DateParseInfo ("h:mm a", true),
+            new DateParseInfo ("h:mm", true),
+            new DateParseInfo ("hh a", true),
+            new DateParseInfo ("hh", true),
+            new DateParseInfo ("h a", true),
+            new DateParseInfo ("h", true)
+        };
+
+        Date date = null;
+
+        for (int i = 0; i < formats.length; i++)
+        {
+            try
+            {
+                date = formats[i].format.parse (s);
+                if (date != null)
+                {
+                    if (formats[i].timeOnly)
+                    {
+                        // The date pattern specified only a time, which
+                        // means the date part defaulted to the epoch. Make
+                        // it today, instead.
+
+                        Calendar cal = Calendar.getInstance();
+                        Calendar calNow = Calendar.getInstance();
+
+                        calNow.setTime (new Date());
+                        cal.setTime (date);
+                        cal.set (calNow.get (Calendar.YEAR),
+                                 calNow.get (Calendar.MONTH),
+                                 calNow.get (Calendar.DAY_OF_MONTH));
+                        date = cal.getTime();
+                    }
+
+                    break;
+                }
+            }
+
+            catch (ParseException ex)
+            {
+            }
+        }
+
+        if (date == null)
+            throw new BadCommandLineException ("Bad date/time: \"" + s + "\"");
+
+        return date;
     }
 
     private void usage()
@@ -246,13 +339,37 @@ public class rssget implements VerboseMessagesHandler
 "",
 "OPTIONS",
 "-f, --full        For each item, display the URL, title and description.",
-"                  (The opposite of --summary.)",
+"                    (The opposite of --summary.)",
 "-C, --nocache     Don't use a cache file at all.",
 "-u, --noupdate    Read the cache, but don't update it",
 "-Q, --noquiet     Emit information about sites with no information",
 "-q, --quiet       Be quiet about sites with no information",
 "-s, --summary     For each item, display only the URL and title. Omit the",
-"                  description. (The opposite of --full.)",
+"                    description. (The opposite of --full.)",
+"-t datetime",
+"--time datetime   For the purposes of cache expiration, pretend the current",
+"                    time is <datetime>. <datetime> may be specified in any",
+"                    of the following forms:",
+"                    yyyy/mm/dd hh:mm:ss [am/pm]",
+"                    yyyy/mm/dd hh:mm:ss",
+"                    yyyy/mm/dd hh:mm [am/pm]",
+"                    yyyy/mm/dd hh:mm",
+"                    yyyy/mm/dd h:mm [am/pm]",
+"                    yyyy/mm/dd h:mm",
+"                    yyyy/mm/dd hh",
+"                    yyyy/mm/dd h",
+"                    yyyy/mm/dd",
+"                    yy/mm/dd",
+"                    hh:mm:ss a",
+"                    hh:mm:ss",
+"                    hh:mm a",
+"                    hh:mm",
+"                    h:mm a",
+"                    h:mm",
+"                    hh a",
+"                    hh",
+"                    h a",
+"                    h",
 "-v level          Set the verbosity (debug) level. Default: 0 (off)",
 "--verbose level",
 "-V, --version     Display this tool's version"

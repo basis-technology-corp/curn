@@ -43,6 +43,11 @@ public class RSSGetCache implements Serializable
      */
     private boolean modified = false;
 
+    /**
+     * Current time
+     */
+    private long currentTime = System.currentTimeMillis();
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -173,6 +178,18 @@ public class RSSGetCache implements Serializable
         modified = true;
     }
 
+    /**
+     * Set the cache's notion of the current time, which affects how elements
+     * are pruned when loaded from the cache. Only meaningful if set before
+     * the <tt>loadCache()</tt> method is called. If this method is never
+     * called, then the cache uses the current time.
+     *
+     * @param datetime  the time to use
+     */
+    public void setCurrentTime (Date datetime)
+    {
+        this.currentTime = datetime.getTime();
+    }
 
     /*----------------------------------------------------------------------*\
                               Private Methods
@@ -183,7 +200,9 @@ public class RSSGetCache implements Serializable
      */
     private void pruneCache()
     {
-        long now = System.currentTimeMillis();
+        vh.verbose (3,
+                    "Cache's notion of current time: "
+                  + new Date (currentTime));
 
         for (Iterator itKeys = cacheMap.keySet().iterator();
              itKeys.hasNext(); )
@@ -222,7 +241,18 @@ public class RSSGetCache implements Serializable
                             "\tcached on: " + new Date (timestamp).toString());
                 vh.verbose (3, "\texpires: " + new Date (expires).toString());
 
-                if (expires < now)
+                if (timestamp > currentTime)
+                {
+                    vh.verbose (2,
+                                "Cache time for URL \""
+                              + itemUrlString
+                              + "\" is in the future, relative to cache's "
+                              + "notion of current time. Deleting cache "
+                              + "entry.");
+                    itKeys.remove();
+                }
+
+                else if (expires < currentTime)
                 {
                     vh.verbose (2,
                                 "Cache time for URL \""
