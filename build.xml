@@ -80,6 +80,7 @@
   <patternset id="parser.main">
     <include name="parser/*.java"/>
     <exclude name="parser/*/*.java"/>
+    <exclude name="parser/tester.java"/>
   </patternset>
 
   <patternset id="parser.builtin">
@@ -88,6 +89,10 @@
 
   <patternset id="parser.informa">
     <include name="parser/informa/*.java"/>
+  </patternset>
+
+  <patternset id="parser.testers">
+    <include name="parser/tester.java"/>
   </patternset>
 
   <patternset id="htmloutput">
@@ -124,7 +129,7 @@
   <target name="all" depends="curn"/>
 
   <target name="curn" 
-          depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info"
+          depends="main,parser.builtin,parser.informa,htmloutput,email,-build.info,parser.testers"
           description="Compiles the source"/>
 
   <target name="parser.main" depends="init">
@@ -201,6 +206,16 @@
   <target name="-check.xmlc.exists">
     <available classname="org.enhydra.xml.xmlc.taskdef.Xmlc"
                property="xmlc.exists" value="true"/>
+  </target>
+
+  <target name="parser.testers">
+    <javac srcdir="${src.dir}"
+           depend="true"
+           listfiles="${compile.listfiles}"
+           destdir="${build}">
+      <classpath refid="project.class.path"/>
+      <patternset refid="parser.testers"/>
+    </javac>
   </target>
 
   <target name="-check.xmlc" depends="-check.xmlc.exists" unless="xmlc.exists">
