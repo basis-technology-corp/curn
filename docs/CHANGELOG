@@ -4,7 +4,7 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 1.5.3 (...)
+Version 1.5.3 (16 October, 2004)
 
 - curn now sets an appropriate "User-Agent" HTTP header on HTTP requests,
   instead of defaulting to whatever the Java VM uses.
