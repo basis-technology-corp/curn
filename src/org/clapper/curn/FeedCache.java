@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-
 import java.net.URL;
 import java.util.Map;
 import java.util.HashMap;
@@ -44,7 +43,7 @@ import java.util.TreeSet;
 
 import org.clapper.curn.util.Util;
 
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 /**
  * Defines the in-memory format of the <i>curn</i> cache, and provides

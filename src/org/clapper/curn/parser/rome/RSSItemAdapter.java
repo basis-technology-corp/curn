@@ -29,7 +29,7 @@ package org.clapper.curn.parser.rome;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.ParserUtil;
 
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndCategory;
@@ -37,7 +37,6 @@ import com.sun.syndication.feed.synd.SyndContentI;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-
 import java.util.Date;
 import java.util.Collection;
 import java.util.ArrayList;

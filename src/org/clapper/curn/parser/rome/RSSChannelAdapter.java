@@ -29,14 +29,13 @@ package org.clapper.curn.parser.rome;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.ParserUtil;
 
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 import com.sun.syndication.feed.synd.SyndFeedI;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;

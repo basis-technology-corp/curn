@@ -29,7 +29,7 @@ package org.clapper.curn;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 /**
  * Contains parsed configuration information for an output handler,

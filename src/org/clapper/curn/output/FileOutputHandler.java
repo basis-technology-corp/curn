@@ -32,15 +32,13 @@ import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
-
 import org.clapper.curn.parser.RSSChannel;
-
-import org.clapper.util.text.HTMLUtil;
-import org.clapper.util.text.Unicode;
-import org.clapper.util.misc.Logger;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
+import org.clapper.util.logging.Logger;
+import org.clapper.util.text.HTMLUtil;
+import org.clapper.util.text.Unicode;
 
 import java.io.IOException;
 import java.io.InputStream;

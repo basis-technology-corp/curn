@@ -33,20 +33,17 @@ import org.clapper.curn.EmailOutputHandler;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.Version;
-
 import org.clapper.curn.parser.RSSChannel;
 
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.logging.Logger;
 import org.clapper.util.mail.EmailMessage;
 import org.clapper.util.mail.EmailTransport;
 import org.clapper.util.mail.SMTPEmailTransport;
 import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
 
-import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.misc.Logger;
-
 import java.io.InputStream;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;

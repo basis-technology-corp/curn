@@ -42,9 +42,9 @@ import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
 
-import org.clapper.util.io.FileUtil;
-import org.clapper.util.misc.Logger;
 import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.io.FileUtil;
+import org.clapper.util.logging.Logger;
 
 /**
  * <p><i>curn</i>: Customizable Utilitarian RSS Notifier.</p>

@@ -29,7 +29,7 @@ package org.clapper.curn;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 /**
  * This class provides a factory for retrieving a specific

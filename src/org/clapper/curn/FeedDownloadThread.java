@@ -39,7 +39,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
-
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,22 +53,17 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.MalformedURLException;
-
 import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.io.FileUtil;
-import org.clapper.util.text.TextUtil;
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 import org.clapper.util.regex.RegexUtil;
 import org.clapper.util.regex.RegexException;
+import org.clapper.util.text.TextUtil;
 
 class FeedDownloadThread extends Thread
 {

@@ -32,18 +32,14 @@ import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
-
 import org.clapper.curn.output.FileOutputHandler;
-
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
-
 import org.clapper.util.io.FileUtil;
-
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,7 +47,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -195,7 +190,7 @@ import org.apache.bsf.BSFManager;
  *
  *   <tr valign="top">
  *     <td>logger</td>
- *     <td>{@link Logger org.clapper.util.misc.Logger}</td>
+ *     <td>{@link Logger org.clapper.util.logging.Logger}</td>
  *     <td>A <tt>Logger</tt> object, useful for logging messages to
  *         the <i>curn</i> log file.</td>
  *   </tr>

@@ -44,11 +44,10 @@ import java.net.MalformedURLException;
 
 import org.clapper.curn.util.Util;
 
-import org.clapper.util.misc.Logger;
-
 import org.clapper.util.config.Configuration;
 import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.logging.Logger;
 
 /**
  * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt> class (part of

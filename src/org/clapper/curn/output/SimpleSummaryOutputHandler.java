@@ -31,18 +31,15 @@ import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-
 import org.clapper.curn.parser.RSSChannel;
 
-import org.clapper.util.io.WordWrapWriter;
-import org.clapper.util.misc.Logger;
-
 import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.logging.Logger;
 
 import java.io.IOException;
 import java.io.FileWriter;
 import java.io.File;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;

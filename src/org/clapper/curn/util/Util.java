@@ -33,7 +33,7 @@ import java.util.MissingResourceException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.clapper.util.misc.Logger;
+import org.clapper.util.logging.Logger;
 
 /**
  * Miscellaneous utility methods that are shared among classes in this package,

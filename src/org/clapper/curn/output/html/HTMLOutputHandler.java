@@ -32,35 +32,29 @@ import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
-
 import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
-
+import org.clapper.util.logging.Logger;
 import org.clapper.util.text.HTMLUtil;
 import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.Unicode;
-
-import org.clapper.util.misc.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-
+import java.net.URL;
+import java.net.InetAddress;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Collection;
 import java.util.Iterator;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import java.net.URL;
-import java.net.InetAddress;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

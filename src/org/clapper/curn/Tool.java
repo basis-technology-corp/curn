@@ -30,7 +30,8 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.StringWriter;
 import java.io.PrintWriter;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -40,17 +41,14 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import org.clapper.util.misc.BuildInfo;
-import org.clapper.util.misc.Logger;
 import org.clapper.util.cmdline.CommandLineUtility;
 import org.clapper.util.cmdline.CommandLineException;
 import org.clapper.util.cmdline.CommandLineUsageException;
 import org.clapper.util.cmdline.UsageInfo;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.logging.Logger;
+import org.clapper.util.misc.BuildInfo;
 
 /**
  * <p><i>curn</i>: Customizable Utilitarian RSS Notifier.</p>
