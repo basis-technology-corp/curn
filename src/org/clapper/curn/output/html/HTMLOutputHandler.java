@@ -10,7 +10,6 @@ import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.ConfigFile;
-import org.clapper.curn.Logger;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -19,6 +18,8 @@ import org.clapper.util.config.NoSuchSectionException;
 
 import org.clapper.util.text.Unicode;
 import org.clapper.util.text.TextUtils;
+
+import org.clapper.util.misc.Logger;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
