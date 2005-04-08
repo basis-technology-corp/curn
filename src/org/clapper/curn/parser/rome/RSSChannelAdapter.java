@@ -27,6 +27,7 @@
 package org.clapper.curn.parser.rome;
 
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.ParserUtil;
 
 import org.clapper.util.logging.Logger;
@@ -98,12 +99,11 @@ public class RSSChannelAdapter implements RSSChannel
      *         The collection will be empty (never null) if there are
      *         no items.
      */
-    public Collection getItems()
+    public Collection<RSSItem> getItems()
     {
-        Collection result = new ArrayList();
-        List items  = syndFeed.getEntries();
+        Collection<RSSItem> result = new ArrayList<RSSItem>();
 
-        for (Iterator it = items.iterator(); it.hasNext(); )
+        for (Iterator it = syndFeed.getEntries().iterator(); it.hasNext(); )
             result.add (new RSSItemAdapter ((SyndEntry) it.next()));
 
         return result;
@@ -117,9 +117,14 @@ public class RSSChannelAdapter implements RSSChannel
      *
      * @param newItems  new collection of <tt>RSSItem</tt> items.
      */
-    public void setItems (Collection newItems)
+    public void setItems (Collection<? extends RSSItem> newItems)
     {
-        syndFeed.setEntries (new ArrayList (newItems));
+        // We're storing values from a genericized collection into a
+        // non-genericized collection. We have to copy the items to a new
+        // collection. Use of a Collection<Object> avoids a compiler
+        // "unchecked cast" warning.
+
+        syndFeed.setEntries (new ArrayList<Object> (newItems));
     }
 
     /**

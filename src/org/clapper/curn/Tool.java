@@ -80,11 +80,11 @@ public class Tool extends CommandLineUtility
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static Collection DATE_FORMATS;
+    private static Collection<DateParseInfo> DATE_FORMATS;
 
     static
     {
-        DATE_FORMATS = new ArrayList();
+        DATE_FORMATS = new ArrayList<DateParseInfo>();
 
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false));
         DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false));
@@ -119,18 +119,18 @@ public class Tool extends CommandLineUtility
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private String      configPath       = null;
-    private ConfigFile  config           = null;
-    private boolean     useCache         = true;
-    private Date        currentTime      = new Date();
-    private Collection  emailAddresses   = new ArrayList();
-    private boolean     optShowBuildInfo = false;
-    private boolean     optShowVersion   = false;
-    private Boolean     optShowDates     = null;
-    private Boolean     optShowAuthors   = null;
-    private Boolean     optRSSVersion    = null;
-    private Boolean     optUpdateCache   = null;
-    private int         maxThreads       = 0;
+    private String              configPath       = null;
+    private ConfigFile          config           = null;
+    private boolean             useCache         = true;
+    private Date                currentTime      = new Date();
+    private Collection<String>  emailAddresses   = new ArrayList<String>();
+    private boolean             optShowBuildInfo = false;
+    private boolean             optShowVersion   = false;
+    private Boolean             optShowDates     = null;
+    private Boolean             optShowAuthors   = null;
+    private Boolean             optRSSVersion    = null;
+    private Boolean             optUpdateCache   = null;
+    private int                 maxThreads       = 0;
 
     /**
      * For log messages
@@ -204,9 +204,9 @@ public class Tool extends CommandLineUtility
      * @throws NoSuchElementException     overran the iterator (i.e., missing
      *                                    parameter) 
      */
-    protected void parseCustomOption (char     shortOption,
-                                      String   longOption,
-                                      Iterator it)
+    protected void parseCustomOption (char             shortOption,
+                                      String           longOption,
+                                      Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
@@ -245,11 +245,11 @@ public class Tool extends CommandLineUtility
                 break;
 
             case 't':           // --time
-                currentTime = parseDateTime ((String) it.next());
+                currentTime = parseDateTime (it.next());
                 break;
 
             case 'T':           // --threads
-                String arg = (String) it.next();
+                String arg = it.next();
 
                 try
                 {
@@ -328,7 +328,7 @@ public class Tool extends CommandLineUtility
      *                                    safe for subclass implementations of
      *                                    this method not to handle it
      */
-    protected void processPostOptionCommandLine (Iterator it)
+    protected void processPostOptionCommandLine (Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
@@ -337,10 +337,10 @@ public class Tool extends CommandLineUtility
 
         if (! (optShowBuildInfo || optShowVersion))
         {
-            configPath = (String) it.next();
+            configPath = it.next();
 
             while (it.hasNext())
-                emailAddresses.add ((String) it.next());
+                emailAddresses.add (it.next());
         }
     }
 
@@ -429,10 +429,9 @@ public class Tool extends CommandLineUtility
             sampleDate = new Date();
         }
 
-        Set printed = new HashSet();
-        for (Iterator it = DATE_FORMATS.iterator(); it.hasNext(); )
+        Set<String> printed = new HashSet<String>();
+        for (DateParseInfo dpi : DATE_FORMATS)
         {
-            DateParseInfo dpi = (DateParseInfo) it.next();
             String s = dpi.formatDate (sampleDate);
             if (! printed.contains (s))
             {
@@ -562,11 +561,10 @@ public class Tool extends CommandLineUtility
     {
         Date date = null;
 
-        for (Iterator it = DATE_FORMATS.iterator(); it.hasNext(); )
+        for (DateParseInfo dpi : DATE_FORMATS)
         {
             try
             {
-                DateParseInfo dpi = (DateParseInfo) it.next();
                 date = dpi.format.parse (s);
                 if (date != null)
                 {

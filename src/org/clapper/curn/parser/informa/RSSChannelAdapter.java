@@ -1,3 +1,4 @@
+
 /*---------------------------------------------------------------------------*\
   $Id$
   ---------------------------------------------------------------------------
@@ -27,6 +28,7 @@
 package org.clapper.curn.parser.informa;
 
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
@@ -89,12 +91,11 @@ public class RSSChannelAdapter implements RSSChannel
      *         The collection will be empty (never null) if there are
      *         no items.
      */
-    public Collection getItems()
+    public Collection<RSSItem> getItems()
     {
-        Collection result = new ArrayList();
-        Collection items  = this.channel.getItems();
+        Collection<RSSItem> result = new ArrayList<RSSItem>();
 
-        for (Iterator it = items.iterator(); it.hasNext(); )
+        for (Iterator it = channel.getItems().iterator(); it.hasNext(); )
             result.add (new RSSItemAdapter ((ItemIF) it.next()));
 
         return result;
@@ -108,16 +109,25 @@ public class RSSChannelAdapter implements RSSChannel
      *
      * @param newItems  new collection of <tt>RSSItem</tt> items.
      */
-    public void setItems (Collection newItems)
+    public void setItems (Collection<? extends RSSItem> newItems)
     {
-        Collection items  = new ArrayList (this.channel.getItems());
-        Iterator   it;
+        Collection<ItemIF> items = new ArrayList<ItemIF>();
+        Iterator           it;
 
-        for (it = items.iterator(); it.hasNext(); )
-            this.channel.removeItem ((ItemIF) it.next());
+        // Can't use generics with Informa classes, since they don't
+        // provide generic-based prototypes. Copy the items from the
+        // Informa channel to a separate list, so we can iterate over that
+        // list to remove them from the Informa one. (This prevents a
+        // ConcurrentModificationException.)
 
-        for (it = newItems.iterator(); it.hasNext(); )
-            this.channel.addItem (((RSSItemAdapter) it.next()).getItemIF());
+        for (it = channel.getItems().iterator(); it.hasNext(); )
+            items.add ((ItemIF) it.next());
+
+        for (ItemIF item : items)
+            this.channel.removeItem (item);
+
+        for (RSSItem newItem : newItems)
+            this.channel.addItem (((RSSItemAdapter) newItem).getItemIF());
     }
 
     /**

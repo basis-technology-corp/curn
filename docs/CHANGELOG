@@ -4,8 +4,10 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 1.5.8 (...)
+Version 2.0 (...)
 
+- Now requires Java 1.5.0 JDK/JRE.
+- Various classes converted to use JDK 1.5 generics.
 - MiniRSSParser now handles (and ignores) empty <link> elements in
   RSS version 0.92, RSS version 2.0, and Atom XML files.
 

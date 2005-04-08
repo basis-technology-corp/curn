@@ -73,8 +73,8 @@ public class RSSParserFactory
         try
         {
             Class parserClass = Class.forName (className);
-            Constructor constructor = parserClass.getConstructor (null);
-            return (RSSParser) constructor.newInstance (null);
+            Constructor constructor = parserClass.getConstructor();
+            return (RSSParser) constructor.newInstance();
         }
 
         catch (ClassNotFoundException ex)

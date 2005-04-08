@@ -59,6 +59,7 @@ source and documentation packages.
   <property name="build.info.file"
             value="${build}/${pkg.path}/BuildInfoBundle.properties"/>
   <property name="javac.listfiles" value="no"/>
+  <property name="javac_source_opt" value="1.5"/>
   <property name="code_jar_name" value="curn"/>
   <property name="code_jar_file" value="${code_jar_name}.jar"/>
   <property name="code_jar_dir" value="${dist}/lib"/>
@@ -122,7 +123,7 @@ source and documentation packages.
 
   <target name="main">
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -132,6 +133,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
 
@@ -191,7 +194,7 @@ source and documentation packages.
 	  if="informa.exists">
     <echo level="verbose">Found Informa parser. Compiling Informa classes.</echo>
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -201,6 +204,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
 
@@ -241,7 +246,7 @@ source and documentation packages.
 	  if="rome.exists">
     <echo level="verbose">Found Rome parser. Compiling Rome classes.</echo>
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -251,6 +256,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
 
@@ -274,7 +281,7 @@ source and documentation packages.
       First the local targets.
     -->
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -284,6 +291,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
 
@@ -352,6 +361,8 @@ source and documentation packages.
           packagedir=".">
       <arg value="-delete-class"/>
       <arg value="mockup"/>
+      <arg value="-extends"/>
+      <arg value="org.clapper.curn.output.html.HTMLBase"/>
     </xmlc>
 
     <replaceregexp match="^package.*;"
@@ -371,7 +382,7 @@ source and documentation packages.
     -->
 
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -381,13 +392,15 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pno-shadow"/>
       <compilerarg compiler="jikes" value="-nowarn"/>
 
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+
       <classpath refid="project.class.path"/>
       <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
 
     </javac>
 
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -397,6 +410,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
       <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
@@ -428,7 +443,7 @@ source and documentation packages.
   <target name="output.script" depends="-check.bsf" if="bsf.exists">
 
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -438,6 +453,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
 
@@ -487,7 +504,7 @@ source and documentation packages.
   <target name="email" depends="-check.email" if="email.exists">
     <echo level="verbose">Found mail classes. Compiling mail support.</echo>
     <javac srcdir="${javac.src.dir}"
-	   source="1.4"
+	   source="${javac_source_opt}"
            depend="true"
            listfiles="${javac.listfiles}"
            destdir="${build}">
@@ -497,6 +514,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Punused-package-imports"/>
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
+
+      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
 
       <classpath refid="project.class.path"/>
 
@@ -553,7 +572,7 @@ source and documentation packages.
     <javadoc
              destdir="${javadocs_api_dir}"
              sourcepath="${src.top}"
-	     source="1.4"
+	     source="${javac_source_opt}"
 	     breakiterator="true"
              author="true"
              version="true"

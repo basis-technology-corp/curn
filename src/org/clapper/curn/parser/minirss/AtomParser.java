@@ -153,7 +153,7 @@ public class AtomParser extends ParserCommon
                               Attributes attributes)
         throws SAXException
     {
-        ElementStackEntry entry = (ElementStackEntry) elementStack.peek();
+        ElementStackEntry entry = elementStack.peek();
         Object container = entry.getContainer();
 
         if (elementName.equals ("feed"))

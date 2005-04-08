@@ -321,18 +321,29 @@ public class ScriptOutputHandler extends FileOutputHandler
         }
     }
 
+    /**
+     * Type alias
+     */
+    private class ChannelList extends ArrayList<ChannelWrapper>
+    {
+        ChannelList()
+        {
+            super();
+        }
+    }
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private BSFManager    bsfManager     = null;
-    private ConfigFile    config         = null;
-    private Collection    channels       = new ArrayList();
-    private String        scriptPath     = null;
-    private String        scriptString   = null;
-    private StringBuffer  mimeTypeBuffer = new StringBuffer();
-    private String        language       = null;
-    private Logger        scriptLogger   = null;
+    private BSFManager                 bsfManager     = null;
+    private ConfigFile                 config         = null;
+    private Collection<ChannelWrapper> channels       = new ChannelList();
+    private String                     scriptPath     = null;
+    private String                     scriptString   = null;
+    private StringBuffer               mimeTypeBuffer = new StringBuffer();
+    private String                     language       = null;
+    private Logger                     scriptLogger   = null;
 
     /**
      * For logging
@@ -475,7 +486,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         channel.setTitle (convert (channel.getTitle()));
 
-        Collection items = channel.getItems();
+        Collection<RSSItem> items = channel.getItems();
         if ((items != null) && (items.size() > 0))
         {
             for (Iterator it = items.iterator(); it.hasNext(); )

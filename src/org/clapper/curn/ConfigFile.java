@@ -117,7 +117,8 @@ public class ConfigFile extends Configuration
     /**
      * Legal values
      */
-    private static final Map LEGAL_SORT_BY_VALUES = new HashMap();
+    private static final Map<String,Integer> LEGAL_SORT_BY_VALUES
+        = new HashMap<String,Integer>();
     static
     {
         LEGAL_SORT_BY_VALUES.put ("none",
@@ -153,26 +154,26 @@ public class ConfigFile extends Configuration
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private File        cacheFile             = null;
-    private int         defaultCacheDays      = DEF_DAYS_TO_CACHE;
-    private boolean     updateCache           = true;
-    private boolean     summaryOnly           = false;
-    private boolean     showRSSFormat         = false;
-    private boolean     showDates             = false;
-    private Collection  feeds                 = new ArrayList();
-    private Map         feedMap               = new HashMap();
-    private String      parserClassName       = DEF_PARSER_CLASS_NAME;
-    private List        outputHandlers        = new ArrayList();
-    private Map         outputHandlerSections = new HashMap();
-    private String      smtpHost              = DEF_SMTP_HOST;
-    private String      emailSender           = null;
-    private String      emailSubject          = DEF_EMAIL_SUBJECT;
-    private boolean     showAuthors           = false;
-    private boolean     getGzippedFeeds       = true;
-    private int         defaultSortBy         = DEF_SORT_BY;
-    private int         maxThreads            = DEF_MAX_THREADS;
-    private String      defaultUserAgent      = null;
-    private int         maxSummarySize        = DEF_MAX_SUMMARY_SIZE;
+    private File cacheFile = null;
+    private int defaultCacheDays = DEF_DAYS_TO_CACHE;
+    private boolean updateCache = true;
+    private boolean summaryOnly = false;
+    private boolean showRSSFormat = false;
+    private boolean showDates = false;
+    private Collection<FeedInfo> feeds = new ArrayList<FeedInfo>();
+    private Map<String, FeedInfo> feedMap = new HashMap<String, FeedInfo>();
+    private String parserClassName = DEF_PARSER_CLASS_NAME;
+    private List<ConfiguredOutputHandler> outputHandlers
+                                 = new ArrayList<ConfiguredOutputHandler>();
+    private String smtpHost = DEF_SMTP_HOST;
+    private String emailSender = null;
+    private String emailSubject = DEF_EMAIL_SUBJECT;
+    private boolean showAuthors = false;
+    private boolean getGzippedFeeds = true;
+    private int defaultSortBy = DEF_SORT_BY;
+    private int maxThreads = DEF_MAX_THREADS;
+    private String defaultUserAgent = null;
+    private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
 
     /**
      * For log messages
@@ -277,7 +278,7 @@ public class ConfigFile extends Configuration
      *         <tt>ConfiguredOutputHandler</tt> objects. The collection will
      *         be empty, but never null, if no output handlers were configured.
      */
-    public Collection getOutputHandlers()
+    public Collection<ConfiguredOutputHandler> getOutputHandlers()
     {
         return Collections.unmodifiableList (outputHandlers);
     }
@@ -594,7 +595,7 @@ public class ConfigFile extends Configuration
      * @see #getFeedInfoFor(String)
      * @see #getFeedInfoFor(URL)
      */
-    public Collection getFeeds()
+    public Collection<FeedInfo> getFeeds()
     {
         return Collections.unmodifiableCollection (feeds);
     }
@@ -670,11 +671,8 @@ public class ConfigFile extends Configuration
 
         // Process the remaining sections. Skip ones we don't recognize.
 
-        for (Iterator it = getSectionNames (new ArrayList()).iterator();
-             it.hasNext(); )
+        for (String sectionName : getSectionNames())
         {
-            String sectionName = (String) it.next();
-
             if (sectionName.startsWith (FEED_SECTION_PREFIX))
                 processFeedSection (sectionName);
 
@@ -819,8 +817,8 @@ public class ConfigFile extends Configuration
     {
         FeedInfo    feedInfo = null;
         String      feedURLString = null;
-        Collection  varNames = getVariableNames (sectionName, new ArrayList());
-        Collection  preparseEditCommands = new ArrayList();
+        Collection<String> varNames = getVariableNames (sectionName);
+        Collection<String> preparseEditCommands = new ArrayList<String>();
         String      saveAs = null;
         boolean     saveOnly = false;
         String      s;
@@ -1020,13 +1018,9 @@ public class ConfigFile extends Configuration
 
         if (! getOptionalBooleanValue (sectionName, VAR_DISABLED, false))
         {
-            Iterator it = getVariableNames (sectionName, new ArrayList())
-                        .iterator();
-
-            while (it.hasNext())
+            
+            for (String variableName : getVariableNames (sectionName))
             {
-                String variableName = (String) it.next();
-
                 // Skip the ones we've already processed.
 
                 if (variableName.equals (VAR_DISABLED))

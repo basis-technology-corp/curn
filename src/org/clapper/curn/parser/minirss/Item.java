@@ -46,14 +46,14 @@ public class Item extends RSSItem
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private String      title          = null;
-    private URL         url            = null;
-    private String      summary        = null;
-    private Date        pubDate        = null;
-    private Collection  categories     = null;
-    private String      author         = null;
-    private Channel     channel        = null;
-    private String      id             = null;
+    private String             title          = null;
+    private URL                url            = null;
+    private String             summary        = null;
+    private Date               pubDate        = null;
+    private Collection<String> categories     = null;
+    private String             author         = null;
+    private Channel            channel        = null;
+    private String             id             = null;
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -182,7 +182,7 @@ public class Item extends RSSItem
     public void addCategory (String category)
     {
         if (categories == null)
-            categories = new ArrayList();
+            categories = new ArrayList<String>();
 
         categories.add (category);
     }
@@ -193,7 +193,7 @@ public class Item extends RSSItem
      * @return a <tt>Collection</tt> of category strings (<tt>String</tt>
      *         objects) or null if not applicable
      */
-    public Collection getCategories()
+    public Collection<String> getCategories()
     {
         return categories;
     }

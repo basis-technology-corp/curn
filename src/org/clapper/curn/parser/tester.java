@@ -73,8 +73,8 @@ public class tester
         }
 
         Class parserClass = Class.forName (args[0]);
-        Constructor constructor = parserClass.getConstructor (null);
-        RSSParser parser = (RSSParser) constructor.newInstance (null);
+        Constructor constructor = parserClass.getConstructor();
+        RSSParser parser = (RSSParser) constructor.newInstance();
 
         for (int i = 1; i < args.length; i++)
         {

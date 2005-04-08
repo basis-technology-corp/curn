@@ -58,7 +58,8 @@ class ParserCommon extends DefaultHandler
     /**
      * Element stack. Contains ElementStackEntry objects.
      */
-    protected Stack elementStack = new Stack();
+    protected Stack<ElementStackEntry> elementStack =
+          new Stack<ElementStackEntry>();
 
     /*----------------------------------------------------------------------*\
                            Private Instance Data
@@ -102,7 +103,7 @@ class ParserCommon extends DefaultHandler
             // same XML element--which is permitted by the SAX parser
             // interface.
 
-            ElementStackEntry entry = (ElementStackEntry) elementStack.peek();
+            ElementStackEntry entry = elementStack.peek();
             StringBuffer      buf   = entry.getCharBuffer();
             ParserUtil.normalizeCharacterData (ch, start, length, buf);
         }

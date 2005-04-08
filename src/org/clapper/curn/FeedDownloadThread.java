@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,7 +93,7 @@ class FeedDownloadThread extends Thread
                                Inner Classes
     \*----------------------------------------------------------------------*/ 
 
-    private class ItemComparator implements Comparator
+    private class ItemComparator implements Comparator<RSSItem>
     {
         private Date  now = new Date();
         private int   sortBy;
@@ -102,11 +103,9 @@ class FeedDownloadThread extends Thread
             this.sortBy = sortBy;
         }
 
-        public int compare (Object o1, Object o2)
+        public int compare (RSSItem i1, RSSItem i2)
         {
             int      cmp = 0;
-            RSSItem  i1  = (RSSItem) o1;
-            RSSItem  i2  = (RSSItem) o2;
 
             switch (sortBy)
             {
@@ -888,12 +887,12 @@ class FeedDownloadThread extends Thread
                MalformedURLException,
                RegexException
     {
-        Collection  items;
-        Iterator    it;
-        String      titleOverride = feedInfo.getTitleOverride();
-        boolean     pruneURLs = feedInfo.pruneURLs();
-        String      editCmd = feedInfo.getItemURLEditCommand();
-        String      channelName = channel.getLink().toString();
+        Collection<RSSItem> items;
+        Iterator            it;
+        String              titleOverride = feedInfo.getTitleOverride();
+        boolean             pruneURLs = feedInfo.pruneURLs();
+        String              editCmd = feedInfo.getItemURLEditCommand();
+        String              channelName = channel.getLink().toString();
 
         if (titleOverride != null)
             channel.setTitle (titleOverride);
@@ -1025,10 +1024,11 @@ class FeedDownloadThread extends Thread
      *
      * @return a new <tt>Collection</tt> of the same items, possibly sorted
      */
-    private Collection sortChannelItems (Collection items, FeedInfo feedInfo)
+    private Collection<RSSItem> sortChannelItems (Collection<RSSItem> items,
+                                                  FeedInfo            feedInfo)
     {
-        Collection result = items;
-        int        total  = items.size();
+        List<RSSItem> result = null;
+        int           total  = items.size();
 
         if (total > 0)
         {
@@ -1037,6 +1037,7 @@ class FeedDownloadThread extends Thread
             switch (sortBy)
             {
                 case FeedInfo.SORT_BY_NONE:
+                    result = new ArrayList<RSSItem> (items);
                     break;
 
                 case FeedInfo.SORT_BY_TITLE:
@@ -1045,9 +1046,8 @@ class FeedDownloadThread extends Thread
                     // Can't just use a TreeSet, with a Comparator, because
                     // then items with the same title will be weeded out.
 
-                    Object[] array = items.toArray();
-                    Arrays.sort (array, new ItemComparator (sortBy));
-                    result = Arrays.asList (array);
+                    result = new ArrayList<RSSItem> (items);
+                    Collections.sort (result, new ItemComparator (sortBy));
                 break;
 
             default:
@@ -1067,14 +1067,14 @@ class FeedDownloadThread extends Thread
      *
      * @return a new <tt>Collection</tt> of items, possibly pruned
      */
-    private Collection pruneDuplicateTitles (Collection items)
+    private Collection<RSSItem>
+    pruneDuplicateTitles (Collection<RSSItem> items)
     {
-        Set         titlesSeen = new HashSet();
-        Collection  result     = new ArrayList();
+        Set<String>          titlesSeen = new HashSet<String>();
+        Collection<RSSItem>  result     = new ArrayList<RSSItem>();
 
-        for (Iterator it = items.iterator(); it.hasNext(); )
+        for (RSSItem item : items)
         {
-            RSSItem item  = (RSSItem) it.next();
             String  title = item.getTitle().toLowerCase();
 
             if (title == null)

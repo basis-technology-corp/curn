@@ -27,6 +27,7 @@
 package org.clapper.curn.parser.minirss;
 
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import java.net.URL;
 
@@ -51,15 +52,15 @@ public class Channel implements RSSChannel
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private Collection  items       = new ArrayList();
-    private String      title       = null;
-    private String      description = null;
-    private URL         url         = null;
-    private Date        pubDate     = null;
-    private String      rssFormat   = null;
-    private String      copyright   = null;
-    private String      author      = null;
-    private String      uniqueID    = null;
+    private Collection<RSSItem>  items       = new ArrayList<RSSItem>();
+    private String               title       = null;
+    private String               description = null;
+    private URL                  url         = null;
+    private Date                 pubDate     = null;
+    private String               rssFormat   = null;
+    private String               copyright   = null;
+    private String               author      = null;
+    private String               uniqueID    = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -86,9 +87,9 @@ public class Channel implements RSSChannel
      *         items. This <tt>Collection</tt> is a copy of the underlying
      *         <tt>collection</tt> being used.
      */
-    public Collection getItems()
+    public Collection<RSSItem> getItems()
     {
-        Collection result = new ArrayList();
+        Collection<RSSItem> result = new ArrayList<RSSItem>();
 
         result.addAll (items);
         return result;
@@ -102,7 +103,7 @@ public class Channel implements RSSChannel
      *
      * @param newItems  new collection of <tt>RSSItem</tt> items.
      */
-    public void setItems (Collection newItems)
+    public void setItems (Collection<? extends RSSItem> newItems)
     {
         items.clear();
         items.addAll (newItems);

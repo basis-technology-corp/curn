@@ -51,7 +51,7 @@ public class ConfiguredOutputHandler implements Comparable
     private String        className;
     private String        name;
     private OutputHandler handler = null;
-    private Map           extraVariables = new HashMap();
+    private Map<String,String> extraVariables = new HashMap<String,String>();
 
     /**
      * For log messages

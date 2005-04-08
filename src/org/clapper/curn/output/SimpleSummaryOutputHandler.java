@@ -32,6 +32,7 @@ import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.WordWrapWriter;
@@ -106,11 +107,11 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private WordWrapWriter  out              = null;
-    private ConfigFile      config           = null;
-    private String          message          = null;
-    private Collection      channels         = new ArrayList();
-    private int             totalItems       = 0;
+    private WordWrapWriter         out        = null;
+    private ConfigFile             config     = null;
+    private String                 message    = null;
+    private Collection<RSSChannel> channels   = new ArrayList<RSSChannel>();
+    private int                    totalItems = 0;
 
     /**
      * For logging
@@ -198,8 +199,7 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                                 FeedInfo    feedInfo)
         throws CurnException
     {
-        Collection items        = channel.getItems();
-        int        channelItems = items.size();
+        int channelItems = channel.getItems().size();
 
         if (channelItems != 0)
         {

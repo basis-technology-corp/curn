@@ -69,6 +69,18 @@ public class FeedCache implements Serializable
     //private static final long serialVersionUID = 1L;
 
     /*----------------------------------------------------------------------*\
+                              Private Classes
+    \*----------------------------------------------------------------------*/
+
+    private class FeedCacheMap extends HashMap<String, FeedCacheEntry>
+    {
+        FeedCacheMap()
+        {
+            super();
+        }
+    }
+
+    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
@@ -80,13 +92,13 @@ public class FeedCache implements Serializable
     /**
      * The actual cache, indexed by unique ID.
      */
-    private Map cacheByID;
+    private FeedCacheMap cacheByID;
 
     /**
      * Alternate cache (not saved, but regenerated on the fly), indexed
      * by URL.
      */
-    private Map cacheByURL;
+    private FeedCacheMap cacheByURL;
 
     /**
      * Whether or not the cache has been modified since saved or loaded
@@ -131,14 +143,14 @@ public class FeedCache implements Serializable
         throws IOException
     {
         File cacheFile = config.getCacheFile();
-        this.cacheByURL = new HashMap();
+        this.cacheByURL = new FeedCacheMap();
 
         log.debug ("Reading cache from \"" + cacheFile.getPath() + "\"");
 
         if (! cacheFile.exists())
         {
             log.debug ("Cache \"" + cacheFile.getPath() + "\" doesn't exist.");
-            this.cacheByID  = new HashMap();
+            this.cacheByID  = new FeedCacheMap();
         }
 
         else
@@ -148,7 +160,7 @@ public class FeedCache implements Serializable
 
             try
             {
-                this.cacheByID = (Map) objIn.readObject();
+                this.cacheByID = (FeedCacheMap) objIn.readObject();
                 if (log.isDebugEnabled())
                     dumpCache ("before pruning");
                 pruneCache();
@@ -404,13 +416,9 @@ public class FeedCache implements Serializable
     private void dumpCache (String label)
     {
         log.debug ("CACHE DUMP: " + label);
-        Set sortedKeys = new TreeSet (cacheByID.keySet());
-        for (Iterator itKeys = sortedKeys.iterator(); itKeys.hasNext(); )
-        {
-            String itemKey = (String) itKeys.next();
-            dumpCacheEntry (itemKey, (FeedCacheEntry) cacheByID.get (itemKey),
-                            "");
-        }
+        Set<String> sortedKeys = new TreeSet<String> (cacheByID.keySet());
+        for (String itemKey : sortedKeys)
+            dumpCacheEntry (itemKey, cacheByID.get (itemKey), "");
     }   
 
     /**

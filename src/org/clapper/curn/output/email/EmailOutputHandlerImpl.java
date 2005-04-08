@@ -66,8 +66,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private Collection  handlers   = new ArrayList();
-    private Collection  recipients = new ArrayList();
+    private Collection<ConfiguredOutputHandler>  handlers =
+        new ArrayList<ConfiguredOutputHandler>();
+
+    private Collection<EmailAddress> recipients =
+        new ArrayList<EmailAddress>();
+
     private ConfigFile  config     = null;
 
     /**

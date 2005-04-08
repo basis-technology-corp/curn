@@ -222,20 +222,18 @@ public class RSSItemAdapter extends RSSItem
      * @return a <tt>Collection</tt> of category strings (<tt>String</tt>
      *         objects) or null if not applicable
      */
-    public Collection getCategories()
+    public Collection<String> getCategories()
     {
-        Collection result     = null;
-        Collection categories = entry.getCategories();
+        Collection<String>  result     = null;
+        Collection          categories = entry.getCategories();
 
         if ((categories != null) && (categories.size() > 0))
         {
-            result = new ArrayList();
+            result = new ArrayList<String>();
 
             for (Iterator it = categories.iterator(); it.hasNext(); )
             {
-                SyndCategory cat = (SyndCategory) it.next();
-
-                String s = cat.getName();
+                String s = ((SyndCategory) it.next()).getName();
                 if ((s != null) && (s.trim().length() > 0))
                     result.add (s);
             }

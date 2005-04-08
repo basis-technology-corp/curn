@@ -82,8 +82,8 @@ public class OutputHandlerFactory
         {
             log.debug ("Instantiating output handler: " + cls.getName());
 
-            Constructor constructor = cls.getConstructor (null);
-            return (OutputHandler) constructor.newInstance (null);
+            Constructor constructor = cls.getConstructor();
+            return (OutputHandler) constructor.newInstance();
         }
 
         catch (NoSuchMethodException ex)

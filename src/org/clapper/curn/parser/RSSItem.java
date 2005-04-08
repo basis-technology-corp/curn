@@ -71,7 +71,7 @@ public abstract class RSSItem
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private Map contentMap = new HashMap();
+    private Map<String,String> contentMap = new HashMap<String,String>();
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -289,7 +289,7 @@ public abstract class RSSItem
      * @return a <tt>Collection</tt> of category strings (<tt>String</tt>
      *         objects) or null if not applicable
      */
-    public abstract Collection getCategories();
+    public abstract Collection<String> getCategories();
 
     /**
      * Get the item's publication date.

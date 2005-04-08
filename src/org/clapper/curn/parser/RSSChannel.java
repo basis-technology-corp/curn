@@ -64,7 +64,7 @@ public interface RSSChannel
      *         that <tt>Collection</tt> directly; instead, it should return
      *         a copy.)
      */
-    public Collection getItems();
+    public Collection<RSSItem> getItems();
 
     /**
      * Change the items the channel the ones in the specified collection.
@@ -74,7 +74,7 @@ public interface RSSChannel
      *
      * @param newItems  new collection of <tt>RSSItem</tt> items.
      */
-    public void setItems (Collection newItems);
+    public void setItems (Collection<? extends RSSItem> newItems);
 
     /**
      * Get the channel's title

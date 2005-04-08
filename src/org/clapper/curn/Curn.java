@@ -95,11 +95,13 @@ public class Curn
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private ConfigFile  config           = null;
-    private boolean     useCache         = true;
-    private FeedCache   cache            = null;
-    private Date        currentTime      = new Date();
-    private Collection  outputHandlers   = new ArrayList();
+    private ConfigFile config = null;
+    private boolean useCache = true;
+    private FeedCache cache = null;
+    private Date currentTime = new Date();
+
+    private Collection<ConfiguredOutputHandler> outputHandlers =
+        new ArrayList<ConfiguredOutputHandler>();
 
     /**
      * For log messages
@@ -147,18 +149,17 @@ public class Curn
      * @throws RSSParserException       error parsing XML feed(s)
      * @throws CurnException          any other error
      */
-    public void processRSSFeeds (ConfigFile configuration,
-                                 Collection emailAddresses,
-                                 boolean    useCache)
+    public void processRSSFeeds (ConfigFile         configuration,
+                                 Collection<String> emailAddresses,
+                                 boolean            useCache)
         throws IOException,
                ConfigurationException,
                RSSParserException,
                CurnException
     {
-        Iterator    it;
-        String      parserClassName;
-        Collection  channels;
-        boolean     parsingEnabled = true;
+        String               parserClassName;
+        Collection<FeedInfo> channels;
+        boolean              parsingEnabled = true;
 
         loadOutputHandlers (configuration, emailAddresses);
 
@@ -208,23 +209,19 @@ public class Curn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void loadOutputHandlers (ConfigFile configuration,
-                                     Collection emailAddresses)
+    private void loadOutputHandlers (ConfigFile         configuration,
+                                     Collection<String> emailAddresses)
         throws ConfigurationException,
                CurnException
     {
         String                   className;
         OutputHandler            handler;
         Iterator                 it;
-        ConfiguredOutputHandler  cfgHandler;
 
         if (configuration.totalOutputHandlers() > 0)
         {
-            for (it = configuration.getOutputHandlers().iterator();
-                 it.hasNext(); )
+            for (ConfiguredOutputHandler cfgHandler : configuration.getOutputHandlers())
             {
-                cfgHandler = (ConfiguredOutputHandler) it.next();
-
                 // Ensure that the output handler can be instantiated.
 
                 log.debug ("Instantiating output handler \""
@@ -256,16 +253,13 @@ public class Curn
 
                 // Place all the other handlers inside the EmailOutputHandler
 
-                for (it = outputHandlers.iterator(); it.hasNext(); )
-                {
-                    cfgHandler = (ConfiguredOutputHandler) it.next();
+                for (ConfiguredOutputHandler cfgHandler : outputHandlers)
                     emailHandler.addOutputHandler (cfgHandler);
-                }
 
                 // Add the email addresses to the handler
 
-                for (it = emailAddresses.iterator(); it.hasNext(); )
-                    emailHandler.addRecipient ((String) it.next());
+                for (String emailAddress : emailAddresses)
+                    emailHandler.addRecipient (emailAddress);
 
                 // Clear the existing set of output handlers and replace it
                 // with the email handler. Note that the collection contains
@@ -286,22 +280,23 @@ public class Curn
      * @param feedCache      the loaded cache of feed data; may be modified
      * @param configuration  the parsed configuration
      *
-     * @return a <tt>Collection</tt> of <tt>RSSChannel</tt> objects
+     * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects
      *
      * @throws RSSParserException error parsing feeds
      * @throws CurnException      some other error
      */
-    private Collection doSingleThreadedFeedDownload (boolean    parsingEnabled,
-                                                     FeedCache  feedCache,
-                                                     ConfigFile configuration)
+    private Collection<FeedInfo>
+    doSingleThreadedFeedDownload (boolean    parsingEnabled,
+                                  FeedCache  feedCache,
+                                  ConfigFile configuration)
         throws RSSParserException,
                CurnException
     {
         // Instantiate a single FeedDownloadThread object, but call it
         // within this thread, instead of spawning another thread.
 
-        Collection channels = new ArrayList();
-        FeedDownloadThread downloadThread;
+        Collection<FeedInfo> channels = new ArrayList<FeedInfo>();
+        FeedDownloadThread   downloadThread;
 
         log.info ("Doing single-threaded download of feeds.");
 
@@ -345,25 +340,26 @@ public class Curn
      * @param feedCache      the loaded cache of feed data; may be modified
      * @param configuration  the parsed configuration
      *
-     * @return a <tt>Collection</tt> of <tt>RSSChannel</tt> objects
+     * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects
      *
      * @throws RSSParserException error parsing feeds
      * @throws CurnException      some other error
      */
-    private Collection doMultithreadedFeedDownload (boolean    parsingEnabled,
-                                                    FeedCache  feedCache,
-                                                    ConfigFile configuration)
+    private Collection<FeedInfo>
+    doMultithreadedFeedDownload (boolean    parsingEnabled,
+                                 FeedCache  feedCache,
+                                 ConfigFile configuration)
         throws RSSParserException,
                CurnException
     {
-        int                 maxThreads = configuration.getMaxThreads();
-        Collection          feeds      = configuration.getFeeds();
-        int                 totalFeeds = feeds.size();
-        Collection          channels   = new ArrayList();
-        Collection          threads    = new ArrayList();
-        List                feedQueue  = new LinkedList();
-        Iterator            it;
-        FeedDownloadThread  thread;
+        int maxThreads = configuration.getMaxThreads();
+        Collection<FeedInfo> feeds      = configuration.getFeeds();
+        int totalFeeds = feeds.size();
+        Collection<FeedInfo> channels = new ArrayList<FeedInfo>();
+        List<FeedDownloadThread> threads = new ArrayList<FeedDownloadThread>();
+        List<FeedInfo> feedQueue  = new LinkedList<FeedInfo>();
+        Iterator it;
+        FeedDownloadThread thread;
 
         if (maxThreads > totalFeeds)
             maxThreads = totalFeeds;
@@ -508,22 +504,18 @@ public class Curn
         return process;
     }
 
-    private void displayChannels (Collection channels,
-                                  Collection emailAddresses)
+    private void displayChannels (Collection<FeedInfo> channels,
+                                  Collection<String>   emailAddresses)
         throws CurnException,
                ConfigurationException
     {
-        ConfiguredOutputHandler cfgHandler;
         ConfiguredOutputHandler firstOutput = null;
         OutputHandler           handler;
 
         // Dump the output to each output handler
 
-        for (Iterator itHandler = outputHandlers.iterator();
-             itHandler.hasNext(); )
+        for (ConfiguredOutputHandler cfgHandler : outputHandlers)
         {
-            cfgHandler = (ConfiguredOutputHandler) itHandler.next();
-
             log.info ("Initializing output handler \""
                     + cfgHandler.getName()
                     + "\", of type "
@@ -532,12 +524,8 @@ public class Curn
             handler = cfgHandler.getOutputHandler();
             handler.init (config, cfgHandler);
 
-            for (Iterator itChannel = channels.iterator();
-                 itChannel.hasNext(); )
-            {
-                FeedInfo fi = (FeedInfo) itChannel.next();
+            for (FeedInfo fi : channels)
                 handler.displayChannel (fi.getParsedChannelData(), fi);
-            }
 
             handler.flush();
 
