@@ -318,8 +318,14 @@ public class Curn
             }
 
             downloadThread.processFeed (feedInfo);
+
+            // Don't abort if an exception occurred. It might just be a
+            // parse error for this feed. Don't want to abort the whole
+            // run if one feed has problems.
+            /*
             if (downloadThread.errorOccurred())
                 throw downloadThread.getException();
+            */
 
             RSSChannel channel = feedInfo.getParsedChannelData();
 
