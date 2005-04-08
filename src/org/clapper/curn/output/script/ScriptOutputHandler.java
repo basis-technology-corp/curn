@@ -111,9 +111,9 @@ import org.apache.bsf.BSFManager;
  *     public void registerAdditionalScriptingEngines()
  *         throws CurnException
  *     {
- *         BSFManager.registerScriptingLanguage ("judoscript",
- *                                               "com.judoscript.BSFJudoEngine",
- *                                               new String[] {"judo", "jud"});
+ *         BSFManager.registerScriptingEngine ("judoscript",
+ *                                             "com.judoscript.BSFJudoEngine",
+ *                                             new String[] {"judo", "jud"});
  *     }
  * }
  * </pre></blockquote>
@@ -529,6 +529,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
             // Run the script
 
+            log.debug ("Invoking " + scriptPath);
             scriptEngine.exec (scriptPath, 0, 0, scriptString);
         }
 
