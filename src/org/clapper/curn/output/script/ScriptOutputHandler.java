@@ -534,10 +534,12 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         catch (BSFException ex)
         {
+            log.error ("Error interacting with Bean Scripting Framework", ex);
             throw new CurnException (Curn.BUNDLE_NAME,
                                      "ScriptOutputHandler.bsfError",
                                      "Error interacting with Bean Scripting "
-                                   + "Framework.",
+                                   + "Framework: {0}",
+                                     new Object[] {ex.getMessage()},
                                      ex);
         }
     }
