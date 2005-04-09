@@ -3530,9 +3530,9 @@ makes the following objects available to the script.</p>
 
 	<tr valign="top" class="oddRow">
           <td>mimeType</td>
-          <td><span class="code">java.lang.StringBuffer</span></td>
-          <td>A <span class="code">StringBuffer</span> object to which the
-	      script should append the MIME type that corresponds to the
+          <td><span class="code">java.lang.PrintWriter</span></td>
+          <td>A <span class="code">PrintWriter</span> object to which the
+	      script should print the MIME type that corresponds to the
 	      generated output. If the script generates no output, then it can
 	      ignore this object.</td>
 	</tr>
@@ -3595,7 +3595,7 @@ class TextOutputHandler:
         """
         self.__channels    = bsf.lookupBean ("channels")
         self.__outputPath  = bsf.lookupBean ("outputPath")
-        self.__mimeTypeBuf = bsf.lookupBean ("mimeType")
+        self.__mimeTypeOut = bsf.lookupBean ("mimeType")
         self.__config      = bsf.lookupBean ("config")
         self.__sectionName = bsf.lookupBean ("configSection")
         self.__logger      = bsf.lookupBean ("logger");
@@ -3648,7 +3648,7 @@ class TextOutputHandler:
                 feed_info = channel_wrapper.getFeedInfo()
                 self.__process_channel (out, channel, feed_info, indentation)
 
-            self.__mimeTypeBuf.append ("text/plain")
+            self.__mimeTypeOut.print ("text/plain")
 
             # Output a footer
 

@@ -59,7 +59,7 @@ class TextOutputHandler
         #
         @channels    = $bsf.lookupBean("channels")
         @outputPath  = $bsf.lookupBean("outputPath")
-        @mimeTypeBuf = $bsf.lookupBean("mimeType")
+        @mimeTypeOut = $bsf.lookupBean("mimeType")
         @config      = $bsf.lookupBean("config")
         @sectionName = $bsf.lookupBean("configSection")
         @logger      = $bsf.lookupBean("logger")
@@ -118,7 +118,7 @@ class TextOutputHandler
                 process_channel(out, channel, feed_info, indentation)
             end
 
-            @mimeTypeBuf.append("text/plain")
+            @mimeTypeOut.print("text/plain")
             # Output a footer
 
             indent(out, indentation)

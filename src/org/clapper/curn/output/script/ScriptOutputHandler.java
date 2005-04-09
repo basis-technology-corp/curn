@@ -45,6 +45,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -181,9 +182,9 @@ import org.apache.bsf.BSFManager;
  *
  *   <tr valign="top">
  *     <td>mimeType</td>
- *     <td><tt>java.lang.StringBuffer</tt></td>
- *     <td>A <tt>StringBuffer</tt> object to which the script should
- *         append the MIME type that corresponds to the generated output.
+ *     <td><tt>java.io.PrintWriter</tt></td>
+ *     <td>A <tt>PrintWriter</tt> object to which the script should print
+ *         the MIME type that corresponds to the generated output.
  *         If the script generates no output, then it can ignore this
  *         object.</td>
  *   </tr>
@@ -216,7 +217,7 @@ import org.apache.bsf.BSFManager;
  *     """
  *     self.__channels    = bsf.lookupBean ("channels")
  *     self.__outputPath  = bsf.lookupBean ("outputPath")
- *     self.__mimeTypeBuf = bsf.lookupBean ("mimeType")
+ *     self.__mimeTypeOut = bsf.lookupBean ("mimeType")
  *     self.__config      = bsf.lookupBean ("config")
  *     self.__sectionName = bsf.lookupBean ("configSection")
  *     self.__logger      = bsf.lookupBean ("logger");
@@ -260,7 +261,7 @@ import org.apache.bsf.BSFManager;
  *             feed_info = channel_wrapper.getFeedInfo()
  *             self.__process_channel (out, channel, feed_info, indentation)
  *
- *         self.__mimeTypeBuf.append ("text/plain")
+ *         self.__mimeTypeBuf.print ("text/plain")
  *
  *         # Output a footer
  *
@@ -341,7 +342,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     private Collection<ChannelWrapper> channels       = new ChannelList();
     private String                     scriptPath     = null;
     private String                     scriptString   = null;
-    private StringBuffer               mimeTypeBuffer = new StringBuffer();
+    private StringWriter               mimeTypeBuffer = null;
     private String                     language       = null;
     private Logger                     scriptLogger   = null;
 
@@ -450,7 +451,8 @@ public class ScriptOutputHandler extends FileOutputHandler
         // Register the beans we know about now. The other come after we
         // process the channels.
 
-        bsfManager.registerBean ("mimeType", mimeTypeBuffer);
+        mimeTypeBuffer = new StringWriter();
+        bsfManager.registerBean ("mimeType", new PrintWriter (mimeTypeBuffer));
         bsfManager.registerBean ("config", config);
         bsfManager.registerBean ("configSection", section);
         bsfManager.registerBean ("logger", scriptLogger);
@@ -461,7 +463,6 @@ public class ScriptOutputHandler extends FileOutputHandler
         scriptString = loadScript (scriptFile);
 
         channels.clear();
-        mimeTypeBuffer.setLength (0);
     }
 
     /**
@@ -553,7 +554,7 @@ public class ScriptOutputHandler extends FileOutputHandler
      */
     public final String getContentType()
     {
-        return mimeTypeBuffer.toString();
+        return mimeTypeBuffer.toString().trim();
     }
 
     /**
