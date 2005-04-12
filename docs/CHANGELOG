@@ -18,6 +18,11 @@ Version 2.0 (...)
   java.io.StringBuffer. Use of a StringBuffer causes exceptions with BSF
   and the 1.5.0 JDK.
 
+- The configuration file now supports an "env" pseudosection, to
+  interpolate the values of environment variables into a configuration.
+  (The 1.5 JDK has re-established support for environment variables.)
+  See the User's Guide for details.
+
 
 Version 1.5.9 (...)
 

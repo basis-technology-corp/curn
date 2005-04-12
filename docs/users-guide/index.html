@@ -68,7 +68,7 @@
 	    </ul>
 	</li>
 
-        <li><a href="#ConfigFileParameters" class="toc">Overview of <i>curn</i>'s Configuration File</a></li>
+        <li><a href="#CurnConfigFile" class="toc">Overview of <i>curn</i>'s Configuration File</a></li>
 	<li><a href="#CfgCurnSection" class="toc">The <span class="code">[curn]</span> Section</a></li>
 	<li><a href="#CfgRSSFeeds" class="toc">Configuring the RSS Feeds</a></li>
 	<li><a href="#CfgOutputHandlers" class="toc">Configuring Output Handlers</a>
@@ -83,7 +83,7 @@
 
   <li><a href="#SchedulingCurn" class="toc">Having <i>curn</i> Run on a Schedule</a>
       <ul type="disc">
-	<li><a href="#UsingCron" class="toc">Running <i>curn</i> from <i>cron</i>(8) on Unix-like Systems</a></li>
+	<li><a href="#UsingCron" class="toc">Running <i>curn</i> from <i>cron</i>(8) on UNIX-like Systems</a></li>
 	<li><a href="#UsingWindowsScheduler" class="toc">Running <i>curn</i> via the Windows Scheduler</a></li>
       </ul>
   </li>
@@ -131,7 +131,7 @@ for items it has already processed (though that behavior can be disabled).</p>
 interface. It is a command-line utility, intended to be run periodically in
 the background by a command scheduler such as 
 <a href="http://www.freebsd.org/cgi/man.cgi?query=cron&apropos=0&sektion=0&manpath=FreeBSD+5.2-RELEASE+and+Ports&format=html"><i>cron</i>(8)</a>
-(on Unix-like systems) or the Windows Scheduler Service (on Windows).</p>
+(on UNIX-like systems) or the Windows Scheduler Service (on Windows).</p>
 
 <p><i>curn</i> can read RSS feeds from any URL that's supported by Java's
 runtime. When querying HTTP sites, <i>curn</i> uses the HTTP
@@ -203,7 +203,7 @@ produced output, and displays it on standard output.</p>
 invoking <i>curn</i> a little easier. It's specific to FreeBSD systems,
 but can easily be customized.)</p>
 
-<p><i>curn</i>'s command line uses a Unix-like syntax. If you invoke
+<p><i>curn</i>'s command line uses a UNIX-like syntax. If you invoke
 <i>curn</i> without any parameters, you get the following usage display.
 
 <br><br>
@@ -726,15 +726,34 @@ specifies a section name, the referenced section must precede the current
 section. It is not possible to substitute the value of a variable in a
 section that occurs later in the file.</p>
 
-<p>The special section "system" is reserved. It doesn't actually exist in
-the configuration; however, you can refer to it during variable
-substitution to pull in values from Java's
-<span class="code">System.properties</span> class.</p>
+<p>The section names "system", "env", and "program" are reserved for
+special "pseudosections."</p>
 
-<p>The special section "program" is also reserved. Like "system", "program"
-doesn't really exist. It's a placeholder for various special variables
-provided by the <span class="code">Configuration</span> class at runtime. Those variables
-are:</p>
+<p>The "system" pseudosection is used to interpolate values from Java's
+<span class="code">System.properties</span> class. For instance,
+<span class="code">${system:user.home}</span> substitutes the value of the
+<tt>user.home</tt> system property (typically, the home directory of the
+user running <i>curn</i>). Similarly,
+<span class="code">${system:user.name}</span> substitutes the user's
+name.</p>
+
+<p>The "env" pseudosection is used to interpolate values from the environment.
+On UNIX systems, for instance, <span class="code">${env:HOME}</span>
+substitutes user's home directory (and is, therefore, a synonym for
+<span class="code">${system:user.home}</span>. On some versions of Windows,
+<span class="code">${env:USERNAME}</span> will substitute the name of
+the user running <i>curn</i>. Note: On UNIX systems, environment variable
+names are typically case-sensitive; for instance,
+<span class="code">${env:USER}</span> and
+<span class="code">${env:user}</span> refer to different environment
+variables. On Windows systems, environment variable names are typically
+case-insensitive; 
+<span class="code">${env:USERNAME}</span> and
+<span class="code">${env:username}</span> are equivalent.</p>
+
+<p>The "program" pseudosection is a placeholder for various special variables
+provided by the <span class="code">Configuration</span> class at runtime.
+Those variables are:</p>
 
 <table border="0" bgcolor="#000000" cellpadding="0" cellspacing="2"
        align="center" width="70%">
@@ -752,7 +771,7 @@ are:</p>
 	  <td align="left">The program's current working directory. Thus,
 	    <span class="code">${program:cwd}</span> will substitute the
 	    current working directory, with an appropriate path separator for
-	    the host operating system (e.g., "\" for Windows, "/" for Unix.)
+	    the host operating system (e.g., "\" for Windows, "/" for UNIX.)
           </td>
         </tr>
 
@@ -1596,7 +1615,7 @@ section names are all valid for RSS feed sections.</p>
 		  <span class="code">https</span> URLs, the encoding comes
 		  from the HTTP Content-Encoding header; if that header isn't
 		  present, then the Java VM's default encoding (usually
-		  "ISO-8859-1" on Unix, and "Cp1252" on Windows) is used.
+		  "ISO-8859-1" on UNIX, and "Cp1252" on Windows) is used.
 	      <li>For <span class="code">file</span> URLs, the default encoding
 		  is "utf-8", the same as the default value for the
 		  <a href="#Feed_SaveAsEncoding" class="code">SaveAsEncoding</a>
@@ -1771,7 +1790,7 @@ section names are all valid for RSS feed sections.</p>
 	    has no way to save the original feed's character set, so it
 	    tries to convert the feed to the local character set before
 	    saving it. For instance, if you're running <i>curn</i> on
-	    a Unix-like system where the default character set is
+	    a UNIX-like system where the default character set is
 	    "ISO 8859.1", and the remote feed uses "UTF-8", <i>curn</i>
 	    will convert the UTF-8 characters to ISO 8859.1 characters
 	    as it writes the XML to the <span class="code">SaveAs</span> file.
@@ -2500,10 +2519,10 @@ SaveAs: ${vars:feedDir}/CNN_TOP_STORIES.xml
 <p>You can run <i>curn</i> manually, at the command line, whenever you feel
 like checking your news feeds. However, this is less than useful. The best
 way to run <i>curn</i> to have your computer's background scheduler process
-(e.g., <i>cron</i>(8) on Unix-like systems, or the Windows Scheduler on
+(e.g., <i>cron</i>(8) on UNIX-like systems, or the Windows Scheduler on
 Windows) run <i>curn</i> for you automatically, every so often.</p>
 
-<h3><a name="UsingCron">Running <i>curn</i> from <i>cron</i>(8) on Unix-like Systems</a></h3>
+<h3><a name="UsingCron">Running <i>curn</i> from <i>cron</i>(8) on UNIX-like Systems</a></h3>
 
 <p>I typically run <i>curn</i> three times a day, via <i>cron</i>, on
 weekdays and once on weekends, and I have it mail me the output. I use my
