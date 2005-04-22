@@ -222,23 +222,6 @@ public class FeedCache implements Serializable
         if (this.modified)
         {
             File cacheFile = config.getCacheFile();
-            /*
-            try
-            {
-                ObjectOutputStream objOut = new ObjectOutputStream
-                                           (new FileOutputStream (cacheFile));
-
-                log.debug ("Saving cache to \"" + cacheFile.getPath() + "\"");
-                objOut.writeObject (cacheByID);
-                objOut.close();
-                this.modified = false;
-            }
-
-            catch (IOException ex)
-            {
-                throw new CurnException (ex);
-            }
-            */
 
             try
             {
