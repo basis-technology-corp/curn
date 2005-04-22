@@ -152,8 +152,7 @@ public class Curn
     public void processRSSFeeds (ConfigFile         configuration,
                                  Collection<String> emailAddresses,
                                  boolean            useCache)
-        throws IOException,
-               ConfigurationException,
+        throws ConfigurationException,
                RSSParserException,
                CurnException
     {
