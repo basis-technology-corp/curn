@@ -573,7 +573,6 @@ public class FeedCache implements Serializable
 
                 // Skip non-element nodes (like text).
 
-log.debug ("node type=" + childNode.getNodeType() + ", name=" + childNode.getNodeName());
                 if (childNode.getNodeType() != Node.ELEMENT_NODE)
                     continue;
 
