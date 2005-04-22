@@ -427,13 +427,14 @@ public class FeedCache implements Serializable
      */
     private FeedCacheMap readSerializedObjectsCache (File cacheFile)
     {
-        ObjectInputStream  objIn  = null;
-        FeedCacheMap       result = null;
+        ObjectInputStream  objIn         = null;
+        FeedCacheMap       result        = null;
+        String             cacheFilePath = cacheFile.getPath();
 
         try
         {
             log.info ("Attempting to load \""
-                     + cacheFile.getPath()
+                     + cacheFilePath
                      + "\" as an old-style file of serialized Java objects.");
             objIn = new ObjectInputStream (new FileInputStream (cacheFile));
             HashMap map = (HashMap) objIn.readObject();
@@ -445,9 +446,10 @@ public class FeedCache implements Serializable
                 result.put (key, (FeedCacheEntry) map.get (key));
             }
 
-            log.warn ("Loaded old-style cache. If cache updating is enabled, "
-                    + "the cache will be automatically converted to a "
-                    + "new-style XML cache.");
+            log.warn ("Loaded old-style cache \""
+                    + cacheFilePath
+                    + "\". If cache updating is enabled, the cache will "
+                    + "automatically be converted to a new-style XML cache.");
         }
 
         catch (ClassNotFoundException ex)
