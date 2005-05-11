@@ -24,7 +24,7 @@ http://irrelevant.clapper.org/
 
     Tripwell caught with pants down
     http://irrelevant.clapper.org/2004/06/13/televangelist.html
-    Wed Jul 28 02:13:29 EDT 2004
+    Wed Jul 01 02:13:29 EDT 1970
 
         Police, responding to neighbors' reports of disturbing sounds from
         televangelist Gerard Tripwell's home, found his garage door open and the
@@ -77,8 +77,8 @@ http://justthefactsmaam.clapper.org/
     Researcher claims 13% of Americans can't spell their own names
     By Jonh Smth
     http://justthefactsmaam.clapper.org/names.html
-    Fri Jan 09 11:06:35 EST 291643661
+    Wed Jul 01 00:00:00 EDT 1970
 
 ------------------------------------------------------------------------------
-curn, version 2.0
-Generated Fri Apr 22 20:26:25 EDT 2005
+curn, version 2.1
+Generated Tue May 10 21:37:42 EDT 2005
