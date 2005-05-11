@@ -1297,6 +1297,8 @@ in detail, below.</p>
 	  <td align="left">
 	    If set to "true", this configuration item instructs <i>curn</i>
 	    to display author version for each feed item, if available.
+	    This global value can be
+	    <a href="#Feed_ShowAuthors">overridden on a per-feed basis</a>.
           </td>
 	  <td align="left">No</td>
 	  <td align="left" class="code">false</td>
@@ -1833,6 +1835,22 @@ section names are all valid for RSS feed sections.</p>
 	</tr>
 
 	<tr valign="top" class="oddrow">
+	  <td align="left" class="code"><a name="Feed_SummaryOnly">SummaryOnly</a></td>
+          <td align="left">Boolean</td>
+	  <td align="left">
+	    If set to "true", this configuration item instructs <i>curn</i>
+	    to display author version for this feed, if available.
+	    This value overrides the global
+	    <a href="#Cfg_ShowAuthors" class="code">ShowAuthors</a> parameter.
+          </td>
+	  <td align="left">No</td>
+	  <td align="left">The value of the global
+	    <a href="#Cfg_SummaryOnly" class="code">SummaryOnly</a> parameter.
+	  </td>
+	  <td align="left">&nbsp;</td>
+        </tr>
+
+	<tr valign="top" class="evenrow">
 	  <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
           <td align="left">String</td>
 	  <td align="left">
@@ -1859,7 +1877,7 @@ section names are all valid for RSS feed sections.</p>
 	    parameter in the <span class="code">[curn]</span> section.</td>
         </tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_SummaryOnly">SummaryOnly</a></td>
           <td align="left">Boolean</td>
 	  <td align="left">
@@ -1876,7 +1894,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">&nbsp;</td>
         </tr>
 
-        <tr valign="top" class="oddrow">
+        <tr valign="top" class="evenrow">
 	  <td align="left" class="code">TitleOverride</td>
           <td align="left">String</td>
 	  <td align="left">Specifies a string to be used as the site's
@@ -1887,7 +1905,7 @@ section names are all valid for RSS feed sections.</p>
 	  <td align="left">None</td>
 	</tr>
 
-	<tr valign="top" class="evenrow">
+	<tr valign="top" class="oddrow">
 	  <td align="left" class="code"><a name="Feed_UserAgent">UserAgent</a></td>
           <td align="left">String</td>
 	  <td align="left">

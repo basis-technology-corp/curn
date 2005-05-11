@@ -198,7 +198,7 @@ public class TextOutputHandler extends FileOutputHandler
                 s = item.getTitle();
                 out.println ((s == null) ? "(No Title)" : convert (s));
 
-                if (config.showAuthors())
+                if (feedInfo.showAuthors())
                 {
                     s = item.getAuthor();
                     if (s != null)

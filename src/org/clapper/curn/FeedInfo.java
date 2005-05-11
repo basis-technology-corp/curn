@@ -112,6 +112,7 @@ public class FeedInfo
     private String[]    preparseEditCommands  = null;
     private String      userAgent             = null;
     private int         maxSummarySize        = NO_MAX_SUMMARY_SIZE;
+    private boolean     showAuthors           = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -265,6 +266,36 @@ public class FeedInfo
     public void setSummarizeOnlyFlag (boolean val)
     {
         this.summaryOnly = val;
+    }
+
+    /**
+     * Return the value of the global "show authors" flag. This flag
+     * controls whether to display the authors associated with each item,
+     * if available. It can be overridden on a per-feed basis.
+     *
+     * @return <tt>true</tt> if "show authors" flag is set, <tt>false</tt>
+     *         otherwise
+     *
+     * @see #setShowAuthorsFlag
+     */
+    public boolean showAuthors()
+    {
+        return showAuthors;
+    }
+
+    /**
+     * Set the value of the global "show authors" flag. This flag controls
+     * whether to display the authors associated with each item, if
+     * available. It can be overridden on a per-feed basis.
+     *
+     * @param val <tt>true</tt> to set the "show authors" flag, <tt>false</tt>
+     *            to clear it
+     *
+     * @see #showAuthors
+     */
+    public void setShowAuthorsFlag (boolean val)
+    {
+        this.showAuthors = val;
     }
 
     /**

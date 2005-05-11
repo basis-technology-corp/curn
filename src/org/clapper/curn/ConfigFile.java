@@ -434,8 +434,9 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Return the value of the "show authors" flag. This flag controls whether
-     * to display the authors associated with each item, if available.
+     * Return the value of the global "show authors" flag. This flag
+     * controls whether to display the authors associated with each item,
+     * if available. It can be overridden on a per-feed basis.
      *
      * @return <tt>true</tt> if "show authors" flag is set, <tt>false</tt>
      *         otherwise
@@ -448,8 +449,9 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Set the value of the "show authors" flag. This flag controls whether
-     * to display the authors associated with each item, if available.
+     * Set the value of the global "show authors" flag. This flag controls
+     * whether to display the authors associated with each item, if
+     * available. It can be overridden on a per-feed basis.
      *
      * @param val <tt>true</tt> to set the "show authors" flag, <tt>false</tt>
      *            to clear it
@@ -853,6 +855,7 @@ public class ConfigFile extends Configuration
         feedInfo.setSortBy (defaultSortBy);
         feedInfo.setUserAgent (defaultUserAgent);
         feedInfo.setMaxSummarySize (maxSummarySize);
+        feedInfo.setShowAuthorsFlag (showAuthors);
 
         for (Iterator it = varNames.iterator(); it.hasNext(); )
         {
@@ -951,6 +954,12 @@ public class ConfigFile extends Configuration
             {
                 feedInfo.setUserAgent
                     (getConfigurationValue (sectionName, VAR_USER_AGENT));
+            }
+
+            else if (varName.equals (VAR_SHOW_AUTHORS))
+            {
+                feedInfo.setShowAuthorsFlag
+                    (getRequiredBooleanValue (sectionName, VAR_SHOW_AUTHORS));
             }
         }
 
