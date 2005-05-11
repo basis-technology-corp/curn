@@ -251,6 +251,14 @@ public class HTMLOutputHandler extends FileOutputHandler
         dom.getElementItemDate().removeAttribute ("id");
         dom.getElementChannelLink().removeAttribute ("id");
 
+        // Note: Assumes the author block is the last child. Not a great
+        // assumption, if we want to be completely decoupled from the
+        // presentation.
+
+        Node itemAuthorBlock = dom.getElementItemAuthorBlock();
+        Node itemAuthorBlockParent = itemAuthorBlock.getParentNode();
+        boolean removedAuthorBlock = false;
+
         for (i = 0, it = items.iterator(); it.hasNext(); i++, rowCount++)
         {
             RSSItem item = (RSSItem) it.next();
@@ -304,6 +312,8 @@ public class HTMLOutputHandler extends FileOutputHandler
 
             itemAnchor.setHref (item.getLink().toExternalForm());
 
+            // Set the item date
+
             date = null;
             if (config.showDates())
                 date = item.getPublicationDate();
@@ -315,6 +325,28 @@ public class HTMLOutputHandler extends FileOutputHandler
             itemTitleTD.removeAttribute ("class");
             itemDescTD.removeAttribute ("class");
 
+            // Set the author
+
+            String author = null;
+
+            if (feedInfo.showAuthors())
+                author = item.getAuthor();
+
+            if (author != null)
+            {
+                dom.setTextItemAuthor (author);
+                removedAuthorBlock = false;
+            }
+            else
+            {
+                // Remove the author separator (to prevent a blank line in
+                // the output), and set the author string to nothing.
+
+                itemAuthorBlockParent.removeChild (itemAuthorBlock);
+                removedAuthorBlock = true;
+            }
+
+            // Set the odd/even class attribute on the row
             if ((rowCount % 2) == 1)
             {
                 // Want to use the "odd row" class to distinguish the
@@ -334,8 +366,12 @@ public class HTMLOutputHandler extends FileOutputHandler
 
             channelRowParent.insertBefore (channelRow.cloneNode (true),
                                            channelSeparatorRow);
-        }
 
+            // Put back the author separator if it was removed.
+
+            if (removedAuthorBlock)
+                itemAuthorBlockParent.appendChild (itemAuthorBlock);
+        }
     }
     
     /**
