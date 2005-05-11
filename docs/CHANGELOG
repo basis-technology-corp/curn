@@ -4,7 +4,7 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 2.1 (...)
+Version 2.1 (10 May, 2005)
 
 - The ShowAuthors configuration item can now be specified per-feed,
   as well as globally. The global value is the default.
