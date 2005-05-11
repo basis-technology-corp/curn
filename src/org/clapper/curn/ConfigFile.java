@@ -82,6 +82,7 @@ public class ConfigFile extends Configuration
      * Variable names
      */
     private static final String VAR_CACHE_FILE        = "CacheFile";
+    private static final String VAR_CACHE_BACKUP      = "CacheBackup";
     private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
     private static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
@@ -155,6 +156,7 @@ public class ConfigFile extends Configuration
     \*----------------------------------------------------------------------*/
 
     private File cacheFile = null;
+    private File cacheBackupFile = null;
     private int defaultCacheDays = DEF_DAYS_TO_CACHE;
     private boolean updateCache = true;
     private boolean summaryOnly = false;
@@ -305,6 +307,18 @@ public class ConfigFile extends Configuration
     public File getCacheFile()
     {
         return cacheFile;
+    }
+
+    /**
+     * Get the configured cache backup file.
+     *
+     * @return the cache backup file, or null if not defined
+     *
+     * @see #getCacheFile
+     */
+    public File getCacheBackupFile()
+    {
+        return cacheBackupFile;
     }
 
     /**
@@ -712,15 +726,33 @@ public class ConfigFile extends Configuration
 
                 if (cacheFile.isDirectory())
                 {
-                    throw new ConfigurationException (Curn.BUNDLE_NAME,
-                                                      "ConfigFile.cacheIsDir",
-                                                      "Configured cache file "
-                                                    + "\"{0}\" is really a "
-                                                    + "directory.",
-                                                      new Object[]
-                                                      {
-                                                          cacheFile.getPath()
-                                                      });
+                    throw new ConfigurationException
+                        (Curn.BUNDLE_NAME,
+                         "ConfigFile.cacheIsDir",
+                         "Configured cache file \"{0}\" is a directory.",
+                         new Object[]
+                         {
+                             cacheFile.getPath()
+                         });
+                }
+            }
+
+            s = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_BACKUP, null);
+            if (s != null)
+            {
+                cacheBackupFile = new File (s);
+
+                if (cacheBackupFile.isDirectory())
+                {
+                    throw new ConfigurationException
+                        (Curn.BUNDLE_NAME,
+                         "ConfigFile.cacheBackupIsDir",
+                         "Configured cache backup file \"{0}\" is "
+                       + "a directory.",
+                         new Object[]
+                         {
+                             cacheBackupFile.getPath()
+                         });
                 }
             }
 

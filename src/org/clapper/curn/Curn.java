@@ -26,6 +26,7 @@
 
 package org.clapper.curn;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -201,7 +202,37 @@ public class Curn
             displayChannels (channels, emailAddresses);
 
         if ((cache != null) && configuration.mustUpdateCache())
+        {
+            File cacheBackupFile = configuration.getCacheBackupFile();
+            if (cacheBackupFile != null)
+            {
+                File cacheFile = configuration.getCacheFile();
+                log.info ("Copying cache file \""
+                        + cacheFile.getPath()
+                        + "\" to backup file \""
+                        + cacheBackupFile.getPath()
+                        + "\"");
+
+                try
+                {
+                    FileUtil.copyFile (cacheFile, cacheBackupFile);
+                }
+
+                catch (IOException ex)
+                {
+                    // Don't abort, but log the exception.
+
+                    log.error ("Failed to copy cache file \""
+                             + cacheFile.getPath()
+                             + "\" to backup file \""
+                             + cacheBackupFile.getPath()
+                             + "\"",
+                               ex);
+                }
+            }
+
             cache.saveCache();
+        }
     }
 
     /*----------------------------------------------------------------------*\
