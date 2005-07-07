@@ -247,6 +247,7 @@ public class TextOutputHandler extends FileOutputHandler
         out.println (Version.getFullVersion());
         out.println ("Generated " + new Date().toString());
         out.flush();
+        out.close();
         out = null;
     }
     

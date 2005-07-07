@@ -204,7 +204,12 @@ public class Curn
         if ((cache != null) && configuration.mustUpdateCache())
         {
             File cacheBackupFile = configuration.getCacheBackupFile();
-            if (cacheBackupFile != null)
+            if (cacheBackupFile == null)
+            {
+                log.debug ("No cache backup file.");
+            }
+
+            else
             {
                 File cacheFile = configuration.getCacheFile();
                 log.info ("Copying cache file \""

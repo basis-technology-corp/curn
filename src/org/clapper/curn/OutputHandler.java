@@ -98,8 +98,8 @@ public interface OutputHandler
         throws CurnException;
 
     /**
-     * Flush any buffered-up output, but do NOT close the underlying output
-     * stream(s). <i>curn</i> calls this method once, after calling
+     * Flush any buffered-up output and close the underlying output
+     * stream(s), if any. <i>curn</i> calls this method once, after calling
      * <tt>displayChannelItems()</tt> for all channels. If the output
      * handler doesn't need to flush any output, it can simply return
      * without doing anything.

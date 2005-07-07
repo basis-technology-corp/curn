@@ -246,6 +246,7 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
         }
 
         out.flush();
+        out.close();
         out = null;
     }
     

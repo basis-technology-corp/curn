@@ -429,6 +429,8 @@ public class HTMLOutputHandler extends FileOutputHandler
 
         out.print (dom.toDocument());
         out.flush();
+        out.close();
+        out = null;
 
         // Kill the document.
 
