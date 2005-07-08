@@ -94,6 +94,22 @@ Version 2.0 (22 April, 2005)
   See the User's Guide for details.
 
 
+Version 1.5.10 (07 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
+
+- On Windows, curn's supplied output handler classes (TextOutputHandler,
+  HTMLOutputHandler) do not always produce output. Fix: Be sure to close
+  the PrintWriter objects those classes use internally. The flush() method
+  for all existing output handlers now ensure that they close their
+  underlying streams, if any. The documentation for the OutputHandler class
+  has been changed to indicate that the flush() method should also close
+  any open streams.
+
+  This bug does not appear to affect Unix Java VMs.
+
+  Thanks to "Moon Man" <yavinty /at/ yahoo.com> for emailing me about the
+  problem and the fix.
+
+
 Version 1.5.9 (21 April, 2005)
 
 - The "mimeType" object that the ScriptOutputHandler class publishes via
