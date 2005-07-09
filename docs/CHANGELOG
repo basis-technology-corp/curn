@@ -106,6 +106,18 @@ Version 2.0 (22 April, 2005)
   See the User's Guide for details.
 
 
+Version 1.5.11 (08 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
+
+- Curn was not honoring its "MailFrom" configuration option, so it was
+  always computing the sender based on the current user name and host name.
+  In some environments, using the default (computed) email address can
+  cause problems when curn attempts to email its output (and, in any case,
+  "curn" ought to honor one of its own documented configuration options).
+
+  Thanks to "Moon Man" <yavinty /at/ yahoo.com> for emailing me about the
+  problem.
+
+
 Version 1.5.10 (07 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 
 - On Windows, curn's supplied output handler classes (TextOutputHandler,
