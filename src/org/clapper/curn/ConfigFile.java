@@ -87,14 +87,13 @@ public class ConfigFile extends Configuration
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
     private static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
     private static final String VAR_SMTPHOST          = "SMTPHost";
-    private static final String VAR_DEFAULT_MAIL_FROM = "DefaultMailFrom";
     private static final String VAR_MAIL_SUBJECT      = "Subject";
     private static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
     private static final String VAR_PARSER_CLASS_NAME = "ParserClass";
     private static final String VAR_PRUNE_URLS        = "PruneURLs";
     private static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
     private static final String VAR_SMTP_HOST         = "SMTPHost";
-    private static final String VAR_DEF_EMAIL_SENDER  = "MailFrom";
+    private static final String VAR_EMAIL_SENDER      = "MailFrom";
     private static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     private static final String VAR_SHOW_DATES        = "ShowDates";
     private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
@@ -781,7 +780,7 @@ public class ConfigFile extends Configuration
                                                VAR_SMTP_HOST,
                                                DEF_SMTP_HOST);
             emailSender = getOptionalStringValue (MAIN_SECTION,
-                                                  VAR_DEF_EMAIL_SENDER,
+                                                  VAR_EMAIL_SENDER,
                                                   null);
             emailSubject = getOptionalStringValue (MAIN_SECTION,
                                                    VAR_EMAIL_SUBJECT,
