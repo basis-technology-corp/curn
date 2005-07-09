@@ -314,9 +314,10 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
             {
                 // Create an SMTP transport and a new email message.
 
-                EmailMessage message = new EmailMessage();
                 String smtpHost = config.getSMTPHost();
+                String sender = config.getEmailSender();
                 EmailTransport transport = new SMTPEmailTransport (smtpHost);
+                EmailMessage message = new EmailMessage();
 
                 log.debug ("SMTP host = " + smtpHost);
 
@@ -327,6 +328,12 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
                 message.addHeader ("X-Mailer", Version.getFullVersion());
                 message.setSubject (config.getEmailSubject());
+
+                if (sender != null)
+                    message.setSender (sender);
+
+                if (log.isDebugEnabled())
+                    log.debug ("Email sender = " + message.getSender());
 
                 // Add the output. If there's only one attachment, and its
                 // output is text, then there's no need for attachments.
