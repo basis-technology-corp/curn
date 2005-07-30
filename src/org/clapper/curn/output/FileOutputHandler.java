@@ -76,10 +76,11 @@ public abstract class FileOutputHandler implements OutputHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private File        outputFile  = null;
-    private ConfigFile  config      = null;
-    private boolean     saveOnly    = false;
-    private String      name        = null;
+    private File        outputFile   = null;
+    private ConfigFile  config       = null;
+    private boolean     saveOnly     = false;
+    private String      name         = null;
+    private boolean     showToolInfo = true;
 
     /**
      * For logging
@@ -139,6 +140,10 @@ public abstract class FileOutputHandler implements OutputHandler
                 saveOnly = config.getOptionalBooleanValue (sectionName,
                                                            "SaveOnly",
                                                            false);
+
+                showToolInfo = config.getOptionalBooleanValue (sectionName,
+                                                               "ShowCurnInfo",
+                                                               true);
 
                 // saveOnly cannot be set unless saveAs is non-null. The
                 // ConfigFile class is supposed to trap for this, so an
@@ -232,36 +237,20 @@ public abstract class FileOutputHandler implements OutputHandler
     public abstract String getContentType();
 
     /**
-     * Get an <tt>InputStream</tt> that can be used to read the output data
-     * produced by the handler, if applicable.
+     * Get the <tt>File</tt> that represents the output produced by the
+     * handler, if applicable. (Use of a <tt>File</tt>, rather than an
+     * <tt>InputStream</tt>, is more efficient when mailing the output,
+     * since the email API ultimately wants files and will create
+     * temporary files for <tt>InputStream</tt>s.)
      *
-     * @return an open input stream, or null if no suitable output was produced
+     * @return the output file, or null if no suitable output was produced
      *
      * @throws CurnException an error occurred
      */
-    public final InputStream getGeneratedOutput()
+    public final File getGeneratedOutput()
         throws CurnException
     {
-        InputStream result = null;
-
-        if (hasGeneratedOutput())
-        {
-            try
-            {
-                result = new FileInputStream (outputFile);
-            }
-
-            catch (FileNotFoundException ex)
-            {
-                throw new CurnException (Curn.BUNDLE_NAME,
-                                         "FileOutputHandler.cantReopenFile",
-                                         "Cannot reopen file \"{0}\".",
-                                         new Object[] {outputFile},
-                                         ex);
-            }
-        }
-
-        return result;
+        return hasGeneratedOutput() ? outputFile : null;
     }
 
     /**
@@ -315,6 +304,22 @@ public abstract class FileOutputHandler implements OutputHandler
     protected final boolean savingOutputOnly()
     {
         return saveOnly;
+    }
+
+    /**
+     * Determine whether or not to display curn tool-related information in
+     * the generated output. Subclasses are not required to display
+     * tool-related information in the generated output, but if they do,
+     * they are strongly encouraged to do so conditionally, based on the
+     * value of this configuration item.
+     *
+     * @return <tt>true</tt> if tool-related information is to be displayed
+     *         (assuming the output handler supports it), or <tt>false</tt>
+     *         if tool-related information should be suppressed.
+     */
+    protected final boolean displayToolInfo()
+    {
+        return this.showToolInfo;
     }
 
     /**

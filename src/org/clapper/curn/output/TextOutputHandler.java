@@ -244,8 +244,13 @@ public class TextOutputHandler extends FileOutputHandler
     {
         out.println ();
         out.println (HORIZONTAL_RULE);
-        out.println (Version.getFullVersion());
-        out.println ("Generated " + new Date().toString());
+
+        if (displayToolInfo())
+        {
+            out.println (Version.getFullVersion());
+            out.println ("Generated " + new Date().toString());
+        }
+
         out.flush();
         out.close();
         out = null;

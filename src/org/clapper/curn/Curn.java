@@ -27,8 +27,8 @@
 package org.clapper.curn;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -204,14 +204,14 @@ public class Curn
         if ((cache != null) && configuration.mustUpdateCache())
         {
             File cacheBackupFile = configuration.getCacheBackupFile();
+            File cacheFile = configuration.getCacheFile();
             if (cacheBackupFile == null)
             {
                 log.debug ("No cache backup file.");
             }
 
-            else
+            else if (cacheFile.exists())
             {
-                File cacheFile = configuration.getCacheFile();
                 log.info ("Copying cache file \""
                         + cacheFile.getPath()
                         + "\" to backup file \""
@@ -585,12 +585,12 @@ public class Curn
             else
             {
                 handler = firstOutput.getOutputHandler();
-                InputStream output = handler.getGeneratedOutput();
+                File output = handler.getGeneratedOutput();
 
                 try
                 {
-                    FileUtil.copyStream (output, System.out);
-                    output.close();
+                    FileUtil.copyStream (new FileInputStream (output),
+                                         System.out);
                 }
 
                 catch (IOException ex)

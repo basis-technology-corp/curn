@@ -44,7 +44,7 @@ import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
 import org.clapper.util.misc.MIMETypeUtil;
 
-import java.io.InputStream;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -229,17 +229,15 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     }
 
     /**
-     * Get an <tt>InputStream</tt> that can be used to read the output data
-     * produced by the handler, if applicable.
+     * Get the <tt>File</tt> that represents the output produced by the
+     * handler, if applicable. Note that this handler produces no output
+     * and always returns null.
      *
-     * @return an open input stream, or null if no suitable output was produced
+     * @return null, unconditionally
      *
      * @throws CurnException an error occurred
-     *
-     * @see #hasGeneratedOutput
-     * @see #getContentType
      */
-    public InputStream getGeneratedOutput()
+    public File getGeneratedOutput()
         throws CurnException
     {
         return null;
@@ -346,14 +344,14 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                 StringBuffer  name = new StringBuffer();
                 String        ext;
                 String        contentType;
-                InputStream   is;
+                File          file;
 
                 if (totalAttachments == 1)
                 {
                     handler = firstHandlerWithOutput;
                     contentType = handler.getContentType();
                     ext = MIMETypeUtil.fileExtensionForMIMEType (contentType);
-                    is = handler.getGeneratedOutput();
+                    file = handler.getGeneratedOutput();
                     message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
 
                     name.append (fmt.format (1));
@@ -361,9 +359,9 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                     name.append (ext);
 
                     if (contentType.startsWith ("text/"))
-                        message.setText (is, name.toString(), contentType);
+                        message.setText (file, name.toString(), contentType);
                     else
-                        message.addAttachment (is,
+                        message.addAttachment (file,
                                                name.toString(),
                                                contentType);
                 }
@@ -382,15 +380,15 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
                         contentType = handler.getContentType();
                         ext = MIMETypeUtil.fileExtensionForMIMEType
                                                                 (contentType);
-                        is = handler.getGeneratedOutput();
-                        if (is != null)
+                        file = handler.getGeneratedOutput();
+                        if (file != null)
                         {
                             name.setLength (0);
                             name.append (fmt.format (i));
                             name.append ('.');
                             name.append (ext);
                             i++;
-                            message.addAttachment (is,
+                            message.addAttachment (file,
                                                    name.toString(),
                                                    contentType);
                         }
@@ -399,6 +397,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
 
                 log.debug ("Sending message.");
                 transport.send (message);
+                message.clear();
             }
         }
 

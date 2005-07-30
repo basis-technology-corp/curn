@@ -26,7 +26,7 @@
 
 package org.clapper.curn;
 
-import java.io.InputStream;
+import java.io.File;
 
 import org.clapper.curn.parser.RSSChannel;
 
@@ -121,17 +121,17 @@ public interface OutputHandler
     public String getContentType();
 
     /**
-     * Get an <tt>InputStream</tt> that can be used to read the output data
-     * produced by the handler, if applicable.
+     * Get the <tt>File</tt> that represents the output produced by the
+     * handler, if applicable. (Use of a <tt>File</tt>, rather than an
+     * <tt>InputStream</tt>, is more efficient when mailing the output,
+     * since the email API ultimately wants files and will create
+     * temporary files for <tt>InputStream</tt>s.)
      *
-     * @return an open input stream, or null if no suitable output was produced
+     * @return the output file, or null if no suitable output was produced
      *
      * @throws CurnException an error occurred
-     *
-     * @see #hasGeneratedOutput
-     * @see #getContentType
      */
-    public InputStream getGeneratedOutput()
+    public File getGeneratedOutput()
         throws CurnException;
 
     /**

@@ -413,15 +413,23 @@ public class HTMLOutputHandler extends FileOutputHandler
 
         dom.setTextGeneratedOnHost (thisHost);
 
-        // Add configuration info, if available.
+        // Add configuration info, if available and requested.
 
-        dom.setTextVersion (Version.getVersionNumber());
+        if (! displayToolInfo())
+        {
+            removeElement (dom.getElementToolInfo());
+        }
 
-        URL configFileURL = config.getConfigurationFileURL();
-        if (configFileURL == null)
-            removeElement (dom.getElementConfigFileRow());
         else
-            dom.setTextConfigURL (configFileURL.toString());
+        {
+            dom.setTextVersion (Version.getVersionNumber());
+
+            URL configFileURL = config.getConfigurationFileURL();
+            if (configFileURL == null)
+                removeElement (dom.getElementConfigFileRow());
+            else
+                dom.setTextConfigURL (configFileURL.toString());
+        }
 
         // Write the document.
 

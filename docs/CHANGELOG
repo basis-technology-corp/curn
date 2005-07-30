@@ -4,6 +4,51 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.2 (29 July, 2005)
+
+- Curn's output handlers now support a "ShowCurnInfo" configuration
+  parameter. If set to "true" (the default), then the output handlers write
+  the curn version and other information to the generated output. If set to
+  "false", the output handlers suppress that information. (Previously, the
+  output handlers wrote that information unconditionally.)
+
+  The "ShowCurnInfo" configuration parameter is actually parsed by the
+  org.clapper.curn.output.FileOutputHandler abstract base class, so it is
+  available to any subclass that wishes to query its status.
+
+- Curn no longer copies the generated output files to temporary files when
+  emailing them. This buglet resulted from a combination of two things:
+
+  a) The utility library (http://www.clapper.org/software/java/util/) has a
+     set of email classes that provide a simplified front-end to the Java
+     Mail API. The EmailMessage class supports adding attachments to and
+     setting the text of a message from a java.io.File, a String or an
+     java.io.InputStream. When using an InputStream, the EmailMessage class
+     copies the contents to a temporary file. (It does this primarily
+     because the Java Activation Framework's DataSource interface, which is
+     used when specifying attachments, allows the caller to access the data
+     source multiple times--and the JavaMail API appears to do that. One
+     can't guarantee that an InputStream is rewindable, so the only
+     solution, when presented with an InputStream attachment, is to copy
+     the InputStream to a file.)
+
+  b) The curn OutputHandler interface specifies a getGeneratedOutput()
+     method that returned an InputStream, for flexibility (e.g., in case an
+     output handler generates its content in memory). But the existing
+     output handlers were all producing files anyway. So, the
+     OutputHandler.getGeneratedOutput() method now returns a File, instead
+     of an InputStream.
+
+     NOTE: This change breaks existing output handlers! If you have a
+     custom output handler that does not extend
+     org.clapper.curn.output.FileOutputHandler, you'll have to change its
+     getGeneratedOutput() method, or it won't compile.
+
+NOTE: This version of curn REQUIRES version 2.0.1 of the org.clapper.util
+library, since it uses some new methods in the
+org.clapper.util.mail.EmailMessage class. It will NOT run with version 2.0.
+
+
 Version 2.1.2 (08 July, 2005)
 
 - Curn was not honoring its "MailFrom" configuration option, so it was
