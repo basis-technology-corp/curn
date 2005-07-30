@@ -691,6 +691,10 @@ source and documentation packages.
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
+      <fileset dir="${javadocs_top_dir}"/>
+    </delete>
+
+    <delete failonerror="false" includeEmptyDirs="true">
       <fileset dir="${dist}"/>
     </delete>
   </target>
