@@ -103,7 +103,8 @@ public final class ParserUtil
      *
      * @param sDate  the date string
      *
-     * @return the corresponding date, or null if not parseable
+     * @return the corresponding date, or null if not parseable or if the
+     *         date string is empty or null
      */
     public static Date parseDate (String sDate)
     {
@@ -120,11 +121,21 @@ public final class ParserUtil
      *
      * @param sDate  the date string
      *
-     * @return the corresponding date, or null if not parseable
+     * @return the corresponding date, or null if not parseable or if the
+     *         date string is empty or null
      */
     public static Date parseRFC822Date (String sDate)
     {
-        return parseDate (sDate, RFC822_DATE_FORMATS, TimeZone.getDefault());
+        Date result = null;
+
+        if ((sDate != null) && (sDate.length() > 0))
+        {
+            result = parseDate (sDate,
+                                RFC822_DATE_FORMATS,
+                                TimeZone.getDefault());
+        }
+
+        return result;
     }
 
     /**
@@ -132,25 +143,33 @@ public final class ParserUtil
      *
      * @param sDate  the date string
      *
-     * @return the corresponding date, or null if not parseable
+     * @return the corresponding date, or null if not parseable or if the
+     *         date string is empty or null
      */
     public static Date parseW3CDate (String sDate)
     {
-        TimeZone       timeZone = TimeZone.getDefault();
-        int            tzIndex;
+        Date result = null;
 
-        // First, extract the time zone, if present.
-
-        if (((tzIndex = sDate.lastIndexOf ('Z')) != -1) ||
-            ((tzIndex = sDate.lastIndexOf ('-')) != -1) ||
-            ((tzIndex = sDate.lastIndexOf ('+')) != -1))
+        if ((sDate != null) && (sDate.length() > 0))
         {
-            timeZone = parseW3CTimeZone (sDate.substring (tzIndex));
+            TimeZone       timeZone = TimeZone.getDefault();
+            int            tzIndex;
+
+            // First, extract the time zone, if present.
+
+            if (((tzIndex = sDate.lastIndexOf ('Z')) != -1) ||
+                ((tzIndex = sDate.lastIndexOf ('-')) != -1) ||
+                ((tzIndex = sDate.lastIndexOf ('+')) != -1))
+            {
+                timeZone = parseW3CTimeZone (sDate.substring (tzIndex));
+            }
+
+            // Now, parse the date.
+
+            result = parseDate (sDate, W3C_DATE_FORMATS, timeZone);
         }
 
-        // Now, parse the date.
-
-        return parseDate (sDate, W3C_DATE_FORMATS, timeZone);
+        return result;
     }
 
     /**
