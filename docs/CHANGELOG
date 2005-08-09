@@ -4,6 +4,20 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.2.1 (09 Aug, 2005)
+
+- Curn's RSS date-parsing logic had a bug causing a NullPointerException
+  if the date was empty or null. This could happen, for instance, in an
+  RSS 1.0 feed with this construct:
+
+	<dc:date></dc:date>
+
+  That bug has been fixed. 
+
+  Thanks to Tobias Kroha <tobias /at/ esce-neun /dot/ de> for finding the
+  bug and suggesting the fix.
+
+
 Version 2.2 (29 July, 2005)
 
 - Curn's output handlers now support a "ShowCurnInfo" configuration
