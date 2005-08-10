@@ -4,6 +4,36 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.3 (10 August, 2005)
+
+- Curn now supports global and feed-specific "AllowEmbeddedHTML" configuration
+  options. If set for a feed (or set globally and not overridden by the feed),
+  the HTMLOutputHandler class will not strip any raw HTML it finds in the
+  feed title, item title, item description, or item author fields; it will,
+  instead, insert the raw HTML in the resulting HTML output. This is useful
+  when handling feeds that have embedded images, for instance (like a comic
+  site).
+
+- Enhanced the MiniRSSParser Atom feed parser to account for the Atom 1.0
+  specification. As part of this change:
+
+  a) The org.clapper.curn.parser.RSSChannel interface has been converted to
+     an abstract class.
+
+  b) The org.clapper.curn.parser.RSSChannel and org.clapper.curn.parser.RSSItem
+     classes now require new addAuthor(), clearAuthors(), and getAuthors()
+     methods. The old getAuthor() and setAuthor() methods have been
+     converted to concrete, final methods. These changes were necessary to
+     support multiple authors per feed and per item. Existing callers of
+     the old methods do not have to change, but existing curn parser
+     adapters will have to change. (All parser adapters shipped with curn
+     have been changed.)
+
+NOTE: This version of curn REQUIRES version 2.0.2 of the org.clapper.util
+library, since it uses some new methods in the
+org.clapper.util.text.TextUtil class. It will NOT run with earlier versions.
+
+
 Version 2.2.1 (09 Aug, 2005)
 
 - Curn's RSS date-parsing logic had a bug causing a NullPointerException
