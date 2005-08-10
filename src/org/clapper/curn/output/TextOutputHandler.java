@@ -38,6 +38,7 @@ import org.clapper.curn.parser.RSSItem;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.logging.Logger;
+import org.clapper.util.text.TextUtil;
 
 import java.io.IOException;
 import java.io.FileWriter;
@@ -200,9 +201,12 @@ public class TextOutputHandler extends FileOutputHandler
 
                 if (feedInfo.showAuthors())
                 {
-                    s = item.getAuthor();
-                    if (s != null)
+                    Collection<String> authors = item.getAuthors();
+                    if ((authors != null) && (authors.size() > 0))
+                    {
+                        s = TextUtil.join (authors, ", ");
                         out.println ("By " + convert (s));
+                    }
                 }
 
                 out.println (item.getLink().toString());

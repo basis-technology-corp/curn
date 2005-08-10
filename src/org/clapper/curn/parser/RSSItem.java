@@ -210,6 +210,61 @@ public abstract class RSSItem
         return summary;
     }
 
+    /**
+     * Get the item's author. This method simply calls the {@link
+     * #getAuthors} method and combines the results into a comma-delimited
+     * string.
+     *
+     * @return the author string, or null if not available
+     *
+     * @see #setAuthor
+     * @see #getAuthors
+     */
+    public final String getAuthor()
+    {
+        Collection<String> authors = getAuthors();
+        String             result  = null;
+
+        if ((authors != null) && (authors.size() > 0))
+            result = TextUtil.join (authors, ", ");
+
+        return result;
+    }
+
+    /**
+     * Set the item's author. This method clears the existing authors
+     * field, then calls {@link #addAuthor}. You're better off calling
+     * {@link #addAuthor} directly, since some sites support multiple
+     * authors for a feed item.
+     *
+     * @param newAuthor  the author, or null if not available
+     *
+     * @see #setAuthors
+     */
+    public final void setAuthor (String newAuthor)
+    {
+        clearAuthors();
+        addAuthor (newAuthor);
+    }
+
+    /**
+     * Set the item's list of authors to the specified <tt>Collection</tt>.
+     * This method clears the existing authors field, then calls
+     * {@link #addAuthor} for every string in the <tt>Collection</tt>.
+     *
+     * @param newAuthor  the author, or null if not available
+     *
+     * @see #addAuthor
+     * @see #getAuthor
+     * @see #clearAuthor
+     */
+    public final void setAuthors (Collection<String> newAuthors)
+    {
+        clearAuthors();
+        for (String author : newAuthors)
+            addAuthor (author);
+    }
+
     /*----------------------------------------------------------------------*\
                           Public Abstract Methods
     \*----------------------------------------------------------------------*/
@@ -268,20 +323,36 @@ public abstract class RSSItem
     public abstract void setSummary (String newSummary);
 
     /**
-     * Get the item's author.
+     * Get the item's author list.
      *
-     * @return the author, or null if not available
+     * @return the authors, or null (or an empty <tt>Collection</tt>) if
+     *         not available
      *
-     * @see #setAuthor
+     * @see #addAuthor
+     * @see #clearAuthors
+     * @see #setAuthors
      */
-    public abstract String getAuthor();
+    public abstract Collection<String> getAuthors();
 
     /**
-     * Set the item's author.
+     * Add to the item's author list.
      *
-     * @param newAuthor the author, or null if not available
+     * @param author  another author string to add
+     *
+     * @see #getAuthors
+     * @see #clearAuthors
+     * @see #setAuthors
      */
-    public abstract void setAuthor (String newAuthor);
+    public abstract void addAuthor (String author);
+
+    /**
+     * Clear the authors list.
+     *
+     * @see #getAuthors
+     * @see #addAuthor
+     * @see #setAuthors
+     */
+    public abstract void clearAuthors();
 
     /**
      * Get the categories the item belongs to.

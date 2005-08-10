@@ -382,7 +382,10 @@ public class MiniRSSParser
         else if (elementName.equals ("feed"))
         {
             String version = attributes.getValue ("version");
-            channel.setRSSFormat ("Atom " + version);
+            if (version == null)
+                channel.setRSSFormat ("Atom");
+            else
+                channel.setRSSFormat ("Atom " + version);
             xmlReader.setContentHandler (new AtomParser (channel,
                                                          elementName));
         }

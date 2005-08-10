@@ -27,6 +27,7 @@
 package org.clapper.curn.parser;
 
 import org.clapper.util.io.WordWrapWriter;
+import org.clapper.util.text.TextUtil;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
@@ -91,10 +92,17 @@ public class tester
 
     private static void show (RSSChannel channel)
     {
-        out.println ("Channel title: " + channel.getTitle());
-        out.println ("Channel link:  " + channel.getLink());
-        out.println ("RSS version:   " + channel.getRSSFormat());
-        out.print   ("Channel date:  ");
+        out.println ("Channel title:  " + channel.getTitle());
+        out.println ("Channel link:   " + channel.getLink());
+
+        Collection<String> authors = channel.getAuthors();        
+        String s = null;
+        if (authors != null)
+            s = TextUtil.join (authors, ", ");
+
+        out.println ("Channel author: " + ((s == null) ? "<null>" : s));
+        out.println ("RSS version:    " + channel.getRSSFormat());
+        out.print   ("Channel date:   ");
 
         Date date = channel.getPublicationDate();
         if (date != null)
@@ -107,15 +115,25 @@ public class tester
             RSSItem item = (RSSItem) it.next();
 
             out.println ();
-            out.println ("Item title:  " + item.getTitle());
+            out.println ("Item title:    " + item.getTitle());
 
-            out.print ("Item author: ");
-            String s = item.getAuthor();
-            out.println ((s == null) ? "<null>" : s);
+            out.print ("Item categories: ");
+            Collection<String> categories = item.getCategories();
+            if ((categories == null) || (categories.size() == 0))
+                out.println ("<none>");
+            else
+                out.println (TextUtil.join (categories, ", "));
 
-            out.println ("Item link:   " + item.getLink());
+            out.print ("Item author(s):  ");
+            authors = item.getAuthors();
+            if ((authors == null) || (authors.size() == 0))
+                out.println ("<none>");
+            else
+                out.println (TextUtil.join (authors, ", "));
 
-            out.print ("Item date:   ");
+            out.println ("Item link:     " + item.getLink());
+
+            out.print ("Item date:     ");
             date = item.getPublicationDate();
             s = "<null>";
             if (date != null)
@@ -125,7 +143,7 @@ public class tester
             s = item.getSummary();
             if (s != null)
             {
-                out.setPrefix ("Item desc:   ");
+                out.setPrefix ("Item desc:     ");
                 out.println (s);
                 out.setPrefix (null);
             }

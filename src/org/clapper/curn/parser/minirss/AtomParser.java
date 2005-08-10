@@ -74,7 +74,7 @@ public class AtomParser extends ParserCommon
 
         public void setAuthorName (String name)
         {
-            parentChannel.setAuthor (name);
+            parentChannel.addAuthor (name);
         }
     }
 
@@ -89,7 +89,7 @@ public class AtomParser extends ParserCommon
 
         public void setAuthorName (String name)
         {
-            parentItem.setAuthor (name);
+            parentItem.addAuthor (name);
         }
     }
 
@@ -101,6 +101,18 @@ public class AtomParser extends ParserCommon
         ItemContent (String mimeType, Item parentItem)
         {
             this.mimeType = mimeType;
+            this.parentItem = parentItem;
+        }
+    }
+
+    class ItemCategory
+    {
+        String term = null;
+        Item   parentItem = null;
+
+        ItemCategory (String term, Item parentItem)
+        {
+            this.term = term;
             this.parentItem = parentItem;
         }
     }
@@ -219,6 +231,9 @@ public class AtomParser extends ParserCommon
 
             else if (container instanceof ItemContent)
                 endItemContentElement (elementName, entry);
+
+            else if (container instanceof ItemCategory)
+                endItemCategoryElement (elementName, entry);
         }
     }
 
@@ -338,7 +353,12 @@ public class AtomParser extends ParserCommon
         else if (elementName.equals ("modified"))
             theChannel.setPublicationDate (parseW3CDate (chars));
 
+        // The <created> element was dropped in Atom 1.0, but is supported
+        // here for backward compatibility.
         else if (elementName.equals ("created"))
+            theChannel.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("published"))
             theChannel.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("id"))
@@ -439,6 +459,11 @@ public class AtomParser extends ParserCommon
             startItemContentElement (elementName, attributes, item);
         }
 
+        else if (elementName.equals ("category"))
+        {
+            startItemCategoryElement (elementName, attributes, item);
+        }
+
         else if (elementName.equals ("author"))
         {
             Author author = new ItemAuthor (item);
@@ -479,7 +504,11 @@ public class AtomParser extends ParserCommon
         else if (elementName.equals ("summary"))
             item.setSummary (chars);
 
-        else if (elementName.equals ("issued"))
+        // NOTE: The <issued> element is replaced by <published> in Atom
+        // 1.0. <issued> is supported here for backward compatibility.
+
+        else if (elementName.equals ("issued") ||
+                 elementName.equals ("published"))
             item.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("id"))
@@ -519,7 +548,6 @@ public class AtomParser extends ParserCommon
         elementStack.push (new ElementStackEntry (elementName, content));
     }
 
-
     /**
      * Handles the end of an item's nested content element.
      *
@@ -545,5 +573,48 @@ public class AtomParser extends ParserCommon
             content.parentItem.setContent (chars,
                                            RSSItem.DEFAULT_CONTENT_TYPE);
         }
+    }
+
+    /**
+     * Handles the start of an item's nested category element.
+     *
+     * @param elementName  the element name, which is pushed onto the
+     *                     stack along with the <tt>Item</tt> object
+     * @param attributes   the attributes
+     * @param item         the parent Item
+     *
+     * @throws SAXException on error
+     */
+    private void startItemCategoryElement (String     elementName,
+                                           Attributes attributes,
+                                           Item       item)
+        throws SAXException
+    {
+        String        term = attributes.getValue ("term");
+        ItemCategory  category;
+
+        if ((term != null) && (term.trim().length() == 0))
+            term = null;
+
+        category = new ItemCategory (term, item);
+        elementStack.push (new ElementStackEntry (elementName, category));
+    }
+
+    /**
+     * Handles the end of an item's nested category element.
+     *
+     * @param elementName  the name of the element being ended
+     * @param stackEntry   the associated (popped) stack entry
+     *
+     * @throws SAXException on error
+     */
+    private void endItemCategoryElement (String            elementName,
+                                         ElementStackEntry stackEntry)
+        throws SAXException
+    {
+        ItemCategory category  = (ItemCategory) stackEntry.getContainer();
+
+        if (category.term != null)
+            category.parentItem.addCategory (category.term);
     }
 }

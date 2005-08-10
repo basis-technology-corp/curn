@@ -34,6 +34,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * This class contains a subset of standard RSS channel data, providing
@@ -46,13 +47,14 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-public class Channel implements RSSChannel
+public class Channel extends RSSChannel
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
     private Collection<RSSItem>  items       = new ArrayList<RSSItem>();
+    private Collection<String>   authors     = new HashSet<String>();
     private String               title       = null;
     private String               description = null;
     private URL                  url         = null;
@@ -240,24 +242,43 @@ public class Channel implements RSSChannel
     {
         this.rssFormat = format;
     }
+
     /**
-     * Get the author of the feed.
+     * Get the channel's author list.
      *
-     * @return the author, or null if not available
+     * @return the authors, or null (or an empty <tt>Collection</tt>) if
+     *         not available
+     *
+     * @see #addAuthor
+     * @see #clearAuthors
      */
-    public String getAuthor()
+    public Collection<String> getAuthors()
     {
-        return author;
+        return authors;
     }
 
     /**
-     * Set the author of the feed.
+     * Add to the channel's author list.
      *
-     * @param author the author, or null if not available
+     * @param author  another author string to add
+     *
+     * @see #getAuthors
+     * @see #clearAuthors
      */
-    public void setAuthor (String author)
+    public void addAuthor (String author)
     {
-        this.author = author;
+        authors.add (author);
+    }
+
+    /**
+     * Clear the authors list.
+     *
+     * @see #getAuthors
+     * @see #addAuthor
+     */
+    public void clearAuthors()
+    {
+        authors.clear();
     }
 
     /*----------------------------------------------------------------------*\

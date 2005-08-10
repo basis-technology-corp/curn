@@ -40,6 +40,7 @@ import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.HTMLUtil;
+import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.Unicode;
 
 import java.io.File;
@@ -371,7 +372,11 @@ public class HTMLOutputHandler extends FileOutputHandler
             String author = null;
 
             if (feedInfo.showAuthors())
-                author = item.getAuthor();
+            {
+                Collection<String> authors = item.getAuthors();
+                if ((authors != null) && (authors.size() > 0))
+                    author = TextUtil.join (authors, ", ");
+            }
 
             if (author != null)
             {

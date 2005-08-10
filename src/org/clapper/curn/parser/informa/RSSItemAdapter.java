@@ -149,13 +149,15 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
-     * Get the item's author.
+     * Get the item's author list.
      *
-     * @return the author, or null if not available
+     * @return the authors, or null (or an empty <tt>Collection</tt>) if
+     *         not available
      *
-     * @see #setAuthor
+     * @see #addAuthor
+     * @see #clearAuthors
      */
-    public String getAuthor()
+    public Collection<String> getAuthors()
     {
         // Informa doesn't support this field.
 
@@ -163,12 +165,27 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
-     * Set the item's author.
+     * Add to the item's author list.
      *
-     * @param newAuthor the author, or null if not available
+     * @param author  another author string to add
+     *
+     * @see #getAuthors
+     * @see #clearAuthors
      */
-    public void setAuthor (String newAuthor)
+    public void addAuthor (String author)
     {
+        // Informa doesn't support this field.
+    }
+
+    /**
+     * Clear the authors list.
+     *
+     * @see #getAuthors
+     * @see #addAuthor
+     */
+    public void clearAuthors()
+    {
+        // Informa doesn't support this field.
     }
 
     /**

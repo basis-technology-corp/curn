@@ -40,6 +40,7 @@ import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
+import org.clapper.util.text.TextUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -495,11 +496,18 @@ public class ScriptOutputHandler extends FileOutputHandler
                 RSSItem item = (RSSItem) it.next();
                 item.setTitle (convert (item.getTitle()));
 
-                String s = item.getAuthor();
-                if (s != null)
-                    item.setAuthor (convert (s));
+                Collection<String> authors = item.getAuthors();
+                if ((authors != null) && (authors.size() > 0))
+                {
+                    Collection<String> cvtAuthors = new ArrayList<String>();
 
-                s = item.getSummary();
+                    for (String author : authors)
+                        cvtAuthors.add (convert (author));
+
+                    item.setAuthors (cvtAuthors);
+                }
+
+                String s = item.getSummary();
                 if (s != null)
                     item.setSummary (convert (s));
             }

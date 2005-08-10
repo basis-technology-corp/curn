@@ -53,7 +53,7 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RSSChannelAdapter implements RSSChannel
+public class RSSChannelAdapter extends RSSChannel
 {
     /*----------------------------------------------------------------------*\
                            Private Instance Data
@@ -205,12 +205,42 @@ public class RSSChannelAdapter implements RSSChannel
     }
 
     /**
-     * Get the author of the feed.
+     * Get the channel's author list.
      *
-     * @return the author, or null if not available
+     * @return the authors, or null (or an empty <tt>Collection</tt>) if
+     *         not available
+     *
+     * @see #addAuthor
+     * @see #clearAuthors
      */
-    public String getAuthor()
+    public Collection<String> getAuthors()
     {
+        // Informa does not support this field
+
         return null;
+    }
+
+    /**
+     * Add to the channel's author list.
+     *
+     * @param author  another author string to add
+     *
+     * @see #getAuthors
+     * @see #clearAuthors
+     */
+    public void addAuthor (String author)
+    {
+        // Informa does not support this field
+    }
+
+    /**
+     * Clear the authors list.
+     *
+     * @see #getAuthors
+     * @see #addAuthor
+     */
+    public void clearAuthors()
+    {
+        // Informa does not support this field
     }
 }

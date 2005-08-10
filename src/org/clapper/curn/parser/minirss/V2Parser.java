@@ -268,7 +268,7 @@ public class V2Parser extends ParserCommon
             theChannel.setCopyright (chars);
 
         else if (elementName.equals ("author"))
-            theChannel.setAuthor (chars);
+            theChannel.addAuthor (chars);
     }
 
     /**
@@ -341,7 +341,7 @@ public class V2Parser extends ParserCommon
             item.addCategory (chars);
 
         else if (elementName.equals ("author"))
-            item.setAuthor (chars);
+            item.addAuthor (chars);
 
         else if (elementName.equals ("guid"))
             item.setUniqueID (chars);

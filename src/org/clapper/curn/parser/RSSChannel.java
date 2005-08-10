@@ -30,14 +30,16 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 
+import org.clapper.util.text.TextUtil;
+
 /**
- * This interface defines a simplified view of an RSS channel, providing
- * only the methods necessary for <i>curn</i> to work. <i>curn</i> uses
- * the {@link RSSParserFactory} class to get a specific implementation of
- * <tt>RSSParser</tt>, which returns an object that conforms to this
- * interface. This strategy isolates the bulk of the code from the
- * underlying RSS parser, making it easier to substitute different parsers
- * as more of them become available.
+ * This abstract class defines a simplified view of an RSS channel,
+ * providing only the methods necessary for <i>curn</i> to work.
+ * <i>curn</i> uses the {@link RSSParserFactory} class to get a specific
+ * implementation of <tt>RSSParser</tt>, which returns an object that is a
+ * subclass of this class. This strategy isolates the bulk of the code from
+ * the underlying RSS parser, making it easier to substitute different
+ * parsers as more of them become available.
  *
  * @see RSSParserFactory
  * @see RSSParser
@@ -45,10 +47,69 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-public interface RSSChannel
+public abstract class RSSChannel
 {
     /*----------------------------------------------------------------------*\
                               Public Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the author of the feed. This method simply calls the
+     * {@link #getAuthors}
+     * method and combines the results into a comma-delimited string.
+     *
+     * @return the author, or null if not available
+     *
+     * @see #setAuthor
+     * @see #getAuthors
+     */
+    public final String getAuthor()
+    {
+        Collection<String> authors = getAuthors();
+        String             result  = null;
+
+        if ((authors != null) && (authors.size() > 0))
+            result = TextUtil.join (authors, ", ");
+
+        return result;
+    }
+
+    /**
+     * Set the item's author. This method clears the author field, then
+     * calls {@link #addAuthor}. You're better off calling {@link #addAuthor}
+     * directly, since some sites support multiple authors for a feed item.
+     *
+     * @param newAuthor  the author, or null if not available
+     */
+    public final void setAuthor (String newAuthor)
+    {
+        clearAuthors();
+        addAuthor (newAuthor);
+    }
+
+    /**
+     * Set the channel's list of authors to the specified
+     * <tt>Collection</tt>. This method clears the existing authors field,
+     * then calls {@link #addAuthor} for every string in the
+     * <tt>Collection</tt>.
+     *
+     * @param newAuthor  the author, or null if not available
+     *
+     * @see #addAuthor
+     * @see #getAuthor
+     * @see #clearAuthor
+     */
+    public final void setAuthors (Collection<String> newAuthors)
+    {
+        clearAuthors();
+        for (String author : newAuthors)
+            addAuthor (author);
+    }
+
+    
+
+    /*----------------------------------------------------------------------*\
+                          Public Abstract Methods
     \*----------------------------------------------------------------------*/
 
     /**
@@ -64,7 +125,7 @@ public interface RSSChannel
      *         that <tt>Collection</tt> directly; instead, it should return
      *         a copy.)
      */
-    public Collection<RSSItem> getItems();
+    public abstract Collection<RSSItem> getItems();
 
     /**
      * Change the items the channel the ones in the specified collection.
@@ -74,7 +135,7 @@ public interface RSSChannel
      *
      * @param newItems  new collection of <tt>RSSItem</tt> items.
      */
-    public void setItems (Collection<? extends RSSItem> newItems);
+    public abstract void setItems (Collection<? extends RSSItem> newItems);
 
     /**
      * Get the channel's title
@@ -83,7 +144,7 @@ public interface RSSChannel
      *
      * @see #setTitle(String)
      */
-    public String getTitle();
+    public abstract String getTitle();
 
     /**
      * Set the channel's title
@@ -92,47 +153,72 @@ public interface RSSChannel
      *
      * @see #getTitle()
      */
-    public void setTitle (String newTitle);
+    public abstract void setTitle (String newTitle);
 
     /**
      * Get the channel's description
      *
      * @return the channel's description, or null if there isn't one
      */
-    public String getDescription();
+    public abstract String getDescription();
 
     /**
      * Get the channel's published link (its URL).
      *
      * @return the URL, or null if not available
      */
-    public URL getLink();
+    public abstract URL getLink();
 
     /**
      * Get the channel's publication date.
      *
      * @return the date, or null if not available
      */
-    public Date getPublicationDate();
+    public abstract Date getPublicationDate();
 
     /**
      * Get the channel's copyright string
      *
      * @return the copyright string, or null if not available
      */
-    public String getCopyright();
+    public abstract String getCopyright();
 
     /**
      * Get the RSS format the channel is using.
      *
      * @return the format, or null if not available
      */
-    public String getRSSFormat();
+    public abstract String getRSSFormat();
 
     /**
-     * Get the author of the feed.
+     * Get the channel's author list.
      *
-     * @return the author, or null if not available
+     * @return the authors, or null (or an empty <tt>Collection</tt>) if
+     *         not available
+     *
+     * @see #addAuthor
+     * @see #clearAuthors
+     * @see #setAuthor
      */
-    public String getAuthor();
+    public abstract Collection<String> getAuthors();
+
+    /**
+     * Add to the channel's author list.
+     *
+     * @param author  another author string to add
+     *
+     * @see #getAuthors
+     * @see #clearAuthors
+     * @see #setAuthor
+     */
+    public abstract void addAuthor (String author);
+
+    /**
+     * Clear the authors list.
+     *
+     * @see #getAuthors
+     * @see #addAuthor
+     * @see #setAuthor
+     */
+    public abstract void clearAuthors();
 }

@@ -1,11 +1,22 @@
-<feed version="0.3">
+<feed id="foo">
    <title>dive into mark</title>
    <link rel="alternate" type="text/html" href="http://diveintomark.org/"/>
    <modified>2003-12-13T18:30:02Z</modified>
    <author>
       <name>Mark Pilgrim</name>
    </author>
+   <author>
+      <name>John Pilgrim</name>
+   </author>
    <entry>
+      <author>
+         <name>Mark Pilgrim</name>
+      </author>
+      <author>
+         <name>John Pilgrim</name>
+      </author>
+      <category term="foo"/>
+      <category term="bar"></category>
       <title>Atom 0.3 snapshot</title>
       <link rel="alternate" type="text/html" href="http://diveintomark.org/2003/12/13/atom03"/>
       <id>tag:diveintomark.org,2003:3.2397</id>
