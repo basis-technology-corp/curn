@@ -7,6 +7,7 @@ http://irrelevant.clapper.org/
     Fifteen Philadelphia motorists cited for stupidity
     By Olaf Phenobarb
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
+    Wed Jul 28 00:00:00 EDT 2004
 
         During rush hour this morning, on the city's busy Schuylkill Expressway,
         Philadelphia police stopped fifteen motorists and cited them under
@@ -52,6 +53,7 @@ http://bites.clapper.org/
     President Falls
     By Judith Foinsapp
     http://bites.clapper.org/prezfall.html
+    Wed Jul 28 00:31:00 EDT 2004
 
         While stepping off Air Force One, the President tripped, fell onto the
         tarmac, and bruised his right pinky. ...
@@ -78,5 +80,5 @@ http://justthefactsmaam.clapper.org/
     Wed Jul 28 02:32:27 EDT 2004
 
 ------------------------------------------------------------------------------
-curn, version 2.2.1
-Generated Tue Aug 09 12:49:21 EDT 2005
+curn, version 2.3
+Generated Wed Aug 10 15:16:56 EDT 2005
