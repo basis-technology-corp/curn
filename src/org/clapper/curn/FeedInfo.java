@@ -113,6 +113,7 @@ public class FeedInfo
     private String      userAgent             = null;
     private int         maxSummarySize        = NO_MAX_SUMMARY_SIZE;
     private boolean     showAuthors           = false;
+    private boolean     allowEmbeddedHTML     = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -134,6 +135,38 @@ public class FeedInfo
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Whether or not embedded HTML markup should be honored or suppressed
+     * for this feed. (Even if set, this flag may not be meaningful to all
+     * output handlers.)
+     *
+     * @return <tt>true</tt> if embedded HTML markup should be honored
+     *         (if possible) for this feed, <tt>false</tt> if it should
+     *         be stripped.
+     *
+     * @see #setAllowEmbeddedHTMLFlag
+     */
+    public boolean allowEmbeddedHTML()
+    {
+        return allowEmbeddedHTML;
+    }
+
+    /**
+     * Set the flag that controls whether or not embedded HTML markup
+     * should be honored or suppressed for this feed. (Even if set, this
+     * flag may not be meaningful to all output handlers.)
+     *
+     * @param allow <tt>true</tt> if embedded HTML markup should be honored
+     *              (if possible) for this feed, <tt>false</tt> if it should
+     *              be stripped.
+     *
+     * @see #allowEmbeddedHTML()
+     */
+    public void setAllowEmbeddedHTMLFlag (boolean allow)
+    {
+        this.allowEmbeddedHTML = allow;
+    }
 
     /**
      * Get the hash code for this feed

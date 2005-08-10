@@ -314,6 +314,9 @@ public class V1Parser extends ParserCommon
 
         else if (elementName.equals ("dc:date"))
             theChannel.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("dc:creator"))
+            theChannel.setAuthor (chars);
     }
 
     /**
@@ -351,6 +354,9 @@ public class V1Parser extends ParserCommon
 
         else if (elementName.equals ("dc:date"))
             item.setPublicationDate (parseW3CDate (chars));
+
+        else if (elementName.equals ("dc:creator"))
+            item.setAuthor (chars);
     }
 
     /**

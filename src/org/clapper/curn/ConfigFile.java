@@ -113,6 +113,7 @@ public class ConfigFile extends Configuration
     private static final String VAR_FORCE_ENCODING    = "ForceEncoding";
     private static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
     private static final String VAR_USER_AGENT        = "UserAgent";
+    private static final String VAR_ALLOW_EMBEDDED_HTML= "AllowEmbeddedHTML";
 
     /**
      * Legal values
@@ -149,6 +150,7 @@ public class ConfigFile extends Configuration
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
     private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
     private static final int     DEF_MAX_THREADS       = 5;
+    private static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -175,6 +177,7 @@ public class ConfigFile extends Configuration
     private int maxThreads = DEF_MAX_THREADS;
     private String defaultUserAgent = null;
     private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
+    private boolean allowEmbeddedHTML = DEF_ALLOW_EMBEDDED_HTML;
 
     /**
      * For log messages
@@ -444,6 +447,41 @@ public class ConfigFile extends Configuration
     public void setRetrieveFeedsWithGzipFlag (boolean val)
     {
         this.getGzippedFeeds = val;
+    }
+
+    /**
+     * Return the value of the global "allow embedded HTML" flag. This flag
+     * controls whether or not embedded HTML markup should be honored or
+     * suppressed by default. It can be overridden on a per-feed basis.
+     * (Even if set, this flag may not be meaningful to all output
+     * handlers.)
+     *
+     * @return <tt>true</tt> if, by default, embedded HTML markup should be
+     *         honored (if possible), <tt>false</tt> if it should
+     *         be stripped.
+     *
+     * @see #setAllowEmbeddedHTMLFlag
+     */
+    public boolean allowEmbeddedHTML()
+    {
+        return allowEmbeddedHTML;
+    }
+
+    /**
+     * Set the global "allow embedded HTML" flag. This flag controls
+     * whether or not embedded HTML markup should be honored or suppressed
+     * by default. It can be overridden on a per-feed basis. (Even if set,
+     * this flag may not be meaningful to all output handlers.)
+     *
+     * @param allow <tt>true</tt> if, by default, embedded HTML markup should
+     *              be honored (if possible), <tt>false</tt> if it should
+     *              be stripped.
+     *
+     * @see #allowEmbeddedHTML()
+     */
+    public void setAllowEmbeddedHTMLFlag (boolean allow)
+    {
+        this.allowEmbeddedHTML = allow;
     }
 
     /**
@@ -788,6 +826,9 @@ public class ConfigFile extends Configuration
             showAuthors = getOptionalBooleanValue (MAIN_SECTION,
                                                    VAR_SHOW_AUTHORS,
                                                    DEF_SHOW_AUTHORS);
+            allowEmbeddedHTML = getOptionalBooleanValue (MAIN_SECTION,
+                                                         VAR_ALLOW_EMBEDDED_HTML,
+                                                         DEF_ALLOW_EMBEDDED_HTML);
             getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
                                                        VAR_GET_GZIPPED_FEEDS,
                                                        DEF_GET_GZIPPED_FEEDS);
@@ -887,6 +928,7 @@ public class ConfigFile extends Configuration
         feedInfo.setUserAgent (defaultUserAgent);
         feedInfo.setMaxSummarySize (maxSummarySize);
         feedInfo.setShowAuthorsFlag (showAuthors);
+        feedInfo.setAllowEmbeddedHTMLFlag (allowEmbeddedHTML);
 
         for (Iterator it = varNames.iterator(); it.hasNext(); )
         {
@@ -991,6 +1033,13 @@ public class ConfigFile extends Configuration
             {
                 feedInfo.setShowAuthorsFlag
                     (getRequiredBooleanValue (sectionName, VAR_SHOW_AUTHORS));
+            }
+
+            else if (varName.equals (VAR_ALLOW_EMBEDDED_HTML))
+            {
+                feedInfo.setAllowEmbeddedHTMLFlag
+                    (getRequiredBooleanValue (sectionName,
+                                              VAR_ALLOW_EMBEDDED_HTML));
             }
         }
 

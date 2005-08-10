@@ -54,9 +54,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Text;
 import org.w3c.dom.html.HTMLElement;
 import org.w3c.dom.html.HTMLMetaElement;
 import org.w3c.dom.html.HTMLTableRowElement;
@@ -105,6 +114,8 @@ public class HTMLOutputHandler extends FileOutputHandler
     private HTMLTableCellElement  itemDescTD          = null;
     private HTMLTableCellElement  channelTD           = null;
     private String                title               = null;
+    private Set<Node>             addedNodes          = new HashSet<Node>();
+    private Map<Node,List<Node>>  removedNodes        = new HashMap<Node,List<Node>>();
 
     /**
      * For logging
@@ -148,12 +159,25 @@ public class HTMLOutputHandler extends FileOutputHandler
         this.oddChannelClass     = dom.getElementChannelTD().getClassName();
         this.oddItemRowClass     = dom.getElementItemTitleTD().getClassName();
         this.channelRow          = dom.getElementChannelRow();
+        this.channelRow.removeAttribute ("id");
+
         this.channelSeparatorRow = dom.getElementChannelSeparatorRow();
+        this.channelSeparatorRow.removeAttribute ("id");
+
         this.channelRowParent    = channelRow.getParentNode();
+
         this.itemAnchor          = dom.getElementItemAnchor();
+        this.itemAnchor.removeAttribute ("id");
+
         this.itemTitleTD         = dom.getElementItemTitleTD();
+        this.itemTitleTD.removeAttribute ("id");
+
         this.itemDescTD          = dom.getElementItemDescTD();
+        this.itemDescTD.removeAttribute ("id");
+
         this.channelTD           = dom.getElementChannelTD();
+        this.channelTD.removeAttribute ("id");
+
         this.title               = null;
 
         // Parse handler-specific configuration variables
@@ -170,6 +194,7 @@ public class HTMLOutputHandler extends FileOutputHandler
                                                     (section,
                                                      "HTMLEncoding",
                                                      DEFAULT_CHARSET_ENCODING);
+
             }
         }
         
@@ -238,8 +263,12 @@ public class HTMLOutputHandler extends FileOutputHandler
         int       i = 0;
         Iterator  it;
         Date      date;
+        boolean   allowEmbeddedHTML = feedInfo.allowEmbeddedHTML();
 
         channelCount++;
+
+        removedNodes.clear();
+        addedNodes.clear();
 
         // Insert separator row first.
 
@@ -255,26 +284,31 @@ public class HTMLOutputHandler extends FileOutputHandler
         // assumption, if we want to be completely decoupled from the
         // presentation.
 
-        Node itemAuthorBlock = dom.getElementItemAuthorBlock();
+        HTMLElement itemAuthorBlock = dom.getElementItemAuthorBlock();
         Node itemAuthorBlockParent = itemAuthorBlock.getParentNode();
-        boolean removedAuthorBlock = false;
+        itemAuthorBlock.removeAttribute ("id");
 
         for (i = 0, it = items.iterator(); it.hasNext(); i++, rowCount++)
         {
             RSSItem item = (RSSItem) it.next();
+            HTMLAnchorElement channelAnchor = dom.getElementChannelLink();
+            channelAnchor.removeAttribute ("id");
 
             if (i == 0)
             {
                 // First row in channel has channel title and link.
 
-                String s = HTMLUtil.textFromHTML (channel.getTitle());
-                dom.setTextChannelTitle (s);
+                String channelTitle = channel.getTitle();
+                addTextNode (channelAnchor,
+                             channelTitle,
+                             allowEmbeddedHTML,
+                             addedNodes);
 
                 URL url = channel.getLink();
                 if (url == null)
                     url = item.getLink();
 
-                dom.getElementChannelLink().setHref (url.toExternalForm());
+                channelAnchor.setHref (url.toExternalForm());
 
                 date = null;
                 if (config.showDates())
@@ -289,30 +323,37 @@ public class HTMLOutputHandler extends FileOutputHandler
 
             else
             {
-                dom.setTextChannelTitle ("");
+                addTextNode (channelAnchor, "", false, addedNodes);
                 dom.setTextChannelDate ("");
-                dom.getElementChannelLink().setHref ("");
+                channelAnchor.setHref ("");
                 itemAnchor.setHref ("");
             }
 
-            String channelTitle = item.getTitle();
-            dom.setTextItemTitle ((channelTitle == null) ? "(No Title)"
-                                                         : channelTitle);
+            // Item title
+
+            String itemTitle = item.getTitle();
+            if (itemTitle == null)
+                itemTitle = "(No Title)";
+
+            addTextNode (itemAnchor, itemTitle, allowEmbeddedHTML, addedNodes);
+
+            // Item summary (i.e., description)
 
             String desc = item.getSummaryToDisplay (feedInfo,
                                                     new String[]
                                                     {
                                                         "text/plain",
                                                         "text/html"
-                                                    });
+                                                    },
+                                                    false);
             if (desc == null)
                 desc = String.valueOf (Unicode.NBSP);
 
-            dom.setTextItemDescription (HTMLUtil.textFromHTML (desc));
+            addTextNode (itemDescTD, desc, allowEmbeddedHTML, addedNodes);
 
             itemAnchor.setHref (item.getLink().toExternalForm());
 
-            // Set the item date
+            // Item date
 
             date = null;
             if (config.showDates())
@@ -325,7 +366,7 @@ public class HTMLOutputHandler extends FileOutputHandler
             itemTitleTD.removeAttribute ("class");
             itemDescTD.removeAttribute ("class");
 
-            // Set the author
+            // Item author
 
             String author = null;
 
@@ -334,8 +375,12 @@ public class HTMLOutputHandler extends FileOutputHandler
 
             if (author != null)
             {
-                dom.setTextItemAuthor (author);
-                removedAuthorBlock = false;
+                HTMLElement itemAuthorTD = dom.getElementItemAuthorTD();
+                itemAuthorTD.removeAttribute ("id");
+                addTextNode (itemAuthorTD,
+                             author,
+                             allowEmbeddedHTML,
+                             addedNodes);
             }
             else
             {
@@ -343,7 +388,9 @@ public class HTMLOutputHandler extends FileOutputHandler
                 // the output), and set the author string to nothing.
 
                 itemAuthorBlockParent.removeChild (itemAuthorBlock);
-                removedAuthorBlock = true;
+                addRemovedNode (itemAuthorBlockParent,
+                                itemAuthorBlock,
+                                removedNodes);
             }
 
             // Set the odd/even class attribute on the row
@@ -367,10 +414,18 @@ public class HTMLOutputHandler extends FileOutputHandler
             channelRowParent.insertBefore (channelRow.cloneNode (true),
                                            channelSeparatorRow);
 
-            // Put back the author separator if it was removed.
+            // Remove added elements, and add back removed elements.
 
-            if (removedAuthorBlock)
-                itemAuthorBlockParent.appendChild (itemAuthorBlock);
+            for (Node addedNode : addedNodes)
+                removeElement (addedNode);
+
+            for (Node parentNode : removedNodes.keySet())
+            {
+                List<Node> nodes = removedNodes.get (parentNode);
+
+                for (Node removedNode : nodes)
+                    parentNode.appendChild (removedNode);
+            }
         }
     }
     
@@ -520,6 +575,114 @@ public class HTMLOutputHandler extends FileOutputHandler
         }
 
         return (HTMLElement) headNode;
+    }
+
+    /**
+     * Determine whether a string contains embedded HTML markup.
+     *
+     * @param s   the string
+     *
+     * @return true if the string appears to have HTML markup,
+     *         false if not
+     */
+    private boolean containsHTMLMarkup (String s)
+    {
+        // For now, assume the description contains HTML markup if it
+        // has an equal number of "<" and ">" characters.
+
+        int lt = 0;
+        int gt = 0;
+
+        char[] ch = s.toCharArray();
+        for (int i = 0; i < ch.length; i++)
+        {
+            switch (ch[i])
+            {
+                case '<':
+                    lt++;
+                    break;
+
+                case '>':
+                    gt++;
+                    break;
+            }
+        }
+
+        return (lt == gt) && (lt > 0);
+    }
+
+    /**
+     * Adds a removed node to the specified map, indexed by parent node.
+     *
+     * @param parent  the parent node
+     * @param removed the removed node
+     * @param map     the map
+     */
+    private void addRemovedNode (Node                 parent,
+                                 Node                 removed,
+                                 Map<Node,List<Node>> map)
+    {
+        List<Node> list = map.get (parent);
+
+        if (list == null)
+        {
+            list = new ArrayList<Node>();
+            map.put (parent, list);
+        }
+
+        list.add (removed);
+    }
+
+    /**
+     * Set a text element in the DOM. Adds the element as a child of the
+     * specified parent. If the text contains HTML markup, then either (a)
+     * the HTML markup is removed and a pure text node is inserted (if
+     * allowEmbeddedHTML is false), or (b) the HTML markup is preserved in
+     * a CDATA section (if allowEmbeddedHTML is true), which tells XMLC to
+     * leave it alone. If the text contains no markup, then a pure text
+     * node is inserted.
+     *
+     * @param parentNode        the parent, or containing, node
+     * @param text              the text to insert
+     * @param allowEmbeddedHTML whether or not the feed permits embedded HTML
+     * @param addedNodes        collection to which to add the added node
+     *
+     * @return the node that was inserted
+     */
+    private Node addTextNode (Node             parentNode,
+                              String           text,
+                              boolean          allowEmbeddedHTML,
+                              Collection<Node> addedNodes)
+    {
+        Document document = parentNode.getOwnerDocument();
+        Node     node  = null;
+
+        if (containsHTMLMarkup (text))
+        {
+            if (allowEmbeddedHTML)
+            {
+                // Use an XMLC trick: An inserted CDATA section will be
+                // treated as raw markup by XMLC. So, take this raw HTML,
+                // and encode it in a CDATA section. Then, insert it in
+                // place of the normal text node.
+
+                node = document.createCDATASection (text);
+            }
+
+            else
+            {
+                node = document.createTextNode (HTMLUtil.textFromHTML (text));
+            }
+        }
+
+        else
+        {
+            node = document.createTextNode (HTMLUtil.textFromHTML (text));
+        }
+
+        parentNode.appendChild (node);
+        addedNodes.add (node);
+        return node;        
     }
 }
 
