@@ -93,11 +93,11 @@ public abstract class RSSChannel
      * then calls {@link #addAuthor} for every string in the
      * <tt>Collection</tt>.
      *
-     * @param newAuthor  the author, or null if not available
+     * @param newAuthors  the author, or null if not available
      *
      * @see #addAuthor
      * @see #getAuthor
-     * @see #clearAuthor
+     * @see #clearAuthors
      */
     public final void setAuthors (Collection<String> newAuthors)
     {
