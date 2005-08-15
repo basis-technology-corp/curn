@@ -16,6 +16,8 @@ Version 2.4 (15 August, 2005)
   generated. The default value is a very large number, which effectively
   disables the table of contents completely.
 
+  See the User's Guide for details.
+
 - ENHANCEMENT: Expanded the forms of RFC-822 dates that the MiniRSSParser
   (org.clapper.curn.parser.minirss) class can handle.
 
