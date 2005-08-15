@@ -4,6 +4,57 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.4 (15 August, 2005)
+
+- MiniRSSParser (org.clapper.curn.parser.minirss) no longer aborts the parsing
+  of an entire feed if an embedded URL (e.g., within a <link> element) is bad.
+  That element is skipped, but processing of the feed continues. The error is
+  logged.
+
+- Fixed problem with feeds that re-use item URLs. Previously, curn assumed
+  that a feed always specified a new URL for a new item. If it found an item
+  URL in its cache, curn would not display the item even if the item had new
+  content (because it assumed that new content implied a new item URL). That
+  broken assumption has been fixed. Now, when examining each item from an
+  RSS feed, curn:
+
+  a. First determines whether the item has a unique ID (e.g., a <guid>
+     element in an RSS 2.0 feed, or an <id> element in an Atom feed). If
+     the item has a unique ID, and that unique ID isn't in the cache, curn
+     assumes that the item is new, and displays it.
+
+  b. If the item has no ID, then curn attempts to find the item's URL in the
+     cache. If the URL is not in the cache, then curn assumes the item is new,
+     and displays it.
+
+  c. If the item is in the cache, curn then extracts the (optional) item
+     publication date from the item and the (optional) publication date
+     from the cache entry. If both dates are present, curn compares them;
+     if the item's publication date is newer than the publication date in
+     the item's cache entry, curn assumes the item is new, and displays it.
+
+  d. If all of the above tests fail (meaning the item is in the cache, but
+     no additional information is available), then curn assumes that the item
+     is old, and does not display it.
+
+  Note: Prior to this fix, the curn cache did not keep an item's
+  publication date. It does now. There is no need to update your cache,
+  however; curn will adjust the cache automatically, over time, as items
+  naturally age. The only exception is for feeds that are already
+  misbehaving--e.g., feeds that have unique IDs per item and re-use the
+  item URLs. For feeds like that, the simplest solution is to remove the
+  feed's entry from the (XML) cache file and re-run curn.
+
+- The HTMLOutputHandler (org.clapper.curn.output.html.HTMLOutputHandler)
+  now supports a table of contents, which is useful when the number of
+  feeds or items in the generated output is large. The generation of the
+  table of contents is controlled by a new HTMLOutputHandler-specific
+  configuration item, "TOCItemThreshold". That value defines the minimum
+  number of feed items (across all feeds) that must be displayed before a
+  table of contents is generated. The default value is a very large number,
+  which effectively disables the table of contents completely.
+
+
 Version 2.3 (10 August, 2005)
 
 - Curn now supports global and feed-specific "AllowEmbeddedHTML" configuration
