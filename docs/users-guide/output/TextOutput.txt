@@ -7,7 +7,7 @@ http://irrelevant.clapper.org/
     Fifteen Philadelphia motorists cited for stupidity
     By Olaf Phenobarb
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
-    Wed Jul 28 00:00:00 EDT 2004
+    Tue Jul 28 00:00:00 EDT 1970
 
         During rush hour this morning, on the city's busy Schuylkill Expressway,
         Philadelphia police stopped fifteen motorists and cited them under
@@ -42,7 +42,7 @@ http://bites.clapper.org/
     Man Bites Dog
     By Basil Ironthrower
     http://bites.clapper.org/manbitesdog.html
-    Wed Jul 28 01:30:00 EDT 2004
+    Tue Jul 28 00:30:00 EDT 1970
 
         Repeatedly attacked by a small, but persistent, neighborhood Chihuahua
         name Juan, jogger John "Choppers" McNabb finally got fed up and took
@@ -80,5 +80,5 @@ http://justthefactsmaam.clapper.org/
     Wed Jul 28 02:32:27 EDT 2004
 
 ------------------------------------------------------------------------------
-curn, version 2.3
-Generated Wed Aug 10 15:16:56 EDT 2005
+curn, version 2.4
+Generated Mon Aug 15 15:31:39 EDT 2005
