@@ -7,7 +7,7 @@ http://irrelevant.clapper.org/
     Fifteen Philadelphia motorists cited for stupidity
     By Olaf Phenobarb
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
-    Tue Jul 28 00:00:00 EDT 1970
+    Wed Jul 28 00:00:00 EDT 2004
 
         During rush hour this morning, on the city's busy Schuylkill Expressway,
         Philadelphia police stopped fifteen motorists and cited them under
@@ -42,7 +42,7 @@ http://bites.clapper.org/
     Man Bites Dog
     By Basil Ironthrower
     http://bites.clapper.org/manbitesdog.html
-    Tue Jul 28 00:30:00 EDT 1970
+    Wed Jul 28 01:30:00 EDT 2004
 
         Repeatedly attacked by a small, but persistent, neighborhood Chihuahua
         name Juan, jogger John "Choppers" McNabb finally got fed up and took
@@ -67,7 +67,7 @@ http://justthefactsmaam.clapper.org/
     because it contains the word "son."
     By James Longwayfromhome
     http://justthefactsmaam.clapper.org/pcstupid.html
-    Wed Jul 28 02:15:00 EDT 2004
+    Tue Jun 29 22:15:00 EDT 2004
 
     New study claims pollen makes people sneeze
     By Fred Derf
@@ -81,4 +81,4 @@ http://justthefactsmaam.clapper.org/
 
 ------------------------------------------------------------------------------
 curn, version 2.4
-Generated Mon Aug 15 15:31:39 EDT 2005
+Generated Mon Aug 15 15:39:55 EDT 2005

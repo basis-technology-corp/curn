@@ -6,17 +6,30 @@ $Id$
 
 Version 2.4 (15 August, 2005)
 
-- MiniRSSParser (org.clapper.curn.parser.minirss) no longer aborts the parsing
-  of an entire feed if an embedded URL (e.g., within a <link> element) is bad.
-  That element is skipped, but processing of the feed continues. The error is
-  logged.
+- ENHANCEMENT: The HTMLOutputHandler
+  (org.clapper.curn.output.html.HTMLOutputHandler) now supports a table of
+  contents, which is useful when the number of feeds or items in the
+  generated output is large. The generation of the table of contents is
+  controlled by a new HTMLOutputHandler-specific configuration item,
+  "TOCItemThreshold". That value defines the minimum number of feed items
+  (across all feeds) that must be displayed before a table of contents is
+  generated. The default value is a very large number, which effectively
+  disables the table of contents completely.
 
-- Fixed problem with feeds that re-use item URLs. Previously, curn assumed
-  that a feed always specified a new URL for a new item. If it found an item
-  URL in its cache, curn would not display the item even if the item had new
-  content (because it assumed that new content implied a new item URL). That
-  broken assumption has been fixed. Now, when examining each item from an
-  RSS feed, curn:
+- ENHANCEMENT: Expanded the forms of RFC-822 dates that the MiniRSSParser
+  (org.clapper.curn.parser.minirss) class can handle.
+
+- BUG FIX: MiniRSSParser (org.clapper.curn.parser.minirss) no longer aborts
+  the parsing of an entire feed if an embedded URL (e.g., within a <link>
+  element) is bad. That element is skipped, but processing of the feed
+  continues. The error is logged.
+
+- BUG FIX: Fixed problem with feeds that re-use item URLs. Previously, curn
+  assumed that a feed always specified a new URL for a new item. If it
+  found an item URL in its cache, curn would not display the item even if
+  the item had new content (because it assumed that new content implied a
+  new item URL). That broken assumption has been fixed. Now, when examining
+  each item from an RSS feed, curn:
 
   a. First determines whether the item has a unique ID (e.g., a <guid>
      element in an RSS 2.0 feed, or an <id> element in an Atom feed). If
@@ -45,14 +58,6 @@ Version 2.4 (15 August, 2005)
   item URLs. For feeds like that, the simplest solution is to remove the
   feed's entry from the (XML) cache file and re-run curn.
 
-- The HTMLOutputHandler (org.clapper.curn.output.html.HTMLOutputHandler)
-  now supports a table of contents, which is useful when the number of
-  feeds or items in the generated output is large. The generation of the
-  table of contents is controlled by a new HTMLOutputHandler-specific
-  configuration item, "TOCItemThreshold". That value defines the minimum
-  number of feed items (across all feeds) that must be displayed before a
-  table of contents is generated. The default value is a very large number,
-  which effectively disables the table of contents completely.
 
 
 Version 2.3 (10 August, 2005)

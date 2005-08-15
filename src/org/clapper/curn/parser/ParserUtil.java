@@ -72,7 +72,8 @@ public final class ParserUtil
         RFC822_DATE_FORMATS = new SimpleDateFormat[]
         {
             new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss z"),
-            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss")
+            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss"),
+            new SimpleDateFormat ("EEE d MMM yyyy HH:mm:ss")
         };
     };
 
