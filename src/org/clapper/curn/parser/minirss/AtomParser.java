@@ -27,6 +27,7 @@
 package org.clapper.curn.parser.minirss;
 
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.util.logging.Logger;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -54,6 +55,15 @@ import org.xml.sax.Attributes;
  */
 public class AtomParser extends ParserCommon
 {
+    /*----------------------------------------------------------------------*\
+                            Private Data Items
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * For logging
+     */
+    private static Logger log = new Logger (AtomParser.class);
+
     /*----------------------------------------------------------------------*\
                                Inner Classes
     \*----------------------------------------------------------------------*/
@@ -311,7 +321,10 @@ public class AtomParser extends ParserCommon
 
                 catch (MalformedURLException ex)
                 {
-                    throw new SAXException (ex.toString());
+                    // Swallow the exception. No sense aborting the whole
+                    // feed for a bad <link> element.
+
+                    log.error ("Bad <link> element \"" + s + "\"", ex);
                 }
             }
         }
@@ -442,14 +455,17 @@ public class AtomParser extends ParserCommon
             {
                 try
                 {
-                    item.setLink (new URL (attributes.getValue ("href")));
+                    item.setLink (new URL (s));
                     elementStack.push (new ElementStackEntry (elementName,
                                                               channel));
                 }
 
                 catch (MalformedURLException ex)
                 {
-                    throw new SAXException (ex.toString());
+                    // Swallow the exception. No sense aborting the whole
+                    // feed for a bad <link> element.
+
+                    log.error ("Bad <link> element \"" + s + "\"", ex);
                 }
             }
         }

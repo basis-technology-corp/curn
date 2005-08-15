@@ -32,6 +32,8 @@ import java.net.MalformedURLException;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 
+import org.clapper.util.logging.Logger;
+
 /**
  * <p><tt>V1Parser</tt> is a stripped down RSS parser for
  * {@link <a href="http://web.resource.org/rss/1.0/">RSS, version 1.0</a>}.
@@ -53,6 +55,15 @@ import org.xml.sax.Attributes;
  */
 public class V1Parser extends ParserCommon
 {
+    /*----------------------------------------------------------------------*\
+                            Private Data Items
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * For logging
+     */
+    private static Logger log = new Logger (V1Parser.class);
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -304,7 +315,10 @@ public class V1Parser extends ParserCommon
 
                 catch (MalformedURLException ex)
                 {
-                    throw new SAXException (ex.toString());
+                    // Swallow the exception. No sense aborting the whole
+                    // feed for a bad <link> element.
+
+                    log.error ("Bad <link> element \"" + chars + "\"", ex);
                 }
             }
         }
@@ -410,10 +424,10 @@ public class V1Parser extends ParserCommon
 
             if (! ok)
             {
-                throw new SAXException ("Can't save item link \""
-                                      + url.toString()
-                                      + "\": "
-                                      + ex.toString());
+                // Swallow the exception. No sense aborting the whole feed
+                // for a bad <link> element.
+
+                log.error ("Bad <link> element \"" + url + "\"", ex);
             }
         }
     }
