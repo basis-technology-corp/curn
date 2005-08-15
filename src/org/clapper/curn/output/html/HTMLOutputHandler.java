@@ -96,6 +96,17 @@ public class HTMLOutputHandler extends FileOutputHandler
 
     private static final String DEFAULT_CHARSET_ENCODING = "utf-8";
 
+    /**
+     * Default number of feeds (channels) that must be present for a
+     * table of contents to be rendered.
+     */
+    private static final int DEFAULT_TOC_THRESHOLD = Integer.MAX_VALUE;
+
+    /**
+     * Prefix to use with generated channel anchors.
+     */
+    private static final String CHANNEL_ANCHOR_PREFIX = "feed";
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -106,6 +117,7 @@ public class HTMLOutputHandler extends FileOutputHandler
     private String                oddChannelClass     = null;
     private int                   rowCount            = 0;
     private int                   channelCount        = 0;
+    private int                   totalItems          = 0;
     private ConfigFile            config              = null;
     private HTMLTableRowElement   channelRow          = null;
     private HTMLTableRowElement   channelSeparatorRow = null;
@@ -115,6 +127,7 @@ public class HTMLOutputHandler extends FileOutputHandler
     private HTMLTableCellElement  itemDescTD          = null;
     private HTMLTableCellElement  channelTD           = null;
     private String                title               = null;
+    private int                   tocThreshold        = DEFAULT_TOC_THRESHOLD;
     private Set<Node>             addedNodes          = new HashSet<Node>();
     private Map<Node,List<Node>>  removedNodes        = new HashMap<Node,List<Node>>();
 
@@ -192,10 +205,13 @@ public class HTMLOutputHandler extends FileOutputHandler
             {
                 title = config.getOptionalStringValue (section, "Title", null);
                 encoding = config.getOptionalStringValue
-                                                    (section,
-                                                     "HTMLEncoding",
-                                                     DEFAULT_CHARSET_ENCODING);
-
+                                               (section,
+                                                "HTMLEncoding",
+                                                DEFAULT_CHARSET_ENCODING);
+                tocThreshold = config.getOptionalIntegerValue
+                                               (section,
+                                                "TOCItemThreshold",
+                                                DEFAULT_TOC_THRESHOLD);
             }
         }
         
@@ -257,19 +273,58 @@ public class HTMLOutputHandler extends FileOutputHandler
         throws CurnException
     {
         Collection items = channel.getItems();
+        int totalItemsInChannel = items.size();
 
-        if (items.size() == 0)
+        if (totalItemsInChannel == 0)
             return;
+
+        this.totalItems += totalItemsInChannel;
 
         int       i = 0;
         Iterator  it;
         Date      date;
         boolean   allowEmbeddedHTML = feedInfo.allowEmbeddedHTML();
+        String    channelTitle = channel.getTitle();
+
+        // NOTE: We generate the table of contents regardless, since we
+        // don't know how many items we'll have until we finish processing
+        // all channels. At the end of processing, in the flush() method,
+        // we'll decide whether or not to remove the DOM subtree containing
+        // the table of contents.
 
         channelCount++;
-
         removedNodes.clear();
         addedNodes.clear();
+
+        // Generate an anchor name for the channel.
+
+        String channelAnchorName = CHANNEL_ANCHOR_PREFIX
+                                 + String.valueOf (channelCount);
+
+        dom.getElementChannelAnchor().setName (channelAnchorName);
+
+        // Generate a table of contents link for this channel.
+
+        HTMLElement tocEntry = dom.getElementTOCEntry();
+        tocEntry.removeAttribute ("id");
+        Node tocEntryParent = tocEntry.getParentNode();
+        HTMLAnchorElement tocFeedLink = dom.getElementTOCFeedLink();
+        tocFeedLink.removeAttribute ("id");
+        tocFeedLink.setHref ("#" + channelAnchorName);
+
+        dom.getElementTOCEntryText().removeAttribute ("id");
+        dom.getElementTOCFeedTotalItems().removeAttribute ("id");
+
+        String totalSuffix = " item";
+        if (totalItemsInChannel > 1)
+            totalSuffix = totalSuffix + "s";
+
+        dom.setTextTOCFeedTotalItems (String.valueOf (totalItemsInChannel) +
+                                      totalSuffix);
+
+        dom.setTextTOCEntryText (channelTitle);
+
+        tocEntryParent.insertBefore (tocEntry.cloneNode (true), tocEntry);
 
         // Insert separator row first.
 
@@ -299,7 +354,6 @@ public class HTMLOutputHandler extends FileOutputHandler
             {
                 // First row in channel has channel title and link.
 
-                String channelTitle = channel.getTitle();
                 addTextNode (channelAnchor,
                              channelTitle,
                              allowEmbeddedHTML,
@@ -441,9 +495,25 @@ public class HTMLOutputHandler extends FileOutputHandler
      */
     public void flush() throws CurnException
     {
-        // Remove the cloneable row.
+        // Remove the cloneable channel row.
 
         removeElement (dom.getElementChannelRow());
+
+        // Should we keep the table of contents, or nuke it?
+
+        if (totalItems >= tocThreshold)
+        {
+            // Keep it. Remove the cloneable table-of-contents element.
+
+            removeElement (dom.getElementTOCEntry());
+        }
+
+        else
+        {
+            // Nuke it.
+
+            removeElement (dom.getElementTableOfContents());
+        }
 
         // Set the title and the top header.
 
@@ -525,12 +595,14 @@ public class HTMLOutputHandler extends FileOutputHandler
      *
      * @param element the <tt>Node</tt> representing the element in the DOM
      */
-    private void removeElement (Node element)
+    private Node removeElement (Node element)
     {
         Node parentNode = element.getParentNode();
 
         if (parentNode != null)
             parentNode.removeChild (element);
+
+        return element;
     }
 
     /**
