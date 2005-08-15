@@ -957,30 +957,29 @@ class FeedDownloadThread extends Thread
             itemURL = Util.normalizeURL (itemURL);
             item.setLink (itemURL);
 
-            // Skip it if it's cached.
+            // Skip it if it's cached. Note:
+            //
+            // 1. If the item has a unique ID, then the ID alone is used to
+            //    determine whether it's been cached. This is the preferred
+            //    strategy, since it handles the case where a feed has
+            //    unique item IDs that change every day, but has URLs
+            //    that are re-used.
+            //
+            // 2. If the item has no unique ID, then determine whether the
+            //    URL is cached. If it is, then compare the publication date
+            //    of the item with the cached publication date, to see whether
+            //    the item is new. If the publication date is missing from
+            //    one of them, then use the URL alone and assume/hope that
+            //    the item's URL is unique.
 
             String itemID = item.getID();
             log.debug ("Item link: " + itemURL);
             log.debug ("Item ID: " + ((itemID == null) ? "<null>" : itemID));
+
             if (cache != null)
             {
-                if ((itemID != null) && (cache.containsID (itemID)))
-                {
-                    log.debug ("Skipping cached ID \""
-                             + itemID
-                             + "\" (item URL \""
-                             + itemURL.toString()
-                             + "\")");
+                if (! itemIsNew (item, itemURL))
                     it.remove();
-                }
-
-                else if (cache.containsURL (itemURL))
-                {
-                    log .debug ("Skipping cached URL \""
-                             + itemURL.toString()
-                             + "\")");
-                    it.remove();
-                }
             }
         }
 
@@ -998,6 +997,7 @@ class FeedDownloadThread extends Thread
                     log.debug ("Cacheing URL: " + item.getLink().toString());
                     cache.addToCache (item.getID(),
                                       item.getLink(),
+                                      item.getPublicationDate(),
                                       feedInfo);
                 }
             }
@@ -1013,6 +1013,99 @@ class FeedDownloadThread extends Thread
         // Change the channel's items to the ones that are left.
 
         channel.setItems (items);
+    }
+
+    /**
+     * Determine whether an item is cached.
+     *
+     * @param item    the item to test
+     * @param itemURL the item's normalized URL (which might not be the
+     *                same as the URL in the item itself)
+     *
+     * @return true if cached, false if not
+     */
+    private boolean itemIsNew (RSSItem item, URL itemURL)
+    {
+        String   itemURLString = itemURL.toString();
+        String   itemID        = item.getID();
+        boolean  isNew         = true;
+
+        if (itemID != null)
+        {
+            log.debug ("Item URL \""
+                     + itemURLString
+                     + "\" has unique ID \""
+                     + itemID
+                     + "\". Using ONLY the ID to test the cache.");
+            if (cache.containsID (itemID))
+            {
+                log.debug ("Skipping cached ID \""
+                         + itemID
+                         + "\" (item URL \""
+                         + itemURLString
+                         + "\")");
+                isNew = false;
+            }
+        }
+
+        else
+        {
+            log.debug ("Item URL \""
+                     + itemURLString
+                     + "\" has no unique ID. Checking cache for URL.");
+
+            FeedCacheEntry cacheEntry = cache.getItemByURL (itemURL);
+            if (cacheEntry == null)
+            {
+                log.debug ("URL \""
+                         + itemURLString
+                         + "\" is not in the cache. It's new.");
+            }
+
+            else
+            {
+                Date cachePubDate = cacheEntry.getPublicationDate();
+                Date itemPubDate  = item.getPublicationDate();
+
+                if ((cachePubDate == null) || (itemPubDate == null))
+                {
+                    log.debug ("Missing publication date in item and/or cache "
+                             + "for URL \""
+                             + itemURLString
+                             + "\". Assuming URL is old, since it is in the "
+                             + "cache. Skipping it.");
+                    isNew = false;
+                }
+
+                else
+                {
+                    log.debug ("URL \""
+                             + itemURLString
+                             + "\": Cached publication date is "
+                             + cachePubDate.toString()
+                             + "\", item publication date is "
+                             + itemPubDate);
+                    if (itemPubDate.after (cachePubDate))
+                    {
+                        log.debug ("URL \""
+                                 + itemURLString
+                                 + "\" is newer than cached publication date. "
+                                 + "Keeping it.");
+                    }
+
+                    else
+                    {
+                        log.debug ("URL \""
+                                   + itemURLString
+                                 + "\" is not newer than cached publication "
+                                 + "date. Skipping it.");
+                        isNew = false;
+                    }
+                }
+            }
+        }
+
+        return isNew;
     }
 
     /**

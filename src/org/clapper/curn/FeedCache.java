@@ -96,6 +96,7 @@ public class FeedCache implements Serializable
     private static final String XML_ENTRY_ATTR_CHANNEL_URL = "channel_URL";
     private static final String XML_ENTRY_ATTR_ENTRY_URL   = "entry_URL";
     private static final String XML_ENTRY_ATTR_ENTRY_ID    = "entry_ID";
+    private static final String XML_ENTRY_ATTR_PUB_DATE    = "pub_date";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -257,6 +258,15 @@ public class FeedCache implements Serializable
                     e.setAttribute (XML_ENTRY_ATTR_CHANNEL_URL,
                                     entry.getChannelURL().toString());
 
+                    // Only write the publication date if it's present.
+
+                    Date pubDate = entry.getPublicationDate();
+                    if (pubDate != null)
+                    {
+                        e.setAttribute (XML_ENTRY_ATTR_PUB_DATE,
+                                        String.valueOf (pubDate.getTime()));
+                    }
+
                     root.appendChild (e);
                 }
 
@@ -352,12 +362,14 @@ public class FeedCache implements Serializable
      *                   If null, the URL is used as the unique ID.
      * @param url        the URL to cache. May be an individual item URL, or
      *                   the URL for an entire feed.
+     * @param pubDate    the publication date, if known; or null
      * @param parentFeed the associated feed
      *
      * @see Util#normalizeURL
      */
     public synchronized void addToCache (String   uniqueID,
                                          URL      url,
+                                         Date     pubDate,
                                          FeedInfo parentFeed)
     {
         String urlKey = Util.urlToLookupKey (url);
@@ -369,6 +381,7 @@ public class FeedCache implements Serializable
         FeedCacheEntry entry = new FeedCacheEntry (uniqueID,
                                                    parentURL,
                                                    url,
+                                                   pubDate,
                                                    System.currentTimeMillis());
 
         log.debug ("Adding cache entry for URL \""
@@ -613,18 +626,23 @@ public class FeedCache implements Serializable
         // Parse out the attributes.
 
         NamedNodeMap attrs = node.getAttributes();
-        String entryID = getXMLAttribute (attrs,
-                                          XML_ENTRY_ATTR_ENTRY_ID,
-                                          null);
-        String sChannelURL = getXMLAttribute (attrs,
-                                              XML_ENTRY_ATTR_CHANNEL_URL,
-                                              entryID);
-        String sEntryURL = getXMLAttribute (attrs,
-                                           XML_ENTRY_ATTR_ENTRY_URL,
-                                           entryID);
-        String sTimestamp = getXMLAttribute (attrs,
-                                             XML_ENTRY_ATTR_TIMESTAMP,
-                                             entryID);
+        String entryID = getRequiredXMLAttribute (attrs,
+                                                  XML_ENTRY_ATTR_ENTRY_ID,
+                                                  null);
+        String sChannelURL = getRequiredXMLAttribute
+                                              (attrs,
+                                               XML_ENTRY_ATTR_CHANNEL_URL,
+                                               entryID);
+        String sEntryURL = getRequiredXMLAttribute (attrs,
+                                                    XML_ENTRY_ATTR_ENTRY_URL,
+                                                    entryID);
+        String sTimestamp = getRequiredXMLAttribute (attrs,
+                                                     XML_ENTRY_ATTR_TIMESTAMP,
+                                                     entryID);
+        String sPubDate =  getOptionalXMLAttribute (attrs,
+                                                    XML_ENTRY_ATTR_PUB_DATE,
+                                                    null,
+                                                    entryID);
 
         if ((entryID == null) ||
             (sChannelURL == null) ||
@@ -654,6 +672,29 @@ public class FeedCache implements Serializable
                      + entryID
                      + "\". Skipping entry.");
             return null;
+        }
+
+        // Parse the publication date, if any
+
+        Date publicationDate = null;
+        if (sPubDate != null)
+        {
+            long pubTimestamp = 0;
+            try
+            {
+                publicationDate = new Date (Long.parseLong (sPubDate));
+            }
+
+            catch (NumberFormatException ex)
+            {
+                log.error ("Bad publication date value of \""
+                         + sPubDate
+                         + "\" for <"
+                         + XML_ENTRY_ELEMENT_TAG
+                         + "> with unique ID \""
+                         + entryID
+                         + "\". Ignoring publication date.");
+            }
         }
 
         // Parse the URLs.
@@ -694,7 +735,11 @@ public class FeedCache implements Serializable
             return null;
         }
 
-        return new FeedCacheEntry (entryID, channelURL, entryURL, timestamp);
+        return new FeedCacheEntry (entryID,
+                                   channelURL,
+                                   entryURL,
+                                   publicationDate,
+                                   timestamp);
     }
 
     /**
@@ -826,9 +871,43 @@ public class FeedCache implements Serializable
     }
 
     /**
-     * Retrieve an XML attribute value from a list of attributes. The
-     * attribute is assumed to be required. If it's missing, the error is
-     * logged (but an exception is not thrown).
+     * Retrieve an optional XML attribute value from a list of attributes.
+     * If the attribute is missing or empty, the default is returned.
+     *
+     * @param attrs        the list of attributes
+     * @param defaultValue the default value
+     * @param name         the attribute name
+     * @param entryID      entry ID string, if available, for errors
+     *
+     * @return the attribute's value, or null if the attribute wasn't found
+     *
+     * @throws DOMException  DOM parsing error
+     */
+    private String getOptionalXMLAttribute (NamedNodeMap attrs,
+                                            String       name,
+                                            String       defaultValue,
+                                            String       entryID)
+        throws DOMException
+    {
+        Node attr = attrs.getNamedItem (name);
+        String value = null;
+
+        if (attr != null)
+        {
+            assert (attr.getNodeType() == Node.ATTRIBUTE_NODE);
+            value = attr.getNodeValue();
+
+            if ((value != null) && (value.trim().length() == 0))
+                value = null;
+        }
+
+        return (value == null) ? defaultValue : value;
+    }
+
+    /**
+     * Retrieve an XML attribute value from a list of attributes. If the
+     * attribute is missing, the error is logged (but an exception is not
+     * thrown).
      *
      * @param attrs   the list of attributes
      * @param name    the attribute name
@@ -838,27 +917,24 @@ public class FeedCache implements Serializable
      *
      * @throws DOMException  DOM parsing error
      */
-    private String getXMLAttribute (NamedNodeMap attrs,
-                                    String       name,
-                                    String       entryID)
+    private String getRequiredXMLAttribute (NamedNodeMap attrs,
+                                            String       name,
+                                            String       entryID)
         throws DOMException
     {
-        Node attr = attrs.getNamedItem (name);
-        String value = null;
+        String value = getOptionalXMLAttribute (attrs, name, null, entryID);
 
-        if (attr == null)
+        if (value == null)
         {
             if (entryID == null)
                 entryID = "?";
 
-            log.error ("<" + XML_ENTRY_ELEMENT_TAG + "> is missing required " +
-                       "\"" + name + "\" XML attribute.");
-        }
-
-        else
-        {
-            assert (attr.getNodeType() == Node.ATTRIBUTE_NODE);
-            value = attr.getNodeValue();
+            log.error ("<"
+                     + XML_ENTRY_ELEMENT_TAG
+                     + "> is missing required "
+                     + "\""
+                     + name
+                     + "\" XML attribute.");
         }
 
         return value;

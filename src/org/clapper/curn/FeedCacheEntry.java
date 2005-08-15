@@ -28,6 +28,7 @@ package org.clapper.curn;
 
 import java.net.URL;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>Defines the contents of a cache entry. There is one cache entry
@@ -44,22 +45,15 @@ class FeedCacheEntry implements Serializable
                          Private Static Variables
     \*----------------------------------------------------------------------*/
 
-    /**
-     * See JDK 1.5 version of java.io.Serializable
-     *
-     * Temporarily disabled. Interferes with existing caches. Must have a way
-     * to convert existing caches.
-     */
-    //private static final long serialVersionUID = 1L;
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private long    timestamp  = 0;
-    private String  entryID    = null;
-    private URL     entryURL   = null;
-    private URL     channelURL = null;
+    private long    timestamp       = 0;
+    private String  entryID         = null;
+    private URL     entryURL        = null;
+    private URL     channelURL      = null;
+    private Date    publicationDate = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -72,17 +66,20 @@ class FeedCacheEntry implements Serializable
      * @param channelURL  the main URL for the site's RSS feed
      * @param entryURL    the URL to be cached. May be an individual item URL,
      *                    or the channel URL (again).
+     * @param pubDate     the publication date of the item, or null if unknown
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
     FeedCacheEntry (String entryID,
                     URL    channelURL,
                     URL    entryURL,
+                    Date   pubDate,
                     long   timestamp)
     {
-        this.entryID    = entryID;
-        this.channelURL = channelURL;
-        this.entryURL   = entryURL;
-        this.timestamp  = timestamp;
+        this.entryID         = entryID;
+        this.channelURL      = channelURL;
+        this.entryURL        = entryURL;
+        this.timestamp       = timestamp;
+        this.publicationDate = pubDate;
     }
 
     /*----------------------------------------------------------------------*\
@@ -118,6 +115,17 @@ class FeedCacheEntry implements Serializable
     URL getEntryURL()
     {
         return entryURL;
+    }
+
+    /**
+     * Get the publication date associated with the cached item. This value
+     * is typically from within the parsed RSS item.
+     *
+     * @return the publication date, or null if not known
+     */
+    Date getPublicationDate()
+    {
+        return publicationDate;
     }
 
     /**
