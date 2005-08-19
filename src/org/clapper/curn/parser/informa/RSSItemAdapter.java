@@ -26,15 +26,18 @@
 
 package org.clapper.curn.parser.informa;
 
+import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.core.CategoryIF;
 
 import java.net.URL;
-import java.util.Date;
-import java.util.Collection;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -104,23 +107,27 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
-     * Get the item's published link (its URL).
+     * Get the item's published links.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty collection
+     *
+     * @see RSSItem#getLink
      */
-    public URL getLink()
+    public final Collection<RSSLink> getLinks()
     {
-        return this.item.getLink();
-    }
+        // Since Informa doesn't support multiple links per item, we have
+        // to assume that this link is the link for the item. Try to figure
+        // out the MIME type, and default to the MIME type for an RSS feed.
+        // Mark the feed as type "self".
 
-    /**
-     * Set (change) the item's published link (its URL).
-     *
-     * @param url the URL, or null if not available
-     */
-    public void setLink (URL url)
-    {
-        this.item.setLink (url);
+        Collection<RSSLink> results = new ArrayList<RSSLink>();
+
+        URL url = item.getLink();
+        results.add (new RSSLink (url,
+                                  ParserUtil.getLinkMIMEType (url),
+                                  RSSLink.Type.SELF));
+
+        return results;
     }
 
     /**

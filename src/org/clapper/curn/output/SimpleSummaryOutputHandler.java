@@ -238,7 +238,7 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
 
                 out.setPrefix ("    ");
                 out.println (convert (channel.getTitle()));
-                out.println (channel.getLink().toString());
+                out.println (channel.getURL().toString());
 
                 out.setPrefix ("        ");
                 out.println (String.valueOf (channel.getItems().size())

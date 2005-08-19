@@ -26,6 +26,12 @@
 
 package org.clapper.curn.parser;
 
+import org.clapper.util.misc.MIMETypeUtil;
+import org.clapper.util.io.FileUtil;
+
+import java.net.URL;
+
+import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -44,6 +50,15 @@ import java.util.regex.PatternSyntaxException;
  */
 public final class ParserUtil
 {
+    /*----------------------------------------------------------------------*\
+                             Public Constants
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Default MIME type for RSS feeds, if we can't figure one out.
+     */
+    public static final String RSS_MIME_TYPE = "text/xml";
+
     /*----------------------------------------------------------------------*\
 			     Private Constants
     \*----------------------------------------------------------------------*/
@@ -263,6 +278,116 @@ public final class ParserUtil
                     buf.append (c);
             }
         }
+    }
+
+
+    /**
+     * Find the {@link RSSLink} object with a specific MIME type and one of
+     * a set of link types.
+     *
+     * @param links     collection of {@link RSSLink} objects to search
+     * @param mimeType  the desired MIME type
+     * @param linkTypes one or more link types that are acceptable
+     *
+     * @return the link, or null no matches were found
+     */
+    public static RSSLink findMatchingLink (Collection<RSSLink> links,
+                                            String              mimeType,
+                                            RSSLink.Type ...    linkTypes)
+    {
+        RSSLink result = null;
+        
+        outerLoop:
+        for (RSSLink link : links)
+        {
+            if (link.getMIMEType().equals (mimeType))
+            {
+                // MIME type matches. See if there's a match on the link type.
+
+                RSSLink.Type linkType = link.getLinkType();
+                for (RSSLink.Type desiredLinkType : linkTypes)
+                {
+                    if (desiredLinkType == linkType)
+                    {
+                        result = link;
+                        break outerLoop;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Find the first {@link RSSLink} object with a specific link type.
+     *
+     * @param links     collection of {@link RSSLink} objects to search
+     * @param linkType  the desired link type
+     *
+     * @return the link, or null no matches were found
+     */
+    public static RSSLink findMatchingLink (Collection<RSSLink> links,
+                                            RSSLink.Type        linkType)
+    {
+        RSSLink result = null;
+
+        for (RSSLink link : links)
+        {
+            if (link.getLinkType() == linkType)
+            {
+                result = link;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Find the first {@link RSSLink} object with a specific MIME type.
+     *
+     * @param links     collection of {@link RSSLink} objects to search
+     * @param mimeType  the desired MIME type
+     *
+     * @return the link, or null no matches were found
+     */
+    public static RSSLink findMatchingLink (Collection<RSSLink> links,
+                                            String              mimeType)
+    {
+        RSSLink result = null;
+
+        for (RSSLink link : links)
+        {
+            if (link.getMIMEType().equals (mimeType))
+            {
+                result = link;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Get the MIME type for a link from an RSS feed.
+     *
+     * @param url  The URL
+     *
+     * @return the MIME type, or a default one
+     */
+    public static String getLinkMIMEType (URL url)
+    {
+        String mimeType  = RSS_MIME_TYPE;
+        String extension = FileUtil.getFileNameExtension (url.getPath());
+
+        if (extension != null)
+        {
+            mimeType = MIMETypeUtil.MIMETypeForFileExtension (extension,
+                                                              RSS_MIME_TYPE);
+        }
+
+        return mimeType;
     }
 
     /*----------------------------------------------------------------------*\

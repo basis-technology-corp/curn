@@ -55,10 +55,12 @@ import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
 import org.clapper.curn.util.Util;
-import org.clapper.curn.parser.RSSParser;
-import org.clapper.curn.parser.RSSParserException;
+
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
+import org.clapper.curn.parser.RSSParser;
+import org.clapper.curn.parser.RSSParserException;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
@@ -892,7 +894,13 @@ class FeedDownloadThread extends Thread
         String              titleOverride = feedInfo.getTitleOverride();
         boolean             pruneURLs = feedInfo.pruneURLs();
         String              editCmd = feedInfo.getItemURLEditCommand();
-        String              channelName = channel.getLink().toString();
+        String              channelName;
+
+        RSSLink selfLink = channel.getLink (RSSLink.Type.SELF);
+        if (selfLink == null)
+            channelName = feedInfo.getURL().toString();
+        else
+            channelName = selfLink.getURL().toString();
 
         if (titleOverride != null)
             channel.setTitle (titleOverride);
@@ -917,15 +925,16 @@ class FeedDownloadThread extends Thread
         for (it = items.iterator(); it.hasNext(); )
         {
             RSSItem item = (RSSItem) it.next();
-            URL itemURL = item.getLink();
 
-            if (itemURL == null)
+            RSSLink itemLink = item.getURL();
+            if (itemLink == null)
             {
                 log.debug ("Skipping item with null URL.");
                 it.remove();
                 continue;
             }
 
+            URL itemURL  = itemLink.getURL();
             if (pruneURLs || (editCmd != null))
             {
                 // Prune the URL of its parameters, if configured for this
@@ -955,7 +964,7 @@ class FeedDownloadThread extends Thread
             // Normalize the URL and save it.
 
             itemURL = Util.normalizeURL (itemURL);
-            item.setLink (itemURL);
+            itemLink.setURL (itemURL);
 
             // Skip it if it's cached. Note:
             //
@@ -994,9 +1003,13 @@ class FeedDownloadThread extends Thread
 
                 if (cache != null)
                 {
-                    log.debug ("Cacheing URL: " + item.getLink().toString());
+                    RSSLink itemLink = item.getURL();
+                    assert (itemLink != null);
+                    URL itemURL = itemLink.getURL();
+
+                    log.debug ("Cacheing URL: " + itemURL);
                     cache.addToCache (item.getID(),
-                                      item.getLink(),
+                                      itemURL,
                                       item.getPublicationDate(),
                                       feedInfo);
                 }

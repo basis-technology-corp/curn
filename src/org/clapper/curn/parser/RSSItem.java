@@ -56,7 +56,7 @@ import java.util.HashMap;
  *
  * @version <tt>$Revision$</tt>
  */
-public abstract class RSSItem
+public abstract class RSSItem extends RSSElement
 {
     /*----------------------------------------------------------------------*\
                                  Constants
@@ -71,7 +71,7 @@ public abstract class RSSItem
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private Map<String,String> contentMap = new HashMap<String,String>();
+    private Map<String,String>   contentMap = new HashMap<String,String>();
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -210,61 +210,6 @@ public abstract class RSSItem
         return summary;
     }
 
-    /**
-     * Get the item's author. This method simply calls the {@link
-     * #getAuthors} method and combines the results into a comma-delimited
-     * string.
-     *
-     * @return the author string, or null if not available
-     *
-     * @see #setAuthor
-     * @see #getAuthors
-     */
-    public final String getAuthor()
-    {
-        Collection<String> authors = getAuthors();
-        String             result  = null;
-
-        if ((authors != null) && (authors.size() > 0))
-            result = TextUtil.join (authors, ", ");
-
-        return result;
-    }
-
-    /**
-     * Set the item's author. This method clears the existing authors
-     * field, then calls {@link #addAuthor}. You're better off calling
-     * {@link #addAuthor} directly, since some sites support multiple
-     * authors for a feed item.
-     *
-     * @param newAuthor  the author, or null if not available
-     *
-     * @see #setAuthors
-     */
-    public final void setAuthor (String newAuthor)
-    {
-        clearAuthors();
-        addAuthor (newAuthor);
-    }
-
-    /**
-     * Set the item's list of authors to the specified <tt>Collection</tt>.
-     * This method clears the existing authors field, then calls
-     * {@link #addAuthor} for every string in the <tt>Collection</tt>.
-     *
-     * @param newAuthors  the author, or null if not available
-     *
-     * @see #addAuthor
-     * @see #getAuthor
-     * @see #clearAuthors
-     */
-    public final void setAuthors (Collection<String> newAuthors)
-    {
-        clearAuthors();
-        for (String author : newAuthors)
-            addAuthor (author);
-    }
-
     /*----------------------------------------------------------------------*\
                           Public Abstract Methods
     \*----------------------------------------------------------------------*/
@@ -286,20 +231,6 @@ public abstract class RSSItem
      * @see #getTitle
      */
     public abstract void setTitle (String newTitle);
-
-    /**
-     * Get the item's published link (its URL).
-     *
-     * @return the URL, or null if not available
-     */
-    public abstract URL getLink();
-
-    /**
-     * Change the item's link (its URL)
-     *
-     * @param url the new link value
-     */
-    public abstract void setLink (URL url);
 
     /**
      * Get the item's summary (also sometimes called the description or
@@ -344,6 +275,15 @@ public abstract class RSSItem
      * @see #setAuthors
      */
     public abstract void addAuthor (String author);
+
+    /**
+     * Get the item's published links.
+     *
+     * @return the collection of links, or an empty collection
+     *
+     * @see RSSItem#getLink
+     */
+    public abstract Collection<RSSLink> getLinks();
 
     /**
      * Clear the authors list.

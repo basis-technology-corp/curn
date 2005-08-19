@@ -47,66 +47,11 @@ import org.clapper.util.text.TextUtil;
  *
  * @version <tt>$Revision$</tt>
  */
-public abstract class RSSChannel
+public abstract class RSSChannel extends RSSElement
 {
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Get the author of the feed. This method simply calls the
-     * {@link #getAuthors}
-     * method and combines the results into a comma-delimited string.
-     *
-     * @return the author, or null if not available
-     *
-     * @see #setAuthor
-     * @see #getAuthors
-     */
-    public final String getAuthor()
-    {
-        Collection<String> authors = getAuthors();
-        String             result  = null;
-
-        if ((authors != null) && (authors.size() > 0))
-            result = TextUtil.join (authors, ", ");
-
-        return result;
-    }
-
-    /**
-     * Set the item's author. This method clears the author field, then
-     * calls {@link #addAuthor}. You're better off calling {@link #addAuthor}
-     * directly, since some sites support multiple authors for a feed item.
-     *
-     * @param newAuthor  the author, or null if not available
-     */
-    public final void setAuthor (String newAuthor)
-    {
-        clearAuthors();
-        addAuthor (newAuthor);
-    }
-
-    /**
-     * Set the channel's list of authors to the specified
-     * <tt>Collection</tt>. This method clears the existing authors field,
-     * then calls {@link #addAuthor} for every string in the
-     * <tt>Collection</tt>.
-     *
-     * @param newAuthors  the author, or null if not available
-     *
-     * @see #addAuthor
-     * @see #getAuthor
-     * @see #clearAuthors
-     */
-    public final void setAuthors (Collection<String> newAuthors)
-    {
-        clearAuthors();
-        for (String author : newAuthors)
-            addAuthor (author);
-    }
-
-    
 
     /*----------------------------------------------------------------------*\
                           Public Abstract Methods
@@ -163,11 +108,16 @@ public abstract class RSSChannel
     public abstract String getDescription();
 
     /**
-     * Get the channel's published link (its URL).
+     * Get the channel's list of published links (its URLs). Each
+     * element in the returned <tt>Collection</tt> is an
+     * {@link RSSLink} object.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty list if there are none.
+     *         The result will never be null.
+     *
+     * @see #getLink
      */
-    public abstract URL getLink();
+    public abstract Collection<RSSLink> getLinks();
 
     /**
      * Get the channel's publication date.

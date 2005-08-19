@@ -26,8 +26,10 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 
 import java.net.URL;
 
@@ -57,7 +59,7 @@ public class Channel extends RSSChannel
     private Collection<String>   authors     = new HashSet<String>();
     private String               title       = null;
     private String               description = null;
-    private URL                  url         = null;
+    private Collection<RSSLink>  links       = new ArrayList<RSSLink>();
     private Date                 pubDate     = null;
     private String               rssFormat   = null;
     private String               copyright   = null;
@@ -164,23 +166,29 @@ public class Channel extends RSSChannel
     }
 
     /**
-     * Get the channel's published URL.
+     * Get the channel's published links.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty collection
+     *
+     * @see #addLink
+     * @see RSSChannel#getLink
      */
-    public URL getLink()
+    public final Collection<RSSLink> getLinks()
     {
-        return url;
+        return links;
     }
 
     /**
-     * Set the channel's published URL.
+     * Add a link for the channel.
      *
-     * @param url  the URL
+     * @param link  the {@link RSSLink} object to add
+     *
+     * @see #getLinks
+     * @see RSSChannel#getLink
      */
-    public void setLink (URL url)
+    public void addLink (RSSLink link)
     {
-        this.url = url;
+        links.add (link);
     }
 
     /**

@@ -34,6 +34,9 @@ import org.xml.sax.Attributes;
 
 import org.clapper.util.logging.Logger;
 
+import org.clapper.curn.parser.ParserUtil;
+import org.clapper.curn.parser.RSSLink;
+
 /**
  * <p><tt>V2Parser</tt> is a stripped down RSS parser for RSS versions
  * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92, and
@@ -259,7 +262,17 @@ public class V2Parser extends ParserCommon
             {
                 try
                 {
-                    theChannel.setLink (new URL (chars));
+                    // RSS version 2 doesn't support multiple links per
+                    // channel. Assume this link is the link for the feed.
+                    // Try to figure out the MIME type, and default to the
+                    // MIME type for an RSS feed. Mark the feed as type
+                    // "self".
+
+                    URL url = new URL (chars);
+                    theChannel.addLink (new RSSLink
+                                            (url,
+                                             ParserUtil.getLinkMIMEType (url),
+                                             RSSLink.Type.SELF));
                 }
 
                 catch (MalformedURLException ex)
@@ -335,7 +348,17 @@ public class V2Parser extends ParserCommon
             {
                 try
                 {
-                    item.setLink (new URL (chars));
+                    // RSS version 2 doesn't support multiple links per
+                    // item. Assume this link is the link for the item's
+                    // XML. Try to figure out the MIME type, and default to
+                    // the MIME type for an RSS feed. Mark the feed as type
+                    // "self".
+
+                    URL url = new URL (chars);
+                    item.addLink (new RSSLink
+                                            (url,
+                                             ParserUtil.getLinkMIMEType (url),
+                                             RSSLink.Type.SELF));
                 }
 
                 catch (MalformedURLException ex)

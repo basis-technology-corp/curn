@@ -93,7 +93,7 @@ public class tester
     private static void show (RSSChannel channel)
     {
         out.println ("Channel title:  " + channel.getTitle());
-        out.println ("Channel link:   " + channel.getLink());
+        out.println ("Channel link:   " + channel.getURL());
 
         Collection<String> authors = channel.getAuthors();        
         String s = null;
@@ -131,7 +131,7 @@ public class tester
             else
                 out.println (TextUtil.join (authors, ", "));
 
-            out.println ("Item link:     " + item.getLink());
+            out.println ("Item link:     " + item.getURL());
 
             out.print ("Item date:     ");
             date = item.getPublicationDate();

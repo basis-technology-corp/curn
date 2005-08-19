@@ -167,7 +167,7 @@ public class TextOutputHandler extends FileOutputHandler
             out.println (HORIZONTAL_RULE);
 
             out.println (convert (channel.getTitle()));
-            out.println (channel.getLink().toString());
+            out.println (channel.getURL().toString());
 
             if (config.showDates())
             {
@@ -209,7 +209,7 @@ public class TextOutputHandler extends FileOutputHandler
                     }
                 }
 
-                out.println (item.getLink().toString());
+                out.println (item.getURL().toString());
 
                 if (config.showDates())
                 {

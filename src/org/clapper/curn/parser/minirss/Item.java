@@ -26,7 +26,9 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 
 import java.net.URL;
 
@@ -47,15 +49,15 @@ public class Item extends RSSItem
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private String             title          = null;
-    private URL                url            = null;
-    private String             summary        = null;
-    private Date               pubDate        = null;
-    private Collection<String> categories     = null;
-    private Collection<String> authors        = new HashSet<String>();
-    private String             author         = null;
-    private Channel            channel        = null;
-    private String             id             = null;
+    private String               title          = null;
+    private String               summary        = null;
+    private Date                 pubDate        = null;
+    private Collection<String>   categories     = null;
+    private Collection<String>   authors        = new HashSet<String>();
+    private Collection<RSSLink>  links          = new ArrayList<RSSLink>();
+    private String               author         = null;
+    private Channel              channel        = null;
+    private String               id             = null;
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -97,23 +99,29 @@ public class Item extends RSSItem
     }
 
     /**
-     * Get the item's published URL.
+     * Get the item's published links.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty collection
+     *
+     * @see #addLink
+     * @see RSSItem#getLink
      */
-    public URL getLink()
+    public final Collection<RSSLink> getLinks()
     {
-        return url;
+        return links;
     }
 
     /**
-     * Set the item's published URL.
+     * Add a link for the item.
      *
-     * @param url  the URL, as a string
+     * @param link  the {@link RSSLink} object to add
+     *
+     * @see #getLinks
+     * @see RSSItem#getLink
      */
-    public void setLink (URL url)
+    public void addLink (RSSLink link)
     {
-        this.url = url;
+        links.add (link);
     }
 
     /**

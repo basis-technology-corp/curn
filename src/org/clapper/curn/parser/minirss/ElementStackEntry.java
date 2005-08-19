@@ -42,9 +42,10 @@ class ElementStackEntry
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private String        elementName = null;
-    private StringBuffer  charBuffer  = null;
-    private Object        container   = null;
+    private String        elementName     = null;
+    private StringBuffer  charBuffer      = null;
+    private Object        container       = null;
+    private Throwable     allocationPoint = null;
 
     private static Pattern demoronizePattern = null;
 
@@ -54,13 +55,37 @@ class ElementStackEntry
 
     ElementStackEntry (String elementName)
     {
-        this.elementName = elementName;
+        this (elementName, null);
     }
 
     ElementStackEntry (String elementName, Object container)
     {
         this.elementName = elementName;
-        setContainer (container);
+
+        if (container != null)
+            setContainer (container);
+
+        try
+        {
+            throw new Throwable ("allocationPoint");
+        }
+
+        catch (Throwable ex)
+        {
+            this.allocationPoint = ex;
+        }
+    }
+
+    /**
+     * Return a string representation of this element.
+     *
+     * @return the string (the element name, really)n
+     *
+     * @see #getElementName
+     */
+    public String toString()
+    {
+        return getElementName();
     }
 
     /*----------------------------------------------------------------------*\
@@ -136,6 +161,17 @@ class ElementStackEntry
     Object getContainer()
     {
         return container;
+    }
+
+    /**
+     * Get the exception that captures the stack trace for this object's
+     * allocation point.
+     *
+     * @return the allocation point
+     */
+    Throwable getAllocationPoint()
+    {
+        return allocationPoint;
     }
 
     /*----------------------------------------------------------------------*\

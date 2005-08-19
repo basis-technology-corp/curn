@@ -34,6 +34,9 @@ import org.xml.sax.Attributes;
 
 import org.clapper.util.logging.Logger;
 
+import org.clapper.curn.parser.ParserUtil;
+import org.clapper.curn.parser.RSSLink;
+
 /**
  * <p><tt>V1Parser</tt> is a stripped down RSS parser for
  * {@link <a href="http://web.resource.org/rss/1.0/">RSS, version 1.0</a>}.
@@ -310,7 +313,17 @@ public class V1Parser extends ParserCommon
             {
                 try
                 {
-                    theChannel.setLink (new URL (chars));
+                    // RSS version 1 doesn't support multiple links per
+                    // channel. Assume this link is the link for the feed.
+                    // Try to figure out the MIME type, and default to the
+                    // MIME type for an RSS feed. Mark the feed as type
+                    // "self".
+
+                    URL url = new URL (chars);
+                    theChannel.addLink (new RSSLink
+                                            (url,
+                                             ParserUtil.getLinkMIMEType (url),
+                                             RSSLink.Type.SELF));
                 }
 
                 catch (MalformedURLException ex)
@@ -379,17 +392,19 @@ public class V1Parser extends ParserCommon
      * This method is a hack that strips such things out before storing the
      * link in the item.
      *
-     * @param item the item
-     * @param url  the string containing the URL
+     * @param item  the item
+     * @param sUrl  the string containing the URL
      *
      * @throws SAXException on error
      */
-    private void setItemLink (Item item, String url)
+    private void setItemLink (Item item, String sUrl)
         throws SAXException
     {
+        URL url = null;
+
         try
         {
-            item.setLink (new URL (url));
+            url = new URL (sUrl);
         }
 
         catch (MalformedURLException ex)
@@ -398,11 +413,11 @@ public class V1Parser extends ParserCommon
             // protocol. Abort if (a) there's no ":" anywhere in the
             // string, or (b) we reach the ":" without finding a valid URL.
 
-            int iColon = url.indexOf (":");
+            int iColon = sUrl.indexOf (":");
             if (iColon < 0)
             {
                 throw new SAXException ("Can't save item link \""
-                                      + url.toString()
+                                      + sUrl
                                       + "\": "
                                       + ex.toString());
             }
@@ -412,7 +427,7 @@ public class V1Parser extends ParserCommon
             {
                 try
                 {
-                    item.setLink (new URL (url.substring (i)));
+                    url = new URL (sUrl.substring (i));
                     ok = true;
                     break;
                 }
@@ -427,8 +442,21 @@ public class V1Parser extends ParserCommon
                 // Swallow the exception. No sense aborting the whole feed
                 // for a bad <link> element.
 
-                log.error ("Bad <link> element \"" + url + "\"", ex);
+                log.error ("Bad <link> element \"" + sUrl + "\"", ex);
+                url = null;
             }
+        }
+
+        if (url != null)
+        {
+            // RSS version 1 doesn't support multiple links per item.
+            // Assume this link is the link for the item's XML. Try to
+            // figure out the MIME type, and default to the MIME type for
+            // an RSS feed. Mark the feed as type "self".
+
+            item.addLink (new RSSLink (url,
+                                       ParserUtil.getLinkMIMEType (url),
+                                       RSSLink.Type.SELF));
         }
     }
 }

@@ -27,8 +27,10 @@
 
 package org.clapper.curn.parser.informa;
 
+import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
@@ -165,13 +167,27 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
-     * Get the channel's published link (its URL).
+     * Get the channel's published links.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty collection
+     *
+     * @see RSSChannel#getLink
      */
-    public URL getLink()
+    public final Collection<RSSLink> getLinks()
     {
-        return this.channel.getSite();
+        // Since Informa doesn't support multiple links per feed, we have
+        // to assume that this link is the link for the feed. Try to figure
+        // out the MIME type, and default to the MIME type for an RSS feed.
+        // Mark the feed as type "self".
+
+        Collection<RSSLink> results = new ArrayList<RSSLink>();
+
+        URL url = channel.getSite();
+        results.add (new RSSLink (url,
+                                  ParserUtil.getLinkMIMEType (url),
+                                  RSSLink.Type.SELF));
+
+        return results;
     }
 
     /**

@@ -26,7 +26,10 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
+
 import org.clapper.util.logging.Logger;
 
 import java.net.URL;
@@ -219,11 +222,15 @@ public class AtomParser extends ParserCommon
 
         if (! entryElementName.equals (elementName))
         {
-            throw new SAXException ("Element \""
-                                  + elementName
-                                  + "\" doesn't match element on stack (\""
-                                  + entry.getElementName()
-                                  + "\")");
+            String msg = "Element \""
+                       + elementName
+                       + "\" doesn't match element on stack (\""
+                       + entryElementName
+                       + "\")";
+
+            log.error (msg);
+            log.error ("", entry.getAllocationPoint());
+            throw new SAXException (msg);
         }
 
         Object container = entry.getContainer();
@@ -302,31 +309,15 @@ public class AtomParser extends ParserCommon
 
         else if (elementName.equals ("link"))
         {
-            String s = attributes.getValue ("href");
-            if (s != null)
-            {
-                s = s.trim();
-                if (s.length() == 0)
-                    s = null;
-            }
+            RSSLink link = parseLink (attributes);
+            if (link != null)
+                theChannel.addLink (link);
 
-            if (s != null)
-            {
-                try
-                {
-                    theChannel.setLink (new URL (s));
-                    elementStack.push (new ElementStackEntry (elementName,
-                                                              theChannel));
-                }
+            // Push it regardless, or the endElement() call will puke when
+            // it pops off the wrong thing.
 
-                catch (MalformedURLException ex)
-                {
-                    // Swallow the exception. No sense aborting the whole
-                    // feed for a bad <link> element.
-
-                    log.error ("Bad <link> element \"" + s + "\"", ex);
-                }
-            }
+            elementStack.push (new ElementStackEntry (elementName,
+                                                      theChannel));
         }
 
         else
@@ -443,31 +434,14 @@ public class AtomParser extends ParserCommon
 
         if (elementName.equals ("link"))
         {
-            String s = attributes.getValue ("href");
-            if (s != null)
-            {
-                s = s.trim();
-                if (s.length() == 0)
-                    s = null;
-            }
+            RSSLink link = parseLink (attributes);
+            if (link != null)
+                item.addLink (link);
 
-            if (s != null)
-            {
-                try
-                {
-                    item.setLink (new URL (s));
-                    elementStack.push (new ElementStackEntry (elementName,
-                                                              channel));
-                }
+            // Push it regardless, or the endElement() call will puke when
+            // it pops off the wrong thing.
 
-                catch (MalformedURLException ex)
-                {
-                    // Swallow the exception. No sense aborting the whole
-                    // feed for a bad <link> element.
-
-                    log.error ("Bad <link> element \"" + s + "\"", ex);
-                }
-            }
+            elementStack.push (new ElementStackEntry (elementName, channel));
         }
 
         else if (elementName.equals ("content"))
@@ -632,5 +606,79 @@ public class AtomParser extends ParserCommon
 
         if (category.term != null)
             category.parentItem.addCategory (category.term);
+    }
+
+    /**
+     * Parse a "link" element.
+     *
+     * @param attributes  the element's attributes
+     *
+     * @return the RSSLink item, or null on error or unsupported link type
+     */
+    private RSSLink parseLink (Attributes attributes)
+    {
+        String sURL = attributes.getValue ("href");
+        URL url = null;
+        if (sURL != null)
+        {
+            sURL = sURL.trim();
+            if (sURL.length() == 0)
+                sURL = null;
+
+            else
+            {
+                try
+                {
+                    url = new URL (sURL);
+                }
+
+                catch (MalformedURLException ex)
+                {
+                    // Swallow the exception. No sense aborting the whole
+                    // feed for a bad <link> element.
+
+                    log.error ("Bad <link> element \"" + sURL + "\"", ex);
+                }
+            }
+        }
+
+        String sType = attributes.getValue ("rel");
+        RSSLink.Type linkType = RSSLink.Type.SELF;
+        if (sType != null)
+        {
+            // Currently, we only support rel="alternative" and rel="self"
+
+            sType = sType.trim();
+            if (sType.length() == 0)
+                sType = null;
+
+            else if (sType.equals ("self"))
+                linkType = RSSLink.Type.SELF;
+
+            else if (sType.equals ("alternate"))
+                linkType = RSSLink.Type.ALTERNATE;
+
+            else
+                sType = null;
+        }
+
+        String mimeType = attributes.getValue ("type");
+        if (mimeType != null)
+        {
+            mimeType = mimeType.trim();
+            if (mimeType.length() == 0)
+                mimeType = null;
+
+            if (mimeType == null)
+            {
+                if (linkType == RSSLink.Type.SELF)
+                    mimeType = ParserUtil.RSS_MIME_TYPE;
+            }
+        }
+
+        if ((url != null) && (sType != null) && (mimeType != null))
+            return new RSSLink (url, mimeType, linkType);
+        else
+            return null;
     }
 }

@@ -35,6 +35,7 @@ import org.clapper.curn.Version;
 import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -350,6 +351,13 @@ public class HTMLOutputHandler extends FileOutputHandler
             HTMLAnchorElement channelAnchor = dom.getElementChannelLink();
             channelAnchor.removeAttribute ("id");
 
+            RSSLink link;
+            URL itemURL;
+
+            link = item.getLinkWithFallback ("text/html");
+            assert (link != null);
+            itemURL = link.getURL();
+
             if (i == 0)
             {
                 // First row in channel has channel title and link.
@@ -359,11 +367,14 @@ public class HTMLOutputHandler extends FileOutputHandler
                              allowEmbeddedHTML,
                              addedNodes);
 
-                URL url = channel.getLink();
-                if (url == null)
-                    url = item.getLink();
+                link = channel.getLinkWithFallback ("text/html");
+                URL channelURL;
+                if (link == null)
+                    channelURL = feedInfo.getURL();
+                else
+                    channelURL = link.getURL();
 
-                channelAnchor.setHref (url.toExternalForm());
+                channelAnchor.setHref (channelURL.toExternalForm());
 
                 date = null;
                 if (config.showDates())
@@ -373,7 +384,7 @@ public class HTMLOutputHandler extends FileOutputHandler
                 else
                     dom.setTextChannelDate ("");
 
-                itemAnchor.setHref (item.getLink().toExternalForm());
+                itemAnchor.setHref (itemURL.toExternalForm());
             }
 
             else
@@ -406,7 +417,7 @@ public class HTMLOutputHandler extends FileOutputHandler
 
             addTextNode (itemDescTD, desc, allowEmbeddedHTML, addedNodes);
 
-            itemAnchor.setHref (item.getLink().toExternalForm());
+            itemAnchor.setHref (itemURL.toExternalForm());
 
             // Item date
 
