@@ -30,7 +30,7 @@ import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSParserException;
 
-import com.sun.syndication.feed.synd.SyndFeedI;
+import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.FeedException;
 
@@ -101,7 +101,7 @@ public class RSSParserAdapter implements RSSParser
                 r = new InputStreamReader (stream, encoding);
 
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeedI     feed  = input.build (new InputSource (r));
+            SyndFeed      feed  = input.build (new InputSource (r));
 
             return new RSSChannelAdapter (feed);
         }

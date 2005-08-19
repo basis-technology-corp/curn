@@ -27,13 +27,14 @@
 package org.clapper.curn.parser.rome;
 
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 import org.clapper.curn.parser.ParserUtil;
 
 import org.clapper.util.logging.Logger;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndCategory;
-import com.sun.syndication.feed.synd.SyndContentI;
+import com.sun.syndication.feed.synd.SyndContent;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -120,17 +121,27 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
-     * Get the item's published link (its URL).
+     * Get the item's published links.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty collection
+     *
+     * @see RSSItem#getLink
      */
-    public URL getLink()
+    public final Collection<RSSLink> getLinks()
     {
-        URL url = null;
+        // Since ROME doesn't support multiple links per item, we have to
+        // assume that this link is the link for the item. Try to figure
+        // out the MIME type, and default to the MIME type for an RSS feed.
+        // Mark the feed as type "self".
+
+        Collection<RSSLink> results = new ArrayList<RSSLink>();
 
         try
         {
-            url = new URL (entry.getLink());
+            URL url = new URL (entry.getLink());
+            results.add (new RSSLink (url,
+                                      ParserUtil.getLinkMIMEType (url),
+                                      RSSLink.Type.SELF));
         }
 
         catch (MalformedURLException ex)
@@ -141,17 +152,7 @@ public class RSSItemAdapter extends RSSItem
                      + ex.toString());
         }
 
-        return url;
-    }
-
-    /**
-     * Set (change) the item's published link (its URL).
-     *
-     * @param url the URL, or null if not available
-     */
-    public void setLink (URL url)
-    {
-        entry.setLink (url.toString());
+        return results;
     }
 
     /**
@@ -163,8 +164,8 @@ public class RSSItemAdapter extends RSSItem
      */
     public String getSummary()
     {
-        String        result  = null;
-        SyndContentI  content = entry.getDescription();
+        String       result  = null;
+        SyndContent  content = entry.getDescription();
 
         if (content != null)
             result = content.getValue();
@@ -188,7 +189,7 @@ public class RSSItemAdapter extends RSSItem
      */
     public void setSummary (String newSummary)
     {
-        SyndContentI  content = entry.getDescription();
+        SyndContent  content = entry.getDescription();
 
         if (content != null)
             content.setValue (newSummary);

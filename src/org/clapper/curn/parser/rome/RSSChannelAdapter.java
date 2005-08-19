@@ -26,14 +26,16 @@
 
 package org.clapper.curn.parser.rome;
 
+import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.parser.ParserUtil;
+import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.logging.Logger;
 
-import com.sun.syndication.feed.synd.SyndFeedI;
+import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -65,7 +67,7 @@ public class RSSChannelAdapter extends RSSChannel
     /**
      * The real channel object
      */
-    private SyndFeedI syndFeed;
+    private SyndFeed syndFeed;
 
     /**
      * For log messages
@@ -82,7 +84,7 @@ public class RSSChannelAdapter extends RSSChannel
      *
      * @param syndFeed  the <tt>SyndFeedI</tt> object
      */
-    RSSChannelAdapter (SyndFeedI syndFeed)
+    RSSChannelAdapter (SyndFeed syndFeed)
     {
         this.syndFeed = syndFeed;
     }
@@ -119,12 +121,20 @@ public class RSSChannelAdapter extends RSSChannel
      */
     public void setItems (Collection<? extends RSSItem> newItems)
     {
+        Collection<SyndEntry> syndItems = new ArrayList<SyndEntry>();
+
+        for (RSSItem ourItem : newItems)
+        {
+            RSSItemAdapter itemAdapter = (RSSItemAdapter) ourItem;
+            syndItems.add (itemAdapter.getSyndEntry());
+        }
+
         // We're storing values from a genericized collection into a
         // non-genericized collection. We have to copy the items to a new
         // collection. Use of a Collection<Object> avoids a compiler
         // "unchecked cast" warning.
 
-        syndFeed.setEntries (new ArrayList<Object> (newItems));
+        syndFeed.setEntries (new ArrayList<Object> (syndItems));
     }
 
     /**
@@ -174,17 +184,27 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
-     * Get the channel's published link (its URL).
+     * Get the channel's published links.
      *
-     * @return the URL, or null if not available
+     * @return the collection of links, or an empty collection
+     *
+     * @see RSSChannel#getLink
      */
-    public URL getLink()
+    public final Collection<RSSLink> getLinks()
     {
-        URL url = null;
+        // Since ROME doesn't support multiple links per feed, we have to
+        // assume that this link is the link for the feed. Try to figure
+        // out the MIME type, and default to the MIME type for an RSS feed.
+        // Mark the feed as type "self".
+
+        Collection<RSSLink> results = new ArrayList<RSSLink>();
 
         try
         {
-            url = new URL (syndFeed.getLink());
+            URL url = new URL (syndFeed.getLink());
+            results.add (new RSSLink (url,
+                                      ParserUtil.getLinkMIMEType (url),
+                                      RSSLink.Type.SELF));
         }
 
         catch (MalformedURLException ex)
@@ -195,7 +215,7 @@ public class RSSChannelAdapter extends RSSChannel
                      + ex.toString());
         }
 
-        return url;
+        return results;
     }
 
     /**
