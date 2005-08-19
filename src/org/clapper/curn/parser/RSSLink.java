@@ -179,5 +179,5 @@ public class RSSLink
     public String toString()
     {
         return (url == null) ? "null" : url.toExternalForm();
-    }X
+    }
 }
