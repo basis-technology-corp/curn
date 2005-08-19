@@ -160,7 +160,13 @@ See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
 item for information on how to specify which parser <i>curn</i> should use.
 See the section entitled
 <a href="#DifferentParser">Using a Different RSS Parser</a> for more
-details on adapting <i>curn</i> to use other RSS parsers.</p>
+details on adapting <i>curn</i> to use other RSS parsers. (WARNING: As of
+the last time this document was updated, the Informa parser, version 0.6,
+does not support Atom 1.0 properly. Specifically, it assumes that a
+<span class="code">&lt;feed&gt;</span> element will always have a
+"version" attribute. That was true for Atom 0.3, but it's not true for
+Atom 1.0.)
+</p>
 
 <p><i>curn</i> supports a several output formats; you can configure
 one or more output handlers in <i>curn</i>'s
