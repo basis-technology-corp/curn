@@ -4,6 +4,29 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.5 (19 August, 2005)
+
+- ENHANCEMENT: The MiniRSSParser class now handles and stores multiple
+  <link> elements in Atom feeds. The links are saved with URL, MIME type
+  and link type (which can be one of "self" or "alternate", a subset of all
+  the types supported by Atom). This allows output handlers to find the
+  link that is most appropriate to their type. The HTMLOutputHandler class
+  now searches for the "text/html" link and uses that, if it's present;
+  if that's not present, it uses the first link marked with type "self".
+  Currently, only the org.clapper.curn.parser.minirss.MiniRSSParser
+  is capable of producing multiple links from an Atom feed.
+
+  NOTE: This change affects the org.clapper.curn.parser.RSSItem and
+  org.clapper.curn.parser.RSSChannel classes. Existing parser adapter
+  layers must be changed, or they won't compile. (That's why this release
+  is 2.5, not 2.4.1.)
+
+- BUG FIX: Fixed to work with latest version of the ROME parser (0.6).
+  (See http://rome.dev.java.net/)
+
+  NOTE: This breaks support for some previous versions of ROME (e.g., 0.3).
+
+
 Version 2.4 (15 August, 2005)
 
 - ENHANCEMENT: The HTMLOutputHandler
