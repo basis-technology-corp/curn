@@ -26,11 +26,9 @@
 
 package org.clapper.curn.parser;
 
-import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 
-import org.clapper.util.text.TextUtil;
 
 /**
  * This abstract class defines a simplified view of an RSS channel,

@@ -28,7 +28,6 @@ package org.clapper.curn.parser;
 
 import org.clapper.util.text.TextUtil;
 
-import java.net.URL;
 import java.util.Collection;
 
 /**

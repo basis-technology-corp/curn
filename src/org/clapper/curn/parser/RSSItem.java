@@ -31,8 +31,6 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.HTMLUtil;
 
-import java.net.URL;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
