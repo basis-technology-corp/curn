@@ -339,7 +339,7 @@ source and documentation packages.
     <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
   </fileset>
 
-  <fileset id="generated.HTMLOutputHandler.files" dir="${src.top}">
+  <fileset id="generated.HTMLOutputHandler.files" dir="${src.dir}">
     <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
     <patternset>
       <include name="output/html/*.optionCheck"/>
