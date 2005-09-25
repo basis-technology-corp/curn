@@ -26,11 +26,8 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
-
-import java.net.URL;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -55,7 +52,6 @@ public class Item extends RSSItem
     private Collection<String>   categories     = null;
     private Collection<String>   authors        = new HashSet<String>();
     private Collection<RSSLink>  links          = new ArrayList<RSSLink>();
-    private String               author         = null;
     private Channel              channel        = null;
     private String               id             = null;
 
@@ -77,6 +73,16 @@ public class Item extends RSSItem
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the parent <tt>Channel</tt> object.
+     *
+     * @return the parent <tt>Channel</tt> object
+     */
+    public Channel getParentChannel()
+    {
+        return this.channel;        
+    }
 
     /**
      * Set the item's title
