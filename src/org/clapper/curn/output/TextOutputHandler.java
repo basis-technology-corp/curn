@@ -34,6 +34,7 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.WordWrapWriter;
@@ -168,7 +169,7 @@ public class TextOutputHandler extends FileOutputHandler
 
             out.println (convert (channel.getTitle()));
 
-            URL url = channel.getURL();
+            RSSLink url = channel.getURL();
             if (url != null)
                 out.println (url.toString());
 
