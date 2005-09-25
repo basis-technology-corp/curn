@@ -167,7 +167,10 @@ public class TextOutputHandler extends FileOutputHandler
             out.println (HORIZONTAL_RULE);
 
             out.println (convert (channel.getTitle()));
-            out.println (channel.getURL().toString());
+
+            URL url = channel.getURL();
+            if (url != null)
+                out.println (url.toString());
 
             if (config.showDates())
             {
