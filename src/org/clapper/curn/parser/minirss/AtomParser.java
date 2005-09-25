@@ -110,11 +110,22 @@ public class AtomParser extends ParserCommon
     {
         String mimeType = null;
         Item   parentItem = null;
+        StringBuffer buf = new StringBuffer();
 
         ItemContent (String mimeType, Item parentItem)
         {
             this.mimeType = mimeType;
             this.parentItem = parentItem;
+        }
+    }
+
+    class ItemContentSubelement
+    {
+        ItemContent parentContent;
+
+        ItemContentSubelement (ItemContent parent)
+        {
+            this.parentContent = parent;
         }
     }
 
@@ -192,6 +203,10 @@ public class AtomParser extends ParserCommon
 
         else if (container instanceof Author)
             startAuthorSubelement (elementName, attributes, entry);
+
+        else if ((container instanceof ItemContent) ||
+                 (container instanceof ItemContentSubelement))
+            startItemContentSubelement (elementName, attributes, entry);
     }
 
     /**
@@ -248,6 +263,9 @@ public class AtomParser extends ParserCommon
 
             else if (container instanceof ItemContent)
                 endItemContentElement (elementName, entry);
+
+            else if (container instanceof ItemContentSubelement)
+                endItemContentSubelement (elementName, entry);
 
             else if (container instanceof ItemCategory)
                 endItemCategoryElement (elementName, entry);
@@ -563,6 +581,99 @@ public class AtomParser extends ParserCommon
             content.parentItem.setContent (chars,
                                            RSSItem.DEFAULT_CONTENT_TYPE);
         }
+    }
+
+    /**
+     * Handles the start of an element within a content element.
+     *
+     * @param elementName       the element name, which is pushed onto the
+     *                          stack along with the <tt>Item</tt> object
+     * @param attributes        the attributes
+     * @param parentStackEntry  the stack entry for the parent content element
+     *
+     * @throws SAXException on error
+     */
+    private void startItemContentSubelement (String            elementName,
+                                             Attributes        attributes,
+                                             ElementStackEntry parentStackEntry)
+    {
+        Object container = parentStackEntry.getContainer();
+        ItemContent content;
+
+        if (container instanceof ItemContent)
+        {
+            // First subelement within <content>.
+
+            content = (ItemContent) container;
+        }
+
+        else if (container instanceof ItemContentSubelement)
+        {
+            // More deeply nested subelements within <content>
+
+            content = ((ItemContentSubelement) container).parentContent;
+        }
+
+        else
+        {
+            assert (false);
+            throw new IllegalStateException();
+        }
+
+        // Nested <content> elements are treated verbatim. They might be
+        // unescaped HTML markup.
+
+        content.buf.append ("<");
+        content.buf.append (elementName);
+
+        // Loop over the attributes and add them to the output.
+
+        for (int i = 0; i < attributes.getLength(); i++)
+        {
+            content.buf.append (" ");
+            content.buf.append (attributes.getLocalName (i));
+            content.buf.append ("=");
+            content.buf.append (attributes.getValue (i));
+        }
+
+        content.buf.append (">");
+
+        // Push subelement on the stack.
+
+        ItemContentSubelement subelement = new ItemContentSubelement (content);
+        elementStack.push (new ElementStackEntry (elementName, subelement));
+    }
+
+    /**
+     * Handles the end of an element nested within an item's content
+     * element.
+     *
+     * @param elementName  the name of the element being ended
+     * @param stackEntry   the associated (popped) stack entry
+     *
+     * @throws SAXException on error
+     */
+    private void endItemContentSubelement (String            elementName,
+                                           ElementStackEntry stackEntry)
+        throws SAXException
+    {
+        ItemContentSubelement subelement =
+            (ItemContentSubelement) stackEntry.getContainer();
+
+        String chars  = stackEntry.getCharacters().trim();
+
+        if (chars.length() == 0)
+            chars = null;
+
+        // Nested <content> elements are treated verbatim. They might be
+        // unescaped HTML markup.
+
+        if (chars != null)
+            subelement.parentContent.buf.append (chars);
+
+        subelement.parentContent.buf.append ("</");
+        subelement.parentContent.buf.append (elementName);
+        subelement.parentContent.buf.append (">");
     }
 
     /**

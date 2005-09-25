@@ -4,6 +4,13 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.5.1 (...)
+
+- Fixed NullPointerException in TextOutputHandler, when channel has no URL.
+- MiniRSSParser now handles Atom feeds that have unescaped, but
+  well-formed, XHTML within a <content> element.
+
+
 Version 2.5 (19 August, 2005)
 
 - ENHANCEMENT: The MiniRSSParser class now handles and stores multiple
