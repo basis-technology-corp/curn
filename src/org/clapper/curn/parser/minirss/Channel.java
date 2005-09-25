@@ -26,12 +26,9 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
-
-import java.net.URL;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -63,7 +60,6 @@ public class Channel extends RSSChannel
     private Date                 pubDate     = null;
     private String               rssFormat   = null;
     private String               copyright   = null;
-    private String               author      = null;
     private String               uniqueID    = null;
 
     /*----------------------------------------------------------------------*\
@@ -287,6 +283,16 @@ public class Channel extends RSSChannel
     public void clearAuthors()
     {
         authors.clear();
+    }
+
+    /**
+     * Get the unique ID for this item.
+     *
+     * @return  the unique ID
+     */
+    public String getUniqueID()
+    {
+        return uniqueID;
     }
 
     /*----------------------------------------------------------------------*\
