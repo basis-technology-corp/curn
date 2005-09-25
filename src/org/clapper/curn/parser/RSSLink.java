@@ -75,7 +75,7 @@ public class RSSLink
     /**
      * Create an empty <tt>RSSLink</tt> object.
      *
-     * @see #RSSLink{URL,Type,String}
+     * @see #RSSLink(URL,String,Type)
      */
     public RSSLink()
     {

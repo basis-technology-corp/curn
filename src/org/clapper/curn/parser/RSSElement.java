@@ -141,7 +141,7 @@ public abstract class RSSElement
 
     /**
      * Get the first link with the specified MIME type. Fall back to the
-     * {@link RSSLink#Type#SELF SELF} link if not found. Fall back to the
+     * {@link RSSLink.Type#SELF SELF} link if not found. Fall back to the
      * first available link if the <tt>SELF</tt> link is not found.
      *
      * @param mimeType  the MIME type
@@ -169,8 +169,8 @@ public abstract class RSSElement
 
     /**
      * Get the URL associated with this item. This method first attempts to
-     * get the {@link RSSLink#Type#SELF SELF} link. If that fails, it looks
-     * for the first {@link RSSLink#Type#ALTERNATE ALTERNATE} link.
+     * get the {@link RSSLink.Type#SELF SELF} link. If that fails, it looks
+     * for the first {@link RSSLink.Type#ALTERNATE ALTERNATE} link.
      *
      * @return the {@link RSSLink} for the URL, or null if it can't be found
      */
