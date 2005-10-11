@@ -621,7 +621,7 @@ For example:</p>
 <blockquote><pre>
 [curn]
 CacheFile: /home/bmc/.curn/cache
-DaysToCache: 30
+DaysToCache: NoLimit
 ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
 ...
 </pre></blockquote>
@@ -1162,10 +1162,11 @@ in detail, below.</p>
             cache when it's read, which means <i>curn</i> forgets that it saw
             them before. A value of 0 renders the cache is essentially
 	    useless (i.e., 0 ensures that <i>curn</i> always forgets items
-	    that are cached)
+	    that are cached). The special value "NoLimit" causes <i>curn</i>
+	    to leave items in the cache forever.
           </td>
 	  <td align="left">No</td>
-	  <td align="left">5 (days)</td>
+	  <td align="left">365 (days)</td>
 	  <td align="left">Per-feed <a href="#Feed_DaysToCache" class="code">DaysToCache</a> parameter</td>
         </tr>
 
@@ -1584,13 +1585,15 @@ section names are all valid for RSS feed sections.</p>
             cache when it's read, which means <i>curn</i> forgets that it saw
             them before. A value of 0 renders the cache is essentially useless
 	    for this feed (i.e., 0 ensures that <i>curn</i> always forgets
-            items that are cached for this feed).
+            items that are cached for this feed). The special value "NoLimit"
+	    causes <i>curn</i> to leave items in the cache forever.
           </td>
 	  <td align="left">No</td>
 	  <td align="left">
 	    The value of the global
 	    <a href="#Cfg_DaysToCache" class="code">DaysToCache</a>
-	    parameter in the <span class="code">[curn]</span> section.</td>
+	    parameter in the <span class="code">[curn]</span> section or 365
+	    if that value is not set.</td>
         </tr>
 
         <tr valign="top" class="oddrow">

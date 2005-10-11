@@ -45,8 +45,10 @@ import java.net.MalformedURLException;
 import org.clapper.curn.util.Util;
 
 import org.clapper.util.config.Configuration;
-import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.config.NoSuchSectionException;
+import org.clapper.util.config.NoSuchVariableException;
+
 import org.clapper.util.logging.Logger;
 
 /**
@@ -133,7 +135,7 @@ public class ConfigFile extends Configuration
     /**
      * Default values
      */
-    private static final int     DEF_DAYS_TO_CACHE     = 30;
+    private static final int     DEF_DAYS_TO_CACHE     = 365;
     private static final boolean DEF_PRUNE_URLS        = false;
     private static final boolean DEF_NO_CACHE_UPDATE   = false;
     private static final boolean DEF_SUMMARY_ONLY      = false;
@@ -151,6 +153,11 @@ public class ConfigFile extends Configuration
     private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
     private static final int     DEF_MAX_THREADS       = 5;
     private static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
+
+    /**
+     * Others
+     */
+    private static final String  NO_LIMIT_VALUE         = "NoLimit";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -793,9 +800,9 @@ public class ConfigFile extends Configuration
                 }
             }
 
-            defaultCacheDays = getOptionalCardinalValue (MAIN_SECTION,
-                                                         VAR_DAYS_TO_CACHE,
-                                                         DEF_DAYS_TO_CACHE);
+            defaultCacheDays = parseMaxDaysParameter (MAIN_SECTION,
+                                                      VAR_DAYS_TO_CACHE,
+                                                      DEF_DAYS_TO_CACHE);
             updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_NO_CACHE_UPDATE,
                                                      DEF_NO_CACHE_UPDATE));
@@ -937,8 +944,9 @@ public class ConfigFile extends Configuration
             if (varName.equals (VAR_DAYS_TO_CACHE))
             {
                 feedInfo.setDaysToCache
-                               (getRequiredCardinalValue (sectionName,
-                                                          VAR_DAYS_TO_CACHE));
+                               (parseMaxDaysParameter (sectionName,
+                                                       VAR_DAYS_TO_CACHE,
+                                                       defaultCacheDays));
             }
 
             else if (varName.equals (VAR_PRUNE_URLS))
@@ -1163,5 +1171,76 @@ public class ConfigFile extends Configuration
         }
 
         return val.intValue();
+    }
+
+    /**
+     * Parse an optional MaxDaysToCache parameter.
+     *
+     * @param sectionName   the section name
+     * @param variableName  the variable name
+     * @param def           the default
+     *
+     * @return the value
+     *
+     * @throws NoSuchSectionException no such section
+     * @throws ConfigurationException bad numeric value
+     */
+    private int parseMaxDaysParameter (String sectionName,
+                                       String variableName,
+                                       int    def)
+        throws NoSuchSectionException,
+               ConfigurationException
+    {
+        int result = def;
+        String value = getOptionalStringValue (sectionName,
+                                               variableName,
+                                               null);
+        if (value != null)
+        {
+            if (value.equalsIgnoreCase (NO_LIMIT_VALUE))
+                result = Integer.MAX_VALUE;
+
+            else
+            {
+                try
+                {
+                    result = Integer.parseInt (value);
+                }
+
+                catch (NumberFormatException ex)
+                {
+                    throw new ConfigurationException
+                                         (Curn.BUNDLE_NAME,
+                                          "ConfigFile.badNumericValue",
+                                          "Bad numeric value \"{0}\" for "
+                                        + "variable \"{1}\" in section "
+                                        + "\"{2}\"",
+                                          new Object[]
+                                          {
+                                              value,
+                                              variableName,
+                                              sectionName
+                                          });
+                }
+
+                if (result < 0)
+                {
+                    throw new ConfigurationException
+                                      (Curn.BUNDLE_NAME,
+                                       "ConfigFile.negativeCardinalValue",
+                                       "Unexpected negative numeric value "
+                                     + "{0} for variable \"{1}\" in section "
+                                     + "\"{2}\"",
+                                       new Object[]
+                                       {
+                                           value,
+                                           variableName,
+                                           sectionName
+                                       });
+                }
+            }
+        }
+
+        return result;
     }
 }
