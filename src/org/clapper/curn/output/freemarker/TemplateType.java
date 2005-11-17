@@ -32,7 +32,7 @@ import org.clapper.curn.CurnException;
 /**
  * @version <tt>$Revision$</tt>
  */
-enum TemplateType
+public enum TemplateType
 {
     /*----------------------------------------------------------------------*\
                                 Enum Values

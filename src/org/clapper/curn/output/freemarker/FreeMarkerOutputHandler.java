@@ -283,24 +283,102 @@ import freemarker.template.TemplateException;
 public class FreeMarkerOutputHandler extends FileOutputHandler
 {
     /*----------------------------------------------------------------------*\
-                               Inner Classes
+                             Public Constants
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Configuration variable: allow embedded HTML
+     */
+    public static final String CFG_ALLOW_EMBEDDED_HTML = "AllowEmbeddedHTML";
+
+    /**
+     * Configuration variable: extra text
+     */
+    public static final String CFG_EXTRA_TEXT = "ExtraText";
+
+    /**
+     * Configuration variable: title
+     */
+    public static final String CFG_TITLE = "Title";
+
+    /**
+     * Configuration variable: table-of-contents item threshold
+     */
+    public static final String CFG_TOC_ITEM_THRESHOLD = "TOCItemThreshold";
+
+    /**
+     * Configuration variable: encoding
+     */
+    public static final String CFG_ENCODING = "Encoding";
+
+    /**
+     * Configuration variable: template file
+     */
+    public static final String CFG_TEMPLATE_FILE = "TemplateFile";
+
+    /**
+     * Configuration keyword for built-in template
+     */
+    public static final String CFG_TEMPLATE_LOAD_BUILTIN = "builtin";
+
+    /**
+     * Configuration keyword: Built-in HTML template
+     */
+    public static final String CFG_BUILTIN_HTML_TEMPLATE = "html";
+
+    /**
+     * Configuration keyword: Built-in text template
+     */
+    public static final String CFG_BUILTIN_TEXT_TEMPLATE = "text";
+
+    /**
+     * Configuration keyword: Built-in summary template
+     */
+    public static final String CFG_BUILTIN_SUMMARY_TEMPLATE = "summary";
+
+    /**
+     * Configuration keyword for template loading from classpath
+     */
+    public static final String CFG_TEMPLATE_LOAD_FROM_CLASSPATH = "classpath";
+
+    /**
+     * Configuration keyword for template loading from URL
+     */
+    public static final String CFG_TEMPLATE_LOAD_FROM_URL = "url";
+
+    /**
+     * Configuration keyword for template loading from file
+     */
+    public static final String CFG_TEMPLATE_LOAD_FROM_FILE = "file";
+
+    /**
+     * Built-in HTML template.
+     */
+    public final static TemplateLocation BUILTIN_HTML_TEMPLATE =
+        new TemplateLocation (TemplateType.CLASSPATH,
+                              "org/clapper/curn/output/freemarker/HTML.ftl");
+
+    /**
+     * Built-in text template
+     */
+    public final static TemplateLocation BUILTIN_TEXT_TEMPLATE =
+        new TemplateLocation (TemplateType.CLASSPATH,
+                              "org/clapper/curn/output/freemarker/Text.ftl");
+
+    /**
+     * Built-in summary template
+     */
+    public final static TemplateLocation BUILTIN_SUMMARY_TEMPLATE =
+        new TemplateLocation (TemplateType.CLASSPATH,
+                              "org/clapper/curn/output/freemarker/Summary.ftl");
 
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private final static TemplateLocation BUILTIN_HTML_TEMPLATE =
-        new TemplateLocation (TemplateType.CLASSPATH,
-                              "org/clapper/curn/output/freemarker/HTML.ftl");
-
-    private final static TemplateLocation BUILTIN_TEXT_TEMPLATE =
-        new TemplateLocation (TemplateType.CLASSPATH,
-                              "org/clapper/curn/output/freemarker/Text.ftl");
-
-    private final static TemplateLocation BUILTIN_SUMMARY_TEMPLATE =
-        new TemplateLocation (TemplateType.CLASSPATH,
-                              "org/clapper/curn/output/freemarker/Summary.ftl");
+    /**
+     * Default encoding value
+     */
     private static final String DEFAULT_CHARSET_ENCODING = "utf-8";
 
     /**
@@ -372,8 +450,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public final void initOutputHandler (ConfigFile              config,
-                                         ConfiguredOutputHandler cfgHandler)
+    public void initOutputHandler (ConfigFile              config,
+                                   ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -401,30 +479,32 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                 // Determine whether we should strip HTML tags.
 
                 this.allowEmbeddedHTML = config.getOptionalBooleanValue
-                    (section, "AllowEmbeddedHTML", false);
+                                                     (section,
+                                                      CFG_ALLOW_EMBEDDED_HTML,
+                                                      false);
                 
                 // Get the title.
 
                 title = config.getOptionalStringValue (section,
-                                                       "Title",
+                                                       CFG_TITLE,
                                                        title);
 
                 // Get the extra text.
 
                 extraText = config.getOptionalStringValue (section,
-                                                           "ExtraText",
+                                                           CFG_EXTRA_TEXT,
                                                            extraText);
 
                 // Get the table of contents threshold
 
                 tocThreshold = config.getOptionalIntegerValue
                                                (section,
-                                                "TOCItemThreshold",
+                                                CFG_TOC_ITEM_THRESHOLD,
                                                 DEFAULT_TOC_THRESHOLD);
 
                 encoding = config.getOptionalStringValue
                                                (section,
-                                                "Encoding",
+                                                CFG_ENCODING,
                                                 DEFAULT_CHARSET_ENCODING);
             }
         }
@@ -514,8 +594,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public final void displayChannel (RSSChannel  channel,
-                                      FeedInfo    feedInfo)
+    public void displayChannel (RSSChannel channel, FeedInfo feedInfo)
         throws CurnException
     {
         // Both the feed AND the handler must enable HTML for it not to
@@ -661,7 +740,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public final void flush() throws CurnException
+    public void flush() throws CurnException
     {
         log.debug ("Generating output.");
 
@@ -734,7 +813,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      *
      * @return the content type
      */
-    public final String getContentType()
+    public String getContentType()
     {
         return this.mimeType;
     }
@@ -758,13 +837,17 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                CurnException
     {
         String templateFileString =
-            config.getConfigurationValue (section, "TemplateFile");
+            config.getConfigurationValue (section, CFG_TEMPLATE_FILE);
         String[] tokens;
 
         if ( (templateFileString == null) ||
              (templateFileString.trim().length() == 0) )
         {
-            tokens = new String[] {"builtin", "html"};
+            tokens = new String[]
+                         {
+                             CFG_TEMPLATE_LOAD_BUILTIN,
+                             CFG_BUILTIN_HTML_TEMPLATE
+                         };
         }
 
         else
@@ -780,21 +863,21 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                             + "\" must have two fields.");
         }
 
-        if (tokens[0].equalsIgnoreCase ("builtin"))
+        if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_BUILTIN))
         {
-            if (tokens[1].equals ("html"))
+            if (tokens[1].equals (CFG_BUILTIN_HTML_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_HTML_TEMPLATE;
                 this.mimeType = "text/html";
             }
 
-            else if (tokens[1].equals ("text"))
+            else if (tokens[1].equals (CFG_BUILTIN_TEXT_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_TEXT_TEMPLATE;
                 this.mimeType = "text/plain";
             }
 
-            else if (tokens[1].equals ("summary"))
+            else if (tokens[1].equals (CFG_BUILTIN_SUMMARY_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_SUMMARY_TEMPLATE;
                 this.mimeType = "text/plain";
@@ -810,21 +893,21 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             }
         }
 
-        else if (tokens[0].equalsIgnoreCase ("url"))
+        else if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_URL))
         {
             this.templateLocation = new TemplateLocation (TemplateType.URL,
                                                           tokens[1]);
             this.mimeType = config.getConfigurationValue (section, "MimeType");
         }
 
-        else if (tokens[0].equalsIgnoreCase ("file"))
+        else if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_FILE))
         {
             this.templateLocation = new TemplateLocation (TemplateType.FILE,
                                                           tokens[1]);
             this.mimeType = config.getConfigurationValue (section, "MimeType");
         }
 
-        else if (tokens[0].equalsIgnoreCase ("classpath"))
+        else if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_CLASSPATH))
         {
             this.templateLocation = new TemplateLocation (TemplateType.CLASSPATH,
                                                           tokens[1]);

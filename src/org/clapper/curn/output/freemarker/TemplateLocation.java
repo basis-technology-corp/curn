@@ -32,7 +32,7 @@ import org.clapper.curn.CurnException;
 /**
  * @version <tt>$Revision$</tt>
  */
-class TemplateLocation implements Comparable<TemplateLocation>
+public class TemplateLocation implements Comparable<TemplateLocation>
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -143,7 +143,7 @@ class TemplateLocation implements Comparable<TemplateLocation>
     }
 
     /*----------------------------------------------------------------------*\
-                          Package-visible Methods
+                              Public Methods
     \*----------------------------------------------------------------------*/
 
     /**
@@ -151,7 +151,7 @@ class TemplateLocation implements Comparable<TemplateLocation>
      *
      * @return  the name
      */
-    String getName()
+    public String getName()
     {
         StringBuilder buf = new StringBuilder();
 
@@ -169,7 +169,7 @@ class TemplateLocation implements Comparable<TemplateLocation>
      *
      * @see TemplateType
      */
-    TemplateType getType()
+    public TemplateType getType()
     {
         return this.type;
     }
@@ -182,7 +182,7 @@ class TemplateLocation implements Comparable<TemplateLocation>
      *
      * @see #getType
      */
-    String getLocation()
+    public String getLocation()
     {
         return this.location;
     }
