@@ -27,16 +27,20 @@
 package org.clapper.curn.parser.informa;
 
 import org.clapper.curn.parser.ParserUtil;
+import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.core.CategoryIF;
+import de.nava.informa.impl.basic.Item;
+import de.nava.informa.impl.basic.Category;
 
 import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -63,6 +67,11 @@ public class RSSItemAdapter extends RSSItem
      */
     private ItemIF item;
 
+    /**
+     * Parent channel
+     */
+    private RSSChannel channel;
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -71,16 +80,45 @@ public class RSSItemAdapter extends RSSItem
      * Allocate a new <tt>RSSItemAdapter</tt> object that wraps the specified
      * Informa <tt>ItemIF</tt> object.
      *
-     * @param itemIF  the <tt>ItemIF</tt> object
+     * @param itemIF        the <tt>ItemIF</tt> object
+     * @param parentChannel parent <tt>RSSChannel</tt>
      */
-    RSSItemAdapter (ItemIF itemIF)
+    RSSItemAdapter (ItemIF itemIF, RSSChannel parentChannel)
     {
-        this.item = itemIF;
+        super();
+
+        this.item    = itemIF;
+        this.channel = parentChannel;
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @param channel  the parent channel
+     *
+     * @return the new instance
+     */
+    public RSSItem newInstance (RSSChannel channel)
+    {
+        ItemIF newItem = new Item();
+        newItem.setChannel (((RSSChannelAdapter) channel).getChannelIF());
+        return new RSSItemAdapter (newItem, channel);
+    }
+
+    /**
+     * Get the parent <tt>Channel</tt> object.
+     *
+     * @return the parent <tt>Channel</tt> object
+     */
+    public RSSChannel getParentChannel()
+    {
+        return this.channel;        
+    }
 
     /**
      * Get the item's title
@@ -128,6 +166,25 @@ public class RSSItemAdapter extends RSSItem
                                   RSSLink.Type.SELF));
 
         return results;
+    }
+
+    /**
+     * Set the item's published links.
+     *
+     * @param links the collection of links, or an empty collection (or null)
+     *
+     * @see #getLinks
+     */
+    public void setLinks (Collection<RSSLink> links)
+    {
+        // Since Informa doesn't support multiple links per item, we have
+        // to assume that the first link is the link for the item.
+
+        if ((links != null) && (links.size() > 0))
+        {
+            RSSLink link = links.iterator().next();
+            item.setLink (link.getURL());
+        }
     }
 
     /**
@@ -223,6 +280,28 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
+     * Set the categories the item belongs to.
+     *
+     * @param categories a <tt>Collection</tt> of category strings
+     *                   or null if not applicable
+     *
+     * @see #getCategories
+     */
+    public void setCategories (Collection<String> categories)
+    {
+        if (categories == null)
+            categories = Collections.emptyList();
+
+        Collection<CategoryIF> nativeCategories;
+
+        nativeCategories = new ArrayList<CategoryIF>();
+        for (String category : categories)
+            nativeCategories.add (new Category (category));
+
+        item.setCategories (nativeCategories);
+    }
+
+    /**
      * Get the item's publication date.
      *
      * @return the date, or null if not available
@@ -233,6 +312,18 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
+     * Set the item's publication date.
+     *
+     * @return the date, or null if not available
+     *
+     * @see #getPublicationDate
+     */
+    public void setPublicationDate (Date date)
+    {
+        this.item.setDate (date);
+    }
+
+    /**
      * Get the item's ID field, if any.
      *
      * @return the ID field, or null if not set
@@ -240,6 +331,15 @@ public class RSSItemAdapter extends RSSItem
     public String getID()
     {
         return null;
+    }
+
+    /**
+     * Set the item's ID field, if any.
+     *
+     * @param id the ID field, or null
+     */
+    public void setID (String id)
+    {
     }
 
     /*----------------------------------------------------------------------*\

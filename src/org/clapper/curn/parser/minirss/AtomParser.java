@@ -520,7 +520,7 @@ public class AtomParser extends ParserCommon
             item.setPublicationDate (parseW3CDate (chars));
 
         else if (elementName.equals ("id"))
-            item.setUniqueID (chars);
+            item.setID (chars);
 
         else if (elementName.equals ("entry"))
         {

@@ -33,9 +33,10 @@ import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.logging.Logger;
 
-import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -94,6 +95,17 @@ public class RSSChannelAdapter extends RSSChannel
     \*----------------------------------------------------------------------*/
 
     /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @return the new instance
+     */
+    public RSSChannel newInstance()
+    {
+        return new RSSChannelAdapter (new SyndFeedImpl());
+    }
+
+    /**
      * Get a <tt>Collection</tt> of the items in this channel. All objects
      * in the collection are of type <tt>RSSItem</tt>.
      *
@@ -106,7 +118,7 @@ public class RSSChannelAdapter extends RSSChannel
         Collection<RSSItem> result = new ArrayList<RSSItem>();
 
         for (Iterator it = syndFeed.getEntries().iterator(); it.hasNext(); )
-            result.add (new RSSItemAdapter ((SyndEntry) it.next()));
+            result.add (new RSSItemAdapter ((SyndEntry) it.next(), this));
 
         return result;
     }
@@ -184,6 +196,18 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
+     * Set the channel's description
+     *
+     * @param desc the channel's description, or null if there isn't one
+     *
+     * @see #getDescription
+     */
+    public void setDescription (String desc)
+    {
+        syndFeed.setDescription (desc);
+    }
+
+    /**
      * Get the channel's published links.
      *
      * @return the collection of links, or an empty collection
@@ -217,6 +241,26 @@ public class RSSChannelAdapter extends RSSChannel
 
         return results;
     }
+    /**
+     * Set the channel's list of published links (its URLs).
+     *
+     * @param links the links
+     *
+     * @see #getLink
+     * @see #getLinks
+     */
+    public void setLinks (Collection<RSSLink> links)
+    {
+        // Since ROME doesn't support multiple links per feed, we have
+        // to assume that the first link is the link for the feed.
+
+        if ((links != null) && (links.size() > 0))
+        {
+            RSSLink link = links.iterator().next();
+            this.syndFeed.setLink (link.getURL().toExternalForm());
+        }
+    }
+
 
     /**
      * Get the channel's publication date.
@@ -226,6 +270,16 @@ public class RSSChannelAdapter extends RSSChannel
     public Date getPublicationDate()
     {
         return syndFeed.getPublishedDate();
+    }
+
+    /**
+     * Set the channel's publication date.
+     *
+     * @param date  the publication date, or null if not available
+     */
+    public void setPublicationDate (Date date)
+    {
+        this.syndFeed.setPublishedDate (date);
     }
 
     /**
@@ -239,6 +293,18 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
+     * Set the channel's copyright string
+     *
+     * @param copyright  the copyright string, or null if not available
+     *
+     * @see #getCopyright
+     */
+    public void setCopyright (String copyright)
+    {
+        this.syndFeed.setCopyright (copyright);
+    }
+
+    /**
      * Get the RSS format the channel is using.
      *
      * @return the format, or null if not available
@@ -246,6 +312,37 @@ public class RSSChannelAdapter extends RSSChannel
     public String getRSSFormat()
     {
         return syndFeed.getFeedType();
+    }
+
+    /**
+     * Get the RSS format the channel is using, in native format. This
+     * method exists for underlying implementations that store the RSS
+     * format as something other than a string; the method allows the
+     * {@link #makeCopy} method to copy the RSS format without knowing
+     * how it's stored. The default implementation of this method 
+     * simply calls {@link #getRSSFormat}.
+     *
+     * @return the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #setNativeRSSFormat
+     */
+    public Object getNativeRSSFormat()
+    {
+        return getRSSFormat();
+    }
+
+    /**
+     * Set the RSS format the channel is using.
+     *
+     * @param format the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #getNativeRSSFormat
+     */
+    public void setNativeRSSFormat (Object format)
+    {
+        ((SyndFeedImpl) this.syndFeed).setFeedType ((String) format);
     }
 
     /**

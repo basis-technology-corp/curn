@@ -26,6 +26,7 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 
@@ -75,11 +76,24 @@ public class Item extends RSSItem
     \*----------------------------------------------------------------------*/
 
     /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @param channel  the parent channel
+     *
+     * @return the new instance
+     */
+    public RSSItem newInstance (RSSChannel channel)
+    {
+        return new Item ((Channel) channel);
+    }
+
+    /**
      * Get the parent <tt>Channel</tt> object.
      *
      * @return the parent <tt>Channel</tt> object
      */
-    public Channel getParentChannel()
+    public RSSChannel getParentChannel()
     {
         return this.channel;        
     }
@@ -128,6 +142,20 @@ public class Item extends RSSItem
     public void addLink (RSSLink link)
     {
         links.add (link);
+    }
+
+    /**
+     * Set the item's published links.
+     *
+     * @param newLinks collection of links, or an empty collection (or null)
+     *
+     * @see #getLinks
+     */
+    public void setLinks (Collection<RSSLink> newLinks)
+    {
+        links.clear();
+        if (newLinks != null)
+            links.addAll (newLinks);
     }
 
     /**
@@ -212,6 +240,9 @@ public class Item extends RSSItem
      * Add a category to this item.
      *
      * @param category  the category string
+     *
+     * @see #getCategories
+     * @see #setCategories
      */
     public void addCategory (String category)
     {
@@ -226,10 +257,33 @@ public class Item extends RSSItem
      *
      * @return a <tt>Collection</tt> of category strings (<tt>String</tt>
      *         objects) or null if not applicable
+     *
+     * @see #addCategory
+     * @see #setCategories
      */
     public Collection<String> getCategories()
     {
         return categories;
+    }
+
+    /**
+     * Set the categories the item belongs to.
+     *
+     * @param newCategories a <tt>Collection</tt> of category strings
+     *                      or null if not applicable
+     *
+     * @see #addCategory
+     * @see #getCategories
+     */
+    public void setCategories (Collection<String> newCategories)
+    {
+        if (this.categories == null)
+            this.categories = new ArrayList<String>();
+        else
+            this.categories.clear();
+
+        if (newCategories != null)
+            this.categories.addAll (newCategories);
     }
 
     /**
@@ -242,16 +296,12 @@ public class Item extends RSSItem
         return this.id;
     }
 
-    /*----------------------------------------------------------------------*\
-                          Package-visible Methods
-    \*----------------------------------------------------------------------*/
-
     /**
-     * Set the ID field for this item.
+     * Set the item's ID field, if any.
      *
-     * @param id  the ID
+     * @param id the ID field, or null
      */
-    void setUniqueID (String id)
+    public void setID (String id)
     {
         this.id = id;
     }

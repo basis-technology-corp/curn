@@ -32,8 +32,10 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 
+import de.nava.informa.core.ChannelFormat;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
+import de.nava.informa.impl.basic.Channel;
 
 import java.net.URL;
 
@@ -78,12 +80,24 @@ public class RSSChannelAdapter extends RSSChannel
      */
     RSSChannelAdapter (ChannelIF channelIF)
     {
+        super();
         this.channel = channelIF;
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @return the new instance
+     */
+    public RSSChannel newInstance()
+    {
+        return new RSSChannelAdapter (new Channel());
+    }
 
     /**
      * Get a <tt>Collection</tt> of the items in this channel. All objects
@@ -98,7 +112,7 @@ public class RSSChannelAdapter extends RSSChannel
         Collection<RSSItem> result = new ArrayList<RSSItem>();
 
         for (Iterator it = channel.getItems().iterator(); it.hasNext(); )
-            result.add (new RSSItemAdapter ((ItemIF) it.next()));
+            result.add (new RSSItemAdapter ((ItemIF) it.next(), this));
 
         return result;
     }
@@ -149,7 +163,7 @@ public class RSSChannelAdapter extends RSSChannel
      *
      * @param newTitle the channel's title, or null if there isn't one
      *
-     * @see #getTitle()
+     * @see #getTitle
      */
     public void setTitle (String newTitle)
     {
@@ -160,10 +174,24 @@ public class RSSChannelAdapter extends RSSChannel
      * Get the channel's description
      *
      * @return the channel's description, or null if there isn't one
+     *
+     * @see #setDescription
      */
     public String getDescription()
     {
         return this.channel.getDescription();
+    }
+
+    /**
+     * Set the channel's description
+     *
+     * @param desc the channel's description, or null if there isn't one
+     *
+     * @see #getDescription
+     */
+    public void setDescription (String desc)
+    {
+        this.channel.setDescription (desc);
     }
 
     /**
@@ -191,9 +219,31 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
+     * Set the channel's list of published links (its URLs).
+     *
+     * @param links the links
+     *
+     * @see #getLink
+     * @see #getLinks
+     */
+    public void setLinks (Collection<RSSLink> links)
+    {
+        // Since Informa doesn't support multiple links per feed, we have
+        // to assume that the first link is the link for the feed.
+
+        if ((links != null) && (links.size() > 0))
+        {
+            RSSLink link = links.iterator().next();
+            this.channel.setSite (link.getURL());
+        }
+    }
+
+    /**
      * Get the channel's publication date.
      *
      * @return the date, or null if not available
+     *
+     * @see #setPublicationDate
      */
     public Date getPublicationDate()
     {
@@ -201,13 +251,37 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
+     * Set the channel's publication date.
+     *
+     * @param date  the publication date, or null if not available
+     */
+    public void setPublicationDate (Date date)
+    {
+        this.channel.setPubDate (date);
+    }
+
+    /**
      * Get the channel's copyright string
      *
      * @return the copyright string, or null if not available
+     *
+     * @see #setCopyright
      */
     public String getCopyright()
     {
         return this.channel.getCopyright();
+    }
+
+    /**
+     * Set the channel's copyright string
+     *
+     * @param copyright  the copyright string, or null if not available
+     *
+     * @see #getCopyright
+     */
+    public void setCopyright (String copyright)
+    {
+        this.channel.setCopyright (copyright);
     }
 
     /**
@@ -218,6 +292,37 @@ public class RSSChannelAdapter extends RSSChannel
     public String getRSSFormat()
     {
         return this.channel.getFormat().toString();
+    }
+
+    /**
+     * Get the RSS format the channel is using, in native format. This
+     * method exists for underlying implementations that store the RSS
+     * format as something other than a string; the method allows the
+     * {@link #makeCopy} method to copy the RSS format without knowing
+     * how it's stored. The default implementation of this method 
+     * simply calls {@link #getRSSFormat}.
+     *
+     * @return the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #setNativeRSSFormat
+     */
+    public Object getNativeRSSFormat()
+    {
+        return this.channel.getFormat();
+    }
+
+    /**
+     * Set the RSS format the channel is using.
+     *
+     * @param format the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #getNativeRSSFormat
+     */
+    public void setNativeRSSFormat (Object format)
+    {
+        this.channel.setFormat ((ChannelFormat) format);
     }
 
     /**
@@ -258,5 +363,19 @@ public class RSSChannelAdapter extends RSSChannel
     public void clearAuthors()
     {
         // Informa does not support this field
+    }
+
+    /*----------------------------------------------------------------------*\
+                          Package-visible Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get the underlying Informa <tt>ChannelIF</tt> object.
+     *
+     * @return the <tt>ChannelIF</tt> object
+     */
+    ChannelIF getChannelIF()
+    {
+        return this.channel;
     }
 }

@@ -26,22 +26,29 @@
 
 package org.clapper.curn.parser.rome;
 
+import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 import org.clapper.curn.parser.ParserUtil;
 
 import org.clapper.util.logging.Logger;
 
-import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndCategory;
+import com.sun.syndication.feed.synd.SyndCategoryImpl;
 import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.Date;
-import java.util.Collection;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class implements the <tt>RSSItem</tt> interface and defines an
@@ -67,6 +74,11 @@ public class RSSItemAdapter extends RSSItem
     private SyndEntry entry;
 
     /**
+     * Parent channel
+     */
+    private RSSChannel channel;
+
+    /**
      * For log messages
      */
     private static Logger log = new Logger (RSSItemAdapter.class);
@@ -79,16 +91,44 @@ public class RSSItemAdapter extends RSSItem
      * Allocate a new <tt>RSSItemAdapter</tt> object that wraps the specified
      * Rome <tt>SyndEntry</tt> object.
      *
-     * @param entry  the <tt>SyndEntry</tt> object
+     * @param entry         the <tt>SyndEntry</tt> object
+     * @param parentChannel parent <tt>RSSChannel</tt>
      */
-    RSSItemAdapter (SyndEntry entry)
+    RSSItemAdapter (SyndEntry entry, RSSChannel parentChannel)
     {
-        this.entry = entry;
+        super();
+
+        this.entry   = entry;
+        this.channel = parentChannel;
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @param channel  the parent channel
+     *
+     * @return the new instance
+     */
+    public RSSItem newInstance (RSSChannel channel)
+    {
+        return new RSSItemAdapter (new SyndEntryImpl(), channel);
+    }
+
+    /**
+     * Get the parent <tt>Channel</tt> object.
+     *
+     * @return the parent <tt>Channel</tt> object
+     */
+    public RSSChannel getParentChannel()
+    {
+        return this.channel;        
+    }
+
 
     /**
      * Get the item's title
@@ -156,6 +196,25 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
+     * Set the item's published links.
+     *
+     * @param links the collection of links, or an empty collection (or null)
+     *
+     * @see #getLinks
+     */
+    public void setLinks (Collection<RSSLink> links)
+    {
+        // Since ROME doesn't support multiple links per item, we have
+        // to assume that the first link is the link for the item.
+
+        if ((links != null) && (links.size() > 0))
+        {
+            RSSLink link = links.iterator().next();
+            entry.setLink (link.getURL().toExternalForm());
+        }
+    }
+
+    /**
      * Get the item's summary.
      *
      * @return the summary, or null if not available
@@ -168,15 +227,19 @@ public class RSSItemAdapter extends RSSItem
         SyndContent  content = entry.getDescription();
 
         if (content != null)
+        {
+            // Rome leaves leading, trailing and embedded newlines in place.
+            // While this is syntactically okay, curn prefers the description
+            // to be one long line. ParserUtil.normalizeCharacterData() strips
+            // leading and trailing newlines, and converts embedded newlines to
+            // spaces.
+
             result = content.getValue();
+            if (result != null)
+                result = ParserUtil.normalizeCharacterData (result);
+        }
 
-        // Rome leaves leading, trailing and embedded newlines in place.
-        // While this is syntactically okay, curn prefers the description
-        // to be one long line. ParserUtil.normalizeCharacterData() strips
-        // leading and trailing newlines, and converts embedded newlines to
-        // spaces.
-
-        return ParserUtil.normalizeCharacterData (result);
+        return result;
     }
 
     /**
@@ -191,10 +254,14 @@ public class RSSItemAdapter extends RSSItem
     {
         SyndContent  content = entry.getDescription();
 
-        if (content != null)
-            content.setValue (newSummary);
-     }
+        if (content == null)
+        {
+            content = new SyndContentImpl();
+            entry.setDescription (content);
+        }
 
+        content.setValue (newSummary);
+     }
 
     /**
      * Get the item's author list.
@@ -263,6 +330,31 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
+     * Set the categories the item belongs to.
+     *
+     * @param categories a <tt>Collection</tt> of category strings
+     *                   or null if not applicable
+     *
+     * @see #getCategories
+     */
+    public void setCategories (Collection<String> categories)
+    {
+        if (categories == null)
+            categories = Collections.emptyList();
+
+        List<SyndCategory> nativeCategories = new ArrayList<SyndCategory>();
+
+        for (String category : categories)
+        {
+            SyndCategoryImpl nativeCategory = new SyndCategoryImpl();
+            nativeCategory.setName (category);
+            nativeCategories.add (nativeCategory);
+        }
+
+        entry.setCategories (nativeCategories);
+    }
+
+    /**
      * Get the item's publication date.
      *
      * @return the date, or null if not available
@@ -273,6 +365,18 @@ public class RSSItemAdapter extends RSSItem
     }
 
     /**
+     * Set the item's publication date.
+     *
+     * @return the date, or null if not available
+     *
+     * @see #getPublicationDate
+     */
+    public void setPublicationDate (Date date)
+    {
+        this.entry.setPublishedDate (date);
+    }
+
+    /**
      * Get the item's ID field, if any.
      *
      * @return the ID field, or null if not set
@@ -280,6 +384,15 @@ public class RSSItemAdapter extends RSSItem
     public String getID()
     {
         return null;
+    }
+
+    /**
+     * Set the item's ID field, if any.
+     *
+     * @param id the ID field, or null
+     */
+    public void setID (String id)
+    {
     }
 
     /*----------------------------------------------------------------------*\

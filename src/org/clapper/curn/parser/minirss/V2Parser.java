@@ -384,6 +384,6 @@ public class V2Parser extends ParserCommon
             item.addAuthor (chars);
 
         else if (elementName.equals ("guid"))
-            item.setUniqueID (chars);
+            item.setID (chars);
     }
 }

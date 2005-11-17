@@ -234,7 +234,7 @@ public class V1Parser extends ParserCommon
         String  id   = attributes.getValue ("rdf:about");
 
         if (id != null)
-            item.setUniqueID (id);
+            item.setID (id);
 
         elementStack.push (new ElementStackEntry (elementName, item));
 

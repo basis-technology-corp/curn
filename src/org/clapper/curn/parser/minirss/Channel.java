@@ -79,6 +79,17 @@ public class Channel extends RSSChannel
     \*----------------------------------------------------------------------*/
 
     /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @return the new instance
+     */
+    public RSSChannel newInstance()
+    {
+        return new Channel();
+    }
+
+    /**
      * Get a <tt>Collection</tt> of the items in this channel. All objects
      * in the collection are of type <tt>RSSItem</tt>.
      *
@@ -106,7 +117,8 @@ public class Channel extends RSSChannel
     public void setItems (Collection<? extends RSSItem> newItems)
     {
         items.clear();
-        items.addAll (newItems);
+        if (newItems != null)
+            items.addAll (newItems);
     }
 
     /**
@@ -168,10 +180,27 @@ public class Channel extends RSSChannel
      *
      * @see #addLink
      * @see RSSChannel#getLink
+     * @see #addLink
      */
     public final Collection<RSSLink> getLinks()
     {
         return links;
+    }
+
+    /**
+     * Set the channel's list of published links (its URLs).
+     *
+     * @param newLinks the links
+     *
+     * @see #getLink
+     * @see #getLinks
+     * @see #addLink
+     */
+    public void setLinks (Collection<RSSLink> newLinks)
+    {
+        this.links.clear();
+        if (newLinks != null)
+            links.addAll (newLinks);
     }
 
     /**
@@ -180,7 +209,8 @@ public class Channel extends RSSChannel
      * @param link  the {@link RSSLink} object to add
      *
      * @see #getLinks
-     * @see RSSChannel#getLink
+     * @see #getLinks
+     * @see #setLinks
      */
     public void addLink (RSSLink link)
     {
@@ -235,6 +265,37 @@ public class Channel extends RSSChannel
     public String getRSSFormat()
     {
         return rssFormat;
+    }
+
+    /**
+     * Get the RSS format the channel is using, in native format. This
+     * method exists for underlying implementations that store the RSS
+     * format as something other than a string; the method allows the
+     * {@link #makeCopy} method to copy the RSS format without knowing
+     * how it's stored. The default implementation of this method 
+     * simply calls {@link #getRSSFormat}.
+     *
+     * @return the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #setNativeRSSFormat
+     */
+    public Object getNativeRSSFormat()
+    {
+        return getRSSFormat();
+    }
+
+    /**
+     * Set the RSS format the channel is using.
+     *
+     * @param format the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #getNativeRSSFormat
+     */
+    public void setNativeRSSFormat (Object format)
+    {
+        setRSSFormat ((String) format);
     }
 
     /**

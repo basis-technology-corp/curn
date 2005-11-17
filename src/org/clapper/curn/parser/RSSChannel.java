@@ -26,9 +26,10 @@
 
 package org.clapper.curn.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-
+import java.util.TreeSet;
 
 /**
  * This abstract class defines a simplified view of an RSS channel,
@@ -45,15 +46,88 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-public abstract class RSSChannel extends RSSElement
+public abstract class RSSChannel extends RSSElement implements Cloneable
 {
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Clone this channel. This method simply calls the type-safe
+     * {@link #makeCopy} method. The clone is a deep-clone (i.e., the items
+     * are cloned, too).
+     *
+     * @return the cloned <tt>RSSChannel</tt>
+     *
+     * @throws CloneNotSupportedException  doesn't, actually, but the
+     *                                     <tt>Cloneable</tt> interface
+     *                                     requires that this exception
+     *                                     be declared
+     *
+     * @see #makeCopy
+     */
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        return makeCopy();
+    }
+
+    /**
+     * Make a deep copy of this <tt>RSSChannel</tt> object.
+     *
+     * @return the copy
+     */
+    public RSSChannel makeCopy()
+    {
+        RSSChannel newChannel = newInstance();
+
+        newChannel.setTitle (this.getTitle());
+        newChannel.setDescription (this.getDescription());
+        newChannel.setLinks (this.getLinks());
+        newChannel.setPublicationDate (this.getPublicationDate());
+        newChannel.setCopyright (this.getCopyright());
+        newChannel.setNativeRSSFormat (this.getNativeRSSFormat());
+
+        Collection<String> authors = this.getAuthors();
+        if (authors != null)
+        {
+            for (String author : authors)
+                newChannel.addAuthor (author);
+        }
+
+        Collection<RSSItem> itemCopies = new ArrayList<RSSItem>();
+
+        for (RSSItem item : this.getItems())
+            itemCopies.add (item.makeCopy (newChannel));
+        newChannel.setItems (itemCopies);
+
+        return newChannel;
+    }
+
+    /**
+     * Get a <tt>Collection</tt> of the items in this channel, sorted by the
+     * {@link RSSItem#compareTo RSSItem.compareTo()} method.
+     *
+     * @return a (new) <tt>Collection</tt> of <tt>RSSItem</tt> objects.
+     *         The collection will be empty (never null) if there are no
+     *         items.
+     */
+    public Collection<RSSItem> getSortedItems()
+    {
+        return new TreeSet<RSSItem> (getItems());
+    }
+
     /*----------------------------------------------------------------------*\
-                          Public Abstract Methods
+                          Abstract Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Create a new, empty instance of the underlying concrete
+     * class.
+     *
+     * @return the new instance
+     */
+    public abstract RSSChannel newInstance();
 
     /**
      * Get a <tt>Collection</tt> of the items in this channel. All objects
@@ -66,7 +140,11 @@ public abstract class RSSChannel extends RSSElement
      *         underlying implementation is using a <tt>Collection</tt> to
      *         store its <tt>RSSItem</tt> objects, it should not return
      *         that <tt>Collection</tt> directly; instead, it should return
-     *         a copy.)
+     *         a copy.) The order of items in the returned collection
+     *         is arbitrary and not guaranteed to be sorted. Use
+     *         {@link #getSortedItems} to force the items to be sorted
+     *         by the {@link RSSItem#compareTo RSSItem.compareTo()}
+     *         method.
      */
     public abstract Collection<RSSItem> getItems();
 
@@ -102,8 +180,19 @@ public abstract class RSSChannel extends RSSElement
      * Get the channel's description
      *
      * @return the channel's description, or null if there isn't one
+     *
+     * @see #setDescription
      */
     public abstract String getDescription();
+
+    /**
+     * Set the channel's description
+     *
+     * @param desc the channel's description, or null if there isn't one
+     *
+     * @see #getDescription
+     */
+    public abstract void setDescription (String desc);
 
     /**
      * Get the channel's list of published links (its URLs). Each
@@ -114,29 +203,93 @@ public abstract class RSSChannel extends RSSElement
      *         The result will never be null.
      *
      * @see #getLink
+     * @see #setLinks
      */
     public abstract Collection<RSSLink> getLinks();
+
+    /**
+     * Set the channel's list of published links (its URLs).
+     *
+     * @param links the links
+     *
+     * @see #getLink
+     * @see #getLinks
+     */
+    public abstract void setLinks (Collection<RSSLink> links);
 
     /**
      * Get the channel's publication date.
      *
      * @return the date, or null if not available
+     *
+     * @see #setPublicationDate
      */
     public abstract Date getPublicationDate();
+
+    /**
+     * Set the channel's publication date.
+     *
+     * @param date the publication date, or null if not available
+     *
+     * @see #getPublicationDate
+     */
+    public abstract void setPublicationDate (Date date);
 
     /**
      * Get the channel's copyright string
      *
      * @return the copyright string, or null if not available
+     *
+     * @see #setCopyright
      */
     public abstract String getCopyright();
 
     /**
-     * Get the RSS format the channel is using.
+     * Set the channel's copyright string
+     *
+     * @param copyright  the copyright string, or null if not available
+     *
+     * @see #getCopyright
+     */
+    public abstract void setCopyright (String copyright);
+
+    /**
+     * Get the RSS format the channel is using, as a string
      *
      * @return the format, or null if not available
+     *
+     * @see #getNativeRSSFormat
+     * @see #setNativeRSSFormat
      */
     public abstract String getRSSFormat();
+
+    /**
+     * Get the RSS format the channel is using, in native format. This
+     * method exists for underlying implementations that store the RSS
+     * format as something other than a string; the method allows the
+     * {@link #makeCopy} method to copy the RSS format without knowing
+     * how it's stored. The default implementation of this method 
+     * simply calls {@link #getRSSFormat}.
+     *
+     * @return the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #setNativeRSSFormat
+     */
+    public Object getNativeRSSFormat()
+    {
+        return getRSSFormat();
+    }
+
+    /**
+     * Set the RSS format the channel is using.
+     *
+     * @param format the format, or null if not available
+     *
+     * @see #getRSSFormat
+     * @see #getNativeRSSFormat
+     */
+    public abstract void setNativeRSSFormat (Object format);
 
     /**
      * Get the channel's author list.
