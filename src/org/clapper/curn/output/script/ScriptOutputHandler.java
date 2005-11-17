@@ -484,11 +484,10 @@ public class ScriptOutputHandler extends FileOutputHandler
                                       FeedInfo    feedInfo)
         throws CurnException
     {
-        convertChannelText (channel);
-
         // Save the channel.
 
-        channels.add (new ChannelWrapper (channel, feedInfo));
+        channels.add (new ChannelWrapper (convertChannelText (channel),
+                                          feedInfo));
     }
     
     /**
