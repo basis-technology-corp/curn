@@ -96,6 +96,14 @@ import freemarker.template.TemplateException;
  *   </tr>
  *
  *   <tr>
+ *     <td><tt>MimeType</tt></td>
+ *     <td>The MIME type of the document produced by the template.
+ *         (See <tt>TemplateFile</tt>, below.) Required for all template
+ *         types except "builtin".</td>
+ *     <td>None</td>
+ *   </tr>
+ *
+ *   <tr>
  *     <td><tt>TOCItemThreshold</tt></td>
  *     <td>The total number of items (not feeds, but individual items) that
  *         must be displayed before curn will generate a table of contents
@@ -119,169 +127,149 @@ import freemarker.template.TemplateException;
  *         The location is specified with two white space-delimited
  *         fields:
  *         <ul>
- *          <li>A <i>type</i>, which may be "file", "classpath" or
- *              "url"
+ *          <li>A <i>type</i>, which may be "file", "classpath",
+ *              "url" or "builtin"
  *          <li>An identifier string
  *        </ul>
- *       </td>
+ *
+ *       The form of the identifier string depends on the <i>type</i>
+ *       value.
+ *       <ul>
+ *          <li>For the "file" type, the identifier must be the path
+ *              to the template file, on the machine where <i>curn</i>
+ *              is running.
+ *          <li>For the "classpath" type, the identifier must be a relative
+ *              path to a template file that can be found by searching the
+ *              jar files and directories in the class path.
+ *          <li>For the "url" type, the identifier must be a valid URL.
+ *          <li>For the "builtin" type, the identifier can be one of three
+ *              values: "html", "summary" or "text"
+ *       </ul>
+ *
+ *       Examples:
+ *
+ *       <blockquote>
+ *       <pre>
+ * file c:\curn\html.ftl
+ * url http://localhost/html.ftl
+ * classpath org/clapper/curn/output/freemarker/HTML.ftl
+ * builtin html</pre>
+ *       </blockquote>
+ *
+ *       Note:
+ *
+ *       <ul>
+ *         <li><tt>builtin html</tt> is short-hand for
+ *             <tt>classpath org/clapper/curn/output/freemarker/HTML.ftl</tt>
+ *         <li><tt>builtin text</tt> is short-hand for
+ *             <tt>classpath org/clapper/curn/output/freemarker/Text.ftl</tt>
+ *         <li><tt>builtin summary</tt> is short-hand for
+ *             <tt>classpath org/clapper/curn/output/freemarker/Summary.ftl</tt>
+ *       </ul>
+ *
+ *       But, use the "builtin" form, rather than the "classpath" form,
+ *       to refer to the built-in templates; if the locations of the
+ *       built-in templates change in the future, your <i>curn</i>
+ *       configuration file won't break if you're using the "builtin" forms.
+ *     </td>
  *     <td>"RSS Feeds"</td>
  *   </tr>
  * </table>
  *
- * <p>This handler's {@link #displayChannel displayChannel()} method does
- * not invoke the script; instead, it buffers up all the channels so that
- * the {@link #flush} method can invoke the script. That way, the overhead
- * of invoking the script only occurs once. Via the BSF engine, this
- * handler makes available an iterator of special objects that wrap both
- * the {@link RSSChannel} and {@link FeedInfo} objects for a given channel.
- * See below for a more complete description.</p>
+ * <p>This handler builds a FreeMarker data model; each call to
+ * {@link #displayChannel displayChannel()} adds the data for a channel
+ * to the data structure. When the  {@link #flush} method is invoked,
+ * this handler loads the FreeMarker template and feeds it the
+ * FreeMarker data model, producing the output. The FreeMarker template
+ * can produce any kind of document; this handler doesn't care.</p>
  *
- * <p>The complete list of objects bound into the BSF beanspace follows.</p>
+ * <h3>The FreeMarker Data Model</h3>
  *
- * <table border="0">
- *   <tr valign="top">
- *     <th>Bound name</th>
- *     <th>Java type</th>
- *     <th>Explanation</th>
- *   </tr>
+ * <p>This handler builds the following FreeMarker data model tree.</p>
  *
- *   <tr valign="top">
- *     <td>channels</td>
- *     <td><tt>java.util.Collection</tt></td>
- *     <td>An <tt>Collection</tt> of special internal objects that wrap
- *         both {@link RSSChannel} and {@link FeedInfo} objects. The
- *         wrapper objects provide two methods:</td>
- *
- *         <ul>
- *           <li><tt>getChannel()</tt> gets the <tt>RSSChannel</tt> object
- *           <li><tt>getFeedInfo()</tt> gets the <tt>FeedInfo</tt> object
- *         </ul>
- *    </tr>
- *
- *   <tr valign="top">
- *     <td>outputPath</td>
- *     <td><tt>java.lang.String</tt></td>
- *     <td>The path to an output file. The script should write its output
- *         to that file. Overwriting the file is fine. If the script generates
- *         no output, then it can ignore the file.</td>
- *   </tr>
- *
- *   <tr valign="top">
- *     <td>config</td>
- *     <td><tt>{@link ConfigFile}</tt></td>
- *     <td>The <tt>org.clapper.curn.ConfigFile</tt> object that represents
- *         the parsed configuration data. Useful in conjunction with the
- *         "configSection" object, to parse additional parameters from
- *         the configuration.</td>
- *   </tr>
- *
- *   <tr valign="top">
- *     <td>configSection</td>
- *     <td><tt>java.lang.String</tt></td>
- *     <td>The name of the configuration file section in which the output
- *         handler was defined. Useful if the script wants to access
- *         additional script-specific configuration data.</td>
- *   </tr>
- *
- *   <tr valign="top">
- *     <td>mimeType</td>
- *     <td><tt>java.io.PrintWriter</tt></td>
- *     <td>A <tt>PrintWriter</tt> object to which the script should print
- *         the MIME type that corresponds to the generated output.
- *         If the script generates no output, then it can ignore this
- *         object.</td>
- *   </tr>
- *
- *   <tr valign="top">
- *     <td>logger</td>
- *     <td>{@link Logger org.clapper.util.logging.Logger}</td>
- *     <td>A <tt>Logger</tt> object, useful for logging messages to
- *         the <i>curn</i> log file.</td>
- *   </tr>
- *
- *   <tr valign="top">
- *     <td>version</td>
- *     <td><tt>java.lang.String</tt></td>
- *     <td>Full <i>curn</i> version string, in case the script wants to
- *         include it in the generated output
- *   </tr>
- * </table>
- *
- * <p>For example, the following Jython script can be used as a template
- * for a Jython output handler.</p>
- *
- * <blockquote>
  * <pre>
- * import sys
+ * <b>Tree</b>                                         <b>Description</b>
  *
- * def __init__ (self):
- *     """
- *     Initialize a new TextOutputHandler object.
- *     """
- *     self.__channels    = bsf.lookupBean ("channels")
- *     self.__outputPath  = bsf.lookupBean ("outputPath")
- *     self.__mimeTypeOut = bsf.lookupBean ("mimeType")
- *     self.__config      = bsf.lookupBean ("config")
- *     self.__sectionName = bsf.lookupBean ("configSection")
- *     self.__logger      = bsf.lookupBean ("logger");
- *     self.__version     = bsf.lookupBean ("version")
- *     self.__message     = None
- *
- * def processChannels (self):
- *     """
- *     Process the channels passed in through the Bean Scripting Framework.
- *     """
- *
- *     out = open (self.__outputPath, "w")
- *     msg = self.__config.getOptionalStringValue (self.__sectionName,
- *                                                 "Message",
- *                                                 None)
- *
- *     totalNew = 0
- *
- *     # First, count the total number of new items
- *
- *     iterator = self.__channels.iterator()
- *     while iterator.hasNext():
- *         channel_wrapper = iterator.next()
- *         channel = channel_wrapper.getChannel()
- *         totalNew = totalNew + channel.getItems().size()
- *
- *     if totalNew > 0:
- *         # If the config file specifies a message for this handler,
- *         # display it.
- *
- *         if msg != None:
- *             out.println (msg)
- *             out.println ()
- *
- *         # Now, process the items
- *
- *         iterator = self.__channels.iterator()
- *         while iterator.hasNext():
- *             channel_wrapper = iterator.next()
- *             channel = channel_wrapper.getChannel()
- *             feed_info = channel_wrapper.getFeedInfo()
- *             self.__process_channel (out, channel, feed_info, indentation)
- *
- *         self.__mimeTypeBuf.print ("text/plain")
- *
- *         # Output a footer
- *
- *         self.__indent (out, indentation)
- *         out.write ("\n")
- *         out.write (self.__version + "\n")
- *         out.close ()
- *
- * def process_channel (channel, feed_info):
- *     item_iterator = channel.getItems().iterator()
- *     while item_iterator.hasNext():
- *         # Do output for item
- *         ...
- *
- * main()
+ * (root)
+ *  |
+ *  +-- curn
+ *  |    |
+ *  |    +-- version                            version of curn
+ *  |
+ *  +-- totalItems                              total items for all channels
+ *  |
+ *  +-- dateGenerated                           date generated
+ *  |
+ *  +-- extraText                               extra text, from the config
+ *  |
+ *  +-- encoding                                encoding, from the config
+ *  |
+ *  +-- tableOfContents                         hash of TOC data
+ *  |    |
+ *  |    +-- needed                             whether a TOC is needed
+ *  |    |
+ *  |    +-- channels                           sequence of channel TOC
+ *  |          |                                items 
+ *  |          |
+ *  |          +-- (channel)                    TOC entry for one channel
+ *  |                |
+ *  |                +-- title                  channel title
+ *  |                |
+ *  |                +-- totalItems             total items in channel
+ *  |                |
+ *  |                +-- channelAnchor          HTML anchor for channel
+ *  | 
+ *  +-- channels                                sequence of channel data
+ *         |
+ *         +-- (channel)                        hash for a single channel
+ *                 |
+ *                 +-- index                    channel's index in list
+ *                 |
+ *                 +-- totalItems               total items in channel
+ *                 |
+ *                 +-- title                    channel title
+ *                 |
+ *                 +-- anchorName               HTML anchor for channel
+ *                 |
+ *                 +-- url                      channel's URL
+ *                 |
+ *                 +-- showDate                 whether or not to show date
+ *                 |
+ *                 +-- date                     channel's last-modified date
+ *                 |                            (might be missing)
+ *                 |
+ *                 +-- items                    sequence of channel items
+ *                       |
+ *                       +-- (item)             entry for one item
+ *                             |
+ *                             +-- index        item's index in channel
+ *                             |
+ *                             +-- title        item's title
+ *                             |
+ *                             +-- url          item's unique URL
+ *                             |
+ *                             +-- showDate     whether to show date
+ *                             |
+ *                             +-- date         the date
+ *                             |                (might be missing)
+ *                             |
+ *                             +-- showAuthor   whether to show author
+ *                             |
+ *                             +-- author       the author, or ""
+ *                             |
+ *                             +-- description  description/summary
  * </pre>
- * </blockquote>
+ *
+ * <p>In addition, the data model provides (at the top level) the following
+ * methods:</p>
+ *
+ * <pre>
+ * (root)
+ *  |
+ *  +-- wrapText (string[, indentation[, lineLength]])
+ *  |
+ *  +-- indentText (string, indentation)
+ * </pre>
  *
  * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
@@ -342,88 +330,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     private int               totalChannels       = 0;
     private int               totalItems          = 0;
     private Date              now                 = null;
+    private String            handlerName         = null;
 
-    /**
-     * The FreeMarker datamodel looks like this:
-     *
-     * (root)
-     *  |
-     *  +-- curn
-     *  |    |
-     *  |    +-- version                            version of curn
-     *  |
-     *  +-- totalItems                              total items for all
-     *  |                                           channels
-     *  +-- dateGenerated                           date generated
-     *  |
-     *  +-- extraText                               extra text, from the config
-     *  |
-     *  +-- encoding                                encoding, from the config
-     *  |
-     *  +-- tableOfContents                         hash of TOC data
-     *  |    |
-     *  |    +-- needed                             whether a TOC is needed
-     *  |    |
-     *  |    +-- channels                           sequence of channel TOC
-     *  |          |                                items 
-     *  |          |
-     *  |          +-- (channel)                    TOC entry for one channel
-     *  |                |
-     *  |                +-- title                  channel title
-     *  |                |
-     *  |                +-- totalItems             total items in channel
-     *  |                |
-     *  |                +-- channelAnchor          HTML anchor for channel
-     *  | 
-     *  +-- channels                                sequence of channel data
-     *         |
-     *         +-- (channel)                        hash for a single channel
-     *                 |
-     *                 +-- index                    channel's index in list
-     *                 |
-     *                 +-- totalItems               total items in channel
-     *                 |
-     *                 +-- title                    channel title
-     *                 |
-     *                 +-- anchorName               HTML anchor for channel
-     *                 |
-     *                 +-- url                      channel's URL
-     *                 |
-     *                 +-- showDate                 whether or not to show date
-     *                 |
-     *                 +-- date                     channel's last-modified
-     *                 |                            date
-     *                 |
-     *                 +-- items                    sequence of channel items
-     *                       |
-     *                       +-- (item)             entry for one item
-     *                             |
-     *                             +-- index        item's index in channel
-     *                             |
-     *                             +-- title        item's title
-     *                             |
-     *                             +-- url          item's unique URL
-     *                             |
-     *                             +-- showDate     whether to show date
-     *                             |
-     *                             +-- date         the date
-     *                             |
-     *                             +-- showAuthor   whether to show author
-     *                             |
-     *                             +-- author       the author
-     *                             |
-     *                             +-- description  description/summary
-     *
-     * In addition, the data model provides (at the top level) the following
-     * methods:
-     *
-     * (root)
-     *  |
-     *  +-- wrapText (string[, indentation[, lineLength]])
-     *  |
-     *  +-- indentText (string, indentation)
-     * 
-     */
     private freemarker.template.Configuration freemarkerConfig;
     private Map<String,Object>                freemarkerDataModel;
     private Map<String,Object>                freemarkerTOCData;
@@ -478,6 +386,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         String title = DEFAULT_TITLE;
         String extraText = "";
 
+        this.handlerName = section;
+
         try
         {
             if (section != null)
@@ -490,7 +400,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
                 this.allowEmbeddedHTML = config.getOptionalBooleanValue
                     (section, "AllowEmbeddedHTML", false);
-
                 
                 // Get the title.
 
@@ -612,11 +521,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         boolean permitEmbeddedHTML = feedInfo.allowEmbeddedHTML() &&
                                      this.allowEmbeddedHTML;
         if (! permitEmbeddedHTML)
-            convertChannelText (channel);
+            channel = convertChannelText (channel);
 
         // Add the channel information to the data model.
 
-        Collection<RSSItem> items = channel.getItems();
+        Collection<RSSItem> items = channel.getSortedItems();
         int totalItemsInChannel = items.size();
 
         if (totalItemsInChannel == 0)
@@ -647,13 +556,13 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             channelURL = link.getURL();
         channelData.put ("url", channelURL.toString());
 
-        Date date = null;
+        Date channelDate = null;
         TemplateBooleanModel showDate;
         if (config.showDates())
         {
             showDate = TemplateBooleanModel.TRUE;
             channelData.put ("showDate", showDate);
-            date = channel.getPublicationDate();
+            channelDate = channel.getPublicationDate();
         }
 
         else
@@ -662,10 +571,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             channelData.put ("showDate", showDate);
         }            
 
-        if (date == null)
-            date = now;
-
-        channelData.put ("date", new SimpleDate (date, SimpleDate. DATETIME));
+        if (channelDate != null)
+        {
+            channelData.put ("date", new SimpleDate (channelDate,
+                                                     SimpleDate.DATETIME));
+        }
 
         // Store a table of contents entry for the channel.
 
@@ -704,14 +614,15 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             i++;
             itemData.put ("index", new SimpleNumber (i));
             itemData.put ("showDate", showDate);
-            date = null;
+            Date itemDate = null;
             if (config.showDates())
-                date = item.getPublicationDate();
+                itemDate = item.getPublicationDate();
 
-            if (date == null)
-                date = now;
-
-            itemData.put ("date", new SimpleDate (date, SimpleDate.DATETIME));
+            if (itemDate != null)
+            {
+                itemData.put ("date", new SimpleDate (itemDate,
+                                                      SimpleDate.DATETIME));
+            }
 
             link = item.getLinkWithFallback ("text/html");
             assert (link != null);
@@ -733,7 +644,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
             String desc =  item.getSummaryToDisplay (feedInfo,
                                                      desiredItemDescTypes,
-                                                     ! permitEmbeddedHTML);
+                                                     (! permitEmbeddedHTML));
 
             if (desc == null)
                 desc = "";
