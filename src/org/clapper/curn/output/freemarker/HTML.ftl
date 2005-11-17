@@ -57,13 +57,13 @@
 
 <body>
 <h1>${title}</h1>
-<p>${dateGenerated?string("HH:mm:ss zzz")}</p>
+<p>${dateGenerated?string("dd MMM, yyyy, HH:mm:ss")}</p>
 
 <#if (tableOfContents.needed)>
 <span class="toc">Table of Contents</span>
 <ul>
   <#list tableOfContents.channels as toc>
-  <li><a href="#${toc.channelAnchor}">${toc.title}</a> (${toc.totalItems} items)</li>
+  <li class="TOCEntry"><a href="#${toc.channelAnchor}">${toc.title}</a> (${toc.totalItems} items)</li>
   </#list>
 </ul>
 </#if>
@@ -95,7 +95,7 @@
     <td class="${evenOdd}Channel" align="left" rowspan="${channel.totalItems}">
         <a name="${channel.anchorName}"></a>
         <a href="${channel.url}">${channel.title}</a><br>
-        <#if channel.showDate>${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if>
+        <#if channel.showDate && channel.date?exists>${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if>
     </td>
 
     </#if>
@@ -104,7 +104,7 @@
       <table border="0" align="left" valign="top" summary="" cellpadding="0" cellspacing="0">
 
 	<tr><td align="left"><a href="${item.url}">${item.title}</a></td></tr>
-	<tr><td align="left"><#if item.showDate>${item.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if></td></tr>
+	<tr><td align="left"><#if item.showDate && item.date?exists>${item.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if></td></tr>
         <#if item.showAuthor>
 	<tr><td>${item.author}</td></tr>
 	</#if>
