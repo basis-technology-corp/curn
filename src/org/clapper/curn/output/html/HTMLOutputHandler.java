@@ -273,7 +273,7 @@ public class HTMLOutputHandler extends FileOutputHandler
                                 FeedInfo    feedInfo)
         throws CurnException
     {
-        Collection items = channel.getItems();
+        Collection<RSSItem> items = channel.getItems();
         int totalItemsInChannel = items.size();
 
         if (totalItemsInChannel == 0)
@@ -282,7 +282,6 @@ public class HTMLOutputHandler extends FileOutputHandler
         this.totalItems += totalItemsInChannel;
 
         int       i = 0;
-        Iterator  it;
         Date      date;
         boolean   allowEmbeddedHTML = feedInfo.allowEmbeddedHTML();
         String    channelTitle = channel.getTitle();
@@ -345,9 +344,9 @@ public class HTMLOutputHandler extends FileOutputHandler
         Node itemAuthorBlockParent = itemAuthorBlock.getParentNode();
         itemAuthorBlock.removeAttribute ("id");
 
-        for (i = 0, it = items.iterator(); it.hasNext(); i++, rowCount++)
+        i = 0;
+        for (RSSItem item : items)
         {
-            RSSItem item = (RSSItem) it.next();
             HTMLAnchorElement channelAnchor = dom.getElementChannelLink();
             channelAnchor.removeAttribute ("id");
 
@@ -496,6 +495,9 @@ public class HTMLOutputHandler extends FileOutputHandler
                 for (Node removedNode : nodes)
                     parentNode.appendChild (removedNode);
             }
+
+            i++;
+            rowCount++;
         }
     }
     
