@@ -45,9 +45,10 @@ ${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
 <#list channel.items as item>
 ${wrapText (item.title, 4)}
 ${indentText (item.url, 4)}
-<#if item.description != "">
+<#assign desc = stripHTML(item.description)>
+<#if desc != "">
 
-${wrapText (item.description, 8)}
+${wrapText (desc, 8)}
 </#if>
 
 </#list>

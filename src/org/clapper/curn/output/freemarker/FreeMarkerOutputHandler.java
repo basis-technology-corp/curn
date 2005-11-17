@@ -269,6 +269,8 @@ import freemarker.template.TemplateException;
  *  +-- wrapText (string[, indentation[, lineLength]])
  *  |
  *  +-- indentText (string, indentation)
+ *  |
+ *  +-- stripHTML (string)
  * </pre>
  *
  * @see org.clapper.curn.OutputHandler
@@ -474,6 +476,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         freemarkerDataModel.put ("wrapText", new WrapTextMethod());
         freemarkerDataModel.put ("indentText", new IndentTextMethod());
+        freemarkerDataModel.put ("stripHTML", new StripHTMLMethod());
 
         // Open the output file.
 
