@@ -386,16 +386,22 @@ public abstract class FileOutputHandler implements OutputHandler
     /**
      * Convert various fields in a channel and its subitems by invoking the
      * {@link #convert} method on them. Intended primarily for output handlers
-     * that produce plain text.
+     * that produce plain text. Produces a copy of the channel, so that the
+     * original channel isn't modified (since it might be used by subsequent
+     * handlers that don't want the data to be converted).
      *
      * @param channel  the channel
      *
+     * @return a copy of the channel, with possibly converted data.
+     *
      * @throws CurnException on error
      */
-    protected void convertChannelText (RSSChannel  channel)
+    protected RSSChannel convertChannelText (RSSChannel channel)
         throws CurnException
     {
-        Collection<RSSItem> items = channel.getItems();
+        RSSChannel channelCopy = channel.makeCopy();
+
+        Collection<RSSItem> items = channelCopy.getItems();
         if ((items != null) && (items.size() > 0))
         {
             for (Iterator it = items.iterator(); it.hasNext(); )
@@ -419,5 +425,7 @@ public abstract class FileOutputHandler implements OutputHandler
                     item.setSummary (convert (s));
             }
         }
+
+        return channelCopy;
     }
 }
