@@ -80,59 +80,51 @@ import freemarker.template.TemplateException;
  *   <tr>
  *     <th>Parameter</th>
  *     <th>Explanation</th>
+ *     <th>Default</th>
  *   </tr>
  *
  *   <tr>
- *     <td><tt>Script</tt></td>
- *     <td>Path to the script to be invoked. The script will be called
- *         as if from the command line, except that additional objects will
- *         be available via BSF.
- *     </td>
+ *     <td><tt>AllowEmbeddedHTML</tt></td>
+ *     <td>Whether or not to pass embedded HTML to the FreeMarker template</td>
+ *     <td><tt>false</tt></td>
  *   </tr>
  *
  *   <tr>
- *     <td><tt>Language</tt></td>
- *     <td><p>The scripting language, as recognized by BSF. This handler
- *         supports all the scripting language engines that are registered
- *         with the BSF software. Some of the scripting language engines
- *         are actually bundled with BSF. Some are not. Regardless, of
- *         course, the actual the jar files for the scripting
- *         languages themselves must be in the CLASSPATH at runtime, for those
- *         languages to be available.</p>
- * 
- *         <p>If you want to use a BSF scripting language engine that isn't
- *         one of the above, simply extend this class and override the
- *         {@link #registerAdditionalScriptingEngines} method. In that method,
- *         call <tt>BSFManager.registerScriptingEngine()</tt> for each
- *         additional language you want to support. For example, to provide
- *         a handler that supports
- *         {@link <a href="http://www.judoscript.com/">JudoScript</a>},
- *         you might write an output handler that looks like this:</p>
- * <blockquote><pre>
- * import org.clapper.curn.CurnException;
- * import org.clapper.curn.output.script.FreeMarkerOutputHandler;
- * import org.apache.bsf.BSFManager;
+ *     <td><tt>Encoding</tt></td>
+ *     <td>Encoding to use for the generated document</td>
+ *     <td>UTF-8</td>
+ *   </tr>
  *
- * public class MyOutputHandler extends FreeMarkerOutputHandler
- * {
- *     public JudoFreeMarkerOutputHandler()
- *     {
- *         super();
- *     }
+ *   <tr>
+ *     <td><tt>TOCItemThreshold</tt></td>
+ *     <td>The total number of items (not feeds, but individual items) that
+ *         must be displayed before curn will generate a table of contents
+ *         header. A value of 0 means "generate a table of
+ *         contents regardless of how many items are displayed." The
+ *         FreeMarker template is not obligated to honor this parameter.
+ *         (Note, though, that the default FreeMarker HTML template does
+ *         honor it.)</td>
+ *     <td>infinite (i.e., no table of contents is generated)</td>
+ *   </tr>
  *
- *     public void registerAdditionalScriptingEngines()
- *         throws CurnException
- *     {
- *         BSFManager.registerScriptingEngine ("judoscript",
- *                                             "com.judoscript.BSFJudoEngine",
- *                                             new String[] {"judo", "jud"});
- *     }
- * }
- * </pre></blockquote>
+ *   <tr>
+ *     <td><tt>Title</tt></td>
+ *     <td>Document title to pass to the template.</td>
+ *     <td>"RSS Feeds"</td>
+ *   </tr>
  *
- *         Then, simply use your class instead of <tt>FreeMarkerOutputHandler</tt>
- *         in your configuration file.
- *     </td>
+ *   <tr>
+ *     <td><tt>TemplateFile</tt></td>
+ *     <td>Specifies the location of the FreeMarker template file.
+ *         The location is specified with two white space-delimited
+ *         fields:
+ *         <ul>
+ *          <li>A <i>type</i>, which may be "file", "classpath" or
+ *              "url"
+ *          <li>An identifier string
+ *        </ul>
+ *       </td>
+ *     <td>"RSS Feeds"</td>
  *   </tr>
  * </table>
  *
@@ -332,6 +324,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      */
     private static final String CHANNEL_ANCHOR_PREFIX = "feed";
 
+    /**
+     * Default title
+     */
+    private static final String DEFAULT_TITLE = "RSS Feeds";
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -478,7 +475,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         String section = cfgHandler.getSectionName();
         String encoding = null;
-        String title = "";
+        String title = DEFAULT_TITLE;
         String extraText = "";
 
         try
@@ -929,68 +926,5 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                             + tokens[0]
                                             + "\".");
         }
-    }
-
-    /**
-     * Copy the resource a URL specifies to a temporary file.
-     *
-     * @param url  the URL
-     *
-     * @return the temporary file
-     *
-     * @throws CurnException  on error (including I/O error)
-     */
-    private File copyURLToTempFile (URL url)
-        throws CurnException
-    {
-        try
-        {
-            String suffix   = FileUtil.getFileNameExtension (url.getPath());
-            File tempFile   = File.createTempFile ("curn", suffix);
-            InputStream is  = url.openStream();
-            OutputStream os = new FileOutputStream (tempFile);
-
-            FileUtil.copyStream (is, os);
-            is.close();
-            os.close();
-
-            return tempFile;
-        }
-
-        catch (IOException ex)
-        {
-            throw new CurnException (Curn.BUNDLE_NAME,
-                                     "FreeMarkerOutputHandler.cantCopyURL",
-                                     "Unable to copy URL \"{0}\" to temporary "
-                                   + "file",
-                                     new Object[] {url.toString()},
-                                     ex);
-        }
-    }
-
-    /**
-     * Copy classpath resource to temporary file.
-     *
-     * @param resource  the resource identifier
-     *
-     * @return the temporary file
-     *
-     * @throws CurnException on error
-     */
-    private File copyClasspathResourceToTempFile (String resource)
-        throws CurnException
-    {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        URL url = classLoader.getResource (resource);
-        if (url == null)
-        {
-            throw new CurnException (Curn.BUNDLE_NAME,
-                                     "FreeMarkerOutputHandler.missingResource",
-                                     "Cannot find resource \"{0}\" in any of "
-                                   + "the elements of the classpath.",
-                                     new Object[] {resource});
-        }
-
-        return copyURLToTempFile (url);
     }
 }
