@@ -484,34 +484,7 @@ public class ScriptOutputHandler extends FileOutputHandler
                                       FeedInfo    feedInfo)
         throws CurnException
     {
-        // Do some textual conversion on the channel data.
-
-        channel.setTitle (convert (channel.getTitle()));
-
-        Collection<RSSItem> items = channel.getItems();
-        if ((items != null) && (items.size() > 0))
-        {
-            for (Iterator it = items.iterator(); it.hasNext(); )
-            {
-                RSSItem item = (RSSItem) it.next();
-                item.setTitle (convert (item.getTitle()));
-
-                Collection<String> authors = item.getAuthors();
-                if ((authors != null) && (authors.size() > 0))
-                {
-                    Collection<String> cvtAuthors = new ArrayList<String>();
-
-                    for (String author : authors)
-                        cvtAuthors.add (convert (author));
-
-                    item.setAuthors (cvtAuthors);
-                }
-
-                String s = item.getSummary();
-                if (s != null)
-                    item.setSummary (convert (s));
-            }
-        }
+        convertChannelText (channel);
 
         // Save the channel.
 
