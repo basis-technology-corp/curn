@@ -31,21 +31,14 @@ import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.Version;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
-import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.io.WordWrapWriter;
-import org.clapper.util.logging.Logger;
+import org.clapper.curn.output.freemarker.FreeMarkerOutputHandler;
 
-import java.io.IOException;
-import java.io.FileWriter;
-import java.io.File;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.ArrayList;
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.config.NoSuchSectionException;
+import org.clapper.util.text.VariableSubstitutionException;
 
 /**
  * <p>Provides an output handler that produces a summary of the number of new
@@ -96,6 +89,9 @@ import java.util.ArrayList;
  * won't render full HTML), and view the resulting HTML document in my
  * browser.</p>
  *
+ * <p><b>Note:</b> This handler is now implemented in terms of the
+ * {@link FreeMarkerOutputHandler} class and may be removed in the future.</p>
+ *
  * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
  * @see org.clapper.curn.Curn
@@ -109,16 +105,15 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private WordWrapWriter         out        = null;
-    private ConfigFile             config     = null;
-    private String                 message    = null;
-    private Collection<RSSChannel> channels   = new ArrayList<RSSChannel>();
-    private int                    totalItems = 0;
-
     /**
-     * For logging
+     * We forward to a FreeMarkerOutputHandler instance, instead of extending
+     * the class, because of implementation constraints. For instance,
+     * the initOutputHandler() method must do some work before calling the
+     * FreeMarkerOutputHandler class's initOutputHandler() method. But if
+     * we subclass FreeMarkerOutputHandler, then the super() call must come
+     * first.
      */
-    private static Logger log = new Logger (SimpleSummaryOutputHandler.class);
+    private FreeMarkerOutputHandler outputHandler;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -129,6 +124,9 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
      */
     public SimpleSummaryOutputHandler()
     {
+        super();
+
+        outputHandler = new FreeMarkerOutputHandler();
     }
 
     /*----------------------------------------------------------------------*\
@@ -152,35 +150,53 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
         throws ConfigurationException,
                CurnException
     {
-        this.config = config;
+        // Parse handler-specific configuration variables not also processed
+        // by the FreeMarkerOutputHandler class.
 
-        String sectionName = cfgHandler.getSectionName();
+        String section  = cfgHandler.getSectionName();
 
-        if (sectionName != null)
-        {
-            message = config.getOptionalStringValue (sectionName,
-                                                     "Message",
-                                                     null);
-        }
-
-        File outputFile = super.getOutputFile();
         try
         {
-            log.debug ("Opening output file \"" + outputFile + "\"");
-            out = new WordWrapWriter (new FileWriter (outputFile));
-        }
+            if (section != null)
+            {
+                // Map the encoding
 
-        catch (IOException ex)
+                // Add the AllowEmbeddedHTML directive. Set it to false,
+                // unconditionally; that way, embedded HTML will be
+                // controlled solely by the feed-specific setting (which is
+                // the way this handler used to work);
+
+                config.setVariable
+                              (section,
+                               FreeMarkerOutputHandler.CFG_ALLOW_EMBEDDED_HTML,
+                               "false",
+                               false);
+
+                // Add the template-file directive, specifying the built-in
+                // summary template.
+
+                StringBuilder val = new StringBuilder();
+                val.append (FreeMarkerOutputHandler.CFG_TEMPLATE_LOAD_BUILTIN);
+                val.append (" ");
+                val.append (FreeMarkerOutputHandler.CFG_BUILTIN_SUMMARY_TEMPLATE);
+                config.setVariable (section,
+                                    FreeMarkerOutputHandler.CFG_TEMPLATE_FILE,
+                                    val.toString(),
+                                    false);
+            }
+        }
+        
+        catch (NoSuchSectionException ex)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
-                                     "OutputHandler.cantOpenFile",
-                                     "Cannot open file \"{0}\" for output",
-                                     new Object[] {outputFile.getPath()},
-                                     ex);
+            throw new ConfigurationException (ex);
         }
 
-        channels.clear();
-        totalItems = 0;
+        catch (VariableSubstitutionException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+
+        outputHandler.init (config, cfgHandler);
     }
 
     /**
@@ -201,13 +217,7 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
                                 FeedInfo    feedInfo)
         throws CurnException
     {
-        int channelItems = channel.getItems().size();
-
-        if (channelItems != 0)
-        {
-            totalItems += channelItems;
-            channels.add (channel);
-        }
+        outputHandler.displayChannel (channel, feedInfo);
     }
 
     /**
@@ -217,48 +227,7 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
      */
     public void flush() throws CurnException
     {
-        if (totalItems > 0)
-        {
-            out.println ("Some or all configured feeds have new items.");
-            out.println ("Total new items for all channels: "
-                       + String.valueOf (totalItems));
-            out.println ();
-            if (message != null)
-            {
-                out.println (message);
-                out.println ();
-            }
-
-            out.println ("A summary follows.");
-            out.println ();
-
-            for (Iterator it = channels.iterator(); it.hasNext(); )
-            {
-                RSSChannel channel = (RSSChannel) it.next();
-
-                out.setPrefix ("    ");
-                out.println (convert (channel.getTitle()));
-                out.println (channel.getURL().toString());
-
-                out.setPrefix ("        ");
-                out.println (String.valueOf (channel.getItems().size())
-                           + " items");
-                out.println ();
-            }
-
-            if (displayToolInfo())
-            {
-                out.setPrefix ("");
-                out.println ("Generated by "
-                           + Version.getFullVersion()
-                           + " on "
-                           + new Date().toString());
-            }
-        }
-
-        out.flush();
-        out.close();
-        out = null;
+        outputHandler.flush();
     }
     
     /**
@@ -269,10 +238,6 @@ public class SimpleSummaryOutputHandler extends FileOutputHandler
      */
     public String getContentType()
     {
-        return "text/plain";
+        return outputHandler.getContentType();
     }
-
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
 }

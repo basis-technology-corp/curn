@@ -28,32 +28,26 @@ package org.clapper.curn.output;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.Version;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.parser.RSSLink;
+
+import org.clapper.curn.output.freemarker.FreeMarkerOutputHandler;
 
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.io.WordWrapWriter;
-import org.clapper.util.logging.Logger;
-import org.clapper.util.text.TextUtil;
-
-import java.io.IOException;
-import java.io.FileWriter;
-import java.io.File;
-import java.util.Date;
-import java.util.Collection;
-import java.util.Iterator;
+import org.clapper.util.config.NoSuchSectionException;
+import org.clapper.util.text.VariableSubstitutionException;
 
 /**
- * Provides an output handler that writes the RSS channel and item summaries
- * as plain text. This handler supports the additional configuration items
- * that its parent {@link FileOutputHandler} class supports. It has no
- * class-specific configuration items of its own. It produces output only
- * if the channels contain
+ * <p>Provides an output handler that writes the RSS channel and item
+ * summaries as plain text. This handler supports the additional
+ * configuration items that its parent {@link FileOutputHandler} class
+ * supports. It has no class-specific configuration items of its own. It
+ * produces output only if the channels contain data.</p>
+ *
+ * <p><b>Note:</b> This handler is now implemented in terms of the
+ * {@link FreeMarkerOutputHandler} class and may be removed in the future.</p>
  *
  * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
@@ -65,26 +59,18 @@ import java.util.Iterator;
 public class TextOutputHandler extends FileOutputHandler
 {
     /*----------------------------------------------------------------------*\
-                             Private Constants
-    \*----------------------------------------------------------------------*/
-
-    private static final String HORIZONTAL_RULE =
-                      "---------------------------------------"
-                    + "---------------------------------------";
-
-    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private WordWrapWriter  out         = null;
-    private int             indentLevel = 0;
-    private ConfigFile      config      = null;
-    private StringBuffer    scratch     = new StringBuffer();
-
     /**
-     * For logging
+     * We forward to a FreeMarkerOutputHandler instance, instead of extending
+     * the class, because of implementation constraints. For instance,
+     * the initOutputHandler() method must do some work before calling the
+     * FreeMarkerOutputHandler class's initOutputHandler() method. But if
+     * we subclass FreeMarkerOutputHandler, then the super() call must come
+     * first.
      */
-    private static Logger log = new Logger (TextOutputHandler.class);
+    private FreeMarkerOutputHandler outputHandler;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -95,6 +81,9 @@ public class TextOutputHandler extends FileOutputHandler
      */
     public TextOutputHandler()
     {
+        super();
+
+        outputHandler = new FreeMarkerOutputHandler();
     }
 
     /*----------------------------------------------------------------------*\
@@ -118,23 +107,53 @@ public class TextOutputHandler extends FileOutputHandler
         throws ConfigurationException,
                CurnException
     {
-        this.config = config;
+        // Parse handler-specific configuration variables not also processed
+        // by the FreeMarkerOutputHandler class.
 
-        File outputFile = super.getOutputFile();
+        String section  = cfgHandler.getSectionName();
+
         try
         {
-            log.debug ("Opening output file \"" + outputFile + "\"");
-            out = new WordWrapWriter (new FileWriter (outputFile));
+            if (section != null)
+            {
+                // Map the encoding
+
+                // Add the AllowEmbeddedHTML directive. Set it to false,
+                // unconditionally; that way, embedded HTML will be
+                // controlled solely by the feed-specific setting (which is
+                // the way this handler used to work);
+
+                config.setVariable
+                              (section,
+                               FreeMarkerOutputHandler.CFG_ALLOW_EMBEDDED_HTML,
+                               "false",
+                               false);
+
+                // Add the template-file directive, specifying the built-in
+                // text template.
+
+                StringBuilder val = new StringBuilder();
+                val.append (FreeMarkerOutputHandler.CFG_TEMPLATE_LOAD_BUILTIN);
+                val.append (" ");
+                val.append (FreeMarkerOutputHandler.CFG_BUILTIN_TEXT_TEMPLATE);
+                config.setVariable (section,
+                                    FreeMarkerOutputHandler.CFG_TEMPLATE_FILE,
+                                    val.toString(),
+                                    false);
+            }
+        }
+        
+        catch (NoSuchSectionException ex)
+        {
+            throw new ConfigurationException (ex);
         }
 
-        catch (IOException ex)
+        catch (VariableSubstitutionException ex)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
-                                     "OutputHandler.cantOpenFile",
-                                     "Cannot open file \"{0}\" for output",
-                                     new Object[] {outputFile.getPath()},
-                                     ex);
+            throw new ConfigurationException (ex);
         }
+
+        outputHandler.init (config, cfgHandler);
     }
 
     /**
@@ -155,92 +174,7 @@ public class TextOutputHandler extends FileOutputHandler
                                 FeedInfo    feedInfo)
         throws CurnException
     {
-        Collection items = channel.getItems();
-        String     s;
-
-        indentLevel = setIndent (0);
-
-        if (items.size() != 0)
-        {
-            // Emit a site (channel) header.
-
-            out.println();
-            out.println (HORIZONTAL_RULE);
-
-            out.println (convert (channel.getTitle()));
-
-            RSSLink url = channel.getURL();
-            if (url != null)
-                out.println (url.toString());
-
-            if (config.showDates())
-            {
-                Date date = channel.getPublicationDate();
-                if (date != null)
-                    out.println (date.toString());
-            }
-
-            if (config.showRSSVersion())
-            {
-                s = channel.getRSSFormat();
-                if (s != null)
-                    out.println ("(Format: " + s + ")");
-            }
-        }
-
-        if (items.size() != 0)
-        {
-            // Now, process each item.
-
-            for (Iterator it = items.iterator(); it.hasNext(); )
-            {
-                RSSItem item = (RSSItem) it.next();
-
-                setIndent (++indentLevel);
-
-                out.println ();
-
-                s = item.getTitle();
-                out.println ((s == null) ? "(No Title)" : convert (s));
-
-                if (feedInfo.showAuthors())
-                {
-                    Collection<String> authors = item.getAuthors();
-                    if ((authors != null) && (authors.size() > 0))
-                    {
-                        s = TextUtil.join (authors, ", ");
-                        out.println ("By " + convert (s));
-                    }
-                }
-
-                out.println (item.getURL().toString());
-
-                if (config.showDates())
-                {
-                    Date date = item.getPublicationDate();
-                    if (date != null)
-                        out.println (date.toString());
-                }
-
-                s = item.getSummaryToDisplay (feedInfo,
-                                              new String[]
-                                              {
-                                                  "text/plain",
-                                                  "text/html"
-                                              });
-                if (s != null)
-                {
-                    out.println();
-                    setIndent (++indentLevel);
-                    out.println (convert (s));
-                    setIndent (--indentLevel);
-                }
-
-                setIndent (--indentLevel);
-            }
-        }
-
-        setIndent (0);
+        outputHandler.displayChannel (channel, feedInfo);
     }
 
     /**
@@ -250,18 +184,7 @@ public class TextOutputHandler extends FileOutputHandler
      */
     public void flush() throws CurnException
     {
-        out.println ();
-        out.println (HORIZONTAL_RULE);
-
-        if (displayToolInfo())
-        {
-            out.println (Version.getFullVersion());
-            out.println ("Generated " + new Date().toString());
-        }
-
-        out.flush();
-        out.close();
-        out = null;
+        outputHandler.flush();
     }
     
     /**
@@ -272,22 +195,6 @@ public class TextOutputHandler extends FileOutputHandler
      */
     public String getContentType()
     {
-        return "text/plain";
-    }
-
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
-
-    private int setIndent (int level)
-    {
-        StringBuffer buf = new StringBuffer();
-
-        for (int i = 0; i < level; i++)
-            buf.append ("    ");
-
-        out.setPrefix (buf.toString());
-
-        return level;
+        return outputHandler.getContentType();
     }
 }
