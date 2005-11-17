@@ -304,6 +304,8 @@ source and documentation packages.
 
       <patternset id="output">
          <include name="${pkg.path}/output/*.java"/>
+	 <include name="${pkg.path}/output/freemarker/*.java"/>
+	 <include name="${pkg.path}/output/html/*.java"/>
       </patternset>
 
     </javac>
@@ -311,138 +313,8 @@ source and documentation packages.
     <!--
      Now the subtargets.
     -->
-    <antcall target="output.html"/>
     <antcall target="output.script"/>
-    <antcall target="output.freemarker"/>
     <antcall target="email"/>
-  </target>
-
-  <!--
-  ***************************************************************************
-			HTML Output Handler Targets
-  ***************************************************************************
-  -->
-
-  <patternset id="generated.HTMLOutputHandler.java.pattern">
-    <include name="${pkg.path}/output/html/*HTML.java"/>
-  </patternset>
-
-  <patternset id="permanent.HTMLOutputHandler.java.pattern">
-    <include name="${pkg.path}/output/html/*.java"/>
-    <exclude name="${pkg.path}/output/html/*HTML.java"/>
-  </patternset>
-
-  <fileset id="generated.HTMLOutputHandler.java.files" dir="${src.top}">
-    <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
-  </fileset>
-
-  <fileset id="permanent.HTMLOutputHandler.java.files" dir="${src.top}">
-    <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
-  </fileset>
-
-  <fileset id="generated.HTMLOutputHandler.files" dir="${src.dir}">
-    <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
-    <patternset>
-      <include name="output/html/*.optionCheck"/>
-    </patternset>
-  </fileset>
-
-  <target name="output.html" depends="-check.xmlc" if="xmlc.exists">
-
-    <!-- Make the <xmlc> task available -->
-
-    <taskdef name="xmlc" classname="org.enhydra.xml.xmlc.taskdef.Xmlc"/>
-
-    <!--
-    Specifying "packagename" forces <xmlc> to create the generated Java source
-    files in a subdirectory. But, even then, the package name is wrong.
-    Specifying just "packagedir" causes it to create a bad "package"
-    line, but the file is at least local. Then, we edit it. (Yuck.)
-     -->
-
-    <xmlc srcdir="${src.dir}/output/html"
-          sourceout="${src.dir}/output/html"
-          includes="*.html"
-          keep="yes"
-          verbose="no"
-          packagedir=".">
-      <arg value="-delete-class"/>
-      <arg value="mockup"/>
-      <arg value="-extends"/>
-      <arg value="org.clapper.curn.output.html.HTMLBase"/>
-      <arg value="-warnings"/>
-      <arg value="no"/>
-    </xmlc>
-
-    <replaceregexp match="^package.*;"
-                   replace="package org.clapper.curn.output.html;"
-                   flags="g"
-                   byline="true">
-      <fileset dir="${src.dir}" includes="output/html/*.java">
-        <contains text="XMLC GENERATED" casesensitive="yes"/>
-      </fileset>
-    </replaceregexp>
-
-    <!--
-
-    The XMLC-generated Java sources contain various anomalies (including
-    identifiers with "$" characters) that cause Jikes to complain. Compile
-    them separately, with various Jikes warnings disabled.
-    -->
-
-    <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
-           debug="${javac.debug}"
-           depend="${javac.depend}"
-           listfiles="${javac.listfiles}"
-           destdir="${build}">
-
-      <compilerarg compiler="jikes" value="+Pno-naming-convention"/>
-      <compilerarg compiler="jikes" value="+Pno-switchcheck"/>
-      <compilerarg compiler="jikes" value="+Pno-shadow"/>
-      <compilerarg compiler="jikes" value="-nowarn"/>
-
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
-
-      <classpath refid="project.class.path"/>
-      <patternset refid="generated.HTMLOutputHandler.java.pattern"/>
-
-    </javac>
-
-    <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
-           debug="${javac.debug}"
-           depend="${javac.depend}"
-           listfiles="${javac.listfiles}"
-           destdir="${build}">
-
-      <compilerarg compiler="jikes" value="+Peffective-java"/>
-      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
-      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
-      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
-      <compilerarg compiler="jikes" value="+Pserial"/>
-
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
-
-      <classpath refid="project.class.path"/>
-      <patternset refid="permanent.HTMLOutputHandler.java.pattern"/>
-
-    </javac>
-  </target>
-
-  <target name="-check.xmlc.exists">
-    <available classname="org.enhydra.xml.xmlc.taskdef.Xmlc"
-               property="xmlc.exists" value="true"/>
-  </target>
-
-  <target name="-check.xmlc" depends="-check.xmlc.exists" unless="xmlc.exists">
-    <echo>
-*** XMLC is not currently available in the build environment. Because XMLC is
-*** missing, all targets that require XMLC will be skipped. To enable these
-*** targets, place a copy of xmlc-taskdef.jar and the XMLC runtime jars
-*** in ANT_HOME/lib or in the CLASSPATH. XMLC is available at
-*** http://xmlc.objectweb.org/
-    </echo>
   </target>
 
   <!--
@@ -490,67 +362,6 @@ source and documentation packages.
 *** that require BSF will be skipped. To enable these targets, place a copy of
 *** bsf.jar in ANT_HOME/lib or in the CLASSPATH. BSF is available at
 *** http://jakarta.apache.org/bsf/
-    </echo>
-  </target>
-
-  <!--
-  ***************************************************************************
-		     FreeMarker Output Handler Targets
-  ***************************************************************************
-  -->
-
-  <target name="output.freemarker"
-	  depends="-check.freemarker,-freemarker.code,-freemarker.templates"
-	  if="freemarker.exists"/>
-
-  <target name="-freemarker.code">
-    <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
-           debug="${javac.debug}"
-           depend="${javac.depend}"
-           listfiles="${javac.listfiles}"
-           destdir="${build}">
-
-      <compilerarg compiler="jikes" value="+Peffective-java"/>
-      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
-      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
-      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
-      <compilerarg compiler="jikes" value="+Pserial"/>
-
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
-
-      <classpath refid="project.class.path"/>
-
-      <patternset id="output.freemarker">
-        <include name="${pkg.path}/output/freemarker/*.java"/>
-      </patternset>
-
-    </javac>
-
-  </target>
-
-  <target name="-freemarker.templates">
-    <copy todir="${build}">
-      <fileset dir="${src.top}">
-        <include name="**/*.ftl"/>
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="-check.freemarker.exists">
-    <available classname="freemarker.template.TemplateModel"
-               property="freemarker.exists" value="true"/>
-  </target>
-
-  <target name="-check.freemarker"
-	  depends="-check.freemarker.exists"
-	  unless="freemarker.exists">
-    <echo>
-*** The FreeMarker template engine is not currently available in the build
-*** environment. Because FreeMarker is missing, all targets that require
-*** FreeMarker will be skipped. To enable these targets, place a copy of
-*** freemarker.jar in ANT_HOME/lib or in the CLASSPATH. FreeMarker is available
-*** at http://freemarker.sourceforge.net/
     </echo>
   </target>
 
@@ -743,10 +554,6 @@ source and documentation packages.
 
   <target name="clean"
           description="clean up" >
-
-    <delete failonerror="false">
-      <fileset refid="generated.HTMLOutputHandler.files"/>
-    </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
       <fileset dir="${build}"/>
