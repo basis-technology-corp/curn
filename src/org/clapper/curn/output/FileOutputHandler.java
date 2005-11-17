@@ -33,6 +33,7 @@ import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -45,6 +46,10 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * <p><tt>FileOutputHandler</tt> is an abstract base class for
@@ -336,6 +341,9 @@ public abstract class FileOutputHandler implements OutputHandler
         StringBuffer buf = new StringBuffer();
         char[]       ch;
 
+        if (s == null)
+            return "";
+
         s = HTMLUtil.textFromHTML (s);
         ch = s.toCharArray();
 
@@ -373,5 +381,43 @@ public abstract class FileOutputHandler implements OutputHandler
         }
 
         return buf.toString();
+    }
+
+    /**
+     * Convert various fields in a channel and its subitems by invoking the
+     * {@link #convert} method on them. Intended primarily for output handlers
+     * that produce plain text.
+     *
+     * @param channel  the channel
+     *
+     * @throws CurnException on error
+     */
+    protected void convertChannelText (RSSChannel  channel)
+        throws CurnException
+    {
+        Collection<RSSItem> items = channel.getItems();
+        if ((items != null) && (items.size() > 0))
+        {
+            for (Iterator it = items.iterator(); it.hasNext(); )
+            {
+                RSSItem item = (RSSItem) it.next();
+                item.setTitle (convert (item.getTitle()));
+
+                Collection<String> authors = item.getAuthors();
+                if ((authors != null) && (authors.size() > 0))
+                {
+                    Collection<String> cvtAuthors = new ArrayList<String>();
+
+                    for (String author : authors)
+                        cvtAuthors.add (convert (author));
+
+                    item.setAuthors (cvtAuthors);
+                }
+
+                String s = item.getSummary();
+                if (s != null)
+                    item.setSummary (convert (s));
+            }
+        }
     }
 }
