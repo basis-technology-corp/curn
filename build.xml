@@ -111,7 +111,7 @@ source and documentation packages.
   <target name="all" depends="curn"/>
 
   <target name="curn"
-          depends="init,main,output,third.party.parsers,bundles,-build.info"
+          depends="init,main,output,third.party.parsers,bundles,freemarker.templates,-build.info"
           description="Compiles the source"/>
 
   <target name="third.party.parsers"
@@ -164,6 +164,14 @@ source and documentation packages.
     <copy todir="${build}">
       <fileset dir="${src.top}">
         <include name="**/*.properties"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="freemarker.templates">
+    <copy todir="${build}">
+      <fileset dir="${src.top}">
+        <include name="**/*.ftl"/>
       </fileset>
     </copy>
   </target>
