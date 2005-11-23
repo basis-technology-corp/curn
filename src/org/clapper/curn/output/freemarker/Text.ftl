@@ -55,5 +55,7 @@ ${wrapText (desc, 8)}
 </#list>
 
 ---------------------------------------------------------------------------
+<#if (curn.showToolInfo)>
 curn, ${curn.version}
 Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
+</#if>
