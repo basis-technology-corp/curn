@@ -194,6 +194,10 @@ import freemarker.template.TemplateException;
  *  |
  *  +-- curn
  *  |    |
+ *  |    +-- showToolInfo                       (boolean) whether or not
+ *  |    |                                      to display curn information
+ *  |    |                                      in the output
+ *  |    |
  *  |    +-- version                            version of curn
  *  |
  *  +-- totalItems                              total items for all channels
@@ -543,6 +547,10 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         map = new HashMap<String,Object>();
         freemarkerDataModel.put ("curn", map);
         map.put ("version", Version.getVersionNumber());
+        if (super.displayToolInfo())
+            map.put ("showToolInfo", TemplateBooleanModel.TRUE);
+        else
+            map.put ("showToolInfo", TemplateBooleanModel.FALSE);
 
         this.freemarkerTOCData = new HashMap<String,Object>();
         freemarkerDataModel.put ("tableOfContents", this.freemarkerTOCData);
@@ -551,6 +559,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         freemarkerChannelsData = new ArrayList<Object>();
         freemarkerDataModel.put ("channels", freemarkerChannelsData);
+
 
         // Methods accessible from the template
 
@@ -712,12 +721,18 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             itemData.put ("url", itemURL.toString());
 
             itemData.put ("showAuthor", showAuthor);
+            String authorString = null;
             if (feedInfo.showAuthors())
             {
                 Collection<String> authors = item.getAuthors();
                 if ((authors != null) && (authors.size() > 0))
-                    itemData.put ("author", TextUtil.join (authors, ", "));
+                    authorString = TextUtil.join (authors, ", ");
             }
+
+            if (authorString == null)
+                itemData.put ("author", "");
+            else
+                itemData.put ("author", authorString);
 
             String itemTitle = item.getTitle();
             if (itemTitle == null)
