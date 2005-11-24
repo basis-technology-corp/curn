@@ -33,16 +33,41 @@ import java.util.MissingResourceException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
+import org.clapper.util.io.FileUtil;
+import org.clapper.util.io.IOExceptionExt;
+import org.clapper.util.io.RollingFileWriter;
+
 import org.clapper.util.logging.Logger;
 
 /**
- * Miscellaneous utility methods that are shared among classes in this package,
+ * Miscellaneous utility methods that are shared among classes,
  * but don't logically belong anywhere in particular.
  *
  * @version <tt>$Revision$</tt>
  */
 public class Util
 {
+    /*----------------------------------------------------------------------*\
+                           Public Inner Classes
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Constants defining where rolled file indicators should go in the
+     * file name pattern.
+     */
+    public enum IndexMarker
+    {
+        BEFORE_EXTENSION,
+        AFTER_EXTENSION
+    };
+
     /*----------------------------------------------------------------------*\
                              Public Constants
     \*----------------------------------------------------------------------*/
@@ -178,6 +203,118 @@ public class Util
         catch (MissingResourceException ex)
         {
             return null;
+        }
+    }
+
+    /**
+     * Transform a <tt>File</tt> object into a <tt>RollingFileWriter</tt>
+     * pattern.
+     *
+     * @param file           the file
+     * @param indexMarkerLoc where the <tt>RollingFileWriter</tt> index marker
+     *                       should go
+     *
+     * @return the transformed path string
+     */
+    public static String
+    makeRollingFileWriterPattern (File        file,
+                                  IndexMarker indexMarkerLoc)
+    {
+        // Transform the parameter into a pattern suitable for use by a
+        // RollingFileWriter. Split the file name into its base name and
+        // extension, and put the number after the base name. If there's no
+        // extension, just put it at the end.
+
+        StringBuilder  buf  = new StringBuilder();
+        String         path = file.getPath();
+
+        switch (indexMarkerLoc)
+        {
+            case BEFORE_EXTENSION:
+                String fileNoExt = FileUtil.getFileNameNoExtension (path);
+                String ext = FileUtil.getFileNameExtension (path);
+                buf.append (fileNoExt);
+                buf.append (RollingFileWriter.INDEX_PATTERN);
+                if (ext != null)
+                {
+                    buf.append (".");
+                    buf.append (ext);
+                }
+                break;
+
+            case AFTER_EXTENSION:
+                buf.append (path);
+                buf.append (RollingFileWriter.INDEX_PATTERN);
+                break;
+        }
+
+        return buf.toString();
+    }
+
+    /**
+     * Open a file that might require backing up. Takes care of transforming
+     * the file name into a <tt>RollingFileWriter</tt> pattern, if necessary.
+     *
+     * @param file           the file to open
+     * @param encoding       encoding to use when opening the file, or null
+     *                       for the default
+     * @param totalBackups   total backups to keep, if positive
+     * @param indexMarkerLoc where the <tt>RollingFileWriter</tt> index marker
+     *                       should go. Ignored unless <tt>totalBackups</tt>
+     *                       is positive.
+     *
+     * @return a <tt>PrintWriter</tt> for the output
+     *
+     * @throws IOExceptionExt on error
+     */
+    public static PrintWriter openOutputFile (File        file,
+                                              String      encoding,
+                                              IndexMarker indexMarkerLoc,
+                                              int         totalBackups)
+        throws IOExceptionExt
+    {
+        try
+        {
+            PrintWriter w;
+
+            if (totalBackups != 0)
+            {
+                String pattern = Util.makeRollingFileWriterPattern
+                                                     (file, indexMarkerLoc);
+                log.debug ("Opening rolling output file \"" + pattern + "\"");
+                w = new RollingFileWriter (pattern,
+                                           encoding,
+                                           /* max size = */ 0,
+                                           /* max files = */ totalBackups);
+            }
+
+            else
+            {
+                log.debug ("Opening non-rolling output file \""
+                         + file.getPath()
+                         + "\"");
+                if (encoding != null)
+                {
+                    w = new PrintWriter
+                          (new OutputStreamWriter
+                             (new FileOutputStream (file), encoding));
+                }
+
+                else
+                {
+                    w = new PrintWriter (new FileWriter (file));
+                }
+            }
+
+            return w;
+        }
+
+        catch (IOException ex)
+        {
+            throw new IOExceptionExt (Util.BUNDLE_NAME,
+                                      "Util.cantOpenFile",
+                                      "Unable to open file \"{0}\" for output",
+                                      new Object[] {file.getPath()});
         }
     }
 }
