@@ -28,7 +28,6 @@ package org.clapper.curn.output.freemarker;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
@@ -36,6 +35,7 @@ import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
+import org.clapper.curn.util.Util;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -87,12 +87,6 @@ import freemarker.template.TemplateException;
  *     <td><tt>AllowEmbeddedHTML</tt></td>
  *     <td>Whether or not to pass embedded HTML to the FreeMarker template</td>
  *     <td><tt>false</tt></td>
- *   </tr>
- *
- *   <tr>
- *     <td><tt>Encoding</tt></td>
- *     <td>Encoding to use for the generated document</td>
- *     <td>UTF-8</td>
  *   </tr>
  *
  *   <tr>
@@ -311,11 +305,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     public static final String CFG_TOC_ITEM_THRESHOLD = "TOCItemThreshold";
 
     /**
-     * Configuration variable: encoding
-     */
-    public static final String CFG_ENCODING = "Encoding";
-
-    /**
      * Configuration variable: template file
      */
     public static final String CFG_TEMPLATE_FILE = "TemplateFile";
@@ -379,11 +368,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Default encoding value
-     */
-    private static final String DEFAULT_CHARSET_ENCODING = "utf-8";
 
     /**
      * Default number of feeds (channels) that must be present for a
@@ -466,7 +450,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         // Parse handler-specific configuration variables
 
         String section = cfgHandler.getSectionName();
-        String encoding = null;
         String title = DEFAULT_TITLE;
         String extraText = "";
 
@@ -505,11 +488,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                                (section,
                                                 CFG_TOC_ITEM_THRESHOLD,
                                                 DEFAULT_TOC_THRESHOLD);
-
-                encoding = config.getOptionalStringValue
-                                               (section,
-                                                CFG_ENCODING,
-                                                DEFAULT_CHARSET_ENCODING);
             }
         }
         
@@ -533,6 +511,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                  new SimpleDate (now, SimpleDate.DATETIME));
         freemarkerDataModel.put ("title", title);
         freemarkerDataModel.put ("extraText", extraText);
+
+        String encoding = super.getEncoding();
+        if (encoding == null)
+            encoding = FileUtil.getDefaultEncoding();
+
         freemarkerDataModel.put ("encoding", encoding);
 
         Map<String,Object> map = new HashMap<String,Object>();
@@ -569,24 +552,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         // Open the output file.
 
-        File outputFile = super.getOutputFile();
-
-        try
-        {
-            log.debug ("Opening output file \"" + outputFile + "\"");
-            this.out = new PrintWriter
-                          (new OutputStreamWriter
-                               (new FileOutputStream (outputFile), encoding));
-        }
-
-        catch (IOException ex)
-        {
-            throw new CurnException (Curn.BUNDLE_NAME,
-                                     "OutputHandler.cantOpenFile",
-                                     "Cannot open file \"{0}\" for output",
-                                     new Object[] {outputFile.getPath()},
-                                     ex);
-        }
+        this.out = super.openOutputFile();
     }
 
     /**
@@ -780,7 +746,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         {
             log.error ("Error creating FreeMarker template", ex);
             throw new CurnException
-                         (Curn.BUNDLE_NAME,
+                         (Util.BUNDLE_NAME,
                           "FreeMarkerOutputHandler.cantGetFreeMarkerTemplate",
                           "Cannot create FreeMarker template",
                           ex);
@@ -795,7 +761,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         {
             log.error ("Error processing FreeMarker template", ex);
             throw new CurnException
-                          (Curn.BUNDLE_NAME,
+                          (Util.BUNDLE_NAME,
                            "FreeMarkerOutputHandler.cantProcessTemplate",
                            "Error while processing FreeMarker template "
                          + "\"{0}\"",
@@ -805,7 +771,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         catch (IOException ex)
         {
             throw new CurnException
-                          (Curn.BUNDLE_NAME,
+                          (Util.BUNDLE_NAME,
                            "FreeMarkerOutputHandler.cantProcessTemplate",
                            "Error while processing FreeMarker template "
                          + "\"{0}\"",
