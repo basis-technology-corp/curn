@@ -1,7 +1,8 @@
 <html> 
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=${encoding?upper_case}">
 <meta name="GENERATOR" content="curn, version ${curn.version}">
-<meta http-equiv="Content-Type" content="text/html; charset=${encoding?lower_case}">
+
 <#--
   -----------------------------------------------------------------------
   curn: Customizable Utilitarian RSS Notifier

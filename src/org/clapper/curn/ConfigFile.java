@@ -84,7 +84,7 @@ public class ConfigFile extends Configuration
      * Variable names
      */
     private static final String VAR_CACHE_FILE        = "CacheFile";
-    private static final String VAR_CACHE_BACKUP      = "CacheBackup";
+    private static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
     private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
     private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
     private static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
@@ -153,6 +153,7 @@ public class ConfigFile extends Configuration
     private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
     private static final int     DEF_MAX_THREADS       = 5;
     private static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
+    private static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
 
     /**
      * Others
@@ -164,7 +165,6 @@ public class ConfigFile extends Configuration
     \*----------------------------------------------------------------------*/
 
     private File cacheFile = null;
-    private File cacheBackupFile = null;
     private int defaultCacheDays = DEF_DAYS_TO_CACHE;
     private boolean updateCache = true;
     private boolean summaryOnly = false;
@@ -185,6 +185,7 @@ public class ConfigFile extends Configuration
     private String defaultUserAgent = null;
     private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
     private boolean allowEmbeddedHTML = DEF_ALLOW_EMBEDDED_HTML;
+    private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
 
     /**
      * For log messages
@@ -319,15 +320,14 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Get the configured cache backup file.
+     * Get the total number of cache backup files to keep.
      *
-     * @return the cache backup file, or null if not defined
-     *
-     * @see #getCacheFile
+     * @return the total number of cache backup files to keep, or 0 for
+     *         none.
      */
-    public File getCacheBackupFile()
+    public int totalCacheBackups()
     {
-        return cacheBackupFile;
+        return totalCacheBackups;
     }
 
     /**
@@ -372,7 +372,7 @@ public class ConfigFile extends Configuration
     {
         if (newValue <= 0)
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.badPositiveInteger",
                                               "The \"{0}\" configuration "
                                             + "parameter cannot be set to "
@@ -751,7 +751,7 @@ public class ConfigFile extends Configuration
     {
         if (! this.containsSection (MAIN_SECTION))
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.missingReqSection",
                                               "The configuration file is "
                                             + "missing the required \"{0}\" "
@@ -771,7 +771,7 @@ public class ConfigFile extends Configuration
                 if (cacheFile.isDirectory())
                 {
                     throw new ConfigurationException
-                        (Curn.BUNDLE_NAME,
+                        (Util.BUNDLE_NAME,
                          "ConfigFile.cacheIsDir",
                          "Configured cache file \"{0}\" is a directory.",
                          new Object[]
@@ -781,28 +781,12 @@ public class ConfigFile extends Configuration
                 }
             }
 
-            s = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_BACKUP, null);
-            if (s != null)
-            {
-                cacheBackupFile = new File (s);
-
-                if (cacheBackupFile.isDirectory())
-                {
-                    throw new ConfigurationException
-                        (Curn.BUNDLE_NAME,
-                         "ConfigFile.cacheBackupIsDir",
-                         "Configured cache backup file \"{0}\" is "
-                       + "a directory.",
-                         new Object[]
-                         {
-                             cacheBackupFile.getPath()
-                         });
-                }
-            }
-
             defaultCacheDays = parseMaxDaysParameter (MAIN_SECTION,
                                                       VAR_DAYS_TO_CACHE,
                                                       DEF_DAYS_TO_CACHE);
+            totalCacheBackups = getOptionalCardinalValue (MAIN_SECTION,
+                                                          VAR_TOTAL_CACHE_BACKUPS,
+                                                          DEF_TOTAL_CACHE_BACKUPS);
             updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
                                                      VAR_NO_CACHE_UPDATE,
                                                      DEF_NO_CACHE_UPDATE));
@@ -873,7 +857,7 @@ public class ConfigFile extends Configuration
 
         catch (NoSuchVariableException ex)
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.missingReqVar",
                                               "The configuration file is "
                                             + "missing required variable "
@@ -916,7 +900,7 @@ public class ConfigFile extends Configuration
 
         catch (MalformedURLException ex)
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.badFeedURL",
                                               "Configuration file section "
                                             + "\"{0}\" specifies a bad RSS "
@@ -1060,7 +1044,7 @@ public class ConfigFile extends Configuration
 
         if (url == null)
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.missingReqVar",
                                               "The configuration file is "
                                             + "missing required variable "
@@ -1074,7 +1058,7 @@ public class ConfigFile extends Configuration
 
         if (saveOnly && (saveAs == null))
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.saveOnlyButNoSaveAs",
                                               "Configuration section \"{0}\": "
                                             + "\"[1}\" may only be specified "
@@ -1156,7 +1140,7 @@ public class ConfigFile extends Configuration
 
         if (val == null)
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "ConfigFile.badVarValue",
                                               "Section \"{0}\" in the "
                                             + "configuration file has a bad "
@@ -1210,7 +1194,7 @@ public class ConfigFile extends Configuration
                 catch (NumberFormatException ex)
                 {
                     throw new ConfigurationException
-                                         (Curn.BUNDLE_NAME,
+                                         (Util.BUNDLE_NAME,
                                           "ConfigFile.badNumericValue",
                                           "Bad numeric value \"{0}\" for "
                                         + "variable \"{1}\" in section "
@@ -1226,7 +1210,7 @@ public class ConfigFile extends Configuration
                 if (result < 0)
                 {
                     throw new ConfigurationException
-                                      (Curn.BUNDLE_NAME,
+                                      (Util.BUNDLE_NAME,
                                        "ConfigFile.negativeCardinalValue",
                                        "Unexpected negative numeric value "
                                      + "{0} for variable \"{1}\" in section "
