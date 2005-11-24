@@ -26,8 +26,8 @@
 
 package org.clapper.curn.output.freemarker;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
+import org.clapper.curn.util.Util;
 
 /**
  * @version <tt>$Revision$</tt>
@@ -64,7 +64,7 @@ public enum TemplateType
                 return t;
         }
 
-        throw new CurnException (Curn.BUNDLE_NAME,
+        throw new CurnException (Util.BUNDLE_NAME,
                                  "TemplateType.badString",
                                  "Cannot decode TemplateType from string "
                                + "\"{0}\"",

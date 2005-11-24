@@ -26,8 +26,8 @@
 
 package org.clapper.curn.output.freemarker;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
+import org.clapper.curn.util.Util;
 
 /**
  * @version <tt>$Revision$</tt>
@@ -77,7 +77,7 @@ public class TemplateLocation implements Comparable<TemplateLocation>
 
         if (tokens.length != 2)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
+            throw new CurnException (Util.BUNDLE_NAME,
                                      "TemplateLocation.tooManyTokensInName",
                                      "Cannot decode TemplateLocation from "
                                    + "string \"{0}\":  String should have 2 "

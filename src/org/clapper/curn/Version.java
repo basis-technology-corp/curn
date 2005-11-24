@@ -31,6 +31,8 @@ import java.io.PrintWriter;
 import java.io.PrintStream;
 import java.util.Locale;
 
+import org.clapper.curn.util.Util;
+
 import org.clapper.util.misc.BuildInfo;
 import org.clapper.util.misc.BundleUtil;
 
@@ -76,7 +78,7 @@ public final class Version
      */
     public static String getVersionNumber()
     {
-        return BundleUtil.getString (Curn.BUNDLE_NAME, "curn.version", "?");
+        return BundleUtil.getString (Util.BUNDLE_NAME, "curn.version", "?");
     }
 
     /**
@@ -86,7 +88,7 @@ public final class Version
      */
     public static String getUtilityName()
     {
-        return BundleUtil.getString (Curn.BUNDLE_NAME, "curn.name", "curn");
+        return BundleUtil.getString (Util.BUNDLE_NAME, "curn.name", "curn");
     }
 
     /**
@@ -96,7 +98,7 @@ public final class Version
      */
     public static String getWebSite()
     {
-        return BundleUtil.getString (Curn.BUNDLE_NAME, "curn.website", "?");
+        return BundleUtil.getString (Util.BUNDLE_NAME, "curn.website", "?");
     }
 
     /**
@@ -118,7 +120,7 @@ public final class Version
         String name = getUtilityName();
         String version = getVersionNumber();
 
-        return BundleUtil.getMessage (Curn.BUNDLE_NAME, locale,
+        return BundleUtil.getMessage (Util.BUNDLE_NAME, locale,
                                       "curn.fullVersion",
                                       "{0}, version {1}",
                                       new Object[] {name, version});

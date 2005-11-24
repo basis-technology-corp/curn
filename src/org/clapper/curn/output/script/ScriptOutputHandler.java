@@ -28,13 +28,13 @@ package org.clapper.curn.output.script;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
 import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.util.Util;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -517,7 +517,7 @@ public class ScriptOutputHandler extends FileOutputHandler
         catch (BSFException ex)
         {
             log.error ("Error interacting with Bean Scripting Framework", ex);
-            throw new CurnException (Curn.BUNDLE_NAME,
+            throw new CurnException (Util.BUNDLE_NAME,
                                      "ScriptOutputHandler.bsfError",
                                      "Error interacting with Bean Scripting "
                                    + "Framework: {0}",
@@ -585,7 +585,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         catch (IOException ex)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
+            throw new CurnException (Util.BUNDLE_NAME,
                                      "ScriptOutputHandler.cantLoadScript",
                                      "Failed to load script \"{0}\" into "
                                    + "memory.",

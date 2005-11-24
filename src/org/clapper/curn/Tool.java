@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.clapper.curn.util.Util;
+
 import org.clapper.util.cmdline.CommandLineUtility;
 import org.clapper.util.cmdline.CommandLineException;
 import org.clapper.util.cmdline.CommandLineUsageException;
@@ -257,7 +259,7 @@ public class Tool extends CommandLineUtility
                     if (maxThreads < 1)
                     {
                         throw new CommandLineUsageException
-                            (Curn.BUNDLE_NAME, "Tool.negNumericOption",
+                            (Util.BUNDLE_NAME, "Tool.negNumericOption",
                              "Value for \"{0}\" (\"{1}\") option must be "
                            + "greater than 0",
                              new Object[] {"-t", "--threads"});
@@ -267,7 +269,7 @@ public class Tool extends CommandLineUtility
                 catch (NumberFormatException ex)
                 {
                     throw new CommandLineUsageException
-                        (Curn.BUNDLE_NAME, "Tool.badNumericOption",
+                        (Util.BUNDLE_NAME, "Tool.badNumericOption",
                          "Bad numeric value \"{0}\" for \"{1}\" (\"{2}\") "
                        + "option",
                          new Object[]
@@ -530,7 +532,7 @@ public class Tool extends CommandLineUtility
 
         catch (FileNotFoundException ex)
         {
-            throw new CommandLineUsageException (Curn.BUNDLE_NAME,
+            throw new CommandLineUsageException (Util.BUNDLE_NAME,
                                                  "Tool.cantFindConfig",
                                                  "Cannot find configuration "
                                                + "file \"{0}\"",
@@ -596,7 +598,7 @@ public class Tool extends CommandLineUtility
 
         if (date == null)
         {
-            throw new CommandLineUsageException (Curn.BUNDLE_NAME,
+            throw new CommandLineUsageException (Util.BUNDLE_NAME,
                                                  "Tool.badDateTime",
                                                  "Bad date/time: \"{0}\"",
                                                  new Object[] {s});
