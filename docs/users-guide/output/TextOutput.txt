@@ -1,13 +1,11 @@
+RSS Feeds
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 The Daily Irrelevant
 http://irrelevant.clapper.org/
-(Format: RSS 2.0)
 
     Fifteen Philadelphia motorists cited for stupidity
-    By Olaf Phenobarb
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
-    Wed Jul 28 00:00:00 EDT 2004
 
         During rush hour this morning, on the city's busy Schuylkill Expressway,
         Philadelphia police stopped fifteen motorists and cited them under
@@ -15,7 +13,6 @@ http://irrelevant.clapper.org/
 
     Joe Sixpack to retire
     http://irrelevant.clapper.org/2004/06/13/joe6.html
-    Wed Jul 28 02:12:07 EDT 2004
 
         Joe Sixpack, whose name is frequently used to represent an average guy,
         is retiring at the end of July. "After that, they're just gonna hafta
@@ -24,7 +21,6 @@ http://irrelevant.clapper.org/
 
     Tripwell caught with pants down
     http://irrelevant.clapper.org/2004/06/13/televangelist.html
-    Wed Jul 28 02:13:29 EDT 2004
 
         Police, responding to neighbors' reports of disturbing sounds from
         televangelist Gerard Tripwell's home, found his garage door open and the
@@ -34,15 +30,18 @@ http://irrelevant.clapper.org/
         Trudy, had left an hour earlier to catch a plane to Little Rock,
         Arkansas, to visit her dying father.
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 News Bites
 http://bites.clapper.org/
-(Format: RSS 2.0)
+
+    President Falls
+    http://bites.clapper.org/prezfall.html
+
+        While stepping off Air Force One, the President tripped, fell onto the
+        tarmac, and bruised his right pinky. ...
 
     Man Bites Dog
-    By Basil Ironthrower
     http://bites.clapper.org/manbitesdog.html
-    Wed Jul 28 01:30:00 EDT 2004
 
         Repeatedly attacked by a small, but persistent, neighborhood Chihuahua
         name Juan, jogger John "Choppers" McNabb finally got fed up and took
@@ -50,35 +49,21 @@ http://bites.clapper.org/
         veterinary bills. McNabb has countersued, seeking to recover the costs
         of treatment for multiple bite wounds.
 
-    President Falls
-    By Judith Foinsapp
-    http://bites.clapper.org/prezfall.html
-    Wed Jul 28 00:31:00 EDT 2004
-
-        While stepping off Air Force One, the President tripped, fell onto the
-        tarmac, and bruised his right pinky. ...
-
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------
 Simple News Summaries
 http://justthefactsmaam.clapper.org/
-(Format: RSS 2.0)
 
     Political correctness organization claims that the word "person" is sexist,
     because it contains the word "son."
-    By James Longwayfromhome
     http://justthefactsmaam.clapper.org/pcstupid.html
-    Tue Jun 29 22:15:00 EDT 2004
 
     New study claims pollen makes people sneeze
-    By Fred Derf
     http://justthefactsmaam.clapper.org/duh.html
-    Wed Jul 28 02:31:07 EDT 2004
 
     Researcher claims 13% of Americans can't spell their own names
-    By Jonh Smth
     http://justthefactsmaam.clapper.org/names.html
-    Wed Jul 28 02:32:27 EDT 2004
 
-------------------------------------------------------------------------------
-curn, version 2.4
-Generated Mon Aug 15 15:39:55 EDT 2005
+
+---------------------------------------------------------------------------
+curn, 2.6
+Generated Thursday, 24 November, 2005 at 11:42:25 EST
