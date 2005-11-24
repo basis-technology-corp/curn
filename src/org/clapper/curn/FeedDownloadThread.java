@@ -387,7 +387,6 @@ class FeedDownloadThread extends Thread
                 log.debug ("Feed may have changed. "
                          + "Downloading and processing it.");
 
-
                 // Download the feed to a file. We'll parse the file.
 
                 DownloadedTempFile tempFile = downloadFeed (conn, feedInfo);
@@ -427,12 +426,6 @@ class FeedDownloadThread extends Thread
                     if (parser == null)
                     {
                         log.debug ("No RSS parser. Skipping XML parse phase.");
-                    }
-
-                    else if (feedInfo.saveOnly())
-                    {
-                        log.debug ("Feed is marked 'save only'. Skipping "
-                                 + "XML parse phase.");
                     }
 
                     else
