@@ -125,7 +125,7 @@ public class HTMLOutputHandler extends FileOutputHandler
                                                 "HTMLEncoding",
                                                 DEFAULT_CHARSET_ENCODING);
                 config.setVariable (section,
-                                    FreeMarkerOutputHandler.CFG_ENCODING,
+                                    FileOutputHandler.CFG_ENCODING,
                                     encoding,
                                     false);
 
