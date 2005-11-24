@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 
+import org.clapper.curn.util.Util;
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
@@ -86,11 +87,6 @@ public class Curn
     /*----------------------------------------------------------------------*\
                              Public Constants
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Resource bundle for this package
-     */
-    public static final String BUNDLE_NAME = "org.clapper.curn.Curn";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -160,10 +156,11 @@ public class Curn
         String               parserClassName;
         Collection<FeedInfo> channels;
         boolean              parsingEnabled = true;
+        File                 cacheFile = configuration.getCacheFile();
 
         loadOutputHandlers (configuration, emailAddresses);
 
-        if (useCache && (configuration.getCacheFile() != null))
+        if (useCache && (cacheFile != null))
         {
             cache = new FeedCache (configuration);
             cache.setCurrentTime (currentTime);
@@ -181,7 +178,7 @@ public class Curn
         Collection feeds = configuration.getFeeds();
         if (feeds.size() == 0)
         {
-            throw new ConfigurationException (Curn.BUNDLE_NAME,
+            throw new ConfigurationException (Util.BUNDLE_NAME,
                                               "Curn.noConfiguredFeeds",
                                               "No configured RSS feed URLs.");
         }
@@ -201,42 +198,16 @@ public class Curn
         if (channels.size() > 0)
             displayChannels (channels, emailAddresses);
 
+
+        log.debug ("cacheFile="
+                 + ((cacheFile == null) ? "null" : cacheFile.getPath())
+                 + ", mustUpdateCache="
+                 + configuration.mustUpdateCache());
+
         if ((cache != null) && configuration.mustUpdateCache())
         {
-            File cacheBackupFile = configuration.getCacheBackupFile();
-            File cacheFile = configuration.getCacheFile();
-            if (cacheBackupFile == null)
-            {
-                log.debug ("No cache backup file.");
-            }
-
-            else if (cacheFile.exists())
-            {
-                log.info ("Copying cache file \""
-                        + cacheFile.getPath()
-                        + "\" to backup file \""
-                        + cacheBackupFile.getPath()
-                        + "\"");
-
-                try
-                {
-                    FileUtil.copyFile (cacheFile, cacheBackupFile);
-                }
-
-                catch (IOException ex)
-                {
-                    // Don't abort, but log the exception.
-
-                    log.error ("Failed to copy cache file \""
-                             + cacheFile.getPath()
-                             + "\" to backup file \""
-                             + cacheBackupFile.getPath()
-                             + "\"",
-                               ex);
-                }
-            }
-
-            cache.saveCache();
+            int totalCacheBackups = configuration.totalCacheBackups();
+            cache.saveCache (totalCacheBackups);
         }
     }
 
@@ -427,7 +398,7 @@ public class Curn
 
         if (feedQueue.size() == 0)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
+            throw new CurnException (Util.BUNDLE_NAME,
                                      "Curn.allFeedsDisabled",
                                      "All configured RSS feeds are disabled.");
         }
@@ -595,7 +566,7 @@ public class Curn
 
                 catch (IOException ex)
                 {
-                    throw new CurnException (Curn.BUNDLE_NAME,
+                    throw new CurnException (Util.BUNDLE_NAME,
                                              "Curn.outputCopyFailed",
                                              "Failed to copy output from "
                                            + "handler \"{0}\" to standard "

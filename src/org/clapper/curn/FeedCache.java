@@ -71,6 +71,7 @@ import org.xml.sax.SAXException;
 
 import org.clapper.curn.util.Util;
 
+import org.clapper.util.io.IOExceptionExt;
 import org.clapper.util.io.XMLWriter;
 import org.clapper.util.logging.Logger;
 
@@ -194,7 +195,7 @@ public class FeedCache implements Serializable
 
             if (this.cacheByID == null)
             {
-                throw new CurnException (Curn.BUNDLE_NAME,
+                throw new CurnException (Util.BUNDLE_NAME,
                                          "FeedCache.badCacheFile",
                                          "Unable to load cache file \"{0}\" "
                                        + "as either a file of serialized Java "
@@ -215,9 +216,11 @@ public class FeedCache implements Serializable
      * Attempt to save the cache back to disk. Does nothing if the cache
      * hasn't been modified since it was saved.
      *
+     * @param totalCacheBackups total number of backup files to keep
+     *
      * @throws CurnException  unable to write cache
      */
-    public void saveCache()
+    public void saveCache (int totalCacheBackups)
         throws CurnException
     {
         if (this.modified)
@@ -226,7 +229,10 @@ public class FeedCache implements Serializable
 
             try
             {
-                log.debug ("Saving cache to \"" + cacheFile.getPath() + "\"");
+                log.debug ("Saving cache to \""
+                         + cacheFile.getPath()
+                         + "\". Total backups="
+                         + totalCacheBackups);
 
                 // Create the DOM.
 
@@ -270,17 +276,28 @@ public class FeedCache implements Serializable
                     root.appendChild (e);
                 }
 
+                // Open the cache file. For the cache file, the index
+                // marker goes at the end of the file (since the extension
+                // doesn't matter as much). This allows the file names to
+                // sort better in a directory listing.
+
+                Writer cacheOut = Util.openOutputFile
+                                             (cacheFile,
+                                              null,
+                                              Util.IndexMarker.AFTER_EXTENSION,
+                                              totalCacheBackups);
+
                 // Transform it to the output file.
 
                 TransformerFactory tf = TransformerFactory.newInstance();
                 Transformer transformer = tf.newTransformer();
+
                 transformer.transform (new DOMSource (dom),
                                        new StreamResult
-                                          (new XMLWriter
-                                             (new FileWriter (cacheFile))));
+                                         (new XMLWriter (cacheOut)));
             }
 
-            catch (IOException ex)
+            catch (IOExceptionExt ex)
             {
                 throw new CurnException (ex);
             }
@@ -546,7 +563,7 @@ public class FeedCache implements Serializable
 
             if (! rootTagName.equals (XML_ROOT_ELEMENT_TAG))
             {
-                throw new CurnException (Curn.BUNDLE_NAME,
+                throw new CurnException (Util.BUNDLE_NAME,
                                          "FeedCache.nonCacheXML",
                                          "File \"{0}\" is not a curn XML "
                                        + "cache file. The root XML element is "
@@ -593,7 +610,7 @@ public class FeedCache implements Serializable
 
         catch (SAXException ex)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
+            throw new CurnException (Util.BUNDLE_NAME,
                                      "FeedCache.xmlParseFailure",
                                      "Unable to parse cache file \"{0}\" "
                                    + "as an XML file.",
@@ -603,7 +620,7 @@ public class FeedCache implements Serializable
 
         catch (IOException ex)
         {
-            throw new CurnException (Curn.BUNDLE_NAME,
+            throw new CurnException (Util.BUNDLE_NAME,
                                      "FeedCache.xmlParseFailure",
                                      "Unable to parse cache file \"{0}\" "
                                    + "as an XML file.",
