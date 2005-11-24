@@ -4,12 +4,82 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 2.5.2 (...)
+Version 2.6 (...)
+
+- Added new FreeMarkerOutputHandler, which uses the FreeMarker template
+  engine (freemarker.sourceforge.net) to generate output based on
+  template files. Three built-in templates are bundled with curn:
+
+  - HTML      generates output identical to existing HTMLOutputHandler
+  - Text      generates output identical to existing TextOutputHandler
+  - Summary   generates output identical to existing SimpleSummaryOutputHandler
+
+  The configuration directives for the FreeMarkerOutputHandler permit
+  use of four kinds of templates:
+
+  - Built-in templates (listed above)
+  - Templates available via the class loader
+  - Templates residing in a file on the computer where curn is running
+  - Templates accessible via a URL
+
+  Any one familiar with FreeMarker and with curn's FreeMarker data model
+  can write a template and, thus, change curn's output without writing
+  any code (other than the simple coding instructions in a FreeMarker
+  template).
+
+  See the "curn User's Guide" for details.
+
+  The FreeMarkerOutputHandler class compiles unconditionally, so this
+  version of curn requires the freemarker.jar file.
+
+- The HTMLOutputHandler, TextOutputHandler and SummaryOutputHandler classes
+  are now implemented in terms of the new FreeMarkerOutputHandler. This means
+  the XMLC third-party jar is no longer necessary.
+
+- The org.clapper.curn.parser.RSSChannel and org.clapper.curn.parser.RSSItem
+  abstract classes have some new abstract methods, necessary to support the
+  new clone() and makeCopy() methods. If you have written a custom RSS
+  parser adapter for curn, you'll will have to change it to get it to
+  compile with curn 3.0.
+
+- Fixed a bizarre bug: If you configured a ScriptOutputHandler to run
+  before the HTMLOutputHandler, and one of the feeds contained only HTML
+  in the description (e.g., an image reference), the ScriptOutputHandler
+  would strip the HTML from the channel--essentially removing the
+  content--so that the HTMLOutputHandler wouldn't see the embedded HTML.
+  The code now makes a copy of the feed data before stripping the HTML.
+
+- Fixed NullPointerException in ROME parser adapter package's
+  RSSItemAdapter class; the exception occurred when the item being
+  processed had no summary data.
+
+- Added a new "TotalCacheBackups" parameter, which allows you to keep
+  any number of old caches around. If this parameter is greater than 0,
+  then curn will roll the existing cache file over (much like a rolled-over
+  log file) before overwriting it.
+
+- Removed the "CacheBackup" parameter. Use the new "TotalCacheBackups"
+  parameter instead.
+
+- Added a "SavedBackups" parameter for all output handlers except the
+  ScriptOutputHandler. If this parameter is greater than 0 for a given
+  output handler (and if a "SaveAs" parameter is also specified), then the
+  output handler will roll the "SaveAs" file over (much like a rolled-over
+  log file) before overwriting it.
 
 - The DaysToCache configuration parameter now accepts a special value of
   "NoLimit", indicating that the cache entries should never expire. The
   default value of the global DaysToCache configuration parameter is now
   365 days, not 30 days.
+
+- Fixed bug: If a feed was marked as "SaveOnly", it was downloaded, but not
+  parsed. But not parsing the file means the cache can't be updated properly.
+  Now, downloaded files are parsed regardless, to ensure that the cache is
+  properly maintained with RSS channel and item time stamps.
+
+*** WARNING: This version of curn REQUIRES version 2.0.4 (or better) of
+*** the org.clapper.util Java Utility Library. See
+*** http://www.clapper.org/software/java/util/
 
 
 Version 2.5.1 (25 September, 2005)
