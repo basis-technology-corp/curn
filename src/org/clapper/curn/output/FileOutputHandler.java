@@ -28,24 +28,28 @@ package org.clapper.curn.output;
 
 import org.clapper.curn.ConfigFile;
 import org.clapper.curn.ConfiguredOutputHandler;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
+import org.clapper.curn.util.Util;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
+import org.clapper.util.io.FileUtil;
+import org.clapper.util.io.IOExceptionExt;
+import org.clapper.util.io.RollingFileWriter;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.HTMLUtil;
 import org.clapper.util.text.Unicode;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,14 +82,54 @@ import java.util.Iterator;
 public abstract class FileOutputHandler implements OutputHandler
 {
     /*----------------------------------------------------------------------*\
+                             Public Constants
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Configuration variable: encoding
+     */
+    public static final String CFG_ENCODING = "Encoding";
+
+    /**
+     * Whether or not to show curn information
+     */
+    public static final String CFG_SHOW_CURN_INFO = "ShowCurnInfo";
+
+    /**
+     * Where to save the output, if any
+     */
+    public static final String CFG_SAVE_AS = "SaveAs";
+
+    /**
+     * Whether we're ONLY saving output
+     */
+    public static final String CFG_SAVE_ONLY = "SaveOnly";
+
+    /**
+     * Number of backups of saved files to keep.
+     */
+    public static final String CFG_SAVED_BACKUPS = "SavedBackups";
+
+    /*----------------------------------------------------------------------*\
+                             Public Constants
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Default encoding value
+     */
+    private static final String DEFAULT_CHARSET_ENCODING = "utf-8";
+
+    /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private File        outputFile   = null;
-    private ConfigFile  config       = null;
-    private boolean     saveOnly     = false;
-    private String      name         = null;
-    private boolean     showToolInfo = true;
+    private File        outputFile     = null;
+    private ConfigFile  config         = null;
+    private boolean     saveOnly       = false;
+    private String      name           = null;
+    private boolean     showToolInfo   = true;
+    private int         savedBackups   = 0;
+    private String      encoding       = null;
 
     /**
      * For logging
@@ -140,15 +184,24 @@ public abstract class FileOutputHandler implements OutputHandler
             if (sectionName != null)
             {
                 saveAs = config.getOptionalStringValue (sectionName,
-                                                        "SaveAs",
+                                                        CFG_SAVE_AS,
                                                         null);
+                savedBackups = config.getOptionalCardinalValue
+                                              (sectionName,
+                                               CFG_SAVED_BACKUPS,
+                                               0);
                 saveOnly = config.getOptionalBooleanValue (sectionName,
-                                                           "SaveOnly",
+                                                           CFG_SAVE_ONLY,
                                                            false);
 
-                showToolInfo = config.getOptionalBooleanValue (sectionName,
-                                                               "ShowCurnInfo",
-                                                               true);
+                showToolInfo = config.getOptionalBooleanValue
+                                               (sectionName,
+                                                CFG_SHOW_CURN_INFO,
+                                                true);
+                encoding = config.getOptionalStringValue
+                                               (sectionName,
+                                                CFG_ENCODING,
+                                                DEFAULT_CHARSET_ENCODING);
 
                 // saveOnly cannot be set unless saveAs is non-null. The
                 // ConfigFile class is supposed to trap for this, so an
@@ -176,7 +229,7 @@ public abstract class FileOutputHandler implements OutputHandler
 
             catch (IOException ex)
             {
-                throw new CurnException (Curn.BUNDLE_NAME,
+                throw new CurnException (Util.BUNDLE_NAME,
                                          "FileOutputHandler.cantMakeTempFile",
                                          "Cannot create temporary file",
                                          ex);
@@ -261,7 +314,7 @@ public abstract class FileOutputHandler implements OutputHandler
     /**
      * Determine whether this handler has produced any actual output (i.e.,
      * whether {@link #getGeneratedOutput()} will return a non-null
-     * <tt>InputStream</tt> if called).
+     * <tt>File</tt> if called).
      *
      * @return <tt>true</tt> if the handler has produced output,
      *         <tt>false</tt> if not
@@ -300,6 +353,41 @@ public abstract class FileOutputHandler implements OutputHandler
     }
 
     /**
+     * Open the output file, returning a <tt>PrintWriter</tt>. Handles
+     * whether or not to roll the saved file, etc.
+     *
+     * @return the <tt>PrintWriter</tt>
+     *
+     * @throws CurnException unable to open file
+     */
+    protected PrintWriter openOutputFile()
+        throws CurnException
+    {
+        PrintWriter w = null;
+
+        try
+        {
+            log.debug ("Opening output file \"" + outputFile + "\"");
+
+            // For the output handler output file, the index marker between
+            // the file name and the extension, rather than at the end of
+            // the file (since the extension is likely to matter).
+
+            w = Util.openOutputFile (outputFile,
+                                     encoding,
+                                     Util.IndexMarker.BEFORE_EXTENSION,
+                                     savedBackups);
+        }
+
+        catch (IOExceptionExt ex)
+        {
+            throw new CurnException (ex);
+        }
+
+        return w;
+    }
+
+    /**
      * Determine whether the handler is saving output only, or also reporting
      * output to <i>curn</i>.
      *
@@ -309,6 +397,32 @@ public abstract class FileOutputHandler implements OutputHandler
     protected final boolean savingOutputOnly()
     {
         return saveOnly;
+    }
+
+    /**
+     * Get the configured encoding.
+     *
+     * @return the encoding, or null if not configured
+     *
+     * @see #setEncoding
+     */
+    protected final String getEncoding()
+    {
+        return encoding;
+    }
+
+    /**
+     * Override the encoding specified by the {@link #CFG_ENCODING}
+     * configuration parameter. To have any effect, this method must be
+     * called before {@link #openOutputFile}
+     *
+     * @param newEncoding  the new encoding, or null to use the default
+     *
+     * @see #getEncoding
+     */
+    protected final void setEncoding (String newEncoding)
+    {
+        this.encoding = newEncoding;
     }
 
     /**
