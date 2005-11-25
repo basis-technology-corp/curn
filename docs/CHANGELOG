@@ -77,7 +77,7 @@ Version 2.6 (...)
   Now, downloaded files are parsed regardless, to ensure that the cache is
   properly maintained with RSS channel and item time stamps.
 
-*** WARNING: This version of curn REQUIRES version 2.0.4 (or better) of
+*** WARNING: This version of curn REQUIRES version 2.1 (or better) of
 *** the org.clapper.util Java Utility Library. See
 *** http://www.clapper.org/software/java/util/
 
