@@ -2555,7 +2555,7 @@ built-in templates that produce the appropriate kind of output.</p>
 
       <table class="unbordered" align="center">
 	<tr valign="top">
-	<td class="code"><a href="builtin-templates">builtin</a></td>
+	<td class="code"><a href="#builtin-templates">builtin</a></td>
 	<td>The identifer specifies one of the built-in <i>curn</i>
 	    FreeMarker templates that are bundled in the <i>curn</i> jar
 	    file. There are three legal values:
@@ -2640,6 +2640,17 @@ built-in templates that produce the appropriate kind of output.</p>
 
 <a name="WriteFreeMarkerTemplate"></a><h6>Writing your own FreeMarker template</h6>
 
+<p>Because FreeMarker relies on external templates to create the final
+document, and because <i>curn</i> makes it easy to use custom-crafted
+templates, you easily create your own custom documents, or your own branded
+HTML output, without having to write your own output handler. To create your
+own <i>curn</i> FreeMarker template, you must understand two things:</p>
+
+<ul>
+  <li>How to create a FreeMarker template
+  <li><i>curn</i>'s specific FreeMarker data model
+</ul>
+
 <p>A tutorial on FreeMarker is beyond the scope of this document. The remainder
 of this section assumes you have some familiarity with FreeMarker. If you
 don't know how FreeMarker works, please consult the on-line
@@ -2648,10 +2659,17 @@ before reading this section.</p>
 
 <p>A FreeMarker template relies on the presence of a tree of data, supplied by
 the program. FreeMarker calls this data tree a "data model". The
-<span class="code">FreeMarkerOutputHandler</span> creates the following
-FreeMarker data model for use within a template. (The data model notation
-used here is similar to the notation used within the FreeMarker documentation.)
-The various fields are described after the tree.</p>
+<span class="code">FreeMarkerOutputHandler</span> creates a
+<i>curn</i>-specific
+FreeMarker data model for use within a template. The
+<span class="code">FreeMarkerOutputHandler</span> is as much as data-mapper
+as an output handler: It maps <i>curn</i>'s internal RSS data structures
+into a FreeMarker data model, then invokes the FreeMarker template engine
+to transform the template and data-model into a document.</p>
+
+<p>The <i>curn</i> FreeMarker data model is described below. The data model
+notation used here is similar to the notation used within the FreeMarker
+documentation.</p>
 
 <table class="bordered colored" align="center">
 <tr>
@@ -2826,6 +2844,7 @@ illustrates the use of the data model. You can a version of
 the text template, as well as the HTML template and the simple summary
 template, by following these links:</p>
 
+<a name="builtin-templates"></a>
 <ul>
   <li><a href="HTML.txt">HTML</a>
   <li><a href="Text.txt">Text</a>
