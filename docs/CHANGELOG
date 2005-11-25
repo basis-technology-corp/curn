@@ -4,7 +4,7 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 2.6 (...)
+Version 2.6 (25 November, 2005)
 
 - Added new FreeMarkerOutputHandler, which uses the FreeMarker template
   engine (freemarker.sourceforge.net) to generate output based on
