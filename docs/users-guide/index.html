@@ -52,6 +52,13 @@ h5
     margin-top: 3em;
 }
 
+h6
+{
+    color: #000000;
+    margin-top: 3em;
+    font-family: sans-serif;
+}
+
 .code
 {
     font-family: Courier New, Courier, monospace;
@@ -76,7 +83,7 @@ h5
 dl.dlSummary
 {
     padding: 0.5em;
-} 
+}
 
 dl.dlSummary dt
 {
@@ -105,6 +112,17 @@ ul.toc
     font-weight: bold;
 }
 
+ul.nobullet
+{
+    list-style-type: none;
+}
+
+ul.nobullet li
+{
+    margin-bottom: 5px;
+    margin-left: -10px;
+}
+
 table.outlined
 {
     margin-top: 1em;
@@ -112,10 +130,26 @@ table.outlined
     border: 1px solid black;
 }
 
+table.cell-outlined td
+{
+    border: 1px solid black;
+    padding-left: 5px;
+    padding-right: 10px;
+}
+
 tr.col-headers
 {
     background-color: white;
     border-bottom: 1px solid black;
+}
+
+table.cell-outlined tr.col-headers th
+{
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-top: 1px dashed black;
+    padding-left: 5px;
+    padding-right: 10px;
 }
 
 tr.title
@@ -127,17 +161,46 @@ tr.title
     border: 1px dashed black;
 }
 
+table.colored
+{
+    background-color: #e9e9e9;
+    border-collapse: collapse;
+}
+
+table.colored tr td
+{
+    padding-left: 15px;
+}
+
+table.uncolored
+{
+    background-color: white;
+}
+
 table.bordered
 {
     border-collapse: collapse;
     border: 1px solid black;
-    background-color: white;
 }
 
-table.bordered tr td
+table.uncolored tr td
 {
     border: 1px solid black;
     padding: 2px;
+    background-color: white;
+}
+
+table.unbordered
+{
+    border-collapse: collapse;
+    border: none;
+    background-color: white;
+}
+
+table.unbordered tr td
+{
+    border: none;
+    padding-right: 8px;
     background-color: white;
 }
 
@@ -179,7 +242,7 @@ function hasClass(obj)
          result = obj.getAttributeNode("class").value;
 
      return result;
-}   
+}
 
 function supportsDOM()
 {
@@ -204,12 +267,12 @@ function stripe(table)
     if (! supportsDOM())
         return;
 
-    // the flag we'll use to keep track of 
+    // the flag we'll use to keep track of
     // whether the current row is odd or even
     var even = false;
-  
+
     //alert ("striping table with id " + table.getAttribute ("id"));
-    
+
     // by definition, tables can have more than one tbody
     // element, so we'll have to get the list of child
     // <tbody> elements
@@ -237,7 +300,7 @@ function stripe(table)
     }
 }
 
-// Not adapted from 
+// Not adapted from
 
 function stripeAll()
 {
@@ -256,7 +319,7 @@ function stripeAll()
 	    }
         }
         if (found)
-            stripe (tables[i]);        
+            stripe (tables[i]);
     }
 }
 
@@ -379,7 +442,7 @@ for items it has already processed (though that behavior can be disabled).</p>
 
 <p>Unlike many RSS readers, <i>curn</i> does not use a graphical user
 interface. It is a command-line utility, intended to be run periodically in
-the background by a command scheduler such as 
+the background by a command scheduler such as
 <a href="http://www.freebsd.org/cgi/man.cgi?query=cron&apropos=0&sektion=0&manpath=FreeBSD+5.2-RELEASE+and+Ports&format=html"><i>cron</i>(8)</a>
 (on UNIX-like systems) or the Windows Scheduler Service (on Windows).</p>
 
@@ -465,7 +528,7 @@ but can easily be customized.)</p>
 <i>curn</i> without any parameters, you get the following usage display.
 
 <br><br>
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -475,7 +538,7 @@ OPTIONS:
 
 -A, --no-authors     Don't the authors for each item, if available.
 -a, --show-authors   Show the authors for each item, if available.
--B, --build-info     Show full build information, then exit. This option shows 
+-B, --build-info     Show full build information, then exit. This option shows
                      a bit more information than the --version option
 -C, --no-cache       Don't use a cache file at all.
 -D, --no-dates       Don't show dates on feeds and feed items.
@@ -485,10 +548,10 @@ OPTIONS:
 -q, --quiet          Be quiet about sites with no new items.
 -R, --no-rss-version Don't show the RSS version each site uses.
 -r, --rss-version    Show the RSS version each site uses.
--T, --threads &lt;n&gt;    Set the number of concurrent download threads to &lt;n&gt;. &lt;n&gt; 
+-T, --threads &lt;n&gt;    Set the number of concurrent download threads to &lt;n&gt;. &lt;n&gt;
                      must be greater than 0.
--t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current 
-                     time is &lt;time&gt;. &lt;time&gt; may be in one of the following 
+-t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current
+                     time is &lt;time&gt;. &lt;time&gt; may be in one of the following
                      formats.
                      2004/10/07 09:36:43 PM
                      2004/10/07 09:36:43
@@ -516,9 +579,9 @@ OPTIONS:
                      21:36
 -u, --no-update      Read the cache, but don't update it.
 -v, --version        Show version information, then exit.
--Z, --no-gzip        Don't ask remote HTTP servers to gzip content before 
+-Z, --no-gzip        Don't ask remote HTTP servers to gzip content before
                      sending it.
--z, --gzip           Ask remote HTTP servers to gzip content before sending it. 
+-z, --gzip           Ask remote HTTP servers to gzip content before sending it.
 PARAMETERS:
 
 config               Path to configuration file
@@ -813,7 +876,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
         <a href="#Cfg_SMTPHost" class="code">SMTPHost</a>,
         <a href="#Cfg_MailFrom" class="code">MailFrom</a>,
         and <a href="#Cfg_MailSubject" class="code">MailSubject</a>,
-        configuration parameters.       
+        configuration parameters.
     </td>
   </tr>
   </tbody>
@@ -845,7 +908,7 @@ a name surrounded by brackets. Each section contains variable assignments;
 the variable assignment syntax is similar to that of a Java properties file.
 For example:</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -855,9 +918,6 @@ DaysToCache: NoLimit
 ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
 ...
 </pre></blockquote>
-    </td>
-  </tr>
-</table>
     </td>
   </tr>
 </table>
@@ -893,7 +953,7 @@ line is treated as a logical continuation of the first line; however, any
 leading whitespace is removed from continued lines. For example, the
 following four variable assignments all have the same value:</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -975,7 +1035,7 @@ names are typically case-sensitive; for instance,
 <span class="code">${env:USER}</span> and
 <span class="code">${env:user}</span> refer to different environment
 variables. On Windows systems, environment variable names are typically
-case-insensitive; 
+case-insensitive;
 <span class="code">${env:USERNAME}</span> and
 <span class="code">${env:username}</span> are equivalent.</p>
 
@@ -1042,7 +1102,7 @@ Those variables are:</p>
       can be anything that doesn't appear in the format string, the
       variable name, or the locale. For example:
       <blockquote>
-      <table class="bordered" align="center">
+      <table class="bordered uncolored" align="center">
         <tr valign="top">
           <td class="code" nowrap>${program:now|yyyy.MM.dd 'at' hh:mm:ss z}</td>
           <td>2004.08.20 at 03:26:27 EDT</td>
@@ -1147,7 +1207,7 @@ reference, you could use:</p>
 <blockquote><pre>abc: '${foo}'</pre></blockquote>
 
 <p>To include a literal single quote, you must escape it with a backslash.</p>
- 
+
 <h4><a name="CfgIncludes">Includes</a></h4>
 
 <p>A special <i>include</i> directive permits inline inclusion of another
@@ -1204,9 +1264,9 @@ example:</p>
 #            Use the "NoCacheUpdate" parameter to tell curn to read,
 #            but not update, the cache.
 #
-# See also: Configuration parameter "NoCacheUpdate" 
+# See also: Configuration parameter "NoCacheUpdate"
 #           Command line parameter -C, --nocache
-# 
+#
 # OPTIONAL. Default: None
 
 CacheFile: test.cache
@@ -1523,7 +1583,7 @@ in detail, below.</p>
             <i>curn</i>).
 
         <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
-            
+
         <dd>An adapter class that makes the
             <a href="https://rome.dev.java.net/">Rome RSS parser</a>
             work with <i>curn</i>.
@@ -1533,7 +1593,7 @@ in detail, below.</p>
             <a href="http://www.jdom.org/">JDOM</a> library.)
 
         <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
-            
+
         <dd>An adapter class that makes the
             <a href="http://informa.sourceforge.net/">Informa RSS parser</a>
             work with <i>curn</i>.
@@ -1693,19 +1753,18 @@ in detail, below.</p>
       is greater than 0, then <i>curn</i> will keep that many numbered backups
       of the cache. If the cache exists when <i>curn</i> attempts to update
       it, <i>curn</i> will copy the existing cache to
-      <span class="path">cacheFile.0</span>. If 
+      <span class="path">cacheFile.0</span>. If
       <span class="path">cacheFile.0</span> exists, it will be moved to
       <span class="path">cacheFile.1</span> first, and so on down the line,
       until the maximum number of cache backup files exists.
       The newest cache is always the one without a numeric extension.
-      the oldest file is the one with the largest numeric extension.</p>
-
-      <p>This parameter is useful if you want to roll back to a previous
-      cache.</p>
+      the oldest file is the one with the largest numeric extension.
+      This parameter is useful if you want to roll back to a previous cache.</p>
+      <p>If this parameter is not specified, or is 0, then no cache backups
+      are made.</p>
     </td>
     <td align="left">No</td>
-    <td align="left">A string that identifies <i>curn</i>
-     as the user agent.</td>
+    <td align="left">0</td>
     <td align="left">
       <a href="#Cfg_CacheFile" class="code">CacheFile</a>
      </td>
@@ -1852,7 +1911,7 @@ section names are all valid for RSS feed sections.</p>
     <td align="left" class="code"><a name="Feed_EditItemURL">EditItemURL</a></td>
     <td align="left">String</td>
     <td align="left">
-        <p>Apply the specified regular expression edit to each of the 
+        <p>Apply the specified regular expression edit to each of the
         site's RSS item URLs. The value for this option consists of
         a Perl 5-style substitution applied to the URL. For example:</p>
 
@@ -1897,7 +1956,7 @@ section names are all valid for RSS feed sections.</p>
         command:</p>
 
         <blockquote>
-        <table class="bordered" id="foo-nested">
+        <table class="bordered uncolored" id="foo-nested">
           <tr valign="top">
             <td align="left" class="code">g&nbsp;</td>
             <td>Substitute for all occurrences of the regular
@@ -1913,7 +1972,7 @@ section names are all valid for RSS feed sections.</p>
           <tr valign="top">
             <td align="left" class="code">m&nbsp;</td>
             <td>Treat the string is consisting of multiple lines.
-                This modifier changes the meaning of "^" and "$" so that 
+                This modifier changes the meaning of "^" and "$" so that
                 they match just after or just before, respectively, a
                 line terminator or the end of the input sequence. By
                 default these expressions only match at the beginning
@@ -2028,7 +2087,7 @@ section names are all valid for RSS feed sections.</p>
         option, the value for this option this option consists of a
         Perl 5-style substitution.</p>
 
-        <p>This capability is rarely needed, but it's sometimes 
+        <p>This capability is rarely needed, but it's sometimes
         useful for sites that serve unparseable, but easily
         fixed, XML. For instance, one news site I read has an
         RSS channel whose title always contains an unescaped
@@ -2071,7 +2130,7 @@ section names are all valid for RSS feed sections.</p>
         command:</p>
 
         <blockquote>
-        <table class="bordered" id="foo">
+        <table class="bordered uncolored">
           <tr valign="top">
             <td align="left" class="code">g&nbsp;</td>
             <td>Substitute for all occurrences of the regular
@@ -2087,7 +2146,7 @@ section names are all valid for RSS feed sections.</p>
           <tr valign="top">
             <td align="left" class="code">m&nbsp;</td>
             <td>Treat the string is consisting of multiple lines.
-                This modifier changes the meaning of "^" and "$" so that 
+                This modifier changes the meaning of "^" and "$" so that
                 they match just after or just before, respectively, a
                 line terminator or the end of the input sequence. By
                 default these expressions only match at the beginning
@@ -2160,7 +2219,7 @@ section names are all valid for RSS feed sections.</p>
       encoding to use when saving the feed to the file.
       If <span class="code">SaveAs</span> is not set for the feed,
       then any <span class="code">SaveAsEncoding</span> parameter is
-      ignored.</p>
+      ignored.
     <td align="left">No</td>
     <td align="left">"utf-8". Note that this default value is the same
       as the default value of the
@@ -2351,7 +2410,7 @@ variables common to all output handlers are described below.</p>
     <a href="../../javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
     interface. See
     <a href="#NewOutputHandler">Writing Your Own Output Handler</a>
-    for details.) 
+    for details.)
     </td>
     <td align="left">Yes</td>
     <td align="left">&nbsp;</td>
@@ -2391,7 +2450,22 @@ section.</p>
       template engine and a configured template to generate output.
 </dl>
 
-<table class="outlined striped" align="center" width="90%">
+<h6>Using the FreeMarker output handler</h6>
+
+<p>The <span class="code">FreeMarkerOutputHandler</span>, introduced in
+<i>curn</i> version 2.6, is both simple and flexible. It uses the
+<a href="http://freemarker.sourceforge.net/">FreeMarker</a> template engine
+to convert a template to an output file. FreeMarker templates can be used
+to generate nearly any kind of textual output file, from HTML and XML to
+simple text. In fact, the
+<a href="#HTMLOutputHandler" class="code">HTMLOutputHandler</a>,
+<a href="#TextOutputHandler" class="code">TextOutputHandler</a>, and
+<a href="#SimpleSummaryOutputHandler" class="code">SimpleSummaryOutputHandler</a>
+have been reimplemented to use the
+<span class="code">FreeMarkerOutputHandler</span> in conjunction with
+built-in templates that produce the appropriate kind of output.</p>
+
+<table class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -2428,15 +2502,7 @@ section.</p>
     <td align="left">No</td>
     <td align="left">"utf-8"</td>
   </tr>
-  <tr valign="top">
-    <td align="left" class="code">Encoding</td>
-    <td align="left">String</td>
-    <td align="left">Specify the character encoding to use
-    when writing the output file.
-    </td>
-    <td align="left">No</td>
-    <td align="left">"utf-8"</td>
-  </tr>
+
   <tr valign="top">
     <td align="left" class="code">SaveAs</td>
     <td align="left">File name or path name</td>
@@ -2470,6 +2536,84 @@ section.</p>
     <td align="left" class="code">true</td>
   </tr>
   <tr valign="top">
+    <td align="left" class="code"><a name="Freemarker_TemplateFile">TemplateFile</a></td>
+    <td align="left">Two strings</td>
+    <td align="left">Specifies the location of the FreeMarker template file.
+      The location is specified with two parameters:
+      <ul>
+	<li>the <i>type</i>, which may be <tt>file</tt>,
+	    <tt>classpath</tt>, <tt>url</tt> or <tt>builtin</tt>
+	<li>an identifier string
+      </ul>
+
+      <p>The form of the identifier string depends on the <i>type</i> value.</p>
+
+      <!--
+          <dl class="dlSummary"> would work well here, except IE (6) misparses
+          it and screws up the surrounding table.
+      -->
+
+      <table class="unbordered" align="center">
+	<tr valign="top">
+	<td class="code"><a href="builtin-templates">builtin</a></td>
+	<td>The identifer specifies one of the built-in <i>curn</i>
+	    FreeMarker templates that are bundled in the <i>curn</i> jar
+	    file. There are three legal values:
+	    <ul>
+	      <li><span class="code">html</span>: the HTML template, which
+	          generates <a href="#HTMLOutputHandler">HTML output</a></li>
+	      <li><span class="code">summary</span>: a plain text template
+		  that generates a simple
+		  <a href="#SimpleSummaryOutputHandler">text summary</a></li>
+	      <li><span class="code">text</span>: a template that
+		  generates output containing the same information as the
+		  HTML template, but in
+		  <a href="#TextOutputHandler">plain text</a> form
+	      </li>
+	    </ul>
+	</td>
+        </tr>
+
+	<tr valign="top">
+	<td class="code">classpath</td>
+	<td>The identifer must be a relative path to a template file that can
+	    be found by searching the directories and jar files in the
+	    Java classpath. For example:
+	    <blockquote>
+	    <span class="path">org/clapper/curn/output/freemarker/HTML.ftl</span><br>
+	    <span class="path">com/example/mycurn/output/text.ftl</span>
+	    </blockquote>
+	</td>
+	</tr>
+
+	<tr valign="top">
+        <td class="code">file</td>
+        <td>The identifier must be the path
+	    (relative or absolute) to the template file. For example:<br>
+	    <blockquote>
+	    <span class="path">C:\curn\html.ftl</span><br>
+	    <span class="path">${system:user.home}/.curn/text.ftl</span><br>
+	    <span class="path">../.curn/summary.ftl</span>
+	    </blockquote>
+	</td>
+	</tr>
+
+	<tr valign="top">
+	<td class="code">url</td>
+	<td>The identifer must be a URL that specifies the location of the
+	    FreeMarker template to use. For example:
+	    <blockquote>
+	    <span class="code">http://localhost/curn-templates/html.ftl</span><br>
+	    <span class="code">ftp://ftp.example.com/curn-templates/text.ftl</span>
+	    </blockquote>
+	</td>
+	</tr>
+      </table>
+    </td>
+    <td align="left">Yes</td>
+    <td align="left">&nbsp;</td>
+  </tr>
+  <tr valign="top">
     <td align="left" class="code">Title</td>
     <td align="left">String</td>
     <td align="left">If set, this string overrides the title
@@ -2494,6 +2638,241 @@ section.</p>
 </table>
 <br clear="all"/>
 
+<a name="WriteFreeMarkerTemplate"></a><h6>Writing your own FreeMarker template</h6>
+
+<p>A tutorial on FreeMarker is beyond the scope of this document. The remainder
+of this section assumes you have some familiarity with FreeMarker. If you
+don't know how FreeMarker works, please consult the on-line
+<a href="http://freemarker.sourceforge.net/docs/index.html">FreeMarker documentation</a>
+before reading this section.</p>
+
+<p>A FreeMarker template relies on the presence of a tree of data, supplied by
+the program. FreeMarker calls this data tree a "data model". The
+<span class="code">FreeMarkerOutputHandler</span> creates the following
+FreeMarker data model for use within a template. (The data model notation
+used here is similar to the notation used within the FreeMarker documentation.)
+The various fields are described after the tree.</p>
+
+<table class="bordered colored" align="center">
+<tr>
+<td>
+<pre>
+<b>Tree</b>                                         <b>Description</b>
+
+(root)
+ |
+ +-- curn
+ |    |
+ |    +-- showToolInfo ....................... [boolean] whether or not
+ |    |                                        to display curn information
+ |    |                                        in the output
+ |    |
+ |    +-- version ............................ [String] version of curn
+ |
+ +-- totalItems .............................. [int] total items for all channels
+ |
+ +-- dateGenerated ........................... [Date] date generated
+ |
+ +-- extraText ............................... [String] extra text, from the config
+ |
+ +-- encoding ................................ [String] encoding, from the config
+ |
+ +-- tableOfContents ......................... hash of table-of-contents data
+ |    |
+ |    +-- needed ............................. [boolean] whether a table of contents is needed
+ |    |
+ |    +-- (channels) ......................... sequence of channel table of contents items
+ |          |
+ |          +-- channel ...................... table of contents entry for one channel
+ |          |     |
+ |          |     +-- title .................. [String] channel title
+ |          |     |
+ |          |     +-- totalItems ............. [int] total items in channel
+ |          |     |
+ |          |     +-- channelAnchor .......... [String] HTML anchor name for channel
+ |          |
+ |          +-- channel
+ .....       ...
+ |
+ +-- (channels) .............................. sequence of channel data
+ |      |
+ |      +-- channel .......................... hash for a single channel
+ |      |       |
+ |      |       +-- index .................... [int] channel's index in list
+ |      |       |
+ |      |       +-- totalItems ............... [int] total items in channel
+ |      |       |
+ |      |       +-- title .................... [String] channel title
+ |      |       |
+ |      |       +-- anchorName ............... [String] HTML anchor name for channel
+ |      |       |
+ |      |       +-- url ...................... [String] channel's URL
+ |      |       |
+ |      |       +-- showDate ................. [boolean] whether or not to show date
+ |      |       |
+ |      |       +-- date ..................... [Date] channel's last-modified date (might be missing)
+ |      |       |
+ |      |       +-- (items) .................. sequence of channel items
+ |      |             |
+ |      |             +-- item ............... entry for one item
+ |      |             |     |
+ |      |             |     +-- index ........ [int] item's index in channel
+ |      |             |     |
+ |      |             |     +-- title ........ [String] item's title
+ |      |             |     |
+ |      |             |     +-- url .......... [String] item's unique URL
+ |      |             |     |
+ |      |             |     +-- showDate ..... [boolean] whether to show date
+ |      |             |     |
+ |      |             |     +-- date ......... [Date] the date (might be missing)
+ |      |             |     |
+ |      |             |     +-- showAuthor ... [boolean] whether to show author
+ |      |             |     |
+ |      |             |     +-- author ....... [String] the author, or ""
+ |      |             |     |
+ |      |             |     +-- description .. [String] description/summary
+ |      |             |
+ |      |             +-- item
+ |      |             |
+...    ...           ...
+ |      |
+ |      +-- channel
+ |      |
+...    ...
+</pre>
+</td>
+</tr>
+</table>
+
+<p>The <span class="code">FreeMarkerOutputHandler</span> also places three
+FreeMarker methods in the data model, as well:</p>
+
+<table class="outlined striped cell-outlined" align="center" width="80%">
+  <tr class="title">
+    <th colspan="4">Methods in the Data Model</th>
+  </tr>
+
+  <tr valign="bottom" class="col-headers">
+    <th align="left">Method Name</th>
+    <th align="left">Explanation</th>
+    <th align="left">Arguments</th>
+    <th align="left">Examples</th>
+  </tr>
+
+  <tbody>
+
+  <tr valign="top">
+    <td align="left" class="code">wrapText</td>
+    <td align="left">Wraps text at the end of the line, on word boundaries.
+       Uses the <i>org.clapper.util</i> Java Utility Library's
+       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/io/WordWrapWriter.html" class="code">WordWrapWriter</a>
+       class.
+    </td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">stringToWrap</span>: Required. Specifies the
+	    string to wrap.
+	<li><span class="code">indentation</span>: Optional. How many blanks
+	    to indent the string from the left margin. Each wrapped line,
+	    including the first, is indented by this much. Defaults to 0.
+	<li><span class="code">lineLength</span>: Optional. The length of the
+	    line. Defaults to 79.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${wrapText (item.title, 4)}<br>
+      ${wrapText (item.description, 4, 50)}
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code">indentText</td>
+    <td align="left">Indents the specified string.</td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">string</span>: Required. Specifies the
+	    string to indent.
+	<li><span class="code">indentation</span>: Required. How many blanks
+	    to indent the string from the left margin.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${indentText (item.url, 4)}<br>
+      ${indentText (channel.url, 8)}
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code">stripHTML</td>
+    <td align="left">Strips all HTML tags from the specified string. Especially
+      useful for plain text templates.</td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">string</span>: Required. Specifies the
+	    string to strip.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${stripHTML (item.description)}
+    </td>
+  </tr>
+
+  </tbody>
+</table>
+
+<p>Below is a sample template, which is largely identical to the
+<a href="#builtin-templates">built-in text template</a>. This template
+illustrates the use of the data model. You can a version of
+the text template, as well as the HTML template and the simple summary
+template, by following these links:</p>
+
+<ul>
+  <li><a href="HTML.txt">HTML</a>
+  <li><a href="Text.txt">Text</a>
+  <li><a href="Summary.txt">Simple Summary</a>
+</ul>
+
+<table class="bordered" align="center">
+  <tr>
+    <th class="title">Sample FreeMarker template</th>
+  </tr>
+  <tr>
+    <td>
+<pre>
+${title}
+&lt;#if extraText != ""&gt;
+${wrapText (extraText)}
+&lt;/#if&gt;
+
+&lt;#list channels as channel&gt;
+---------------------------------------------------------------------------
+${wrapText (channel.title, 0)}
+${channel.url}
+&lt;#if channel.showDate && channel.date?exists&gt;
+${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
+&lt;/#if&gt;
+
+&lt;#list channel.items as item&gt;
+${wrapText (item.title, 4)}
+${indentText (item.url, 4)}
+&lt;#assign desc = stripHTML(item.description)&gt;
+&lt;#if desc != ""&gt;
+
+${wrapText (desc, 8)}
+&lt;/#if&gt;
+
+&lt;/#list&gt;
+&lt;/#list&gt;
+
+---------------------------------------------------------------------------
+&lt;#if (curn.showToolInfo)&gt;
+curn, ${curn.version}
+Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
+&lt;/#if&gt;
+</pre>
+    </td>
+  </tr>
+</table>
 <h5><a name="HTMLOutputHandler" class="code">HTMLOutputHandler</a></h5>
 
 <dl class="dlSummary">
@@ -2520,11 +2899,11 @@ section.</p>
       class when the "builtin html" template is used.
       You can continue to use the
       <span class="code">HTMLOutputHandler</span> class, but it is no longer
-      maintained. Plus, the <span class="code">FreeMarkerOutputHandler</span> 
+      maintained. Plus, the <span class="code">FreeMarkerOutputHandler</span>
       class is more flexible.
 </dl>
 
-<table class="outlined striped" align="center" width="90%">
+<table class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -2625,11 +3004,11 @@ section.</p>
       It forces use of the <span class="code">FreeMarkerOutputHandler</span>'s
       built-in "text" template. You can continue to use the
       <span class="code">TextOutputHandler</span> class, but it is no longer
-      maintained. Plus, the <span class="code">FreeMarkerOutputHandler</span> 
+      maintained. Plus, the <span class="code">FreeMarkerOutputHandler</span>
       class is more flexible.
 </dl>
 
-<table class="outlined striped" align="center" width="90%">
+<table class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -2694,11 +3073,11 @@ section.</p>
       It forces use of the <span class="code">FreeMarkerOutputHandler</span>'s
       built-in "summary" template. You can continue to use the
       <span class="code">SimpleSummaryOutputHandler</span> class, but it is no longer
-      maintained. Plus, the <span class="code">FreeMarkerOutputHandler</span> 
+      maintained. Plus, the <span class="code">FreeMarkerOutputHandler</span>
       class is more flexible.
 </dl>
 
-<table class="outlined striped" align="center" width="90%">
+<table class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -2739,7 +3118,7 @@ section.</p>
     <a href="output/SummaryOutput.txt">sample output</a> was
     created using a <span class="code">Message</span> value that
     points to a URL, where (presumably) the output from the
-    HTML handler has been saved. See 
+    HTML handler has been saved. See
     <a href="#CfgOutputHandlerExample3">Example 3</a>, below.
     </td>
     <td align="left">No</td>
@@ -2773,7 +3152,7 @@ section.</p>
       BSF. For complete details on writing a script output handler,
       See <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>, below.
 </dl>
-<table class="outlined striped" align="center" width="90%">
+<table class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -2805,7 +3184,7 @@ section.</p>
     files for the scripting languages themselves must be in the
     CLASSPATH at runtime, for those languages to be
     available.</p>
- 
+
     <p>The following values are initially legal for this
     parameter. This set of values comes from the
     <span class="path">Languages.properties</span> file
@@ -2816,7 +3195,7 @@ section.</p>
     without any real language to back them up any more (such as
     the Bean Markup Language).</p>
 
-    <table class="bordered" cellspacing="2" align="center" width="100%">
+    <table class="bordered uncolored" cellspacing="2" align="center" width="100%">
       <tr valign="top">
         <th>Value&nbsp;&nbsp;&nbsp;&nbsp;</th>
         <th>Corresponding Language</th>
@@ -2929,7 +3308,7 @@ section.</p>
     <td align="left"><p>Whether or not to display the <i>curn</i>
     version, <i>curn</i> configuration file path, and other
     <i>curn</i>-related information at the bottom of the generated
-    output.<p>
+    output.</p>
 
     <p>Note: There's no guarantee that a given script will honor
     this setting.</p>
@@ -2949,7 +3328,7 @@ produces HTML output. If <i>curn</i> is called with email addresses, the
 HTML output will be mailed to the specified email addresses. The HTML
 output is not saved anywhere.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[OutputHandler]
@@ -2966,7 +3345,7 @@ email addresses, the text output and the HTML output will be mailed to the
 specified email addresses as "multipart/alternative" attachments. The
 output is not saved anywhere.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[OutputHandlerText]
@@ -2984,7 +3363,7 @@ The output handler sections from a <i>curn</i> configuration file that
 produces HTML output to a file (but not to the user), and displays (or emails)
 the user a text summary that contains a link to the HTML file.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[OutputHandlerSummary]
@@ -3010,7 +3389,7 @@ displaying them. (See
 <a href="#Bandwidth">Being Bandwidth Friendly</a> for reasons why you might
 want to do this.)</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[vars]
@@ -3052,7 +3431,7 @@ personal crontab, rather than the system-wide
 <span class="path">/etc/crontab</span> file.
 Here's a sample crontab entry that does this:</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>0 8,12,16 * * 1-5  java org.clapper.curn.Tool my_address@example.com
@@ -3161,7 +3540,7 @@ http://www.example.org/rss/big_jimmys_blog.xml
 <p>You could run <i>curn</i> periodically with the following configuration
 file, to download each of those feeds without producing any output.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -3268,7 +3647,7 @@ RSS parser.</p>
 <h3><a name="UnsupportedParser">Using an Unsupported RSS Parser</a></h3>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
-instead of 
+instead of
 <a href="https://rome.dev.java.net/">Rome</a>,
 <a href="http://informa.sourceforge.net/">Informa</a>, or
 <i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
@@ -3346,7 +3725,7 @@ and using the
 If you're planning to create a different output
 file format (as opposed to writing an output handler to send data over
 a network connection or to a database), then there's a good chance that
-you'll find writing a FreeMarker template to be simpler and faster.</p>
+writing a FreeMarker template will be simpler and faster.</p>
 
 <h4><a name="NewJavaOutputHandler">Writing a Java Output Handler</a></h4>
 
@@ -3371,7 +3750,7 @@ comments and documentation and also implements a common base class.)</p>
 <p>First, let's look at the top of the class and the required
 <span class="code">init()</span> method:</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -3562,7 +3941,7 @@ provide:
 <span class="code">init()</span> method and class definition.
 Changes from the original, above, are marked in bold.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -3716,7 +4095,7 @@ output-related methods that are required by the
 
 <p>Here's the code for the methods our sample class must implement:</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -3870,7 +4249,7 @@ output-related methods that are required by the
 <p>This particular output handler's
 <span class="code">displayChannel()</span> method summarizes the channel
 and item data, writing it to the output file that the
-<span class="code">init()</span> method opened. The 
+<span class="code">init()</span> method opened. The
 <span class="code">flush()</span> method simply finishes the display.</p>
 
 <p>With this model, it's possible to create output handlers that produce
@@ -3917,7 +4296,7 @@ additional language you want to support. For example, a scripting
 output handler that supports (fictitious) scripting language <i>JStooge</i>
 might look like this:</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -4054,7 +4433,7 @@ script for brevity. You can find the complete script, along with a
 of the same functionality, in the <i>curn</i> source bundle, in directory
 <span class="path">src/org/clapper/curn/output/script</span>.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr>
     <td>
 <blockquote><pre>
@@ -4222,7 +4601,7 @@ main()
 description of the configuration parameters. Here is a sample configuration
 entry for our <span class="code">TextOutputHandler.py</span> Jython script.</p>
 
-<table class="bordered" align="center">
+<table class="bordered uncolored" align="center">
   <tr>
     <td>
 <blockquote><pre>
@@ -4255,11 +4634,10 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
     <td align="left"><a name="Note1">[1]</a></td>
     <td align="left">
       <p>Normally, adding attachments to an email message results in a
-      "multipart/mixed" message. According to 
+      "multipart/mixed" message. According to
       <a href="http://www.ietf.org/rfc/rfc1341.txt">RFC 1341</a>, the
       differences between "multipart/mixed" and "multipart/alternative"
       messages are:</p>
-      <p>
         <table border="0">
           <tr valign="top">
             <td>multipart/mixed</td>
@@ -4319,7 +4697,7 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
        substitutions itself, in one pass. It doesn't currently do that,
        because I wanted to make use of the existing
        <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html" class="code">org.clapper.util.text.XStringBuffer</a>
-       class's 
+       class's
        <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html#decodeMetacharacters()" class="code">decodeMetacharacters()</a>
        method and the
        <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/UnixShellVariableSubstituter.html" class="code">org.clapper.util.text.UnixShellVariableSubstituter</a>
