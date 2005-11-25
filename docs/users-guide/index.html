@@ -2848,7 +2848,7 @@ ${wrapText (extraText)}
 ---------------------------------------------------------------------------
 ${wrapText (channel.title, 0)}
 ${channel.url}
-&lt;#if channel.showDate && channel.date?exists&gt;
+&lt;#if channel.showDate &amp;&amp; channel.date?exists&gt;
 ${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
 &lt;/#if&gt;
 
