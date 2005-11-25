@@ -40,7 +40,7 @@ Version 2.6 (25 November, 2005)
   abstract classes have some new abstract methods, necessary to support the
   new clone() and makeCopy() methods. If you have written a custom RSS
   parser adapter for curn, you'll will have to change it to get it to
-  compile with curn 3.0.
+  compile with curn 2.6.
 
 - Fixed a bizarre bug: If you configured a ScriptOutputHandler to run
   before the HTMLOutputHandler, and one of the feeds contained only HTML
