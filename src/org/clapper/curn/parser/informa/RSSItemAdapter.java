@@ -314,8 +314,6 @@ public class RSSItemAdapter extends RSSItem
     /**
      * Set the item's publication date.
      *
-     * @return the date, or null if not available
-     *
      * @see #getPublicationDate
      */
     public void setPublicationDate (Date date)

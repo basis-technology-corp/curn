@@ -459,8 +459,6 @@ public abstract class RSSItem
     /**
      * Set the item's publication date.
      *
-     * @return the date, or null if not available
-     *
      * @see #getPublicationDate
      */
     public abstract void setPublicationDate (Date date);
