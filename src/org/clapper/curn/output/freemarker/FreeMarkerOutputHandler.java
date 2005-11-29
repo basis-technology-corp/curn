@@ -54,16 +54,15 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleDate;
+import freemarker.template.SimpleHash;
 import freemarker.template.SimpleNumber;
+import freemarker.template.SimpleSequence;
 import freemarker.template.Template;
 import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateException;
@@ -401,10 +400,10 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     private String            handlerName         = null;
 
     private freemarker.template.Configuration freemarkerConfig;
-    private Map<String,Object>                freemarkerDataModel;
-    private Map<String,Object>                freemarkerTOCData;
-    private Collection<Object>                freemarkerTOCItems;
-    private Collection<Object>                freemarkerChannelsData;
+    private SimpleHash                        freemarkerDataModel;
+    private SimpleHash                        freemarkerTOCData;
+    private SimpleSequence                    freemarkerTOCItems;
+    private SimpleSequence                    freemarkerChannelsData;
 
     /**
      * For logging
@@ -506,7 +505,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         // Create the FreeMarker data model and populate it with the
         // values that aren't channel-dependent.
 
-        freemarkerDataModel = new HashMap<String,Object>();
+        freemarkerDataModel = new SimpleHash();
         freemarkerDataModel.put ("dateGenerated",
                                  new SimpleDate (now, SimpleDate.DATETIME));
         freemarkerDataModel.put ("title", title);
@@ -518,7 +517,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         freemarkerDataModel.put ("encoding", encoding);
 
-        Map<String,Object> map = new HashMap<String,Object>();
+        SimpleHash map = new SimpleHash();
 
         freemarkerDataModel.put ("configFile", map);
         URL configFileURL = config.getConfigurationFileURL();
@@ -527,20 +526,20 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         else
             map.put ("url", configFileURL.toString());
 
-        map = new HashMap<String,Object>();
+        map = new SimpleHash();
         freemarkerDataModel.put ("curn", map);
         map.put ("version", Version.getVersionNumber());
         if (super.displayToolInfo())
-            map.put ("showToolInfo", TemplateBooleanModel.TRUE);
+            map.put ("showToolInfo", true);
         else
-            map.put ("showToolInfo", TemplateBooleanModel.FALSE);
+            map.put ("showToolInfo", false);
 
-        this.freemarkerTOCData = new HashMap<String,Object>();
+        this.freemarkerTOCData = new SimpleHash();
         freemarkerDataModel.put ("tableOfContents", this.freemarkerTOCData);
-        freemarkerTOCItems = new ArrayList<Object>();
+        freemarkerTOCItems = new SimpleSequence();
         this.freemarkerTOCData.put ("channels", freemarkerTOCItems);
 
-        freemarkerChannelsData = new ArrayList<Object>();
+        freemarkerChannelsData = new SimpleSequence();
         freemarkerDataModel.put ("channels", freemarkerChannelsData);
 
 
@@ -598,7 +597,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         // Store the channel data.
 
-        Map<String,Object> channelData = new HashMap<String,Object>();
+        SimpleHash channelData = new SimpleHash();
         freemarkerChannelsData.add (channelData);
         channelData.put ("index", new SimpleNumber (totalChannels));
         channelData.put ("totalItems", new SimpleNumber (totalItemsInChannel));
@@ -614,17 +613,17 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         channelData.put ("url", channelURL.toString());
 
         Date channelDate = null;
-        TemplateBooleanModel showDate;
+        boolean showDate;
         if (config.showDates())
         {
-            showDate = TemplateBooleanModel.TRUE;
+            showDate = true;
             channelData.put ("showDate", showDate);
             channelDate = channel.getPublicationDate();
         }
 
         else
         {
-            showDate = TemplateBooleanModel.FALSE;
+            showDate = false;
             channelData.put ("showDate", showDate);
         }            
 
@@ -636,7 +635,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         // Store a table of contents entry for the channel.
 
-        Map<String,Object> tocData = new HashMap<String,Object>();
+        SimpleHash tocData = new SimpleHash();
         tocData.put ("title", channelTitle);
         tocData.put ("totalItems", new SimpleNumber (totalItemsInChannel));
         tocData.put ("channelAnchor", channelAnchorName);
@@ -644,17 +643,12 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         // Create a collection for the channel items.
 
-        Collection<Object> itemsData = new ArrayList<Object>();
+        SimpleSequence itemsData = new SimpleSequence();
         channelData.put ("items", itemsData);
 
         // Now, put in the data for each item in the channel.
 
-        TemplateBooleanModel showAuthor;
-        if (feedInfo.showAuthors())
-            showAuthor = TemplateBooleanModel.TRUE;
-        else
-            showAuthor = TemplateBooleanModel.FALSE;
-
+        boolean showAuthor = feedInfo.showAuthors();
         String[] desiredItemDescTypes;
 
         if (permitEmbeddedHTML)
@@ -665,7 +659,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         int i = 0;
         for (RSSItem item : items)
         {
-            Map<String,Object> itemData = new HashMap<String,Object>();
+            SimpleHash itemData = new SimpleHash();
             itemsData.add (itemData);
 
             i++;
