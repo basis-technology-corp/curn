@@ -95,7 +95,7 @@
 
     <td class="${evenOdd}Channel" align="left" rowspan="${channel.totalItems}">
         <a name="${channel.anchorName}"></a>
-        <a href="${channel.url}">${channel.title}</a><br>
+        <a href="${channel.url}">${channel.title}</a>&nbsp;&nbsp;<br>
         <#if channel.showDate && channel.date?exists>${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if>
     </td>
 
