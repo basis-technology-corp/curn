@@ -4,6 +4,18 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.6.1 (13 December, 2005)
+
+- In the default FreeMarker HTML template (used to generate HTML output):
+  Added some non-breaking spaces after the channel name, to ensure visual
+  separation from the first item.
+
+- FreeMarkerOutputHandler class now uses the FreeMarker SimpleSequence and
+  SimpleHash classes, instead of java.util.List and java.util.Map classes.
+  (This change has no effect on output generation and is invisible to code
+  outside the FreeMarkerOutputHandler.)
+
+
 Version 2.6 (25 November, 2005)
 
 - Added new FreeMarkerOutputHandler, which uses the FreeMarker template
