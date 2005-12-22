@@ -401,6 +401,15 @@ public abstract class RSSItem
     public abstract void addAuthor (String author);
 
     /**
+     * Clear the authors list.
+     *
+     * @see #getAuthors
+     * @see #addAuthor
+     * @see #setAuthors
+     */
+    public abstract void clearAuthors();
+
+    /**
      * Get the item's published links.
      *
      * @return the collection of links, or an empty collection
@@ -417,15 +426,6 @@ public abstract class RSSItem
      * @see #getLinks
      */
     public abstract void setLinks (Collection<RSSLink> links);
-
-    /**
-     * Clear the authors list.
-     *
-     * @see #getAuthors
-     * @see #addAuthor
-     * @see #setAuthors
-     */
-    public abstract void clearAuthors();
 
     /**
      * Get the categories the item belongs to.
