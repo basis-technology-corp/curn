@@ -548,10 +548,89 @@ source and documentation packages.
   </target>
 
   <target name="fulldist"
-          depends="dist,-set.version.properties,srczip,doczip,javadoczip"
+          depends="dist,
+		   -set.version.properties,
+		   srczip,
+		   doczip,
+		   javadoczip"
           description="Generate the distribution and source jars">
     <copy file="${code_jar_path}"
           tofile="${release_dir}/${versioned_code_jar_file}"/>
+  </target>
+
+  <!--
+  ***************************************************************************
+			     Installer Target
+  ***************************************************************************
+  -->
+
+  <target name="installer"
+	  depends="-set.version.properties">
+    <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"/>
+    <izpack output="${release_dir}/install-curn.jar"
+	    installerType="standard"
+	    basedir="."
+	    izPackDir="/usr/local/java/IzPack">
+      <config><![CDATA[
+<installation version="1.0">
+  <info>
+    <appname>curn</appname>
+    <appversion>@{curn.version}</appversion>
+    <authors>
+      <author name="Brian Clapper" email="bmc@clapper.org"/>
+    </authors>
+    <url>http://www.clapper.org/software/java/curn/</url>
+    <javaversion>1.5</javaversion>
+  </info>
+
+  <guiprefs width="800" height="600" resizable="no"/>
+
+  <locale>
+    <langpack iso3="eng"/>
+  </locale>
+
+  <resources>
+    <res id="LicencePanel.licence" src="LICENSE"/>
+    <res id="Installer.image" src="curn-logo.png"/>
+  </resources>
+
+  <panels>
+    <panel classname="HelloPanel"/>
+    <!--
+    <panel classname="InfoPanel"/>
+    -->
+    <panel classname="LicencePanel"/>
+    <panel classname="TargetPanel"/> 
+    <panel classname="PacksPanel"/>
+    <panel classname="InstallPanel"/>
+    <panel classname="FinishPanel"/>
+  </panels>
+
+  <packs>
+    <pack name="Base" required="yes">
+      <description>The curn jar file</description>
+      <file src="LICENSE" targetdir="$INSTALL_PATH"/>
+      <file src="@{release_dir}/@{versioned_code_jar_file}"
+	    targetdir="$INSTALL_PATH"/>
+    </pack>
+    <pack name="Docs" required="no">
+      <description>The curn User's Guide and the Javadocs</description>
+      <file src="javadocs"
+	    targetdir="$INSTALL_PATH/docs"/>
+      <file src="docs/users-guide"
+	    targetdir="$INSTALL_PATH/docs"/>
+      <file src="docs/CHANGELOG"
+	    targetdir="$INSTALL_PATH/docs"/>
+    </pack>
+    <pack name="Sources" required="no">
+      <description>The sources</description>
+      <file src="@{release_dir}/@{versioned_src_zipfile}"
+	    targetdir="$INSTALL_PATH"/>
+    </pack>
+  </packs>
+</installation>
+      ]]></config>
+    </izpack>
   </target>
 
   <!--
