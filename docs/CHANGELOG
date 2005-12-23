@@ -4,6 +4,16 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.6.2 (...)
+
+- curn can now be installed (along with all dependent jars, documentation,
+  sources, and a wrapper shell or BAT script) via a graphical installer.
+
+- The Ant build.xml file wasn't properly constructing the source zip file.
+  In particular, it was omitting properties files and FreeMarker template
+  files.
+
+
 Version 2.6.1 (13 December, 2005)
 
 - In the default FreeMarker HTML template (used to generate HTML output):

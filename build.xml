@@ -43,6 +43,7 @@ source and documentation packages.
 
   <!-- set global properties for this build -->
 
+  <property environment="env"/>
   <property name="build" location="classes"/>
   <property name="pkg.path" value="org/clapper/curn"/>
   <property name="src.top" location="src"/>
@@ -489,6 +490,23 @@ source and documentation packages.
   ***************************************************************************
   -->
 
+  <!--
+      WARNING: This file set is essentially duplicated in the installer's
+      config file, below. There's no way around that, unfortunately.
+  -->
+  <zipfileset id="source.fileset" dir="."
+	      prefix="${zip_dir_prefix}" casesensitive="yes">
+    <exclude name="${dist}/**"/>
+    <exclude name="${build}"/>
+    <exclude name="**/CVS"/>
+    <include name="**/*.java"/>
+    <include name="**/package.html"/>
+    <include name="overview.html"/>
+    <include name="**/*.xml"/>
+    <include name="**/*.ftl"/>
+    <include name="**/*.properties"/>
+  </zipfileset>
+
   <target name="-set.version.properties" depends="-get.version">
     <property name="versioned_src_zipfile"
               value="src-${curn.version}.zip"/>
@@ -534,16 +552,7 @@ source and documentation packages.
           description="Generate the source zip">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_src_zipfile}">
-      <zipfileset dir="."
-                  prefix="${zip_dir_prefix}" casesensitive="yes">
-        <exclude name="${dist}/**"/>
-        <exclude name="${build}"/>
-        <exclude name="**/CVS"/>
-        <include name="**/*.java"/>
-        <include name="**/package.html"/>
-        <include name="overview.html"/>
-        <include name="**/*.xml"/>
-      </zipfileset>
+      <zipfileset refid="source.fileset"/>
     </zip>
   </target>
 
@@ -564,18 +573,84 @@ source and documentation packages.
   ***************************************************************************
   -->
 
+  <!--
+      If you're going to build the installer, you'll need the IzPack
+      utility (http://www.izforge.com/izpack/), and you'll have to set
+      this value to the location of the IzPack installation.
+  -->
+  <property name="izpack.home" value="/usr/local/java/IzPack"/>
+  <property name="src.install" value="${src.top}/installer"/>
+
   <target name="installer"
 	  depends="-set.version.properties">
+
+    <!-- Define the IzPack task -->
+
     <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"/>
+
+    <!-- Create a temporary installation directory -->
+
+    <property name="install.tmp" location="${dist}/install"/>
+    <mkdir dir="${install.tmp}"/>
+
+    <!-- Copy and rename the appropriate ocutil.jar file -->
+
+    <copy todir="${install.tmp}">
+      <fileset dir="${env.wwwtest}/software/java/util/download/latest"
+	       includes="ocutil*.jar"/>
+    </copy>
+    <move tofile="${install.tmp}/ocutil.jar">
+      <fileset dir="${install.tmp}" includes="ocutil*.jar"/>
+    </move>
+
+    <!--
+	Copy the LICENSE file and "unwrap" it so it's not wrapped weirdly
+	in the installer's License GUI screen. Oddly enough, this isn't an
+	issue with the README file
+    -->
+
+    <copy todir="${install.tmp}" file="LICENSE"/>
+
+    <!-- First, replace all double newlines with "@@@@" -->
+    <replace dir="${install.tmp}">
+      <include name="LICENSE"/>
+
+      <replacetoken><![CDATA[
+
+]]></replacetoken>
+      <replacevalue>@@@@</replacevalue>
+    </replace>
+
+    <!-- Next, replace single newlines with blanks -->
+    <replace dir="${install.tmp}">
+      <include name="LICENSE"/>
+
+      <replacetoken><![CDATA[
+]]></replacetoken>
+      <replacevalue> </replacevalue>
+    </replace>
+
+    <!-- Finally, restore the double newlines -->
+    <replace dir="${install.tmp}">
+      <include name="LICENSE"/>
+      <replacetoken>@@@@</replacetoken>
+      <replacevalue><![CDATA[
+
+]]></replacevalue>
+    </replace>
+
+    <!-- Build the installer -->
+
     <izpack output="${release_dir}/install-curn.jar"
 	    installerType="standard"
 	    basedir="."
-	    izPackDir="/usr/local/java/IzPack">
+	    izPackDir="${izpack.home}">
       <config><![CDATA[
 <installation version="1.0">
   <info>
-    <appname>curn</appname>
+    <appname>curn (Customizable Utilitarian RSS Notifier)</appname>
     <appversion>@{curn.version}</appversion>
+    <appsubpath>clapper.org/curn</appsubpath>
     <authors>
       <author name="Brian Clapper" email="bmc@clapper.org"/>
     </authors>
@@ -583,36 +658,107 @@ source and documentation packages.
     <javaversion>1.5</javaversion>
   </info>
 
-  <guiprefs width="800" height="600" resizable="no"/>
+  <guiprefs height="600" resizable="yes" width="800">
+    <laf name="looks">
+        <os family="windows"/>
+        <param name="variant" value="extwin"/>
+    </laf>
+  </guiprefs>
 
   <locale>
     <langpack iso3="eng"/>
   </locale>
 
   <resources>
-    <res id="LicencePanel.licence" src="LICENSE"/>
-    <res id="Installer.image" src="curn-logo.png"/>
+    <res id="LicencePanel.licence" src="@{install.tmp}/LICENSE"/>
+    <res id="Installer.image" src="@{src.install}/curn-logo.png"/>
+    <res id="InfoPanel.info" src="README"/>
+    <res id="TargetPanel.dir.windows" src="@{src.install}/path_windows.txt"/>
+    <res id="TargetPanel.dir.unix" src="@{src.install}/path_unix.txt"/>
+    <res id="XInfoPanel.info" src="@{src.install}/final_screen.txt"/>
+    <res id="ProcessPanel.Spec.xml" src="@{src.install}/cleanup.xml"/>
   </resources>
 
   <panels>
     <panel classname="HelloPanel"/>
-    <!--
     <panel classname="InfoPanel"/>
-    -->
     <panel classname="LicencePanel"/>
     <panel classname="TargetPanel"/> 
     <panel classname="PacksPanel"/>
     <panel classname="InstallPanel"/>
+    <panel classname="ProcessPanel"/>
+    <panel classname="XInfoPanel"/>
     <panel classname="FinishPanel"/>
   </panels>
 
   <packs>
     <pack name="Base" required="yes">
-      <description>The curn jar file</description>
-      <file src="LICENSE" targetdir="$INSTALL_PATH"/>
-      <file src="@{release_dir}/@{versioned_code_jar_file}"
-	    targetdir="$INSTALL_PATH"/>
+      <description>The curn jar file, binaries, and dependent jars</description>
+      <singlefile src="LICENSE" target="$INSTALL_PATH/LICENSE.txt"/>
+      <singlefile src="README" target="$INSTALL_PATH/README.txt"/>
+
+      <singlefile src="@{release_dir}/@{versioned_code_jar_file}"
+	         target="$INSTALL_PATH/lib/curn.jar"/>
+      <file src="@{env.wwwtest}/software/java/third-party/freemarker.jar"
+	    targetdir="$INSTALL_PATH/lib"/>
+      <file src="@{env.wwwtest}/software/java/third-party/freemarker.jar"
+	    targetdir="$INSTALL_PATH/lib"/>
+      <file src="@{env.wwwtest}/software/java/third-party/activation.jar"
+	    targetdir="$INSTALL_PATH/lib"/>
+      <file src="@{env.wwwtest}/software/java/third-party/mail.jar"
+	    targetdir="$INSTALL_PATH/lib"/>
+      <file src="@{env.wwwtest}/software/java/third-party/xerces.jar"
+	    targetdir="$INSTALL_PATH/lib"/>
+      <fileset dir="@{install.tmp}"
+               includes="ocutil.jar"
+               targetdir="$INSTALL_PATH/lib"/>
+
+      <!-- curn shell file (Unix only) -->
+
+      <singlefile src="@{src.top}/installer/curn.sh"
+                  target="$INSTALL_PATH/bin/curn">
+	<os family="unix"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/bin/curn">
+	<os family="unix"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/bin/curn" stage="never" os="unix"/>
+
+      <!-- curn.bat (Windows only) -->
+
+      <singlefile src="@{src.top}/installer/curn.bat"
+                  target="$INSTALL_PATH/bin/curn.bat">
+        <os family="windows"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/bin/curn.bat">
+        <os family="windows"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/bin/curn.bat" stage="never"
+                  os="windows"/>
+
+      <!-- for cleaning up -->
+
+      <singlefile src="@{src.top}/installer/cleanup.sh"
+                  target="$INSTALL_PATH/scripts/cleanup.sh">
+	<os family="unix"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/scripts/cleanup.sh">
+	<os family="unix"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/scripts/cleanup.sh"
+                  stage="never" os="unix"/>
+
+      <singlefile src="@{src.top}/installer/cleanup.bat"
+                  target="$INSTALL_PATH/scripts/cleanup.bat">
+        <os family="windows"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/scripts/cleanup.bat">
+	<os family="windows"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/scripts/cleanup.bat" stage="never"
+                  os="windows"/>
     </pack>
+
     <pack name="Docs" required="no">
       <description>The curn User's Guide and the Javadocs</description>
       <file src="javadocs"
@@ -622,15 +768,39 @@ source and documentation packages.
       <file src="docs/CHANGELOG"
 	    targetdir="$INSTALL_PATH/docs"/>
     </pack>
+
     <pack name="Sources" required="no">
       <description>The sources</description>
-      <file src="@{release_dir}/@{versioned_src_zipfile}"
-	    targetdir="$INSTALL_PATH"/>
+      <!--
+          WARNING: This file set is essentially a duplicate of the
+          sources.fileset <zipfileset>, earlier in this file. There's no
+          way around that, unfortunately.
+
+	  KLUDGE: For some reason, the IzPack <fileset> element doesn't
+	  properly include properties files with @{src.top}/**/*.properties,
+	  and exclusion via @{build} doesn't work, either. (It's not quite
+	  like the Ant <fileset>, no matter what the docs say.) So, we'll
+	  clean up the incorrectly copied build directory in the final panel.
+      -->
+      <fileset dir="." targetdir="$INSTALL_PATH/sources">
+	<exclude name="@{dist}/**"/>
+	<exclude name="@{build}/**"/>
+	<exclude name="**/CVS"/>
+	<include name="**/*.java"/>
+	<include name="**/package.html"/>
+	<include name="overview.html"/>
+	<include name="build.xml"/>
+	<include name="**.xml"/>
+	<include name="**.properties"/>
+	<include name="**.ftl"/>
+      </fileset>
     </pack>
   </packs>
 </installation>
       ]]></config>
     </izpack>
+
+    <delete dir="${install.tmp}"/>
   </target>
 
   <!--
@@ -653,5 +823,7 @@ source and documentation packages.
     <delete failonerror="false" includeEmptyDirs="true">
       <fileset dir="${dist}"/>
     </delete>
+
+    <delete dir="${install.tmp}"/>
   </target>
 </project>
