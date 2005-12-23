@@ -29,17 +29,10 @@ exec $JAVA_HOME/bin/java \
 $vm_opts \
 -classpath \
 $UNPKG_JAVA_CLASS_DIR/ocutil.jar:\
-$UNPKG_JAVA_CLASS_DIR/informa.jar:\
-$UNPKG_JAVA_CLASS_DIR/rome.jar:\
-$PKG_JAVA_CLASS_DIR/commons-logging.jar:\
-$PKG_JAVA_CLASS_DIR/jdom.jar:\
+$UNPKG_JAVA_CLASS_DIR/freemarker.jar:\
 $PKG_JAVA_CLASS_DIR/xerces.jar:\
-$UNPKG_JAVA_CLASS_DIR/jakarta-oro.jar:\
 $PKG_JAVA_CLASS_DIR/activation.jar:\
 $PKG_JAVA_CLASS_DIR/mail.jar:\
 $UNPKG_JAVA_CLASS_DIR/bsf.jar:\
-$UNPKG_JAVA_CLASS_DIR/xmlc-all-runtime.jar:\
-$UNPKG_JAVA_CLASS_DIR/xml-apis.jar:\
-$UNPKG_JAVA_CLASS_DIR/jtidy.jar:\
 $UNPKG_JAVA_CLASS_DIR/curn.jar \
 org.clapper.curn.Tool "${@}"
