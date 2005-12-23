@@ -30,5 +30,5 @@ $INSTALL_PATH/lib/activation.jar:\
 $INSTALL_PATH/lib/mail.jar:\
 $INSTALL_PATH/lib/freemarker.jar:\
 $INSTALL_PATH/lib/curn.jar:\
-$CLASSPATH
+$CLASSPATH \
 org.clapper.curn.Tool "${@}"
