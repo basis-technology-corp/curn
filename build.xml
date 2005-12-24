@@ -593,8 +593,15 @@ source and documentation packages.
 
     <!-- Copy and rename the appropriate ocutil.jar file -->
 
+    <condition property="ocutil.dir"
+	       value="${env.OCUTIL_DIR}"
+	       else="${env.wwwtest}/software/java/util/download/latest">
+      <isset property="env.OCUTIL_DIR"/>
+    </condition>
+
+    <echo>Copying ocutil.jar from ${ocutil.dir}</echo>
     <copy todir="${install.tmp}">
-      <fileset dir="${env.wwwtest}/software/java/util/download/latest"
+      <fileset dir="${ocutil.dir}"
 	       includes="ocutil*.jar"/>
     </copy>
     <move tofile="${install.tmp}/ocutil.jar">
