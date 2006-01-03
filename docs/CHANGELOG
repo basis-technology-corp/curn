@@ -4,7 +4,7 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
-Version 2.6.2 (29 December, 2005)
+Version 2.6.2 (2 January, 2006)
 
 - curn can now be installed (along with all dependent jars, documentation,
   sources, and a wrapper shell or BAT script) via a graphical installer.
