@@ -86,9 +86,10 @@ public final class ParserUtil
 
         RFC822_DATE_FORMATS = new SimpleDateFormat[]
         {
-            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss z"),
-            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss"),
-            new SimpleDateFormat ("EEE d MMM yyyy HH:mm:ss")
+            // RFC822 dates are US-centric
+            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss z", Locale.US),
+            new SimpleDateFormat ("EEE, d MMM yyyy HH:mm:ss", Locale.US),
+            new SimpleDateFormat ("EEE d MMM yyyy HH:mm:ss", Locale.US)
         };
     };
 
