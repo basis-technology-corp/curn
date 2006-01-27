@@ -4,6 +4,14 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.6.3 (26 January, 2006)
+
+- RFC822 parsing would fail if system locale wasn't US. Since RFC822 dates
+  are specific to the US, RFC822 date formats are now wired to the US
+  locale. Thanks to Tobias Kroha <t.kroha /at/ seto-gmbh /dot/ de> for the
+  bug report and the suggested fix.
+
+
 Version 2.6.2 (2 January, 2006)
 
 - curn can now be installed (along with all dependent jars, documentation,
