@@ -133,7 +133,7 @@ class TextOutputHandler
         #
         # Process all items within a channel.
         #
-        urlString = channel.getLink().toString()
+        urlString = channel.getLinks().iterator().next().toString()
         @logger.debug("Processing channel \"" + urlString + "\"")
 
         # Print a channel header
@@ -141,13 +141,13 @@ class TextOutputHandler
         config = @config
 
         indent(out, indentation)
-        out.println (HORIZONTAL_RULE)
+        out.println(HORIZONTAL_RULE)
         out.println(channel.getTitle())
-        out.println(channel.getLink().toString())
+        out.println(urlString)
         out.println(channel.getItems().size().to_s() + " item(s)")
         if(config.showDates())
             date = channel.getPublicationDate()
-            if(date != nil)
+            if date
                 out.println(date.toString())
             end
         end
@@ -161,11 +161,11 @@ class TextOutputHandler
 
             out.newline()
             out.println(item.getTitle())
-            out.println(item.getLink().toString())
+            out.println(item.getLinks().iterator().next().toString())
 
             if config.showDates()
-                date = item.getPublicationDate();
-                if date != nil
+                date = item.getPublicationDate()
+                if date
                     out.println(date.toString())
                 end
             end
@@ -174,7 +174,7 @@ class TextOutputHandler
 
             if not feed_info.summarizeOnly()
                 summary = item.getSummary()
-                if summary != nil
+                if summary
                     indent(out, indentation + 1)
                     out.println(summary)
                     indent(out, indentation)

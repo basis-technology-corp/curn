@@ -109,14 +109,14 @@ def process_channel (out, channel, feed_info, indentation):
     """
     Process all items within a channel.
     """
-    logger.debug ("Processing channel \"" + str (channel.getLink()) + "\"")
+    logger.debug ("Processing channel \"" + str (channel.getTitle()) + "\"")
 
     # Print a channel header
 
     indent (out, indentation)
     out.println (HORIZONTAL_RULE)
     out.println (channel.getTitle())
-    out.println (channel.getLink().toString())
+    out.println (channel.getLinks().iterator().next().toString())
     out.println (str (channel.getItems().size()) + " item(s)")
     if config.showDates():
         date = channel.getPublicationDate()
@@ -135,7 +135,7 @@ def process_channel (out, channel, feed_info, indentation):
 
         out.println()
         out.println (item.getTitle())
-        out.println (str (item.getLink()))
+        out.println (str (item.getLinks().iterator().next()))
 
         if config.showDates():
             date = item.getPublicationDate();
