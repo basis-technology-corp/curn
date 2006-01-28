@@ -84,18 +84,20 @@ import org.apache.bsf.BSFManager;
  *     <td><tt>Language</tt></td>
  *     <td><p>The scripting language, as recognized by BSF. This handler
  *         supports all the scripting language engines that are registered
- *         with the BSF software. Some of the scripting language engines
- *         are actually bundled with BSF. Some are not. Regardless, of
+ *         with the BSF software. (Those predefined engines are configured in
+ *         a properties file within the BSF software.) Some of the
+ *         scripting language engines are actually bundled with BSF. Some
+ *         are not. Regardless, of
  *         course, the actual the jar files for the scripting
  *         languages themselves must be in the CLASSPATH at runtime, for those
  *         languages to be available.</p>
  * 
  *         <p>If you want to use a BSF scripting language engine that isn't
- *         one of the above, simply extend this class and override the
- *         {@link #registerAdditionalScriptingEngines} method. In that method,
- *         call <tt>BSFManager.registerScriptingEngine()</tt> for each
- *         additional language you want to support. For example, to provide
- *         a handler that supports
+ *         automatically registered with BSF, simply extend this class and
+ *         override the {@link #registerAdditionalScriptingEngines} method.
+ *         In that method, call <tt>BSFManager.registerScriptingEngine()</tt>
+ *         for each additional language you want to support. For example,
+ *         to provide a handler that supports
  *         {@link <a href="http://www.judoscript.com/">JudoScript</a>},
  *         you might write an output handler that looks like this:</p>
  * <blockquote><pre>
@@ -113,9 +115,9 @@ import org.apache.bsf.BSFManager;
  *     public void registerAdditionalScriptingEngines()
  *         throws CurnException
  *     {
- *         BSFManager.registerScriptingEngine ("judoscript",
- *                                             "com.judoscript.BSFJudoEngine",
- *                                             new String[] {"judo", "jud"});
+ *         BSFManager.registerScriptingEngine ("mylang",
+ *                                             "com.example.BSFMyLangEngine",
+ *                                             new String[] {"ml", "myl"});
  *     }
  * }
  * </pre></blockquote>
@@ -435,6 +437,15 @@ public class ScriptOutputHandler extends FileOutputHandler
         // scripting engines are registered.
 
 	bsfManager = new BSFManager();
+
+        // Register some additional scripting languages.
+
+        BSFManager.registerScriptingEngine ("ObjectScript",
+                                            "oscript.bsf.ObjectScriptEngine",
+                                            new String[] {"os"});
+        BSFManager.registerScriptingEngine ("groovy", 
+                                            "org.codehaus.groovy.bsf.GroovyEngine", 
+                                            new String[] {"groovy", "gy"});
 
         // Set up a logger for the script. The logger name can't have dots
         // in it, because the underlying logging API (Jakarta Commons
