@@ -448,16 +448,17 @@ public class ScriptOutputHandler extends FileOutputHandler
                                             new String[] {"groovy", "gy"});
 
         // Set up a logger for the script. The logger name can't have dots
-        // in it, because the underlying logging API (Jakarta Commons
-        // Logging) strips them out, thinking they're class/package
-        // delimiters. That means we have to strip the extension.
-        // Unfortunately, the extension conveys information (i.e., the
-        // language). Add the script language to the stripped name.
+        // in it, because the underlying logging API strips them out,
+        // thinking they're class/package delimiters. That means we have to
+        // strip the extension or change it to something else. Since the
+        // extension conveys information (i.e., the language), we just
+        // convert it to an underscore.
 
         StringBuffer scriptLoggerName = new StringBuffer();
         String scriptName = scriptFile.getName();
         scriptLoggerName.append (FileUtil.getFileNameNoExtension (scriptName));
-        scriptLoggerName.append ("[" + language + "]");
+        scriptLoggerName.append ("_");
+        scriptLoggerName.append (FileUtil.getFileNameExtension (scriptName));
         scriptLogger = new Logger (scriptLoggerName.toString());
 
         // Register the beans we know about now. The other come after we
@@ -527,13 +528,15 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         catch (BSFException ex)
         {
-            log.error ("Error interacting with Bean Scripting Framework", ex);
+            Throwable realException = ex.getTargetException();
+            log.error ("Error interacting with Bean Scripting Framework",
+                       realException);
             throw new CurnException (Util.BUNDLE_NAME,
                                      "ScriptOutputHandler.bsfError",
                                      "Error interacting with Bean Scripting "
                                    + "Framework: {0}",
                                      new Object[] {ex.getMessage()},
-                                     ex);
+                                     realException);
         }
     }
 
