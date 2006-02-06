@@ -238,7 +238,7 @@ public abstract class FileOutputHandler implements OutputHandler
 
         log.debug ("Calling "
                  + this.getClass().getName()
-                 + "initOutputHandler()");
+                 + ".initOutputHandler()");
 
         initOutputHandler (config, cfgHandler);
     }
