@@ -4,6 +4,39 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.6.4 (5 February, 2006)
+
+- Fixed a bug reported by Manpreet Dharni <mpsdh2003 /at/ yahoo.com>: If
+  the value for a TemplateFile configuration directive (to the
+  FreeMarkerOutputHandler) contains white space (after variable expansion),
+  curn complained that there were too many tokens. For instance:
+
+      TemplateFile: url file:/C:/Program Files/clapper.org/curn/bin/html.ftl
+
+  or
+
+      # ${program:cwd.url} will expand to file:/C:/Program Files/...
+      TemplateFile: url ${program:cwd.url}/html
+
+  Curn was parsing the value strictly on white space delimiters, so white
+  space in a file name or URL caused curn to see too many tokens.
+
+  Curn now uses a new double-quoting capability in the
+  org.clapper.util.config.Configuration class, allowing double quoting of
+  tokens that may contain white space. Now, the above problem can be
+  remedied by quoting the file name or URL:
+
+      TemplateFile: url "${program:cwd.url}/html"
+      TemplateFile: url "file:/C:/Program Files/clapper.org/curn/bin/html.ftl"
+
+- Fixed sample script output handlers to use the correct methods for
+  various curn API calls. I'd neglected to update them when I changed the
+  API.
+
+- Added a sample ObjectScript (http://objectscript.sourceforge.net/)
+  script output handler.
+
+
 Version 2.6.3 (26 January, 2006)
 
 - RFC822 parsing would fail if system locale wasn't US. Since RFC822 dates
