@@ -2554,7 +2554,7 @@ built-in templates that produce the appropriate kind of output.</p>
       <ul>
 	<li>the <i>type</i>, which may be <tt>file</tt>,
 	    <tt>classpath</tt>, <tt>url</tt> or <tt>builtin</tt>
-	<li>an identifier string
+	<li>an <i>identifier</i> string
       </ul>
 
       <p>The form of the identifier string depends on the <i>type</i> value.</p>
@@ -2567,7 +2567,7 @@ built-in templates that produce the appropriate kind of output.</p>
       <table class="unbordered" align="center">
 	<tr valign="top">
 	<td class="code"><a href="#builtin-templates">builtin</a></td>
-	<td>The identifer specifies one of the built-in <i>curn</i>
+	<td>The identifier specifies one of the built-in <i>curn</i>
 	    FreeMarker templates that are bundled in the <i>curn</i> jar
 	    file. There are three legal values:
 	    <ul>
@@ -2582,41 +2582,80 @@ built-in templates that produce the appropriate kind of output.</p>
 		  <a href="#TextOutputHandler">plain text</a> form
 	      </li>
 	    </ul>
+
+	    Examples:
+	    <blockquote><pre>
+TemplateFile: builtin html
+TemplateFile: builtin summary</pre></blockquote>
 	</td>
         </tr>
 
 	<tr valign="top">
 	<td class="code">classpath</td>
-	<td>The identifer must be a relative path to a template file that can
+	<td>The identifier must be a relative path to a template file that can
 	    be found by searching the directories and jar files in the
-	    Java classpath. For example:
-	    <blockquote>
-	    <span class="path">org/clapper/curn/output/freemarker/HTML.ftl</span><br>
-	    <span class="path">com/example/mycurn/output/text.ftl</span>
-	    </blockquote>
+	    Java classpath.
+	    <p>Examples:</p>
+	    <blockquote><pre>
+TemplateFile: classpath org/clapper/curn/output/freemarker/HTML.ftl
+TemplateFile: classpath com/example/mycurn/output/text.ftl</pre></blockquote>
 	</td>
 	</tr>
 
 	<tr valign="top">
         <td class="code">file</td>
         <td>The identifier must be the path
-	    (relative or absolute) to the template file. For example:<br>
-	    <blockquote>
-	    <span class="path">C:\curn\html.ftl</span><br>
-	    <span class="path">${system:user.home}/.curn/text.ftl</span><br>
-	    <span class="path">../.curn/summary.ftl</span>
-	    </blockquote>
+	    (relative or absolute) to the template file.
+	    <p>Examples:</p>
+	    <blockquote><pre>
+	    <span class="path">
+TemplateFile: file 'C:\curn\html.ftl'
+TemplateFile: file "${system:user.home}\\curn\\text.ftl"
+TemplateFile: file ../.curn/summary.ftl</pre></blockquote>
+
+	  <b>NOTE:</b>
+	  <ol>
+	    <li>Note the use of single quotes in the first example; they escape
+	        the special meaning of the backslash character.</li>
+ 	    <li>If there <i>any</i> chance that the file name will contain
+		white space&#8212;either <i>before</i> or <i>after</i>
+		variable substitution&#8212;you <i>must</i> enclose it in either single
+		or double quotes. Otherwise, the white space in the file name
+		will confuse <i>curn</i>. (If the value contains a variable substitution
+		or metacharacters, then you must use double quotes, since
+		variable and metacharacter expansion don't occur within
+		single quotes.) So, in the second example, above,
+		<span class="code">${system:user.home}\\curn\\text.ftl</span>
+		is double-quoted, in case the home directory is something
+		like <span class="path">C:\My Documents</span>.
+ </li>
+	  </ol>
 	</td>
 	</tr>
 
 	<tr valign="top">
 	<td class="code">url</td>
-	<td>The identifer must be a URL that specifies the location of the
-	    FreeMarker template to use. For example:
-	    <blockquote>
-	    <span class="code">http://localhost/curn-templates/html.ftl</span><br>
-	    <span class="code">ftp://ftp.example.com/curn-templates/text.ftl</span>
-	    </blockquote>
+	<td>The identifier must be a URL that specifies the location of the
+	    FreeMarker template to use.
+
+	    <p>Examples:</p>
+	    <blockquote><pre>
+TemplateFile: url http://localhost/curn-templates/html.ftl
+TemplateFile: url ftp://ftp.example.com/curn-templates/text.ftl
+TemplateFile: url "${program:cwd.url}/curn/bin/html.ftl"</pre></blockquote>
+
+	  Note the use of double quotes in the third example. As with the
+	  <span class="code">file</span> type, if there <i>any</i> chance
+	  that the URL will contain white space&#8212;either <i>before</i>
+	  or <i>after</i> variable substitution&#8212;you <i>must</i>
+	  enclose it in either single or double quotes. Otherwise, the
+	  white space in the file name will confuse <i>curn</i>. So, in
+	  that last example above,
+	  <span class="code">${program:cwd:url}/curn/bin/html.ftl</span>
+	  might very well expand to
+	  <span class="path">file:/C:/Program Files/clapper.org/curn/bin/html.ftl</span>
+	  on a Windows system. Double-quoting it is necessary, because of the
+	  blank in <span class="path">Program Files</span>.
 	</td>
 	</tr>
       </table>
