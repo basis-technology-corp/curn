@@ -85,10 +85,8 @@ public function TextOutputHandler()
 
         // First, count the total number of new items
 
-        var iterator = channels.iterator();
-	while (iterator.hasNext())
+	for (var channel_wrapper : channels)
 	{
-            var channel_wrapper = iterator.next();
             var channel = channel_wrapper.getChannel();
             totalNew = totalNew + channel.getItems().size();
         }
@@ -108,10 +106,8 @@ public function TextOutputHandler()
             // Now, process the items
 
             var indentation = 0;
-            var iterator = channels.iterator();
-            while (iterator.hasNext())
+	    for (var channel_wrapper : channels)
             {
-                var channel_wrapper = iterator.next();
                 var channel = channel_wrapper.getChannel();
                 var feed_info = channel_wrapper.getFeedInfo();
                 process_channel (out, channel, feed_info, indentation);
@@ -133,7 +129,7 @@ public function TextOutputHandler()
         //
         // Process all items within a channel.
         //
-        var urlString = channel.getLinks().iterator().next().toString();
+        var urlString = channel.getLinks()[0];
         logger.debug("Processing channel \"" + urlString + "\"");
 
         // Print a channel header
