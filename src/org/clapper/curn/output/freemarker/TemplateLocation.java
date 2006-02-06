@@ -29,6 +29,8 @@ package org.clapper.curn.output.freemarker;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.util.Util;
 
+import org.clapper.util.text.TextUtil;
+
 /**
  * @version <tt>$Revision$</tt>
  */
@@ -37,6 +39,8 @@ public class TemplateLocation implements Comparable<TemplateLocation>
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
+
+    private static final String NAME_TOKEN_DELIM = "$";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -73,7 +77,10 @@ public class TemplateLocation implements Comparable<TemplateLocation>
     TemplateLocation (String name)
         throws CurnException
     {
-        String[] tokens = name.split (" ");
+        // Can't use String.split(), because the delimiter is a regular
+        // expression metacharacter.
+
+        String[] tokens = TextUtil.split (name, NAME_TOKEN_DELIM);
 
         if (tokens.length != 2)
         {
@@ -156,7 +163,7 @@ public class TemplateLocation implements Comparable<TemplateLocation>
         StringBuilder buf = new StringBuilder();
 
         buf.append (type.toString());
-        buf.append (' ');
+        buf.append (NAME_TOKEN_DELIM);
         buf.append (location);
 
         return buf.toString();

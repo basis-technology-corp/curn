@@ -811,48 +811,65 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         throws ConfigurationException,
                CurnException
     {
-        String templateFileString =
-            config.getConfigurationValue (section, CFG_TEMPLATE_FILE);
-        String[] tokens;
+        // Get the template file configuration as explicit tokens from the
+        // config parser. Saves parsing them here, plus the config file has
+        // mechanisms for quoting white space within a token.
 
-        if ( (templateFileString == null) ||
-             (templateFileString.trim().length() == 0) )
+        String[] templateTokens =
+            config.getConfigurationTokens (section, CFG_TEMPLATE_FILE);
+
+        if (templateTokens == null)
         {
-            tokens = new String[]
-                         {
-                             CFG_TEMPLATE_LOAD_BUILTIN,
-                             CFG_BUILTIN_HTML_TEMPLATE
-                         };
+            templateTokens = new String[]
+                             {
+                                 CFG_TEMPLATE_LOAD_BUILTIN,
+                                 CFG_BUILTIN_HTML_TEMPLATE
+                             };
         }
 
         else
         {
-            tokens = TextUtil.split (templateFileString);
+            // The configuration parser only breaks the line into tokens if
+            // there are quoted fields. So, it's possible for there to be
+            // one token (no quoted fields), two tokens (a single quoted
+            // field) or many tokens.
+
+            if (templateTokens.length == 1)
+            {
+                // Split it on white space.
+
+                templateTokens = templateTokens[0].split (" ");
+            }
+
+            if (templateTokens.length != 2)
+            {
+                throw new ConfigurationException
+                    (section,
+                     "\"TemplateFile\" value \""
+                   + config.getConfigurationValue (section, CFG_TEMPLATE_FILE)
+                   + "\" (\""
+                   + config.getRawValue (section, CFG_TEMPLATE_FILE)
+                   + "\") must have two fields.");
+            }
         }
 
-        if (tokens.length != 2)
-        {
-            throw new ConfigurationException (section,
-                                              "\"TemplateFile\" value \""
-                                            + templateFileString
-                                            + "\" must have two fields.");
-        }
+        String templateType = templateTokens[0].trim();
 
-        if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_BUILTIN))
+        if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_BUILTIN))
         {
-            if (tokens[1].equals (CFG_BUILTIN_HTML_TEMPLATE))
+            if (templateTokens[1].equals (CFG_BUILTIN_HTML_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_HTML_TEMPLATE;
                 this.mimeType = "text/html";
             }
 
-            else if (tokens[1].equals (CFG_BUILTIN_TEXT_TEMPLATE))
+            else if (templateTokens[1].equals (CFG_BUILTIN_TEXT_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_TEXT_TEMPLATE;
                 this.mimeType = "text/plain";
             }
 
-            else if (tokens[1].equals (CFG_BUILTIN_SUMMARY_TEMPLATE))
+            else if (templateTokens[1].equals (CFG_BUILTIN_SUMMARY_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_SUMMARY_TEMPLATE;
                 this.mimeType = "text/plain";
@@ -863,40 +880,41 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                 throw new ConfigurationException (section,
                                                   "Unknown built-in template "
                                                 + "file \""
-                                                + tokens[1]
+                                                + templateTokens[1]
                                                 + "\"");
             }
         }
 
-        else if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_URL))
+        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_URL))
         {
             this.templateLocation = new TemplateLocation (TemplateType.URL,
-                                                          tokens[1]);
+                                                          templateTokens[1]);
             this.mimeType = config.getConfigurationValue (section, "MimeType");
         }
 
-        else if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_FILE))
+        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_FILE))
         {
             this.templateLocation = new TemplateLocation (TemplateType.FILE,
-                                                          tokens[1]);
+                                                          templateTokens[1]);
             this.mimeType = config.getConfigurationValue (section, "MimeType");
         }
 
-        else if (tokens[0].equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_CLASSPATH))
+        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_CLASSPATH))
         {
             this.templateLocation = new TemplateLocation (TemplateType.CLASSPATH,
-                                                          tokens[1]);
+                                                          templateTokens[1]);
             this.mimeType = config.getConfigurationValue (section, "MimeType");
         }
 
         else
         {
-            throw new ConfigurationException (section,
-                                              "\"TemplateFile\" value \""
-                                            + templateFileString
-                                            + "\" has unknown type \""
-                                            + tokens[0]
-                                            + "\".");
+            throw new ConfigurationException
+                (section,
+                 "\"TemplateFile\" value \""
+               + config.getRawValue (section, CFG_TEMPLATE_FILE)
+               + "\" has unknown type \""
+               + templateType
+               + "\".");
         }
     }
 }
