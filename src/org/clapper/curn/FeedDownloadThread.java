@@ -448,6 +448,10 @@ class FeedDownloadThread extends Thread
                 }
 
                 tempFile.file.delete();
+                cache.addToCache (null,
+                                  feedURL,
+                                  new Date (conn.getLastModified()),
+                                  feedInfo);
             }
         }
 
