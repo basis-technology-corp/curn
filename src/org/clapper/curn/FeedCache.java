@@ -223,6 +223,7 @@ public class FeedCache implements Serializable
     public void saveCache (int totalCacheBackups)
         throws CurnException
     {
+        log.debug ("modified=" + this.modified);
         if (this.modified)
         {
             File cacheFile = config.getCacheFile();
