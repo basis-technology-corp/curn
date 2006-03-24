@@ -4,6 +4,20 @@ CHANGELOG: curn
 $Id$
 ---------------------------------------------------------------------------
 
+Version 2.6.5 (...)
+
+- Fixed bug: curn wasn't caching data about the overall feed (as opposed to
+  the individual items in the feed, which were being cache). For
+  download-only configurations, where the feeds are downloaded (and
+  presumably saved), but not cached, this bug caused no cache to be saved,
+  so the feeds were always downloaded on every run.
+
+- Fixed bug: The built-in MiniRSSParser wasn't handling relative URLs inside
+  <link> elements (in any of the RSS formats).
+
+- Enhanced error reporting (exception handling) in some areas.
+
+
 Version 2.6.4 (5 February, 2006)
 
 - Fixed a bug reported by Manpreet Dharni <mpsdh2003 /at/ yahoo.com>: If
@@ -18,10 +32,10 @@ Version 2.6.4 (5 February, 2006)
       # ${program:cwd.url} will expand to file:/C:/Program Files/...
       TemplateFile: url ${program:cwd.url}/html
 
-  Curn was parsing the value strictly on white space delimiters, so white
+  curn was parsing the value strictly on white space delimiters, so white
   space in a file name or URL caused curn to see too many tokens.
 
-  Curn now uses a new double-quoting capability in the
+  curn now uses a new double-quoting capability in the
   org.clapper.util.config.Configuration class, allowing double quoting of
   tokens that may contain white space. Now, the above problem can be
   remedied by quoting the file name or URL:
@@ -244,7 +258,7 @@ Version 2.4 (15 August, 2005)
 
 Version 2.3 (10 August, 2005)
 
-- Curn now supports global and feed-specific "AllowEmbeddedHTML" configuration
+- curn now supports global and feed-specific "AllowEmbeddedHTML" configuration
   options. If set for a feed (or set globally and not overridden by the feed),
   the HTMLOutputHandler class will not strip any raw HTML it finds in the
   feed title, item title, item description, or item author fields; it will,
@@ -274,7 +288,7 @@ org.clapper.util.text.TextUtil class. It will NOT run with earlier versions.
 
 Version 2.2.1 (09 Aug, 2005)
 
-- Curn's RSS date-parsing logic had a bug causing a NullPointerException
+- curn's RSS date-parsing logic had a bug causing a NullPointerException
   if the date was empty or null. This could happen, for instance, in an
   RSS 1.0 feed with this construct:
 
@@ -288,7 +302,7 @@ Version 2.2.1 (09 Aug, 2005)
 
 Version 2.2 (29 July, 2005)
 
-- Curn's output handlers now support a "ShowCurnInfo" configuration
+- curn's output handlers now support a "ShowCurnInfo" configuration
   parameter. If set to "true" (the default), then the output handlers write
   the curn version and other information to the generated output. If set to
   "false", the output handlers suppress that information. (Previously, the
@@ -298,7 +312,7 @@ Version 2.2 (29 July, 2005)
   org.clapper.curn.output.FileOutputHandler abstract base class, so it is
   available to any subclass that wishes to query its status.
 
-- Curn no longer copies the generated output files to temporary files when
+- curn no longer copies the generated output files to temporary files when
   emailing them. This buglet resulted from a combination of two things:
 
   a) The utility library (http://www.clapper.org/software/java/util/) has a
@@ -333,7 +347,7 @@ org.clapper.util.mail.EmailMessage class. It will NOT run with version 2.0.
 
 Version 2.1.2 (08 July, 2005)
 
-- Curn was not honoring its "MailFrom" configuration option, so it was
+- curn was not honoring its "MailFrom" configuration option, so it was
   always computing the sender based on the current user name and host name.
   In some environments, using the default (computed) email address can
   cause problems when curn attempts to email its output (and, in any case,
@@ -367,7 +381,7 @@ Version 2.1 (11 May, 2005)
 - The HTML output now shows the author, if configured.
 
 - The configuration file can now contain a "CacheBackup" directive that
-  specifies the location of a cache backup. Curn will copy the cache to
+  specifies the location of a cache backup. curn will copy the cache to
   the backup file before updating the cache on disk.
 
 
@@ -382,7 +396,7 @@ Version 2.0 (22 April, 2005)
 
 - The cache file is now XML, instead of serialized Java objects. Using XML
   makes the code less sensitive to changes in the cache-related classes.
-  Curn will still load an old-style serialized Java cache file, but it will
+  curn will still load an old-style serialized Java cache file, but it will
   convert it to XML when it saves the cache.
 
 - The "mimeType" object that the ScriptOutputHandler class publishes via
@@ -404,7 +418,7 @@ Version 2.1 (11 May, 2005)
 - The HTML output now shows the author, if configured.
 
 - The configuration file can now contain a "CacheBackup" directive that
-  specifies the location of a cache backup. Curn will copy the cache to
+  specifies the location of a cache backup. curn will copy the cache to
   the backup file before updating the cache on disk.
 
 
@@ -419,7 +433,7 @@ Version 2.0 (22 April, 2005)
 
 - The cache file is now XML, instead of serialized Java objects. Using XML
   makes the code less sensitive to changes in the cache-related classes.
-  Curn will still load an old-style serialized Java cache file, but it will
+  curn will still load an old-style serialized Java cache file, but it will
   convert it to XML when it saves the cache.
 
 - The "mimeType" object that the ScriptOutputHandler class publishes via
@@ -435,7 +449,7 @@ Version 2.0 (22 April, 2005)
 
 Version 1.15.12 (09 Aug, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 
-- Curn's RSS date-parsing logic had a bug causing a NullPointerException
+- curn's RSS date-parsing logic had a bug causing a NullPointerException
   if the date was empty or null. This could happen, for instance, in an
   RSS 1.0 feed with this construct:
 
@@ -446,7 +460,7 @@ Version 1.15.12 (09 Aug, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
   Thanks to Tobias Kroha <tobias /at/ esce-neun /dot/ de> for finding the
   bug and suggesting the fix.
 
-- Curn's output handlers now support a "ShowCurnInfo" configuration
+- curn's output handlers now support a "ShowCurnInfo" configuration
   parameter. If set to "true" (the default), then the output handlers write
   the curn version and other information to the generated output. If set to
   "false", the output handlers suppress that information. (Previously, the
@@ -456,7 +470,7 @@ Version 1.15.12 (09 Aug, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
   org.clapper.curn.output.FileOutputHandler abstract base class, so it is
   available to any subclass that wishes to query its status.
 
-- Curn no longer copies the generated output files to temporary files when
+- curn no longer copies the generated output files to temporary files when
   emailing them. This buglet resulted from a combination of two things:
 
   a) The utility library (http://www.clapper.org/software/java/util/) has a
@@ -491,7 +505,7 @@ org.clapper.util.mail.EmailMessage class. It will NOT run with version 1.1.8.
 
 Version 1.5.11 (08 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 
-- Curn was not honoring its "MailFrom" configuration option, so it was
+- curn was not honoring its "MailFrom" configuration option, so it was
   always computing the sender based on the current user name and host name.
   In some environments, using the default (computed) email address can
   cause problems when curn attempts to email its output (and, in any case,
@@ -596,7 +610,7 @@ Version 1.5.5 (10 November, 2004)
   is now "utf-8", instead of the Java VM's default. This plays better with
   the new "SaveAsEncoding" parameter.
 
-- Curn now gives email attachments names with reasonable extensions.
+- curn now gives email attachments names with reasonable extensions.
   Previously, default names (ending in ".tmp") were used, which gave some 
   mail clients (e.g., some versions of Outlook) fits.
 
@@ -711,10 +725,10 @@ Version 1.4 (22 September, 2004):
   TextOutputHandler           org.clapper.curn        org.clapper.curn.output
   ---------------------------------------------------------------------------
 
-- Curn now supports multiple output handlers of the same class in the same
+- curn now supports multiple output handlers of the same class in the same
   configuration file.
 
-- Curn now comes bundled with a new ScriptOutputHandler 
+- curn now comes bundled with a new ScriptOutputHandler 
   (org.clapper.output.script.ScriptOutputHandler). This handler requires the
   Apache Jakarta Bean Scripting Framework (BSF), available at
   "http://jakarta.apache.org/bsf/". It's basically a shim that uses BSF
