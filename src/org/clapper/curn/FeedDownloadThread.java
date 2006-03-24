@@ -438,7 +438,9 @@ class FeedDownloadThread extends Thread
                                  + " to parse the feed.");
 
                         InputStream is = new FileInputStream (tempFile.file);
-                        channel = parser.parseRSSFeed (is, tempFile.encoding);
+                        channel = parser.parseRSSFeed (feedInfo,
+                                                       is,
+                                                       tempFile.encoding);
                         is.close();
 
                         processChannelItems (channel, feedInfo);
@@ -448,10 +450,13 @@ class FeedDownloadThread extends Thread
                 }
 
                 tempFile.file.delete();
-                cache.addToCache (null,
-                                  feedURL,
-                                  new Date (conn.getLastModified()),
-                                  feedInfo);
+                if (cache != null)
+                {
+                    cache.addToCache (null,
+                                      feedURL,
+                                      new Date (conn.getLastModified()),
+                                      feedInfo);
+                }
             }
         }
 
