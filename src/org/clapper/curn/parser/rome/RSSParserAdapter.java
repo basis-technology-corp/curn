@@ -26,6 +26,7 @@
 
 package org.clapper.curn.parser.rome;
 
+import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSParserException;
@@ -77,6 +78,7 @@ public class RSSParserAdapter implements RSSParser
     /**
      * Parse an RSS feed.
      *
+     * @param feedInfo The <i>curn</i> {@link FeedInfo} object for the feed
      * @param stream   the <tt>InputStream</tt> for the feed
      * @param encoding the encoding of the data in the field, if known, or
      *                 null
@@ -87,7 +89,9 @@ public class RSSParserAdapter implements RSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      */
-    public RSSChannel parseRSSFeed (InputStream stream, String encoding)
+    public RSSChannel parseRSSFeed (FeedInfo    feedInfo,
+                                    InputStream stream,
+                                    String      encoding)
         throws IOException,
                RSSParserException
     {

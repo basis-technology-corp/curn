@@ -26,10 +26,18 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.ParserUtil;
+import org.clapper.curn.parser.RSSLink;
+
+import org.clapper.util.logging.Logger;
 
 import java.util.Date;
 import java.util.Stack;
+import java.util.Collection;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -56,6 +64,11 @@ class ParserCommon extends DefaultHandler
     protected Channel channel = null;
 
     /**
+     * The feed data about the channel.
+     */
+    protected FeedInfo feedInfo = null;
+
+    /**
      * Element stack. Contains ElementStackEntry objects.
      */
     protected Stack<ElementStackEntry> elementStack =
@@ -65,6 +78,11 @@ class ParserCommon extends DefaultHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
+    /**
+     * For logging
+     */
+    private Logger log;
+
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -72,10 +90,16 @@ class ParserCommon extends DefaultHandler
     /**
      * Constructor. Saves the <tt>Channel</tt> object and creates a new
      * element stack.
+     *
+     * @param channel  the {@link Channel} object
+     * @param feedInfo the associated {@link FeedInfo} data
+     * @param log      logger to use
      */
-    protected ParserCommon (Channel channel)
+    protected ParserCommon (Channel channel, FeedInfo feedInfo, Logger log)
     {
-        this.channel = channel;
+        this.channel  = channel;
+        this.feedInfo = feedInfo;
+        this.log      = log;
     }
 
     /*----------------------------------------------------------------------*\
@@ -135,5 +159,51 @@ class ParserCommon extends DefaultHandler
     protected Date parseW3CDate (String sDate)
     {
         return ParserUtil.parseW3CDate (sDate);
+    }
+
+    /**
+     * Resolve a link. Handles relative and absolute links.
+     *
+     * @param sLink    the link string
+     * @param channel  the parent {@link Channel}
+     *
+     * @return the URL, if parseable
+     *
+     * @throws MalformedURLException bad URL
+     */
+    protected URL resolveLink (String sLink, Channel  channel)
+        throws MalformedURLException
+    {
+        Collection<RSSLink> channelLinks = channel.getLinks();
+        URL                 parentURL    = null; 
+
+        if (channelLinks.size() > 0)
+        {
+            for (RSSLink link : channelLinks)
+            {
+                // Prefer a SELF link, if there is one.
+
+                parentURL = link.getURL();
+                if (link.getLinkType() == RSSLink.Type.SELF)
+                    break;
+            }
+
+            assert (parentURL != null);
+        }
+
+        URL result;
+        if (parentURL == null)
+        {
+            log.debug ("No parent URL for \"" + sLink + "\"");
+            result = new URL (sLink);
+        }
+
+        else
+        {
+
+            result = new URL (parentURL, sLink);
+        }
+
+        return result;
     }
 }

@@ -26,6 +26,7 @@
 
 package org.clapper.curn.parser.minirss;
 
+import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
@@ -77,6 +78,10 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *         this class defaults to using the Apache Xerces XML parser class.
  * </ol>
  *
+ * <b>Warning:</b> This class is NOT thread safe. Because of the nature of
+ * XML SAX event-driven (i.e., callback-driven) parsing, an instance of this
+ * object must maintain parser state as instance data. 
+ *
  * @version <tt>$Revision$</tt>
  */
 public class MiniRSSParser
@@ -94,6 +99,7 @@ public class MiniRSSParser
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
+    private FeedInfo  feedInfo        = null;
     private Channel   channel         = null;
     private String    parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
     private XMLReader xmlReader       = null;
@@ -138,18 +144,21 @@ public class MiniRSSParser
     \*----------------------------------------------------------------------*/
 
     /**
-     * Parses the RSS feed located at the specified URL. This method,
-     * required by <i>curn</i>'s <tt>RSSParser</tt> interface, is
-     * simply a front-end for {@link #parse(URL)}.
+     * Parse an RSS feed. <b>Warning:</b> This method is NOT thread safe.
+     * Because of the nature of XML SAX event-driven (i.e.,
+     * callback-driven) parsing, an instance of this object must maintain
+     * parser state as instance data.
      *
+     * @param feedInfo The <i>curn</i> {@link FeedInfo} object for the feed
      * @param stream   the <tt>InputStream</tt> for the feed
      * @param encoding the encoding of the data in the field, if known, or
      *                 null
      *
-     * @return the <tt>RSSChannel</tt> object containing the parsed RSS data
+     * @return an <tt>RSSChannel</tt> object representing the RSS data from
+     *         the site.
      *
-     * @throws IOException        error opening or reading from the URL
-     * @throws RSSParserException error parsing the XML
+     * @throws IOException        unable to read from URL
+     * @throws RSSParserException unable to parse RSS XML
      *
      * @see #parse(URL)
      * @see #parse(File)
@@ -158,7 +167,9 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final RSSChannel parseRSSFeed (InputStream stream, String encoding)
+    public final RSSChannel parseRSSFeed (FeedInfo    feedInfo,
+                                          InputStream stream,
+                                          String      encoding)
         throws IOException,
                RSSParserException
     {
@@ -169,130 +180,7 @@ public class MiniRSSParser
         else
             r = new InputStreamReader (stream, encoding);
 
-        return parse (r);
-    }
-
-    /**
-     * Parses the RSS data located in the specified file, using the default
-     * encoding. To specify an encoding, use {@link #parse(File,String)}.
-     *
-     * @param path  the path to the file containing the RSS XML data
-     *
-     * @return the <tt>Channel</tt> object containing the parsed RSS data
-     *
-     * @throws IOException        error opening or reading from the URL
-     * @throws RSSParserException error parsing the XML
-     *
-     * @see #parse(URL)
-     * @see #parseRSSFeed(InputStream,String)
-     * @see #parse(File,String)
-     * @see #parse(Reader)
-     * @see Channel
-     * @see RSSChannel
-     */
-    public final RSSChannel parse (File path)
-	throws FileNotFoundException,
-	       IOException,
-	       RSSParserException
-    {
-	return parse (path, null);
-    }
-
-    /**
-     * Parses the RSS data located in the specified file, using the default
-     * encoding. To specify an encoding, use {@link #parse(File,String)}.
-     *
-     * @param path  the path to the file containing the RSS XML data
-     *
-     * @return the <tt>Channel</tt> object containing the parsed RSS data
-     *
-     * @throws IOException        error opening or reading from the URL
-     * @throws RSSParserException error parsing the XML
-     *
-     * @see #parse(URL)
-     * @see #parseRSSFeed(InputStream,String)
-     * @see #parse(File,String)
-     * @see #parse(Reader)
-     * @see Channel
-     * @see RSSChannel
-     */
-    public final RSSChannel parse (File path, String encoding)
-	throws FileNotFoundException,
-	       IOException,
-	       RSSParserException
-    {
-        FileInputStream   fs =  new FileInputStream (path);
-        InputStreamReader is;
-
-	if (encoding == null)
-	    is = new InputStreamReader (fs);
-	else
-	    is = new InputStreamReader (fs, encoding);
-
-	return parse (is);
-    }
-
-    /**
-     * Parses the RSS feed located at the specified URL.
-     *
-     * @param url  the URL for the RSS feed
-     *
-     * @return the <tt>Channel</tt> object containing the parsed RSS data
-     *
-     * @throws IOException        error opening or reading from the URL
-     * @throws RSSParserException error parsing the XML
-     *
-     * @see #parseRSSFeed(InputStream,String)
-     * @see #parse(File)
-     * @see #parse(File,String)
-     * @see #parse(Reader)
-     * @see Channel
-     * @see RSSChannel
-     */
-    public final RSSChannel parse (URL url)
-	throws IOException,
-	       RSSParserException
-    {
-        // FIXME: Should determine encoding from Content-Encoding
-	return parse (new InputStreamReader (url.openStream()));
-    }
-
-    /**
-     * Parses an RSS feed from an already-open <tt>Reader</tt> object.
-     *
-     * @param r  the <tt>Reader</tt> that will produce the RSS XML
-     *
-     * @return the <tt>Channel</tt> object containing the parsed RSS data
-     *
-     * @throws IOException        error opening or reading from the URL
-     * @throws RSSParserException error parsing the XML
-     *
-     * @see #parseRSSFeed(InputStream,String)
-     * @see #parse(File)
-     * @see #parse(File,String)
-     * @see #parse(URL)
-     * @see Channel
-     * @see RSSChannel
-     */
-    public final RSSChannel parse (Reader r)
-	throws IOException,
-	       RSSParserException
-    {
-	try
-        {
-            xmlReader = XMLReaderFactory.createXMLReader (parserClassName);
-            xmlReader.setContentHandler (this);
-            xmlReader.setErrorHandler (this);
-
-            xmlReader.parse (new InputSource (r));
-        }
-
-        catch (SAXException ex)
-        {
-            throw new RSSParserException (ex);
-        }
-
-        return channel;
+        return parse (feedInfo, r);
     }
 
     /*----------------------------------------------------------------------*\
@@ -376,7 +264,9 @@ public class MiniRSSParser
         if (elementName.equals ("rdf:RDF"))
         {
             channel.setRSSFormat ("RSS 1.0");
-            xmlReader.setContentHandler (new V1Parser (channel, elementName));
+            xmlReader.setContentHandler (new V1Parser (channel,
+                                                       feedInfo,
+                                                       elementName));
         }
 
         else if (elementName.equals ("feed"))
@@ -387,6 +277,7 @@ public class MiniRSSParser
             else
                 channel.setRSSFormat ("Atom " + version);
             xmlReader.setContentHandler (new AtomParser (channel,
+                                                         feedInfo,
                                                          elementName));
         }
 
@@ -402,6 +293,7 @@ public class MiniRSSParser
             if (version.startsWith ("0.9") || version.startsWith ("2."))
             {
                 xmlReader.setContentHandler (new V2Parser (channel,
+                                                           feedInfo,
                                                            elementName));
             }
 
@@ -418,5 +310,54 @@ public class MiniRSSParser
                                   + elementName
                                   + ">");
         }
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Parses an RSS feed from an already-open <tt>Reader</tt> object.
+     *
+     * @param feedInfo The <i>curn</i> {@link FeedInfo} object for the feed
+     * @param r        The <tt>Reader</tt> that will produce the RSS XML
+     *
+     * @return the <tt>Channel</tt> object containing the parsed RSS data
+     *
+     * @throws IOException        error opening or reading from the URL
+     * @throws RSSParserException error parsing the XML
+     *
+     * @see #parseRSSFeed(InputStream,String)
+     * @see #parse(File)
+     * @see #parse(File,String)
+     * @see #parse(URL)
+     * @see Channel
+     * @see RSSChannel
+     */
+    private RSSChannel parse (FeedInfo feedInfo, Reader r)
+	throws IOException,
+	       RSSParserException
+    {
+	try
+        {
+            xmlReader = XMLReaderFactory.createXMLReader (parserClassName);
+            xmlReader.setContentHandler (this);
+            xmlReader.setErrorHandler (this);
+
+            this.feedInfo = feedInfo;
+            xmlReader.parse (new InputSource (r));
+        }
+
+        catch (SAXException ex)
+        {
+            throw new RSSParserException (ex);
+        }
+
+        finally
+        {
+            this.feedInfo = null;
+        }
+
+        return channel;
     }
 }

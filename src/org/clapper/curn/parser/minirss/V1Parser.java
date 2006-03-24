@@ -34,6 +34,7 @@ import org.xml.sax.Attributes;
 
 import org.clapper.util.logging.Logger;
 
+import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSLink;
 
@@ -77,13 +78,14 @@ public class V1Parser extends ParserCommon
      * parsed contents.
      *
      * @param channel      the <tt>Channel</tt> to be filled
+     * @param feedInfo     the associated {@link FeedInfo} data
      * @param firstElement the first element in the file, which was already
      *                     parsed by a <tt>MiniRSSParser</tt> object, before
      *                     it handed control to this object
      */
-    V1Parser (Channel channel, String firstElement)
+    V1Parser (Channel channel, FeedInfo feedInfo, String firstElement)
     {
-        super (channel);
+        super (channel, feedInfo, log);
         elementStack.push (new ElementStackEntry (firstElement, firstElement));
     }
 
@@ -311,6 +313,9 @@ public class V1Parser extends ParserCommon
         {
             if (chars != null)
             {
+                // Some sites use relative URLs in the links. Handle
+                // that, too.
+
                 try
                 {
                     // RSS version 1 doesn't support multiple links per
@@ -319,7 +324,7 @@ public class V1Parser extends ParserCommon
                     // MIME type for an RSS feed. Mark the feed as type
                     // "self".
 
-                    URL url = new URL (chars);
+                    URL url = resolveLink (chars, channel);
                     theChannel.addLink (new RSSLink
                                             (url,
                                              ParserUtil.getLinkMIMEType (url),
@@ -331,7 +336,11 @@ public class V1Parser extends ParserCommon
                     // Swallow the exception. No sense aborting the whole
                     // feed for a bad <link> element.
 
-                    log.error ("Bad <link> element \"" + chars + "\"", ex);
+                    log.error ("Feed \""
+                             + feedInfo.getURL().toString()
+                             + "\": Bad <link> element \""
+                             + chars
+                             + "\"", ex);
                 }
             }
         }
