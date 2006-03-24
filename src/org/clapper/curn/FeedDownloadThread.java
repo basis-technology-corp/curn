@@ -282,7 +282,7 @@ class FeedDownloadThread extends Thread
 
         catch (FeedException ex)
         {
-            log.error ("", ex);
+            log.error (ex.getMessage(), ex);
             this.exception = ex;
         }
     }
