@@ -33,8 +33,9 @@ import org.clapper.curn.util.Util;
 import org.clapper.curn.parser.RSSChannel;
 
 /**
- * <p>Contains data for one feed (or site). Most, but not all, of the data
- * comes from the configuration file.</p>
+ * <p>Contains data for one feed (or site). The data about the feed
+ * comes from the configuration file. The feed itself comes from parsing
+ * the RSS data.</p>
  *
  * @see ConfigFile
  *
