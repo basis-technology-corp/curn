@@ -126,10 +126,11 @@ public class MiniRSSParser
      * Allocate a new <tt>MiniRSSParser</tt> object that uses the specified
      * XML parser. The parser class must implement the SAX
      * <tt>XMLReader</tt> interface. The class is not actually loaded and
-     * verified until one of the {@link #parse(File,String) parse} methods
-     * is called.
+     * verified until the {@link #parseRSSFeed} method is called.
      *
      * @param parserClassName  the fully-qualified parser class name
+     *
+     * @see #parseRSSFeed
      */
     public MiniRSSParser (String parserClassName)
     {
@@ -160,10 +161,6 @@ public class MiniRSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      *
-     * @see #parse(URL)
-     * @see #parse(File)
-     * @see #parse(File,String)
-     * @see #parse(Reader)
      * @see Channel
      * @see RSSChannel
      */
@@ -328,9 +325,6 @@ public class MiniRSSParser
      * @throws RSSParserException error parsing the XML
      *
      * @see #parseRSSFeed(InputStream,String)
-     * @see #parse(File)
-     * @see #parse(File,String)
-     * @see #parse(URL)
      * @see Channel
      * @see RSSChannel
      */
