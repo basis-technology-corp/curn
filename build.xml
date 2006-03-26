@@ -657,7 +657,7 @@ source and documentation packages.
     <appversion>@{curn.version}</appversion>
     <appsubpath>clapper.org/curn</appsubpath>
     <authors>
-      <author name="Brian Clapper" email="bmc@clapper.org"/>
+      <author name="Brian M. Clapper" email="bmc@clapper.org"/>
     </authors>
     <url>http://www.clapper.org/software/java/curn/</url>
     <javaversion>1.5</javaversion>
@@ -677,7 +677,7 @@ source and documentation packages.
   <resources>
     <res id="LicencePanel.licence" src="@{install.tmp}/LICENSE"/>
     <res id="Installer.image" src="@{src.install}/curn-logo.png"/>
-    <res id="InfoPanel.info" src="README"/>
+    <res id="HTMLInfoPanel.info" src="README.html"/>
     <res id="TargetPanel.dir.windows" src="@{src.install}/path_windows.txt"/>
     <res id="TargetPanel.dir.unix" src="@{src.install}/path_unix.txt"/>
     <res id="XInfoPanel.info" src="@{src.install}/final_screen.txt"/>
@@ -686,7 +686,7 @@ source and documentation packages.
 
   <panels>
     <panel classname="HelloPanel"/>
-    <panel classname="InfoPanel"/>
+    <panel classname="HTMLInfoPanel"/>
     <panel classname="LicencePanel"/>
     <panel classname="TargetPanel"/> 
     <panel classname="PacksPanel"/>
@@ -697,9 +697,10 @@ source and documentation packages.
   </panels>
 
   <packs>
-    <pack name="Base" required="yes">
+    <pack name="Core" required="yes">
       <description>The curn jar file, binaries, and dependent jars</description>
       <singlefile src="LICENSE" target="$INSTALL_PATH/LICENSE.txt"/>
+      <singlefile src="README.html" target="$INSTALL_PATH/README.html"/>
       <singlefile src="README" target="$INSTALL_PATH/README.txt"/>
 
       <singlefile src="@{release_dir}/@{versioned_code_jar_file}"
