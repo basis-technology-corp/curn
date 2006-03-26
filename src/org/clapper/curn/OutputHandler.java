@@ -73,10 +73,10 @@ public interface OutputHandler
      * @throws ConfigurationException configuration error
      * @throws CurnException          some other initialization error
      *
-     * @see ConfigFile
+     * @see CurnConfig
      * @see ConfiguredOutputHandler
      */
-    public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
+    public void init (CurnConfig config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException;
 

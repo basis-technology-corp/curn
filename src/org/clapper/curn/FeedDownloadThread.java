@@ -84,7 +84,7 @@ class FeedDownloadThread extends Thread
 
     private Logger         log             = null;
     private String         id              = null;
-    private ConfigFile     configuration   = null;
+    private CurnConfig     configuration   = null;
     private RSSParser      rssParser       = null;
     private FeedCache      cache           = null;
     private RegexUtil      regexUtil       = new RegexUtil();
@@ -192,7 +192,7 @@ class FeedDownloadThread extends Thread
     FeedDownloadThread (String     threadId,
                         RSSParser  parser,
                         FeedCache  feedCache,
-                        ConfigFile configFile,
+                        CurnConfig configFile,
                         List       feedQueue)
     {
 
@@ -339,7 +339,7 @@ class FeedDownloadThread extends Thread
      */
     private RSSChannel handleFeed (FeedInfo   feedInfo,
                                    RSSParser  parser,
-                                   ConfigFile configuration)
+                                   CurnConfig configuration)
         throws FeedException
     {
         URL         feedURL = feedInfo.getURL();
@@ -667,7 +667,7 @@ class FeedDownloadThread extends Thread
      * @param configuration the parsed configuration, which indicates whether
      *                      or not to request gzipping of downloaded data
      */
-    private void setGzipHeader (URLConnection conn, ConfigFile configuration)
+    private void setGzipHeader (URLConnection conn, CurnConfig configuration)
     {
         if (configuration.retrieveFeedsWithGzip())
         {

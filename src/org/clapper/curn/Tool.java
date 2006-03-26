@@ -122,7 +122,7 @@ public class Tool extends CommandLineUtility
     \*----------------------------------------------------------------------*/
 
     private String              configPath       = null;
-    private ConfigFile          config           = null;
+    private CurnConfig          config           = null;
     private boolean             useCache         = true;
     private Date                currentTime      = new Date();
     private Collection<String>  emailAddresses   = new ArrayList<String>();
@@ -527,7 +527,7 @@ public class Tool extends CommandLineUtility
     {
         try
         {
-            config = new ConfigFile (configPath);
+            config = new CurnConfig (configPath);
         }
 
         catch (FileNotFoundException ex)

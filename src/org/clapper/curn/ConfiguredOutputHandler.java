@@ -36,7 +36,7 @@ import org.clapper.util.logging.Logger;
  * including the class name and output handler name (which is really the
  * section name).
  *
- * @see ConfigFile
+ * @see CurnConfig
  * @see Curn
  *
  * @version <tt>$Revision$</tt>

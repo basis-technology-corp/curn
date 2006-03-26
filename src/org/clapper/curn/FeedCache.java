@@ -118,7 +118,7 @@ public class FeedCache implements Serializable
     /**
      * The configuration
      */
-    private ConfigFile config;
+    private CurnConfig config;
 
     /**
      * The actual cache, indexed by unique ID.
@@ -155,7 +155,7 @@ public class FeedCache implements Serializable
      *
      * @param config  the <i>curn</i> configuration
      */
-    FeedCache (ConfigFile config)
+    FeedCache (CurnConfig config)
     {
         this.config = config;
     }

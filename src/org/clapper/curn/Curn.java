@@ -92,7 +92,7 @@ public class Curn
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private ConfigFile config = null;
+    private CurnConfig config = null;
     private boolean useCache = true;
     private FeedCache cache = null;
     private Date currentTime = new Date();
@@ -109,7 +109,7 @@ public class Curn
                                 Constructor
     \*----------------------------------------------------------------------*/
 
-    public Curn (ConfigFile config)
+    public Curn (CurnConfig config)
     {
         this.config = config;
     }
@@ -146,7 +146,7 @@ public class Curn
      * @throws RSSParserException       error parsing XML feed(s)
      * @throws CurnException          any other error
      */
-    public void processRSSFeeds (ConfigFile         configuration,
+    public void processRSSFeeds (CurnConfig         configuration,
                                  Collection<String> emailAddresses,
                                  boolean            useCache)
         throws ConfigurationException,
@@ -215,7 +215,7 @@ public class Curn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void loadOutputHandlers (ConfigFile         configuration,
+    private void loadOutputHandlers (CurnConfig         configuration,
                                      Collection<String> emailAddresses)
         throws ConfigurationException,
                CurnException
@@ -294,7 +294,7 @@ public class Curn
     private Collection<FeedInfo>
     doSingleThreadedFeedDownload (boolean    parsingEnabled,
                                   FeedCache  feedCache,
-                                  ConfigFile configuration)
+                                  CurnConfig configuration)
         throws RSSParserException,
                CurnException
     {
@@ -360,7 +360,7 @@ public class Curn
     private Collection<FeedInfo>
     doMultithreadedFeedDownload (boolean    parsingEnabled,
                                  FeedCache  feedCache,
-                                 ConfigFile configuration)
+                                 CurnConfig configuration)
         throws RSSParserException,
                CurnException
     {
@@ -473,7 +473,7 @@ public class Curn
      *
      * @throws RSSParserException error instantiating parser
      */
-    private RSSParser getRSSParser (ConfigFile configuration)
+    private RSSParser getRSSParser (CurnConfig configuration)
         throws RSSParserException
     {
         String parserClassName = configuration.getRSSParserClassName();

@@ -34,7 +34,7 @@ import java.util.Date;
  * <p>Defines the contents of a cache entry. There is one cache entry
  * per feed item.</p>
  *
- * @see ConfigFile
+ * @see CurnConfig
  * @see FeedInfo
  *
  * @version <tt>$Revision$</tt>

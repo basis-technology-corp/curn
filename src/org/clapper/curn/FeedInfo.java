@@ -37,7 +37,7 @@ import org.clapper.curn.parser.RSSChannel;
  * comes from the configuration file. The feed itself comes from parsing
  * the RSS data.</p>
  *
- * @see ConfigFile
+ * @see CurnConfig
  *
  * @version <tt>$Revision$</tt>
  */

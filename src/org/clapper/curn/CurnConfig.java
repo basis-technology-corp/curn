@@ -52,14 +52,14 @@ import org.clapper.util.config.NoSuchVariableException;
 import org.clapper.util.logging.Logger;
 
 /**
- * <p><tt>ConfigFile</tt> uses the <tt>Configuration</tt> class (part of
+ * <p><tt>CurnConfig</tt> uses the <tt>Configuration</tt> class (part of
  * the <i>clapper.org</i> Java Utility library) to parse and validate the
  * <i>curn</i> configuration file, holding the results in memory for easy
  * access.</p>
  *
  * @version <tt>$Revision$</tt>
  */
-public class ConfigFile extends Configuration
+public class CurnConfig extends Configuration
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -190,14 +190,14 @@ public class ConfigFile extends Configuration
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ConfigFile.class);
+    private static Logger log = new Logger (CurnConfig.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Construct an <tt>ConfigFile</tt> object that parses data
+     * Construct an <tt>CurnConfig</tt> object that parses data
      * from the specified file.
      *
      * @param f  The <tt>File</tt> to open and parse
@@ -205,7 +205,7 @@ public class ConfigFile extends Configuration
      * @throws IOException             can't open or read file
      * @throws ConfigurationException  error in configuration data
      */
-    ConfigFile (File f)
+    CurnConfig (File f)
         throws IOException,
                ConfigurationException
     {
@@ -214,7 +214,7 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Construct an <tt>ConfigFile</tt> object that parses data
+     * Construct an <tt>CurnConfig</tt> object that parses data
      * from the specified file.
      *
      * @param path  the path to the file to parse
@@ -223,7 +223,7 @@ public class ConfigFile extends Configuration
      * @throws IOException             can't open or read file
      * @throws ConfigurationException  error in configuration data
      */
-    ConfigFile (String path)
+    CurnConfig (String path)
         throws FileNotFoundException,
                IOException,
                ConfigurationException
@@ -233,7 +233,7 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Construct an <tt>ConfigFile</tt> object that parses data
+     * Construct an <tt>CurnConfig</tt> object that parses data
      * from the specified URL.
      *
      * @param url  the URL to open and parse
@@ -241,7 +241,7 @@ public class ConfigFile extends Configuration
      * @throws IOException             can't open or read URL
      * @throws ConfigurationException  error in configuration data
      */
-    ConfigFile (URL url)
+    CurnConfig (URL url)
         throws IOException,
                ConfigurationException
     {
@@ -250,7 +250,7 @@ public class ConfigFile extends Configuration
     }
 
     /**
-     * Construct an <tt>ConfigFile</tt> object that parses data
+     * Construct an <tt>CurnConfig</tt> object that parses data
      * from the specified <tt>InputStream</tt>.
      *
      * @param iStream  the <tt>InputStream</tt>
@@ -258,7 +258,7 @@ public class ConfigFile extends Configuration
      * @throws IOException             can't open or read URL
      * @throws ConfigurationException  error in configuration data
      */
-    ConfigFile (InputStream iStream)
+    CurnConfig (InputStream iStream)
         throws IOException,
                ConfigurationException
     {
@@ -373,7 +373,7 @@ public class ConfigFile extends Configuration
         if (newValue <= 0)
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.badPositiveInteger",
+                                              "CurnConfig.badPositiveInteger",
                                               "The \"{0}\" configuration "
                                             + "parameter cannot be set to "
                                             + "{1}. It must have a positive "
@@ -752,7 +752,7 @@ public class ConfigFile extends Configuration
         if (! this.containsSection (MAIN_SECTION))
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.missingReqSection",
+                                              "CurnConfig.missingReqSection",
                                               "The configuration file is "
                                             + "missing the required \"{0}\" "
                                             + "section.",
@@ -772,7 +772,7 @@ public class ConfigFile extends Configuration
                 {
                     throw new ConfigurationException
                         (Util.BUNDLE_NAME,
-                         "ConfigFile.cacheIsDir",
+                         "CurnConfig.cacheIsDir",
                          "Configured cache file \"{0}\" is a directory.",
                          new Object[]
                          {
@@ -858,7 +858,7 @@ public class ConfigFile extends Configuration
         catch (NoSuchVariableException ex)
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.missingReqVar",
+                                              "CurnConfig.missingReqVar",
                                               "The configuration file is "
                                             + "missing required variable "
                                             + "\"{0}\" in section \"{1}\".",
@@ -901,7 +901,7 @@ public class ConfigFile extends Configuration
         catch (MalformedURLException ex)
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.badFeedURL",
+                                              "CurnConfig.badFeedURL",
                                               "Configuration file section "
                                             + "\"{0}\" specifies a bad RSS "
                                             + "feed URL \"{1}\"",
@@ -1045,7 +1045,7 @@ public class ConfigFile extends Configuration
         if (url == null)
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.missingReqVar",
+                                              "CurnConfig.missingReqVar",
                                               "The configuration file is "
                                             + "missing required variable "
                                             + "\"{0}\" in section \"{1}\"",
@@ -1059,7 +1059,7 @@ public class ConfigFile extends Configuration
         if (saveOnly && (saveAs == null))
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.saveOnlyButNoSaveAs",
+                                              "CurnConfig.saveOnlyButNoSaveAs",
                                               "Configuration section \"{0}\": "
                                             + "\"[1}\" may only be specified "
                                             + "if \"{2}\" is set.",
@@ -1141,7 +1141,7 @@ public class ConfigFile extends Configuration
         if (val == null)
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "ConfigFile.badVarValue",
+                                              "CurnConfig.badVarValue",
                                               "Section \"{0}\" in the "
                                             + "configuration file has a bad "
                                             + "value (\"{1}\") for the \"{2}\""
@@ -1195,7 +1195,7 @@ public class ConfigFile extends Configuration
                 {
                     throw new ConfigurationException
                                          (Util.BUNDLE_NAME,
-                                          "ConfigFile.badNumericValue",
+                                          "CurnConfig.badNumericValue",
                                           "Bad numeric value \"{0}\" for "
                                         + "variable \"{1}\" in section "
                                         + "\"{2}\"",
@@ -1211,7 +1211,7 @@ public class ConfigFile extends Configuration
                 {
                     throw new ConfigurationException
                                       (Util.BUNDLE_NAME,
-                                       "ConfigFile.negativeCardinalValue",
+                                       "CurnConfig.negativeCardinalValue",
                                        "Unexpected negative numeric value "
                                      + "{0} for variable \"{1}\" in section "
                                      + "\"{2}\"",
