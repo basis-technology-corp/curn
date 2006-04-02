@@ -19,6 +19,8 @@ Version 2.6.5 (...)
 
 - Enhanced error reporting (exception handling) in some areas.
 
+- Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
+
 
 Version 2.6.4 (5 February, 2006)
 
