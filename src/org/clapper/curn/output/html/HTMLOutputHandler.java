@@ -26,7 +26,7 @@
 
 package org.clapper.curn.output.html;
 
-import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.Curn;
 import org.clapper.curn.CurnException;
@@ -104,7 +104,7 @@ public class HTMLOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile              config,
+    public void initOutputHandler (CurnConfig              config,
                                    ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException

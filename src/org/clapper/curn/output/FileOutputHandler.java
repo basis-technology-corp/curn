@@ -26,7 +26,7 @@
 
 package org.clapper.curn.output;
 
-import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -124,7 +124,7 @@ public abstract class FileOutputHandler implements OutputHandler
     \*----------------------------------------------------------------------*/
 
     private File        outputFile     = null;
-    private ConfigFile  config         = null;
+    private CurnConfig  config         = null;
     private boolean     saveOnly       = false;
     private String      name           = null;
     private boolean     showToolInfo   = true;
@@ -163,7 +163,7 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public final void init (ConfigFile              config,
+    public final void init (CurnConfig              config,
                             ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
@@ -204,7 +204,7 @@ public abstract class FileOutputHandler implements OutputHandler
                                                 DEFAULT_CHARSET_ENCODING);
 
                 // saveOnly cannot be set unless saveAs is non-null. The
-                // ConfigFile class is supposed to trap for this, so an
+                // CurnConfig class is supposed to trap for this, so an
                 // assertion is fine here.
 
                 assert ((! saveOnly) || (saveAs != null));
@@ -256,7 +256,7 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public abstract void initOutputHandler (ConfigFile              config,
+    public abstract void initOutputHandler (CurnConfig              config,
                                             ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException;

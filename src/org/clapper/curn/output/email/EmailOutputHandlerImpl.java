@@ -26,7 +26,7 @@
 
 package org.clapper.curn.output.email;
 
-import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.EmailOutputHandler;
@@ -72,7 +72,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
     private Collection<EmailAddress> recipients =
         new ArrayList<EmailAddress>();
 
-    private ConfigFile  config     = null;
+    private CurnConfig  config     = null;
 
     /**
      * For log messages
@@ -109,7 +109,7 @@ public class EmailOutputHandlerImpl implements EmailOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile config, ConfiguredOutputHandler cfgHandler)
+    public void init (CurnConfig config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {

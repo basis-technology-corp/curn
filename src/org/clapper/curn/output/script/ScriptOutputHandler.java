@@ -26,7 +26,7 @@
 
 package org.clapper.curn.output.script;
 
-import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -168,8 +168,8 @@ import org.apache.bsf.BSFManager;
  *
  *   <tr valign="top">
  *     <td>config</td>
- *     <td><tt>{@link ConfigFile}</tt></td>
- *     <td>The <tt>org.clapper.curn.ConfigFile</tt> object that represents
+ *     <td><tt>{@link CurnConfig}</tt></td>
+ *     <td>The <tt>org.clapper.curn.CurnConfig</tt> object that represents
  *         the parsed configuration data. Useful in conjunction with the
  *         "configSection" object, to parse additional parameters from
  *         the configuration.</td>
@@ -341,7 +341,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     \*----------------------------------------------------------------------*/
 
     private BSFManager                 bsfManager     = null;
-    private ConfigFile                 config         = null;
+    private CurnConfig                 config         = null;
     private Collection<ChannelWrapper> channels       = new ChannelList();
     private String                     scriptPath     = null;
     private String                     scriptString   = null;
@@ -381,7 +381,7 @@ public class ScriptOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public final void initOutputHandler (ConfigFile              config,
+    public final void initOutputHandler (CurnConfig              config,
                                          ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
