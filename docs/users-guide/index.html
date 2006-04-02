@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html><head>
 
 <title>curn User's Guide</title>
@@ -8,6 +8,18 @@ body
 {
     background-color: white;
     color: black;
+}
+
+a
+{
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: red;
+    background-color: #eeeeee;
+    text-decoration: underline;
 }
 
 h1
@@ -112,6 +124,12 @@ ul.toc
     font-weight: bold;
 }
 
+ul.toc ul
+{
+    list-style-type: none;
+    font-weight: bold;
+}
+
 ul.nobullet
 {
     list-style-type: none;
@@ -123,11 +141,39 @@ ul.nobullet li
     margin-left: -10px;
 }
 
+pre
+{
+    font-family: Courier New, Courier, monospace;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+p.endnote
+{
+    text-indent: -2em;
+    margin-left: 2em;
+}
+
+div.endnote
+{
+    margin-left: 2em;
+}
+
 table.outlined
 {
     margin-top: 1em;
+    border-width: 1px;
+    border-spacing: 5px;
+    border-style: solid;
+    border-color: black;
     border-collapse: collapse;
-    border: 1px solid black;
+}
+
+table.outlined tr td
+{
+    padding: 3px;
 }
 
 table.cell-outlined td
@@ -227,7 +273,7 @@ th
 
 -->
 </style>
-<script language="JavaScript">
+<script language="JavaScript" type="text/javascript">
 <!--
 var ODD_COLOR = "#e9e9e9";
 var EVEN_COLOR = "#ffffff";
@@ -333,15 +379,15 @@ function init()
 
 <body onload="init()">
 
-<h1 class="title"><i>curn</i>: Customizable Utilitarian RSS Notifier<br>User's Guide</h1>
-<p class="author">Brian M. Clapper<br>
-<i>bmc<!--spamfoil--> @ <!--spamfoil-->clapper<!--spamfoil--> . <!--spamfoil-->org</i><br>
+<h1 class="title"><i>curn</i>: Customizable Utilitarian RSS Notifier<br/>User's Guide</h1>
+<p class="author">Brian M. Clapper<br/>
+<i>bmc&nbsp;@&nbsp;clapper&nbsp;.&nbsp;org</i><br/>
 <span class="code">$Id$</span>
 </p>
-<hr>
+<hr/>
 
 <!-- ********************************************************************** -->
-<h2><a name="#TOC">Table of Contents</a></h2>
+<h2><a name="TOC"></a>Table of Contents</h2>
 
 <ul class="toc">
   <li><a href="#Introduction">Introduction</a></li>
@@ -427,12 +473,21 @@ function init()
       </ul>
   </li>
 
+  <li><a href="#Troubleshooting">Troubleshooting</a>
+      <ul>
+        <li><a href="#Logging">Logging</a>
+	    <ul>
+	      <li><a href="#java.util.logging" class="code">java.util.logging</a></li>
+	      <li><a href="#Log4J">Log4J</a></li>
+	    </ul></li>
+      </ul></li>
+
   <li><a href="#AppendixA">Appendix A: Similar Products and Tools</a></li>
   <li><a href="#EndNotes">End Notes</a></li>
 </ul>
 
 <!-- ********************************************************************** -->
-<h2><a name="Introduction">Introduction</a></h2>
+<h2><a name="Introduction"></a>Introduction</h2>
 
 <p><i>curn</i> is an RSS reader. It scans a configured set of URLs, each
 one representing an RSS feed, and summarizes the results. By default,
@@ -443,7 +498,7 @@ for items it has already processed (though that behavior can be disabled).</p>
 <p>Unlike many RSS readers, <i>curn</i> does not use a graphical user
 interface. It is a command-line utility, intended to be run periodically in
 the background by a command scheduler such as
-<a href="http://www.freebsd.org/cgi/man.cgi?query=cron&apropos=0&sektion=0&manpath=FreeBSD+5.2-RELEASE+and+Ports&format=html"><i>cron</i>(8)</a>
+<a href="http://www.freebsd.org/cgi/man.cgi?query=cron&amp;apropos=0&amp;sektion=0&amp;manpath=FreeBSD+5.2-RELEASE+and+Ports&amp;format=html"><i>cron</i>(8)</a>
 (on UNIX-like systems) or the Windows Scheduler Service (on Windows).</p>
 
 <p><i>curn</i> can read RSS feeds from any URL that's supported by Java's
@@ -520,15 +575,20 @@ produced output, and displays it on standard output.</p>
 
 <blockquote><pre>java org.clapper.curn.Tool</pre></blockquote>
 
-<p>(Here's a <a href="curn_sh.txt">sample shell script</a> that makes
-invoking <i>curn</i> a little easier. It's specific to FreeBSD systems,
-but can easily be customized.)</p>
+<p><a name="curn-script"></a>
+The <i>curn</i> graphical installer automatically creates a Unix shell
+script (called <span class="code">curn</span>) or a Windows command file
+(<span class="code">curn.bat</span>) in the
+<span class="path">bin</span> directory beneath the <i>curn</i> installation
+directory. If you put the <i>curn</i> <span class="path">bin</span> directory
+in your path, you can simply type <span class="code">curn</span> to invoke
+the tool.</p>
 
 <p><i>curn</i>'s command line uses a UNIX-like syntax. If you invoke
 <i>curn</i> without any parameters, you get the following usage display.
 
-<br><br>
-<table class="bordered uncolored" align="center">
+<br/><br/>
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -543,7 +603,7 @@ OPTIONS:
 -C, --no-cache       Don't use a cache file at all.
 -D, --no-dates       Don't show dates on feeds and feed items.
 -d, --show-dates     Show dates on feeds and feed items, if available.
---logging            Enable logging via java.util.logging API.
+--logging            Enable logging via Jakarta Commons Logging
 -Q, --no-quiet       Emit messages about sites with no new items.
 -q, --quiet          Be quiet about sites with no new items.
 -R, --no-rss-version Don't show the RSS version each site uses.
@@ -596,9 +656,9 @@ emailAddress ...     One or more email addresses to receive the output
 <a href="#ConfigFile"><i>curn</i> configuration file</a>.
 Each option and argument is discussed in more detail, below.</p>
 
-<h3><a name="CommandLineOptions">Command Line Options</a></h3>
+<h3><a name="CommandLineOptions"></a>Command Line Options</h3>
 
-<table class="outlined striped" align="center" width="90%">
+<table summary="" class="outlined striped" align="center" width="90%">
   <tr valign="top" class="title">
     <th align="center" colspan="3">OPTIONS</th>
   </tr>
@@ -612,7 +672,7 @@ Each option and argument is discussed in more detail, below.</p>
   <tbody>
   <tr valign="top">
     <td align="left" class="code">-A</td>
-    <td align="left" class="code"><a name="--show-authors">--show-authors</a></td>
+    <td align="left" class="code"><a name="opt-show-authors"></a>--show-authors</td>
     <td>Don't display author data found in the RSS feeds.
         Also see the <span class="code">-a</span> option.
         This option overrides any
@@ -623,7 +683,7 @@ Each option and argument is discussed in more detail, below.</p>
 
   <tr valign="top">
     <td align="left" class="code">-a</td>
-    <td align="left" class="code"><a name="--no-authors">--no-authors</a></td>
+    <td align="left" class="code"><a name="opt-no-authors"></a>--no-authors</td>
     <td>Display any author data found in the RSS feeds. RSS
         feeds are not required to contain author data, but some do.
         This option overrides any
@@ -633,7 +693,7 @@ Each option and argument is discussed in more detail, below.</p>
 
   <tr valign="top">
     <td align="left" class="code">-B</td>
-    <td align="left" class="code"><a name="--build-info">--build-info</a></td>
+    <td align="left" class="code"><a name="opt-build-info"></a>--build-info</td>
     <td>Display detailed information about how and when <i>curn</i>
         was built, then exit without doing anything. Useful primarily
         when debugging or submitting problem reports. For instance,
@@ -650,13 +710,13 @@ Build compiler: jikes
 Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 </blockquote>
         <p>For a simple one-line version display, use the
-        <a href="#--version" class="code">--version</a> option.</p>
+        <a href="#opt-version" class="code">--version</a> option.</p>
     </td>
   </tr>
 
   <tr valign="top">
     <td align="left" class="code">-C</td>
-    <td align="left" class="code"><a name="--no-cache">--no-cache</a></td>
+    <td align="left" class="code"><a name="opt-no-cache"></a>--no-cache</td>
     <td>Run without a cache. Each RSS item <i>curn</i> encounters will
         appear to be new and will be passed to the output handlers.
         Also see the <a href="#Cfg_CacheFile" class="code">CacheFile</a>
@@ -666,7 +726,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-D</td>
-    <td align="left" class="code"><a name="--no-dates">--no-dates</a></td>
+    <td align="left" class="code"><a name="opt-no-dates"></a>--no-dates</td>
     <td>Some RSS feeds or the individual items within each feed
         contain dates (usually corresponding to the publication
         dates for the feed or item). If this option is specified,
@@ -680,7 +740,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-d</td>
-    <td align="left" class="code"><a name="--show-dates">--show-dates</a></td>
+    <td align="left" class="code"><a name="opt-show-dates"></a>--show-dates</td>
     <td>Display any dates founds in the RSS feeds or items.
         Also see the <span class="code">-D</span> option.
         This option overrides any
@@ -691,7 +751,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left">&nbsp;</td>
-    <td><a name="--logging" class="code">--logging</a></td>
+    <td><a name="opt-logging" class="code">--logging</a></td>
     <td>Enable logging via the <span class="code">java.util.logging</span>
         API. You will also have to specify a logging configuration file
         via a <span class="code">-Djava.util.logging.config.file</span>
@@ -702,7 +762,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-R</td>
-    <td align="left" class="code"><a name="--no-rss-version">--no-rss-version</a></td>
+    <td align="left" class="code"><a name="opt-no-rss-version"></a>--no-rss-version</td>
     <td>Do not display the RSS version for each feed.
         Also see the <span class="code">-r</span> option.
         This option overrides any <a href="#Cfg_ShowRSSVersion" class="code">ShowRSSVersion</a> setting in the
@@ -712,7 +772,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-r</td>
-    <td align="left" class="code"><a name="--rss-version">--rss-version</a></td>
+    <td align="left" class="code"><a name="opt-rss-version"></a>--rss-version</td>
     <td>Display the RSS version for each feed.
         Also see the <span class="code">-r</span> option.
         This option overrides any <a href="#Cfg_ShowRSSVersion" class="code">ShowRSSVersion</a> setting in the
@@ -722,7 +782,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-T &lt;n&gt;</td>
-    <td align="left" class="code"><a name="--threads">--threads &lt;n&gt;</a></td>
+    <td align="left" class="code"><a name="opt-threads"></a>--threads &lt;n&gt;</td>
     <td>Set the number of concurrent download threads to <i>n</i>.
         If <i>n</i> is greater than 1, then <i>curn</i> will spawn
         <i>n</i> worker threads to handle the downloading and parsing of
@@ -744,23 +804,23 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
         may be specified in one of the following formats:</p>
 
         <blockquote>
-        <p>2004/07/22 09:37:29 AM<br>
-        2004/07/22 09:37:29<br>
-        2004/07/22 09:37 AM<br>
-        2004/07/22 09:37<br>
-        2004/07/22 9:37 AM<br>
-        2004/07/22 9:37<br>
-        2004/07/22 09 AM<br>
-        2004/07/22 9 AM<br>
-        2004/07/22<br>
-        04/07/22<br>
-        09:37:29 AM<br>
-        09:37:29<br>
-        09:37 AM<br>
-        09:37<br>
-        9:37 AM<br>
-        9:37<br>
-        09 AM<br>
+        <p>2004/07/22 09:37:29 AM<br/>
+        2004/07/22 09:37:29<br/>
+        2004/07/22 09:37 AM<br/>
+        2004/07/22 09:37<br/>
+        2004/07/22 9:37 AM<br/>
+        2004/07/22 9:37<br/>
+        2004/07/22 09 AM<br/>
+        2004/07/22 9 AM<br/>
+        2004/07/22<br/>
+        04/07/22<br/>
+        09:37:29 AM<br/>
+        09:37:29<br/>
+        09:37 AM<br/>
+        09:37<br/>
+        9:37 AM<br/>
+        9:37<br/>
+        09 AM<br/>
         9 AM</p>
 
         <p>This option is useful primarily for debugging. Before reading
@@ -775,7 +835,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-u</td>
-    <td align="left" class="code"><a name="--no-update">--no-update</a></td>
+    <td align="left" class="code"><a name="opt-no-update"></a>--no-update</td>
     <td>Load (and prune) the cache file before processing the RSS feeds,
         but do not save the modified in-memory cache back to disk. Useful
         primarily for debugging.
@@ -784,17 +844,17 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 
   <tr valign="top">
     <td align="left" class="code">-v</td>
-    <td align="left" class="code"><a name="--version">--version</a></td>
+    <td align="left" class="code"><a name="opt-version"></a>--version</td>
     <td>Show just the one-line version information, then exit. For
         more detailed <i>curn</i> build and version information, use
-        the <a href="#--build-info" class="code">--build-info</a>
+        the <a href="#opt-build-info" class="code">--build-info</a>
         option.
     </td>
   </tr>
 
   <tr valign="top">
     <td align="left" class="code">-Z</td>
-    <td align="left" class="code"><a name="--no-gzip">--no-gzip</a></td>
+    <td align="left" class="code"><a name="opt-no-gzip"></a>--no-gzip</td>
     <td>Do not ask remote HTTP servers to <i>gzip</i> their content
         before sending it.
         By default, <i>curn</i> requests that XML feeds from HTTP
@@ -809,19 +869,19 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
         This option overrides any
         <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
         configuration setting.
-        Also see the <a href="#--gzip" class="code">-z</a> option.
+        Also see the <a href="#opt-gzip" class="code">-z</a> option.
     </td>
   </tr>
 
   <tr valign="top">
     <td align="left" class="code">-z</td>
-    <td align="left" class="code"><a name="--gzip">--gzip</a></td>
+    <td align="left" class="code"><a name="opt-gzip"></a>--gzip</td>
     <td>Ask remote HTTP servers to <i>gzip</i> their content before
         sending it.
         This option overrides any
         <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
         configuration setting.
-        Also see the <a href="#--no-gzip" class="code">-Z</a>
+        Also see the <a href="#opt-no-gzip" class="code">-Z</a>
     </td>
   </tr>
   </tbody>
@@ -829,11 +889,11 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 </table>
 <br clear="all"/>
 
-<h3><a name="CommandLineParameters">Command Line Parameters</a></h3>
+<h3><a name="CommandLineParameters"></a>Command Line Parameters</h3>
 
 <p>A list of <i>curn</i>'s positional parameters follows.</p>
 
-<table class="outlined striped" align="center" width="90%">
+<table summary="" class="outlined striped" align="center" width="90%">
 
   <tr valign="top" class="title">
     <th align="center" colspan="3">PARAMETERS</th>
@@ -854,7 +914,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Param_EmailAddress">emailAddress</a></td>
+    <td align="left" class="code"><a name="Param_EmailAddress"></a>emailAddress</td>
     <td><p>One or more email addresses to receive the output.
         This parameter is optional and may be specified multiple times.
         If any email addresses are present on the command line, then
@@ -895,7 +955,7 @@ describes each <i>curn</i> configuration item in detail.</p>
 <p>You can view a sample <i>curn</i> configuration file by following
 <a href="sample.cfg">this link</a>.</p>
 
-<h3><a name="ConfigFileSyntax">Configuration File Syntax</a></h3>
+<h3><a name="ConfigFileSyntax"></a>Configuration File Syntax</h3>
 
 <p><i>curn</i>'s configuration file is a simple text file. It resembles
 a standard Java properties file, but it is broken into individual sections,
@@ -908,7 +968,7 @@ a name surrounded by brackets. Each section contains variable assignments;
 the variable assignment syntax is similar to that of a Java properties file.
 For example:</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -923,7 +983,7 @@ ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
 </table>
 <br clear="all"/>
 
-<h4><a name="CfgSectionNameSyntax">Section Name Syntax</a></h4>
+<h4><a name="CfgSectionNameSyntax"></a>Section Name Syntax</h4>
 
 <p>There can be any amount of whitespace before and after the brackets in a
 section name; the whitespace is ignored. That is.
@@ -932,7 +992,7 @@ section name; the whitespace is ignored. That is.
 "<span class="code">[   curn   ]</span>" all specify a section named
 "curn".</p>
 
-<h4><a name="CfgVariableNameSyntax">Variable Name Syntax</a></h4>
+<h4><a name="CfgVariableNameSyntax"></a>Variable Name Syntax</h4>
 
 <p>Each section contains zero or more variable settings. Similar to a Java
 properties file, the variables are specified as name/value pairs, separated
@@ -953,7 +1013,7 @@ line is treated as a logical continuation of the first line; however, any
 leading whitespace is removed from continued lines. For example, the
 following four variable assignments all have the same value:</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -979,7 +1039,7 @@ lines, comment lines (see below) and include directives (see below)
 cannot span multiple lines.</p>
 
 
-<h4><a name="CfgExpansions">Expansions of Variable Values</a></h4>
+<h4><a name="CfgExpansions"></a>Expansions of Variable Values</h4>
 
 <p>The configuration parser preprocesses each variable's value, replacing
 embedded metacharacter sequences and substituting variable references. You
@@ -988,7 +1048,7 @@ to recognize metacharacter and variable sequences; you can also use single
 quotes. See <a href="#CfgRawValues">Suppressing Metacharacter Expansion and
 Variable Substitution</a>, below, for more details.</p>
 
-<h5><a name="CfgMetacharacters">Metacharacter Expansion</a></h5>
+<h5><a name="CfgMetacharacters"></a>Metacharacter Expansion</h5>
 
 <p>Within a variable's value, Java-style ASCII escape sequences
 <span class="code">\t</span>, <span class="code">\n</span>,
@@ -999,7 +1059,7 @@ Variable Substitution</a>, below, for more details.</p>
 single characters. Note that metacharacter expansion is performed
 <i>before</i> variable substitution.</p>
 
-<h5><a name="CfgVariableSubst">Variable Substitution</a></h5>
+<h5><a name="CfgVariableSubst"></a>Variable Substitution</h5>
 
 <p>A variable value can interpolate the values of other variables, using a
 variable substitution syntax. The general form of a variable reference is
@@ -1043,7 +1103,7 @@ case-insensitive;
 provided by the <span class="code">Configuration</span> class at runtime.
 Those variables are:</p>
 
-<table class="outlined striped" width="90%" align="center">
+<table summary="" class="outlined striped" width="90%" align="center">
 
   <tr valign="bottom" class="col-headers">
     <th align="left">"<span class="code">program</span>" Section Variable</th>
@@ -1102,7 +1162,7 @@ Those variables are:</p>
       can be anything that doesn't appear in the format string, the
       variable name, or the locale. For example:
       <blockquote>
-      <table class="bordered uncolored" align="center">
+      <table summary="" class="bordered uncolored" align="center">
         <tr valign="top">
           <td class="code" nowrap>${program:now|yyyy.MM.dd 'at' hh:mm:ss z}</td>
           <td>2004.08.20 at 03:26:27 EDT</td>
@@ -1142,7 +1202,7 @@ Those variables are:</p>
 
 <p>For example:</p>
 
-<table class="outlined striped" width="90%" align="center">
+<table summary="" class="outlined striped" width="90%" align="center">
 
   <tr valign="bottom" class="col-headers">
     <th align="left">Variable Reference</th>
@@ -1189,7 +1249,7 @@ CacheFile = <b>${myCurnDir}</b>/cache</pre>
 </table>
 <br clear="all"/>
 
-<h5><a name="CfgRawValues">Suppressing Metacharacter Expansion and Variable Substitution</a></h5>
+<h5><a name="CfgRawValues"></a>Suppressing Metacharacter Expansion and Variable Substitution</h5>
 
 <p>To prevent the parser from interpreting metacharacter sequences,
 variable substitutions and other special characters, enclose part or
@@ -1208,7 +1268,7 @@ reference, you could use:</p>
 
 <p>To include a literal single quote, you must escape it with a backslash.</p>
 
-<h4><a name="CfgIncludes">Includes</a></h4>
+<h4><a name="CfgIncludes"></a>Includes</h4>
 
 <p>A special <i>include</i> directive permits inline inclusion of another
 configuration file. The include directive takes two forms:
@@ -1236,7 +1296,7 @@ valid section.</p>
 <p>Attempting to include a file from itself, either directly or indirectly,
 will cause the parser to throw an exception.</p>
 
-<h4><a name="CfgComments">Comments and Blank Lines</a></h4>
+<h4><a name="CfgComments"></a>Comments and Blank Lines</h4>
 
 <p>A comment line is a one whose first non-whitespace character is a "#" or
 a "!". This comment syntax is identical to the one supported by a Java
@@ -1244,7 +1304,7 @@ properties file. A blank line is a line containing no content, or one
 containing only whitespace. Blank lines and comments are ignored. For
 example:</p>
 
-<table class="outlined" align="center" width="60%">
+<table summary="" class="outlined" align="center" width="60%">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -1308,7 +1368,7 @@ value) can also take a value of "0" (false), "1" (true), "no" (false) or
 <p>This section contains variable global parameters. Each is described
 in detail, below.</p>
 
-<table class="outlined striped" align="center" width="100%">
+<table summary="" class="outlined striped" align="center" width="100%">
 
   <tr valign="bottom" class="col-headers">
     <th align="left">Variable</th>
@@ -1321,7 +1381,7 @@ in detail, below.</p>
 
   <tbody>
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_AllowEmbeddedHTML">AllowEmbeddedHTML</a>&nbsp;</td>
+    <td align="left" class="code"><a name="Cfg_AllowEmbeddedHTML"></a>AllowEmbeddedHTML&nbsp;</td>
     <td align="left">Boolean</td>
     <td align="left"><p>Default setting for whether or not to allow
     embedded HTML in certain RSS feed elements, such as description,
@@ -1371,7 +1431,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_CacheFile">CacheFile</a></td>
+    <td align="left" class="code"><a name="Cfg_CacheFile"></a>CacheFile</td>
     <td align="left">File name or path name</td>
     <td align="left"><p>The full path to the file in which <i>curn</i>
       should cache feed item data. <i>curn</i> uses the cache file to
@@ -1384,7 +1444,7 @@ in detail, below.</p>
       Use the
       <a href="#Cfg_NoCacheUpdate" class="code">NoCacheUpdate</a>
       parameter, or the
-      <a href="#--no-update" class="code">--no-update</a>
+      <a href="#opt-no-update" class="code">--no-update</a>
       command line option, to tell <i>curn</i> to read, but not update,
       the cache.</p>
 
@@ -1394,15 +1454,15 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left">None. (If not specified, no cache is used.)</td>
     <td align="left">
-      <a href="#Cfg_NoCacheUpdate" class="code">NoCacheUpdate</a><br>
-      <a href="#Cfg_CacheBackup" class="code">CacheBackup</a><br>
-      <a href="#--no-cache" class="code">--no-cache</a><br>
-      <a href="#--no-update" class="code">--no-update</a>
+      <a href="#Cfg_NoCacheUpdate" class="code">NoCacheUpdate</a><br/>
+      <a href="#Cfg_CacheBackup" class="code">CacheBackup</a><br/>
+      <a href="#opt-no-cache" class="code">--no-cache</a><br/>
+      <a href="#opt-no-update" class="code">--no-update</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_CacheBackup">CacheBackup</a></td>
+    <td align="left" class="code"><a name="Cfg_CacheBackup"></a>CacheBackup</td>
     <td align="left"><p>File name or path name.</p>
     </td>
     <td align="left">The full path to a cache backup file. If this
@@ -1415,13 +1475,13 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left">None.</td>
     <td align="left">
-      <a href="#Cfg_CacheFile" class="code">CacheFile</a><br>
-      <a href="#Cfg_TotalCacheBackups" class="code">TotalCacheBackups</a><br>
+      <a href="#Cfg_CacheFile" class="code">CacheFile</a><br/>
+      <a href="#Cfg_TotalCacheBackups" class="code">TotalCacheBackups</a><br/>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_DaysToCache">DaysToCache</a></td>
+    <td align="left" class="code"><a name="Cfg_DaysToCache"></a>DaysToCache</td>
     <td align="left">Positive integer</td>
     <td align="left">
       Default maximum number of days to cache an already-read item.
@@ -1441,7 +1501,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_GetGzippedFeeds">GetGzippedFeeds</a></td>
+    <td align="left" class="code"><a name="Cfg_GetGzippedFeeds"></a>GetGzippedFeeds</td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
@@ -1456,13 +1516,13 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">true</td>
     <td align="left">
-      <a href="#--gzip" class="code">--gzip</a><br>
-      <a href="#--no-gzip" class="code">--no-gzip</a>
+      <a href="#opt-gzip" class="code">--gzip</a><br/>
+      <a href="#opt-no-gzip" class="code">--no-gzip</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MailFrom">MailFrom</a></td>
+    <td align="left" class="code"><a name="Cfg_MailFrom"></a>MailFrom</td>
     <td align="left">String</td>
     <td align="left">
       The email address to use as the sender, when mailing output.
@@ -1478,14 +1538,14 @@ in detail, below.</p>
       associated with running process and the current host name.
     </td>
     <td align="left">
-      <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
-      <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
+      <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+      <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
       <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MailSubject">MailSubject</a></td>
+    <td align="left" class="code"><a name="Cfg_MailSubject"></a>MailSubject</td>
     <td align="left">String</td>
     <td align="left">
       The subject line to use when mailing output. This parameter is only
@@ -1495,14 +1555,14 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left"><span class="code">curn output</span></td>
     <td align="left">
-      <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br>
-      <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
+      <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+      <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
       <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MaxSummarySize">MaxSummarySize</a></td>
+    <td align="left" class="code"><a name="Cfg_MaxSummarySize"></a>MaxSummarySize</td>
     <td align="left">Positive integer</td>
     <td align="left">
       If you're displaying the summary (see the
@@ -1520,7 +1580,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MaxThreads">MaxThreads</a></td>
+    <td align="left" class="code"><a name="Cfg_MaxThreads"></a>MaxThreads</td>
     <td align="left">Positive integer</td>
     <td align="left">Defines the number of concurrent download threads.
         If this value is greater than 1, then <i>curn</i> will spawn
@@ -1534,12 +1594,12 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#--threads" class="code">--threads</a>
+      <a href="#opt-threads" class="code">--threads</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_NoCacheUpdate">NoCacheUpdate</a></td>
+    <td align="left" class="code"><a name="Cfg_NoCacheUpdate"></a>NoCacheUpdate</td>
     <td align="left">Boolean</td>
     <td align="left">If set to <span class="code">true</span> (and if a cache file is specified),
       this parameter tells curn to read the cache file and honor its
@@ -1549,13 +1609,13 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#Cfg_CacheFile" class="code">CacheFile</a><br>
-      <a href="#--no-update" class="code">--no-update</a>
+      <a href="#Cfg_CacheFile" class="code">CacheFile</a><br/>
+      <a href="#opt-no-update" class="code">--no-update</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ParserClass">ParserClass</a></td>
+    <td align="left" class="code"><a name="Cfg_ParserClass"></a>ParserClass</td>
     <td align="left">String</td>
     <td align="left">
       <p>The full name of the underlying RSS parser class to be used.
@@ -1619,7 +1679,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_Quiet">Quiet</a></td>
+    <td align="left" class="code"><a name="Cfg_Quiet"></a>Quiet</td>
     <td align="left">Boolean</td>
     <td align="left">
       Normally, if an RSS feed contains no new items, most
@@ -1634,13 +1694,13 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#--quiet" class="code">--quiet</a><br>
-      <a href="#--no-quiet" class="code">--no-quiet</a>
+      <a href="#opt-quiet" class="code">--quiet</a><br/>
+      <a href="#opt-no-quiet" class="code">--no-quiet</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ShowAuthors">ShowAuthors</a></td>
+    <td align="left" class="code"><a name="Cfg_ShowAuthors"></a>ShowAuthors</td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
@@ -1651,13 +1711,13 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#--no-authors" class="code">--no-authors</a><br>
-      <a href="#--show-authors" class="code">--show-authors</a>
+      <a href="#opt-no-authors" class="code">--no-authors</a><br/>
+      <a href="#opt-show-authors" class="code">--show-authors</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ShowDates">ShowDates</a></td>
+    <td align="left" class="code"><a name="Cfg_ShowDates"></a>ShowDates</td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds or the individual items within each feed
@@ -1669,25 +1729,25 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#--no-dates" class="code">--no-dates</a><br>
-      <a href="#--show-dates" class="code">--show-dates</a>
+      <a href="#opt-no-dates" class="code">--no-dates</a><br/>
+      <a href="#opt-show-dates" class="code">--show-dates</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ShowRSSVersion">ShowRSSVersion</a></td>
+    <td align="left" class="code"><a name="Cfg_ShowRSSVersion"></a>ShowRSSVersion</td>
     <td align="left">Boolean</td>
     <td align="left">Display the RSS version for each feed.</td>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#--no-rss-version" class="code">--no-rss-version</a><br>
-      <a href="#--rss-version" class="code">--rss-version</a>
+      <a href="#opt-no-rss-version" class="code">--no-rss-version</a><br/>
+      <a href="#opt-rss-version" class="code">--rss-version</a>
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_SummaryOnly">SummaryOnly</a></td>
+    <td align="left" class="code"><a name="Cfg_SummaryOnly"></a>SummaryOnly</td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds provide a description for each item, in addition
@@ -1702,7 +1762,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_SMTPHost">SMTPHost</a></td>
+    <td align="left" class="code"><a name="Cfg_SMTPHost"></a>SMTPHost</td>
     <td align="left">String</td>
     <td align="left">
       The SMTP host to use when mailing output. This parameter is only
@@ -1712,14 +1772,14 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">localhost</td>
     <td align="left">
-      <a href="#Cfg_MailFrom" class="code">MailFrom</a><br>
-      <a href="#Cfg_MailSubject" class="code">MailSubject</a><br>
+      <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
+      <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
       <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_SortBy">SortBy</a></td>
+    <td align="left" class="code"><a name="Cfg_SortBy"></a>SortBy</td>
     <td align="left">String</td>
     <td align="left">
       <p>Default method to use to sort items within each feed. This
@@ -1746,7 +1806,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_TotalCacheBackups">TotalCacheBackups</a></td>
+    <td align="left" class="code"><a name="Cfg_TotalCacheBackups"></a>TotalCacheBackups</td>
     <td align="left">Positive integer</td>
     <td align="left">
       <p>The total number of cache backup copies to keep. If this parameter
@@ -1771,7 +1831,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_UserAgent">UserAgent</a></td>
+    <td align="left" class="code"><a name="Cfg_UserAgent"></a>UserAgent</td>
     <td align="left">String</td>
     <td align="left">
       <p>Specifies the default HTTP <span class="code">User-Agent</span> header to use.
@@ -1794,7 +1854,7 @@ in detail, below.</p>
 <br clear="all"/>
 
 <!-- ********************************************************************** -->
-<h3><a name="CfgRSSFeeds">Configuring the RSS Feeds</a></h3>
+<h3><a name="CfgRSSFeeds"></a>Configuring the RSS Feeds</h3>
 
 <p>The <i>curn</i> configuration file also contains a list of RSS feeds to
 be polled. Each feed must be specified in its own section in the
@@ -1813,7 +1873,7 @@ section names are all valid for RSS feed sections.</p>
 
 <p>Each feed section supports the following parameters.</p>
 
-<table class="outlined striped" align="center" width="90%">
+<table summary="" class="outlined striped" align="center" width="90%">
 
   <tr valign="bottom" class="col-headers">
     <th align="left">Variable</th>
@@ -1825,7 +1885,7 @@ section names are all valid for RSS feed sections.</p>
 
   <tbody>
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_AllowEmbeddedHTML">AllowEmbeddedHTML</a></td>
+    <td align="left" class="code"><a name="Feed_AllowEmbeddedHTML"></a>AllowEmbeddedHTML</td>
     <td align="left">Boolean</td>
     <td align="left"><p>Whether or not to allow
     embedded HTML in certain RSS feed elements, such as description,
@@ -1873,7 +1933,7 @@ section names are all valid for RSS feed sections.</p>
 
   <tr valign="top">
 
-    <td align="left" class="code"><a name="Feed_DaysToCache">DaysToCache</a></td>
+    <td align="left" class="code"><a name="Feed_DaysToCache"></a>DaysToCache</td>
     <td align="left">Positive integer</td>
     <td align="left">
       Maximum number of days to cache an already-read item for this
@@ -1908,7 +1968,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_EditItemURL">EditItemURL</a></td>
+    <td align="left" class="code"><a name="Feed_EditItemURL"></a>EditItemURL</td>
     <td align="left">String</td>
     <td align="left">
         <p>Apply the specified regular expression edit to each of the
@@ -1956,7 +2016,7 @@ section names are all valid for RSS feed sections.</p>
         command:</p>
 
         <blockquote>
-        <table class="bordered uncolored" id="foo-nested">
+        <table summary="" class="bordered uncolored" id="foo-nested">
           <tr valign="top">
             <td align="left" class="code">g&nbsp;</td>
             <td>Substitute for all occurrences of the regular
@@ -1988,7 +2048,7 @@ section names are all valid for RSS feed sections.</p>
         <p>will match and replace all occurrences of the string "abc",
         whether upper-, lower- or mixed-case.</p>
 
-        <p>Hint: When <a href="#--logging">logging is enabled</a>,
+        <p>Hint: When <a href="#opt-logging">logging is enabled</a>,
         <i>curn</i> will log the parsed expression at the "debug"
         log level.</p>
     </td>
@@ -1997,7 +2057,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_ForceEncoding">ForceEncoding</a></td>
+    <td align="left" class="code"><a name="Feed_ForceEncoding"></a>ForceEncoding</td>
     <td align="left">String</td>
     <td align="left">Force <i>curn</i> to ignore the character set
       encoding advertised by the remote server (if any), and use the
@@ -2057,7 +2117,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_MaxSummarySize">MaxSummarySize</a></td>
+    <td align="left" class="code"><a name="Feed_MaxSummarySize"></a>MaxSummarySize</td>
     <td align="left">Positive integer</td>
     <td align="left">
       If you're displaying the summary for the feed (see the
@@ -2130,7 +2190,7 @@ section names are all valid for RSS feed sections.</p>
         command:</p>
 
         <blockquote>
-        <table class="bordered uncolored">
+        <table summary="" class="bordered uncolored">
           <tr valign="top">
             <td align="left" class="code">g&nbsp;</td>
             <td>Substitute for all occurrences of the regular
@@ -2162,7 +2222,7 @@ section names are all valid for RSS feed sections.</p>
         <p>will match and replace all occurrences of the string "abc",
         whether upper-, lower- or mixed-case.</p>
 
-        <p>Hint: When <a href="#--logging">logging is enabled</a>,
+        <p>Hint: When <a href="#opt-logging">logging is enabled</a>,
         <i>curn</i> will log the parsed expression at the "debug"
         log level.</p>
 
@@ -2183,7 +2243,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SaveAs">SaveAs</a></td>
+    <td align="left" class="code"><a name="Feed_SaveAs"></a>SaveAs</td>
     <td align="left">File name or path name</td>
     <td align="left"><p>If set, this parameter specifies the path to
       a file where <i>curn</i> should save the raw XML contents of
@@ -2211,7 +2271,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SaveAsEncoding">SaveAsEncoding</a></td>
+    <td align="left" class="code"><a name="Feed_SaveAsEncoding"></a>SaveAsEncoding</td>
     <td align="left">String</td>
     <td align="left">If set, and if
       <a href="#Feed_SaveAs" class="code">SaveAs</a> parameter is also
@@ -2230,7 +2290,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SaveOnly">SaveOnly</a></td>
+    <td align="left" class="code"><a name="Feed_SaveOnly"></a>SaveOnly</td>
     <td align="left">Boolean</td>
     <td align="left"><p>If set, and if
      <a href="#Feed_SaveAs" class="code">SaveAs</a> is also set,
@@ -2242,7 +2302,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SavedBackups">SavedBackups</a></td>
+    <td align="left" class="code"><a name="Feed_SavedBackups"></a>SavedBackups</td>
     <td align="left">Positive integer</td>
     <td align="left">Number of saved backups to keep. If this value is
       non-zero, the handler will back the <span class="code">SaveAs</span>
@@ -2253,7 +2313,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_ShowAuthors">ShowAuthors</a></td>
+    <td align="left" class="code"><a name="Feed_ShowAuthors"></a>ShowAuthors</td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
@@ -2268,7 +2328,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SortBy">SortBy</a></td>
+    <td align="left" class="code"><a name="Feed_SortBy"></a>SortBy</td>
     <td align="left">String</td>
     <td align="left">
       <p>How to sort items in this feed. This value locally overrides the
@@ -2295,7 +2355,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SummaryOnly">SummaryOnly</a></td>
+    <td align="left" class="code"><a name="Feed_SummaryOnly"></a>SummaryOnly</td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds provide a description for each item, in addition
@@ -2331,7 +2391,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_UserAgent">UserAgent</a></td>
+    <td align="left" class="code"><a name="Feed_UserAgent"></a>UserAgent</td>
     <td align="left">String</td>
     <td align="left">
       <p>Specifies the HTTP <span class="code">User-Agent</span> header to use when
@@ -2354,9 +2414,9 @@ section names are all valid for RSS feed sections.</p>
 <br clear="all"/>
 
 <!-- ********************************************************************** -->
-<h3><a name="CfgOutputHandlers">Configuring Output Handlers</a></h3>
+<h3><a name="CfgOutputHandlers"></a>Configuring Output Handlers</h3>
 
-<h4><a name="CfgOutputHandlerSections">Output Handler Sections</a></h4>
+<h4><a name="CfgOutputHandlerSections"></a>Output Handler Sections</h4>
 
 <p>As <i>curn</i> processes each RSS feed, it parses the XML and loads the
 new items into internal data structures. When it has finished processing
@@ -2403,7 +2463,7 @@ and save the XML (assuming it has changed) even if XML parsing is disabled.</p>
 output handlers can require configuration items of their own. The two
 variables common to all output handlers are described below.</p>
 
-<table class="outlined striped" align="center" width="90%">
+<table summary="" class="outlined striped" align="center" width="90%">
   <tr valign="bottom" class="col-headers">
     <th align="left">Variable</th>
     <th align="left">Argument type</th>
@@ -2446,7 +2506,7 @@ variables common to all output handlers are described below.</p>
 <a href="#CfgOutputHandlerExamples">examples</a> following the next
 section.</p>
 
-<h4><a name="CfgPredefinedOutputHandlers">Predefined Output Handlers</a></h4>
+<h4><a name="CfgPredefinedOutputHandlers"></a>Predefined Output Handlers</h4>
 
 <p><i>curn</i> comes bundled with the following built-in output handlers.</p>
 
@@ -2476,7 +2536,7 @@ have been reimplemented to use the
 <span class="code">FreeMarkerOutputHandler</span> in conjunction with
 built-in templates that produce the appropriate kind of output.</p>
 
-<table class="outlined striped cell-outlined" align="center" width="90%">
+<table summary="" class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -2547,7 +2607,7 @@ built-in templates that produce the appropriate kind of output.</p>
     <td align="left" class="code">true</td>
   </tr>
   <tr valign="top">
-    <td align="left" class="code"><a name="Freemarker_TemplateFile">TemplateFile</a></td>
+    <td align="left" class="code"><a name="Freemarker_TemplateFile"></a>TemplateFile</td>
     <td align="left">Two strings</td>
     <td align="left">Specifies the location of the FreeMarker template file.
       The location is specified with two parameters:
@@ -2564,7 +2624,7 @@ built-in templates that produce the appropriate kind of output.</p>
           it and screws up the surrounding table.
       -->
 
-      <table class="unbordered" align="center">
+      <table summary="" class="unbordered" align="center">
 	<tr valign="top">
 	<td class="code"><a href="#builtin-templates">builtin</a></td>
 	<td>The identifier specifies one of the built-in <i>curn</i>
@@ -2608,7 +2668,6 @@ TemplateFile: classpath com/example/mycurn/output/text.ftl</pre></blockquote>
 	    (relative or absolute) to the template file.
 	    <p>Examples:</p>
 	    <blockquote><pre>
-	    <span class="path">
 TemplateFile: file 'C:\curn\html.ftl'
 TemplateFile: file "${system:user.home}\\curn\\text.ftl"
 TemplateFile: file ../.curn/summary.ftl</pre></blockquote>
@@ -2721,7 +2780,7 @@ to transform the template and data-model into a document.</p>
 notation used here is similar to the notation used within the FreeMarker
 documentation.</p>
 
-<table class="bordered colored" align="center">
+<table summary="" class="bordered colored" align="center">
 <tr>
 <td>
 <pre>
@@ -2815,7 +2874,7 @@ documentation.</p>
 <p>The <span class="code">FreeMarkerOutputHandler</span> also places three
 FreeMarker methods in the data model, as well:</p>
 
-<table class="outlined striped cell-outlined" align="center" width="80%">
+<table summary="" class="outlined striped cell-outlined" align="center" width="80%">
   <tr class="title">
     <th colspan="4">Methods in the Data Model</th>
   </tr>
@@ -2848,7 +2907,7 @@ FreeMarker methods in the data model, as well:</p>
       </ul>
     </td>
     <td class="code" nowrap>
-      ${wrapText (item.title, 4)}<br>
+      ${wrapText (item.title, 4)}<br/>
       ${wrapText (item.description, 4, 50)}
     </td>
   </tr>
@@ -2865,7 +2924,7 @@ FreeMarker methods in the data model, as well:</p>
       </ul>
     </td>
     <td class="code" nowrap>
-      ${indentText (item.url, 4)}<br>
+      ${indentText (item.url, 4)}<br/>
       ${indentText (channel.url, 8)}
     </td>
   </tr>
@@ -2901,7 +2960,7 @@ template, by following these links:</p>
   <li><a href="Summary.txt">Simple Summary</a>
 </ul>
 
-<table class="bordered" align="center">
+<table summary="" class="bordered" align="center">
   <tr>
     <th class="title">Sample FreeMarker template</th>
   </tr>
@@ -2972,7 +3031,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
       class is more flexible.
 </dl>
 
-<table class="outlined striped cell-outlined" align="center" width="90%">
+<table summary="" class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -3077,7 +3136,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
       class is more flexible.
 </dl>
 
-<table class="outlined striped cell-outlined" align="center" width="90%">
+<table summary="" class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -3146,7 +3205,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
       class is more flexible.
 </dl>
 
-<table class="outlined striped cell-outlined" align="center" width="90%">
+<table summary="" class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -3221,7 +3280,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
       BSF. For complete details on writing a script output handler,
       See <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>, below.
 </dl>
-<table class="outlined striped cell-outlined" align="center" width="90%">
+<table summary="" class="outlined striped cell-outlined" align="center" width="90%">
   <tr class="title">
     <th colspan="5">Additional Configuration Items</th>
   </tr>
@@ -3264,7 +3323,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     without any real language to back them up any more (such as
     the Bean Markup Language).</p>
 
-    <table class="bordered uncolored" cellspacing="2" align="center" width="100%">
+    <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="100%">
       <tr valign="top">
         <th>Value&nbsp;&nbsp;&nbsp;&nbsp;</th>
         <th>Corresponding Language</th>
@@ -3389,7 +3448,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 </table>
 <br clear="all"/>
 
-<h4><a name="CfgOutputHandlerExamples">Examples</a></h4>
+<h4><a name="CfgOutputHandlerExamples"></a>Examples</h4>
 
 <p><a name="CfgOutputHandlerExample1"><span class="exampleHeader">Example 1</span></a>:
 The output handler sections from a <i>curn</i> configuration file that
@@ -3397,7 +3456,7 @@ produces HTML output. If <i>curn</i> is called with email addresses, the
 HTML output will be mailed to the specified email addresses. The HTML
 output is not saved anywhere.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[OutputHandler]
@@ -3414,7 +3473,7 @@ email addresses, the text output and the HTML output will be mailed to the
 specified email addresses as "multipart/alternative" attachments. The
 output is not saved anywhere.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[OutputHandlerText]
@@ -3432,7 +3491,7 @@ The output handler sections from a <i>curn</i> configuration file that
 produces HTML output to a file (but not to the user), and displays (or emails)
 the user a text summary that contains a link to the HTML file.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[OutputHandlerSummary]
@@ -3458,7 +3517,7 @@ displaying them. (See
 <a href="#Bandwidth">Being Bandwidth Friendly</a> for reasons why you might
 want to do this.)</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>[vars]
@@ -3500,7 +3559,7 @@ personal crontab, rather than the system-wide
 <span class="path">/etc/crontab</span> file.
 Here's a sample crontab entry that does this:</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>0 8,12,16 * * 1-5  java org.clapper.curn.Tool my_address@example.com
@@ -3554,7 +3613,7 @@ this section. Unless, of course, someone else wants to supply the relevant
 details...)
 
 <!-- ********************************************************************** -->
-<h2><a name="Bandwidth">Being "Bandwidth Friendly"</a></h2>
+<h2><a name="Bandwidth"></a>Being "Bandwidth Friendly"</h2>
 
 <p>When pulling down RSS documents from remote HTTP servers, <i>curn</i>
 does its best to minimize the amount of bandwidth it consumes. By default,
@@ -3585,7 +3644,7 @@ may vary, but if you're using <i>curn</i> to poll remote RSS feeds every
 five minutes, you probably fall into the "impolite RSS feed user"
 category.</p>
 
-<h5><a name="ConsolidateCommonFeeds">Consolidate Common Feeds</a></h5>
+<h5><a name="ConsolidateCommonFeeds"></a>Consolidate Common Feeds</h5>
 
 <p>Suppose you have a number of users, all of whom run <i>curn</i> several
 times a day. Further suppose that there's significant commonality in the
@@ -3609,7 +3668,7 @@ http://www.example.org/rss/big_jimmys_blog.xml
 <p>You could run <i>curn</i> periodically with the following configuration
 file, to download each of those feeds without producing any output.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -3713,7 +3772,7 @@ classes in its configuration file, you can easily extend <i>curn's</i>
 capabilities by writing your output handler or integrating a different
 RSS parser.</p>
 
-<h3><a name="UnsupportedParser">Using an Unsupported RSS Parser</a></h3>
+<h3><a name="UnsupportedParser"></a>Using an Unsupported RSS Parser</h3>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
 instead of
@@ -3726,7 +3785,7 @@ Integrating that parser with <i>curn</i> requires writing some adapter classes
 that implement some interfaces and extend some classes provided with the
 <i>curn</i> software. Those classes are:</p>
 
-<table class="outlined striped" align="center" width="100%">
+<table summary="" class="outlined striped" align="center" width="100%">
 
   <tbody>
   <tr valign="bottom" class="col-headers">
@@ -3778,7 +3837,7 @@ integration, see the classes in the <i>curn</i> source code package
 <a href="../../javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
 <a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
 
-<h3><a name="NewOutputHandler">Writing Your Own Output Handler</a></h3>
+<h3><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h3>
 
 <p>There are two ways to write your own output handler. You can write a
 Java class that implements the output handler, or you can write a script
@@ -3796,7 +3855,7 @@ file format (as opposed to writing an output handler to send data over
 a network connection or to a database), then there's a good chance that
 writing a FreeMarker template will be simpler and faster.</p>
 
-<h4><a name="NewJavaOutputHandler">Writing a Java Output Handler</a></h4>
+<h4><a name="NewJavaOutputHandler"></a>Writing a Java Output Handler</h4>
 
 <p>Writing a new output handler is reasonably straightforward:</p>
 
@@ -3819,7 +3878,7 @@ comments and documentation and also implements a common base class.)</p>
 <p>First, let's look at the top of the class and the required
 <span class="code">init()</span> method:</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -4010,7 +4069,7 @@ provide:
 <span class="code">init()</span> method and class definition.
 Changes from the original, above, are marked in bold.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -4164,7 +4223,7 @@ output-related methods that are required by the
 
 <p>Here's the code for the methods our sample class must implement:</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -4331,7 +4390,7 @@ all kinds of output, including (for instance):</p>
   <li>etc.
 </ul>
 
-<h4><a name="NewScriptOutputHandler">Writing a Script Output Handler</a></h4>
+<h4><a name="NewScriptOutputHandler"></a>Writing a Script Output Handler</h4>
 
 <p>Writing a script output handler is even simpler, in a way, than writing
 a Java output handler. You simply write a script in a supported language,
@@ -4339,7 +4398,7 @@ then configure an instance of the
 <a href="#CfgScriptOutputHandler" class="code">ScriptOutputHandler</a> class
 to point to your script.</p>
 
-<h5><a name="SupportedScriptingLanguages">Supported Scripting Languages</a></h5>
+<h5><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h5>
 
 <p>The
 <a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
@@ -4353,7 +4412,7 @@ for the list of languages supported by default.</p>
 <p>At runtime, <i>curn</i>'s CLASSPATH must include the
 BSF jar file and the jar files for the scripting languages you want to use.</p>
 
-<h5><a name="AdditionalScriptingLanguages">Supporting Additional Scripting Languages</a></h5>
+<h5><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h5>
 
 <p>If you want to use a BSF scripting language engine that isn't one of the
 above, simply write a Java class that extends the
@@ -4365,7 +4424,7 @@ additional language you want to support. For example, a scripting
 output handler that supports (fictitious) scripting language <i>JStooge</i>
 might look like this:</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
@@ -4398,7 +4457,7 @@ public class JStoogeScriptOutputHandler extends ScriptOutputHandler
   </tr>
 </table>
 
-<h5><a name="WritingScriptOutputHandler">Writing a Script Output Handler</a></h5>
+<h5><a name="WritingScriptOutputHandler"></a>Writing a Script Output Handler</h5>
 
 <p>The <span class="code">ScriptOutputHandler</span> class's
 
@@ -4410,7 +4469,7 @@ method can invoke the script. That way, the overhead of invoking the
 script occurs only once. Via BSF, <span class="code">ScriptOutputHandler</span>
 makes the following objects available to the script.</p>
 
-<table border="outlined striped" align="center" width="90%">
+<table summary="" border="outlined striped" align="center" width="90%">
   <tr valign="top" class="col-headers">
     <th align="left">Bound name</th>
     <th align="left">Java type</th>
@@ -4502,7 +4561,7 @@ script for brevity. You can find the complete script, along with a
 of the same functionality, in the <i>curn</i> source bundle, in directory
 <span class="path">src/org/clapper/curn/output/script</span>.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr>
     <td>
 <blockquote><pre>
@@ -4663,14 +4722,14 @@ main()
   </tr>
 </table>
 
-<h5><a name="ConfigScriptOutputHandler">Configuring the Script Output Handler</a></h5>
+<h5><a name="ConfigScriptOutputHandler"></a>Configuring the Script Output Handler</h5>
 
 <p>The <a href="#CfgScriptOutputHandler">configuration section for the
 <span class="code">ScriptOutputHandler</span> class</a> provides a detailed
 description of the configuration parameters. Here is a sample configuration
 entry for our <span class="code">TextOutputHandler.py</span> Jython script.</p>
 
-<table class="bordered uncolored" align="center">
+<table summary="" class="bordered uncolored" align="center">
   <tr>
     <td>
 <blockquote><pre>
@@ -4688,7 +4747,268 @@ Message: Copy saved in file ${system:user.home}/curn/rss-py.txt
 </table>
 
 <!-- ********************************************************************** -->
-<h2><a name="AppendixA">Appendix A: Similar Products and Tools</a></h2>
+
+<h2><a name="Troubleshooting"></a>Troubleshooting</h2>
+
+<p>In the event of problems, your first step should be to enable logging.
+The next section discusses <i>curn</i>'s logging infrastructure.</p>
+
+<h3><a name="Logging"></a>Logging</h3>
+
+<p><i>curn</i> issues log messages via the
+<a href="http://jakarta.apache.org/commons/logging/index.html">Jakarta Commons Logging API</a> (JCL),
+so it'll log to any JCL-compatible logging framework. The two most popular
+frameworks are
+<a href="http://logging.apache.org/">Log4J</a> and the
+<span class="code">java.util.logging</span> framework that comes with
+the Java JDK or J2SE runtime.</p>
+
+<p><i>curn</i>'s
+graphical installer automatically installs the JCL jars, but it does not
+install Log4J (or any other third-party logging framework); so, by default,
+<i>curn</i> will log via the <span class="code">java.util.logging</span>
+API.</p>
+
+<p>When initialized at runtime, some underlying logging frameworks will
+automatically begin logging if they find an appropriate configuration file
+in some default location. To prevent this behavior, <i>curn</i> does not
+initialize the JCL layer unless the
+<a href="#opt-logging" class="code">--logging</a> command-line parameter is
+specified. If <span class="code">--logging</span> is not specified, <i>curn</i>
+will not issue log messages even if default logging configuration files are
+present.</p>
+
+<p>All <i>curn</i> Java classes are in packages within the
+<span class="code">org.clapper.curn</span> namespace.</p>
+
+<p>Each logging framework has its own initialization files; the following
+two sections show how you might enable logging for the two more popular
+logging frameworks, <span class="code">java.util.logging</span> and Log4J.</p>
+
+<h4><a name="java.util.logging"></a>java.util.logging</h4>
+
+<p>This section assumes that you're using a properties file to configure
+the logging framework; if you're using a custom logging configuration class,
+you'll have to work out the configuration details yourself.</p>
+
+<p>When you use the <span class="code">java.util.logging</span> framework
+with <i>curn</i>, you
+must specify the location of the logging configuration file with
+system property <span class="code">java.util.logging.config.file</span>.
+file. According to the Javadoc for the
+<a href="http://java.sun.com/j2se/1.5.0/docs//api/java/util/logging/LogManager.html" class="code">LogManager</a> class, the property may be set via
+the Preferences API or as a command-line property definition passed to the
+<span class="code">java</span> command.
+
+<p>To invoke <i>curn</i> on a Unix-like system, so that it
+logs through the <span  class="code">java.util.logging</span> framework, you
+might use a command line like this:</p>
+
+<blockquote>
+<pre>java -Djava.util.logging.config.file=/home/bmc/curn/logging.properties org.clapper.curn.Tool --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>The <a href="#curn-script" class="code">curn</a> shell script installed
+by the graphical installer understands <span class="code">-D</span> parameters;
+if you use the shell script, you can shorten the above command to:</p>
+
+<blockquote>
+<pre>curn -Djava.util.logging.config.file=/home/bmc/curn/logging.properties --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>The Windows <a href="#curn-script" class="code">curn.bat</a> command file
+currently does not understand <span class="code">-D</span> parameters, so you
+either have to hack the command file or run <i>curn</i> manually, like this:</p>
+
+<blockquote>
+<pre>java -Djava.util.logging.config.file=C:\curn\logging.properties org.clapper.curn.Tool --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>Here's a configuration file that writes logs all messages at the
+"info" level or lower, to a file. (Change "INFO" to "FINEST" to get messages
+at the debug level.)</p>
+
+<table class="outlined" align="center" summary="">
+  <tr><td><pre>
+handlers=java.util.logging.FileHandler
+.level=FINEST
+
+# %h is replaced with the user's home directory
+java.util.logging.FileHandler.pattern = %h/curn/log.out
+java.util.logging.FileHandler.level=FINEST
+java.util.logging.FileHandler.count = 1
+java.util.logging.FileHandler.formatter = org.clapper.util.misc.JDK14TextLogFormatter
+
+org.clapper.curn.level=INFO</pre>
+  </td></tr>
+</table>
+
+<p>If you want to have exceptions mailed to you (which can be useful when
+running <i>curn</i> from a scheduler, such as <i>cron</i>(8)), then download
+and install the <a href="http://smtphandler.sourceforge.net/">SMTPHandler</a> class from
+<a href="http://smtphandler.sourceforge.net/" class="url">smtphandler.sourceforge.net</a>, and use this configuration file, instead:</p>
+
+<table class="outlined" align="center" summary="">
+  <tr><td><pre>
+handlers=java.util.logging.FileHandler
+.level=FINEST
+
+# %h is replaced with the user's home directory
+java.util.logging.FileHandler.pattern = %h/curn/log.out
+java.util.logging.FileHandler.level=FINEST
+java.util.logging.FileHandler.count = 1
+java.util.logging.FileHandler.formatter = org.clapper.util.misc.JDK14TextLogFormatter
+
+smtphandler.SMTPHandler.level=WARNING
+smtphandler.SMTPHandler.smtpHost=<b>your_smtp_host_here</b>
+smtphandler.SMTPHandler.to=<b>your_email_address_here</b>
+smtphandler.SMTPHandler.from=<b>your_email_address_here</b>
+smtphandler.SMTPHandler.subject=[SMTPHandler] curn error
+smtphandler.SMTPHandler.bufferSize=4096
+smtphandler.SMTPHandler.formatter=org.clapper.util.logging.JavaUtilLoggingTextFormatter
+
+org.clapper.curn.level=INFO</pre>
+  </td></tr>
+</table>
+
+<p>Note that both files use the
+<span class="code">org.clapper.util.misc.JDK14TextLogFormatter</span>
+formatter class, instead of the JDK-supplied
+<span class="code">java.util.logging.SimpleFormatter</span>. I don't care
+for the text format that <span class="code">SimpleFormatter</span> produces,
+so I use a formatter in from utility library that produces output that's
+similar to the default Log4J text formatter.</p>
+
+<p>Obviously, you can use any formatter you wish, including the
+<span class="code">java.util.logging.XMLFormatter</span> class.</p>
+
+<h4><a name="Log4J"></a>Log4J</h4>
+
+<p>This section assumes that you're using a properties file to configure
+the logging framework; if you're using an XML configuration file, you'll have
+to adapt these instructions as appropriate.</p>
+
+<p>When you use the Log4J framework with <i>curn</i>, you must specify the
+location of the logging configuration file using
+system property <span class="code">log4j.configuration</span>
+Unlike the <a href="#java.util.logging" class="code">java.util.logging</a>
+framework, the argument to <span class="code">log4j.configuration</span> is
+not a pathname; it's URL.</p>
+
+<p>To invoke <i>curn</i> on a Unix-like system, so that it
+logs through the Log4J framework, you might use a command line like this:</p>
+
+<blockquote>
+<pre>java -Dlog4j.configuration=file:///home/bmc/curn/logging.properties org.clapper.curn.Tool --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>The <a href="#curn-script" class="code">curn</a> shell script installed
+by the graphical installer understands <span class="code">-D</span> parameters;
+if you use the shell script, you can shorten the above command to:</p>
+
+<blockquote>
+<pre>curn -Dlog4j.configuration=file:///home/bmc/curn/logging.properties --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>The Windows <a href="#curn-script" class="code">curn.bat</a> command file
+currently does not understand <span class="code">-D</span> parameters, so you
+either have to hack the command file or run <i>curn</i> manually, like this:</p>
+
+<blockquote>
+<pre>java -Dlog4j.configuration=file://C|/curn/logging.properties org.clapper.curn.Tool --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>Here's a configuration file that writes logs all messages at the
+"info" level or lower, to a file. (Change "info" to "debug" to get messages
+at the debug level.)</p>
+
+<table class="outlined" align="center" summary="">
+  <tr><td><pre>
+log4j.rootLogger=info, File
+log4j.appender.File=org.apache.log4j.FileAppender
+log4j.appender.File.layout=org.apache.log4j.PatternLayout
+
+log4j.appender.File.file=${user.home}/curn/log.out
+
+# Overwrite the file each time
+log4j.appender.File.append=false
+
+# Print the date in ISO 8601 format
+log4j.appender.File.layout.ConversionPattern=%d %-5p (%c{1}): %m%n
+
+log4j.logger.org.clapper.curn=info</pre>
+  </td></tr>
+</table>
+
+<p>If you want to have exceptions mailed to you (which can be useful when
+running <i>curn</i> from a scheduler, such as <i>cron</i>(8)), then you
+have to use the Log4J <span class="code">LevelRangeFilter</span> class to
+filter the messages going to individual Log4J appenders. You can't use a
+properties-based configuration file in this case, because Log4J's
+properties file configurator
+<a href="http://wiki.apache.org/logging-log4j/LogToAppenderByLevel">doesn't support filters.</a>
+Instead, you must
+use an XML configuration file, such as the one shown below.</p>
+
+<table class="outlined" align="center" summary="">
+  <tr><td><pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE log4j:configuration SYSTEM "log4j.dtd"&gt;
+&lt;log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"&gt;
+
+  &lt;appender name="logfile" class="org.apache.log4j.FileAppender"&gt;
+    &lt;param name="File" value="${user.home}/.curn/log.out"/&gt;
+    &lt;layout class="org.apache.log4j.PatternLayout"&gt;
+      &lt;param name="ConversionPattern" value="=%d %-5p (%c{1}): %m%n"/&gt;
+    &lt;/layout&gt;
+  &lt;/appender&gt;
+
+  &lt;appender name="mail" class="org.apache.log4j.net.SMTPAppender"&gt;
+    &lt;param name="BufferSize" value="4096"/&gt;
+    &lt;param name="From" value="bmc@clapper.org"/&gt;
+    &lt;param name="To" value="bmc@clapper.org"/&gt;
+    &lt;param name="Subject" value="curn log message"/&gt;
+    &lt;param name="SMTPHost" value="mail.inside.clapper.org"/&gt;
+    &lt;layout class="org.apache.log4j.PatternLayout"&gt;
+      &lt;param name="ConversionPattern" value="=%d %-5p (%c{1}): %m%n"/&gt;
+    &lt;/layout&gt;
+
+    &lt;filter class="org.apache.log4j.varia.LevelRangeFilter"&gt;
+      &lt;param name="LevelMin" value="error"/&gt;
+      &lt;param name="AcceptOnMatch" value="true"/&gt;
+    &lt;/filter&gt;
+  &lt;/appender&gt;
+
+  &lt;logger name="org.clapper.curn"&gt;
+    &lt;level value="debug"/&gt;
+    &lt;appender-ref ref="mail"/&gt;
+    &lt;appender-ref ref="logfile"/&gt;
+  &lt;/logger&gt;
+
+  &lt;root&gt;
+    &lt;level value="fatal"/&gt;
+    &lt;appender-ref ref="logfile"/&gt;
+    &lt;appender-ref ref="mail"/&gt;
+  &lt;/root&gt;
+&lt;/log4j:configuration&gt;
+</pre>
+  </td></tr>
+</table>
+
+<p>Note that both files use the
+<span class="code">org.clapper.util.misc.JDK14TextLogFormatter</span>
+formatter class, instead of the JDK-supplied
+<span class="code">java.util.logging.SimpleFormatter</span>. I don't care
+for the text format that <span class="code">SimpleFormatter</span> produces,
+so I use a formatter in from utility library that produces output that's
+similar to the default Log4J text formatter.</p>
+
+<p>Obviously, you can use any formatter you wish, including the
+<span class="code">java.util.logging.XMLFormatter</span> class.</p>
+
+
+<!-- ********************************************************************** -->
+<h2><a name="AppendixA"></a>Appendix A: Similar Products and Tools</h2>
 
 <p>Adam Sampson's <a href="http://offog.org/code/rawdog.html"><i>rawdog</i></a>
 (RSS Aggregator Without Delusions Of Grandeur) is similar in spirit,
@@ -4696,18 +5016,15 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
 <i>rawdog</i> is intended to be run from a scheduler such as <i>cron</i>.</p>
 
 <!-- ********************************************************************** -->
-<h2><a name="EndNotes">End Notes</a></h2>
+<h2><a name="EndNotes"></a>End Notes</h2>
 
-<table width="100%" align="left">
-  <tr valign="top">
-    <td align="left"><a name="Note1">[1]</a></td>
-    <td align="left">
-      <p>Normally, adding attachments to an email message results in a
-      "multipart/mixed" message. According to
-      <a href="http://www.ietf.org/rfc/rfc1341.txt">RFC 1341</a>, the
-      differences between "multipart/mixed" and "multipart/alternative"
-      messages are:</p>
-        <table border="0">
+<p class="endnote"><a name="Note1"></a>[1] Normally, adding attachments to
+an email message results in a "multipart/mixed" message. According to
+<a href="http://www.ietf.org/rfc/rfc1341.txt">RFC 1341</a>, the
+differences between "multipart/mixed" and "multipart/alternative"
+messages are:</p>
+<div class="endnote">
+        <table summary="" border="0">
           <tr valign="top">
             <td>multipart/mixed</td>
             <td>Intended for use when the body parts (i.e., the text and the
@@ -4734,52 +5051,40 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
                 only the plain text part.</td>
            </tr>
         </table>
-    </td>
-  </tr>
+</div>
 
-  <tr valign="top">
-    <td align="left"><a name="Note2">[2]</a></td>
-    <td align="left"><i>curn</i>'s configuration file is parsed by a subclass
-      of the
-      <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
-      class, so it implicitly supports all the features provided by that class.
-    </td>
-  </tr>
+<p class="endnote"><a name="Note2"></a>[2]
+<i>curn</i>'s configuration file is parsed by a subclass of the
+<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
+class, so it implicitly supports all the features provided by that class.
 
-  <tr valign="top">
-    <td align="left"><a name="Note3">[3]</a></td>
-    <td align="left">
-       It's also possible, though hairy, to escape the special meaning
-       of special characters via the backslash character. For instance,
-       you can escape the variable substitution lead-in character, '$', with a
-       backslash. e.g., "\$". This technique is not recommended, however,
-       because you have to double-escape any backslash characters that you want
-       to be preserved literally. For instance, to get "\t", you must specify
-       "\\\\t". To get a literal backslash, specify "\\\\". (Yes, that's
-       four backslashes, just to get a single unescaped one.) This
-       double-escaping is a regrettable side effect of how the
-       configuration file parses variable values: It makes two separate
-       passes over the value, one for metacharacter expansion and another
-       for variable expansion. Each of those passes honors and processes
-       backslash escapes. This problem would go away if the configuration
-       file parser parsed both metacharacter sequences and variable
-       substitutions itself, in one pass. It doesn't currently do that,
-       because I wanted to make use of the existing
-       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html" class="code">org.clapper.util.text.XStringBuffer</a>
-       class's
-       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html#decodeMetacharacters()" class="code">decodeMetacharacters()</a>
-       method and the
-       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/UnixShellVariableSubstituter.html" class="code">org.clapper.util.text.UnixShellVariableSubstituter</a>
-       class. In general, you're better off just sticking with single quotes.
-       I may eventually fix this problem, but single quotes work now and will
-       continue to work regardless.
-    </td>
-  </tr>
-</table>
+<p class="endnote"><a name="Note3"></a>[3]
+It's also possible, though hairy, to escape the special meaning of special
+characters via the backslash character. For instance, you can escape the
+variable substitution lead-in character, '$', with a backslash. e.g., "\$".
+This technique is not recommended, however, because you have to
+double-escape any backslash characters that you want to be preserved
+literally. For instance, to get "\t", you must specify "\\\\t". To get a
+literal backslash, specify "\\\\". (Yes, that's four backslashes, just to
+get a single unescaped one.) This double-escaping is a regrettable side
+effect of how the configuration file parses variable values: It makes two
+separate passes over the value, one for metacharacter expansion and another
+for variable expansion. Each of those passes honors and processes backslash
+escapes. This problem would go away if the configuration file parser parsed
+both metacharacter sequences and variable substitutions itself, in one
+pass. It doesn't currently do that, because I wanted to make use of the
+existing
+<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html"
+class="code">org.clapper.util.text.XStringBuffer</a> class's 
+<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html#decodeMetacharacters()"
+class="code">decodeMetacharacters()</a> method and the 
+<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/UnixShellVariableSubstituter.html"
+class="code">org.clapper.util.text.UnixShellVariableSubstituter</a> class.
+In general, you're better off just sticking with single quotes. I may
+eventually fix this problem, but single quotes work now and will continue
+to work regardless.
 
-<br clear="all"/>
-
-<hr>
+<hr/>
 <pre>$Id$</pre>
 </body>
 </html>
