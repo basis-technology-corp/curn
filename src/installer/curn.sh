@@ -29,6 +29,7 @@ $INSTALL_PATH/lib/xerces.jar:\
 $INSTALL_PATH/lib/activation.jar:\
 $INSTALL_PATH/lib/mail.jar:\
 $INSTALL_PATH/lib/freemarker.jar:\
+$INSTALL_PATH/lib/commons-logging.jar:\
 $INSTALL_PATH/lib/curn.jar:\
 $CLASSPATH \
 org.clapper.curn.Tool "${@}"
