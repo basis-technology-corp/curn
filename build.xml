@@ -37,7 +37,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-				Properties
+                                Properties
   ***************************************************************************
   -->
 
@@ -49,7 +49,7 @@ source and documentation packages.
   <property name="src.top" location="src"/>
   <property name="src.dir" location="${src.top}/${pkg.path}"/>
 
-  <!-- 
+  <!--
        <javac> uses a different source directory to prevent constant
        recompilation. See "http://ant.apache.org/faq.html#always-recompiles"
        for details.
@@ -76,7 +76,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			    Paths and Patterns
+                            Paths and Patterns
   ***************************************************************************
   -->
 
@@ -88,7 +88,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			  Initialization Targets
+                          Initialization Targets
   ***************************************************************************
   -->
 
@@ -105,7 +105,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			       Meta-Targets
+                               Meta-Targets
   ***************************************************************************
   -->
 
@@ -120,13 +120,13 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-		      Main (Top-level) Sources Target
+                      Main (Top-level) Sources Target
   ***************************************************************************
   -->
 
   <target name="main">
     <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
+           source="${javac.source}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -157,7 +157,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			  Resource Bundle Target
+                          Resource Bundle Target
   ***************************************************************************
   -->
 
@@ -179,8 +179,8 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			  Informa Parser Targets
-	      (Only built if Informa libraries are present.)
+                          Informa Parser Targets
+              (Only built if Informa libraries are present.)
   ***************************************************************************
   -->
 
@@ -203,10 +203,10 @@ source and documentation packages.
 
   <target name="parser.informa"
           depends="-check.informa"
-	  if="informa.exists">
+          if="informa.exists">
     <echo level="verbose">Found Informa parser. Compiling Informa classes.</echo>
     <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
+           source="${javac.source}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -233,8 +233,8 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			    Rome Parser Targets
-		(Only built if Rome libraries are present.)
+                            Rome Parser Targets
+                (Only built if Rome libraries are present.)
   ***************************************************************************
   -->
 
@@ -256,10 +256,10 @@ source and documentation packages.
 
   <target name="parser.rome"
           depends="-check.rome"
-	  if="rome.exists">
+          if="rome.exists">
     <echo level="verbose">Found Rome parser. Compiling Rome classes.</echo>
     <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
+           source="${javac.source}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -286,7 +286,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			Main Output Handler Targets
+                        Main Output Handler Targets
   ***************************************************************************
   -->
 
@@ -295,7 +295,7 @@ source and documentation packages.
       First the local targets.
     -->
     <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
+           source="${javac.source}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -313,8 +313,8 @@ source and documentation packages.
 
       <patternset id="output">
          <include name="${pkg.path}/output/*.java"/>
-	 <include name="${pkg.path}/output/freemarker/*.java"/>
-	 <include name="${pkg.path}/output/html/*.java"/>
+         <include name="${pkg.path}/output/freemarker/*.java"/>
+         <include name="${pkg.path}/output/html/*.java"/>
       </patternset>
 
     </javac>
@@ -328,14 +328,14 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-		       Script Output Handler Targets
+                       Script Output Handler Targets
   ***************************************************************************
   -->
 
   <target name="output.script" depends="-check.bsf" if="bsf.exists">
 
     <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
+           source="${javac.source}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -376,7 +376,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-		       Email Output Handler Targets
+                       Email Output Handler Targets
   ***************************************************************************
   -->
 
@@ -397,7 +397,7 @@ source and documentation packages.
   <target name="email" depends="-check.email" if="email.exists">
     <echo level="verbose">Found mail classes. Compiling mail support.</echo>
     <javac srcdir="${javac.src.dir}"
-	   source="${javac.source}"
+           source="${javac.source}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -422,7 +422,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-		      Version and Build-info Targets
+                      Version and Build-info Targets
   ***************************************************************************
   -->
 
@@ -457,7 +457,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			      Javadoc targets
+                              Javadoc targets
   ***************************************************************************
   -->
 
@@ -466,14 +466,14 @@ source and documentation packages.
     <javadoc
              destdir="${javadocs_api_dir}"
              sourcepath="${src.top}"
-	     source="${javac.source}"
-	     breakiterator="true"
+             source="${javac.source}"
+             breakiterator="true"
              author="true"
              version="true"
              splitindex="true"
              use="true"
              excludepackagenames=""
-	     overview="overview.html"
+             overview="overview.html"
              packagenames="org.clapper.curn.*"
              classpathref="project.class.path"
              windowtitle="clapper.org curn utility">
@@ -486,7 +486,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			     Packaging Targets
+                             Packaging Targets
   ***************************************************************************
   -->
 
@@ -536,30 +536,30 @@ source and documentation packages.
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_src_zipfile}">
       <!--
-	  WARNING: This file set is essentially duplicated in the installer's
-	  config file, below. There's no way around that, unfortunately.
+          WARNING: This file set is essentially duplicated in the installer's
+          config file, below. There's no way around that, unfortunately.
       -->
       <zipfileset id="source.fileset" dir="."
-		  prefix="${zip_dir_prefix}" casesensitive="yes">
-	<exclude name="${dist}/**"/>
-	<exclude name="${build}"/>
-	<exclude name="**/CVS"/>
-	<include name="**/*.java"/>
-	<include name="**/package.html"/>
-	<include name="overview.html"/>
-	<include name="**/*.xml"/>
-	<include name="**/*.ftl"/>
-	<include name="**/*.properties"/>
+                  prefix="${zip_dir_prefix}" casesensitive="yes">
+        <exclude name="${dist}/**"/>
+        <exclude name="${build}"/>
+        <exclude name="**/CVS"/>
+        <include name="**/*.java"/>
+        <include name="**/package.html"/>
+        <include name="overview.html"/>
+        <include name="**/*.xml"/>
+        <include name="**/*.ftl"/>
+        <include name="**/*.properties"/>
       </zipfileset>
     </zip>
   </target>
 
   <target name="fulldist"
           depends="dist,
-		   -set.version.properties,
-		   srczip,
-		   doczip,
-		   javadoczip"
+                   -set.version.properties,
+                   srczip,
+                   doczip,
+                   javadoczip"
           description="Generate the distribution and source jars">
     <copy file="${code_jar_path}"
           tofile="${release_dir}/${versioned_code_jar_file}"/>
@@ -567,7 +567,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			     Installer Target
+                             Installer Target
   ***************************************************************************
   -->
 
@@ -580,7 +580,7 @@ source and documentation packages.
   <property name="src.install" value="${src.top}/installer"/>
 
   <target name="installer"
-	  depends="-set.version.properties">
+          depends="-set.version.properties">
 
     <!-- Define the IzPack task -->
 
@@ -595,24 +595,24 @@ source and documentation packages.
     <!-- Copy and rename the appropriate ocutil.jar file -->
 
     <condition property="ocutil.dir"
-	       value="${env.OCUTIL_DIR}"
-	       else="${env.wwwtest}/software/java/util/download/latest">
+               value="${env.OCUTIL_DIR}"
+               else="${env.wwwtest}/software/java/util/download/latest">
       <isset property="env.OCUTIL_DIR"/>
     </condition>
 
     <echo>Copying ocutil.jar from ${ocutil.dir}</echo>
     <copy todir="${install.tmp}">
       <fileset dir="${ocutil.dir}"
-	       includes="ocutil*.jar"/>
+               includes="ocutil*.jar"/>
     </copy>
     <move tofile="${install.tmp}/ocutil.jar">
       <fileset dir="${install.tmp}" includes="ocutil*.jar"/>
     </move>
 
     <!--
-	Copy the LICENSE file and "unwrap" it so it's not wrapped weirdly
-	in the installer's License GUI screen. Oddly enough, this isn't an
-	issue with the README file
+        Copy the LICENSE file and "unwrap" it so it's not wrapped weirdly
+        in the installer's License GUI screen. Oddly enough, this isn't an
+        issue with the README file
     -->
 
     <copy todir="${install.tmp}" file="LICENSE"/>
@@ -648,9 +648,9 @@ source and documentation packages.
     <!-- Build the installer -->
 
     <izpack output="${release_dir}/install-curn.jar"
-	    installerType="standard"
-	    basedir="."
-	    izPackDir="${izpack.home}">
+            installerType="standard"
+            basedir="."
+            izPackDir="${izpack.home}">
       <config><![CDATA[
 <installation version="1.0">
   <info>
@@ -689,7 +689,7 @@ source and documentation packages.
     <panel classname="HelloPanel"/>
     <panel classname="HTMLInfoPanel"/>
     <panel classname="LicencePanel"/>
-    <panel classname="TargetPanel"/> 
+    <panel classname="TargetPanel"/>
     <panel classname="PacksPanel"/>
     <panel classname="InstallPanel"/>
     <panel classname="ProcessPanel"/>
@@ -705,17 +705,17 @@ source and documentation packages.
       <singlefile src="README" target="$INSTALL_PATH/README.txt"/>
 
       <singlefile src="@{release_dir}/@{versioned_code_jar_file}"
-	         target="$INSTALL_PATH/lib/curn.jar"/>
+                 target="$INSTALL_PATH/lib/curn.jar"/>
       <file src="@{env.wwwtest}/software/java/third-party/commons-logging.jar"
-	    targetdir="$INSTALL_PATH/lib"/>
+            targetdir="$INSTALL_PATH/lib"/>
       <file src="@{env.wwwtest}/software/java/third-party/freemarker.jar"
-	    targetdir="$INSTALL_PATH/lib"/>
+            targetdir="$INSTALL_PATH/lib"/>
       <file src="@{env.wwwtest}/software/java/third-party/activation.jar"
-	    targetdir="$INSTALL_PATH/lib"/>
+            targetdir="$INSTALL_PATH/lib"/>
       <file src="@{env.wwwtest}/software/java/third-party/mail.jar"
-	    targetdir="$INSTALL_PATH/lib"/>
+            targetdir="$INSTALL_PATH/lib"/>
       <file src="@{env.wwwtest}/software/java/third-party/xerces.jar"
-	    targetdir="$INSTALL_PATH/lib"/>
+            targetdir="$INSTALL_PATH/lib"/>
       <fileset dir="@{install.tmp}"
                includes="ocutil.jar"
                targetdir="$INSTALL_PATH/lib"/>
@@ -724,10 +724,10 @@ source and documentation packages.
 
       <singlefile src="@{src.top}/installer/curn.sh"
                   target="$INSTALL_PATH/bin/curn">
-	<os family="unix"/>
+        <os family="unix"/>
       </singlefile>
       <parsable targetfile="$INSTALL_PATH/bin/curn">
-	<os family="unix"/>
+        <os family="unix"/>
       </parsable>
       <executable targetfile="$INSTALL_PATH/bin/curn" stage="never" os="unix"/>
 
@@ -747,10 +747,10 @@ source and documentation packages.
 
       <singlefile src="@{src.top}/installer/cleanup.sh"
                   target="$INSTALL_PATH/scripts/cleanup.sh">
-	<os family="unix"/>
+        <os family="unix"/>
       </singlefile>
       <parsable targetfile="$INSTALL_PATH/scripts/cleanup.sh">
-	<os family="unix"/>
+        <os family="unix"/>
       </parsable>
       <executable targetfile="$INSTALL_PATH/scripts/cleanup.sh"
                   stage="never" os="unix"/>
@@ -760,7 +760,7 @@ source and documentation packages.
         <os family="windows"/>
       </singlefile>
       <parsable targetfile="$INSTALL_PATH/scripts/cleanup.bat">
-	<os family="windows"/>
+        <os family="windows"/>
       </parsable>
       <executable targetfile="$INSTALL_PATH/scripts/cleanup.bat" stage="never"
                   os="windows"/>
@@ -769,11 +769,11 @@ source and documentation packages.
     <pack name="Docs" required="no">
       <description>The curn User's Guide and the Javadocs</description>
       <file src="javadocs"
-	    targetdir="$INSTALL_PATH/docs"/>
+            targetdir="$INSTALL_PATH/docs"/>
       <file src="docs/users-guide"
-	    targetdir="$INSTALL_PATH/docs"/>
+            targetdir="$INSTALL_PATH/docs"/>
       <file src="docs/CHANGELOG"
-	    targetdir="$INSTALL_PATH/docs"/>
+            targetdir="$INSTALL_PATH/docs"/>
     </pack>
 
     <pack name="Sources" required="no">
@@ -783,23 +783,23 @@ source and documentation packages.
           sources <zipfileset>, earlier in this file. There's no
           way around that, unfortunately.
 
-	  KLUDGE: For some reason, the IzPack <fileset> element doesn't
-	  properly include properties files with @{src.top}/**/*.properties,
-	  and exclusion via @{build} doesn't work, either. (It's not quite
-	  like the Ant <fileset>, no matter what the docs say.) So, we'll
-	  clean up the incorrectly copied build directory in the final panel.
+          KLUDGE: For some reason, the IzPack <fileset> element doesn't
+          properly include properties files with @{src.top}/**/*.properties,
+          and exclusion via @{build} doesn't work, either. (It's not quite
+          like the Ant <fileset>, no matter what the docs say.) So, we'll
+          clean up the incorrectly copied build directory in the final panel.
       -->
       <fileset dir="." targetdir="$INSTALL_PATH/sources">
-	<exclude name="@{dist}/**"/>
-	<exclude name="@{build}/**"/>
-	<exclude name="**/CVS"/>
-	<include name="**/*.java"/>
-	<include name="**/package.html"/>
-	<include name="overview.html"/>
-	<include name="build.xml"/>
-	<include name="**.xml"/>
-	<include name="**.properties"/>
-	<include name="**.ftl"/>
+        <exclude name="@{dist}/**"/>
+        <exclude name="@{build}/**"/>
+        <exclude name="**/CVS"/>
+        <include name="**/*.java"/>
+        <include name="**/package.html"/>
+        <include name="overview.html"/>
+        <include name="build.xml"/>
+        <include name="**.xml"/>
+        <include name="**.properties"/>
+        <include name="**.ftl"/>
       </fileset>
     </pack>
   </packs>
@@ -812,7 +812,7 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
-			     Clean-up Targets
+                             Clean-up Targets
   ***************************************************************************
   -->
 
