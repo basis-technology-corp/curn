@@ -20,6 +20,7 @@ do
 done
 
 exec $JAVA_HOME/bin/java \
+-Dorg.clapper.curn.home=$INSTALL_PATH \
 -ea \
 -client \
 $vm_opts \
