@@ -28,6 +28,7 @@ package org.clapper.curn;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -85,10 +86,6 @@ public class Curn
                         "org.clapper.curn.output.email.EmailOutputHandlerImpl";
 
     /*----------------------------------------------------------------------*\
-                             Public Constants
-    \*----------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
@@ -109,9 +106,18 @@ public class Curn
                                 Constructor
     \*----------------------------------------------------------------------*/
 
-    public Curn (CurnConfig config)
+    /**
+     * Instantiate a new <tt>Curn</tt> object that reads its configuration
+     * data from the specified file.
+     *
+     * @param configPath  path to the configuration data
+     *
+     * @throws CurnException on error
+     */
+    public Curn (String configPath)
+        throws CurnException
     {
-        this.config = config;
+        this.config = loadConfig (configPath);
     }
 
     /*----------------------------------------------------------------------*\
@@ -146,8 +152,7 @@ public class Curn
      * @throws RSSParserException       error parsing XML feed(s)
      * @throws CurnException          any other error
      */
-    public void processRSSFeeds (CurnConfig         configuration,
-                                 Collection<String> emailAddresses,
+    public void processRSSFeeds (Collection<String> emailAddresses,
                                  boolean            useCache)
         throws ConfigurationException,
                RSSParserException,
@@ -156,13 +161,13 @@ public class Curn
         String               parserClassName;
         Collection<FeedInfo> channels;
         boolean              parsingEnabled = true;
-        File                 cacheFile = configuration.getCacheFile();
+        File                 cacheFile = config.getCacheFile();
 
-        loadOutputHandlers (configuration, emailAddresses);
+        loadOutputHandlers (config, emailAddresses);
 
         if (useCache && (cacheFile != null))
         {
-            cache = new FeedCache (configuration);
+            cache = new FeedCache (config);
             cache.setCurrentTime (currentTime);
             cache.loadCache();
         }
@@ -175,7 +180,7 @@ public class Curn
             parsingEnabled = false;
         }
 
-        Collection feeds = configuration.getFeeds();
+        Collection feeds = config.getFeeds();
         if (feeds.size() == 0)
         {
             throw new ConfigurationException (Util.BUNDLE_NAME,
@@ -183,14 +188,14 @@ public class Curn
                                               "No configured RSS feed URLs.");
         }
 
-        if ((configuration.getMaxThreads() == 1) || (feeds.size() == 1))
+        if ((config.getMaxThreads() == 1) || (feeds.size() == 1))
             channels = doSingleThreadedFeedDownload (parsingEnabled,
                                                      cache,
-                                                     configuration);
+                                                     config);
         else
             channels = doMultithreadedFeedDownload (parsingEnabled,
                                                     cache,
-                                                    configuration);
+                                                    config);
 
         log.debug ("After downloading, total (parsed) channels = "
                  + channels.size());
@@ -202,11 +207,11 @@ public class Curn
         log.debug ("cacheFile="
                  + ((cacheFile == null) ? "null" : cacheFile.getPath())
                  + ", mustUpdateCache="
-                 + configuration.mustUpdateCache());
+                 + config.mustUpdateCache());
 
-        if ((cache != null) && configuration.mustUpdateCache())
+        if ((cache != null) && config.mustUpdateCache())
         {
-            int totalCacheBackups = configuration.totalCacheBackups();
+            int totalCacheBackups = config.totalCacheBackups();
             cache.saveCache (totalCacheBackups);
         }
     }
@@ -214,6 +219,41 @@ public class Curn
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
+
+    private CurnConfig loadConfig (String configPath)
+        throws CurnException
+    {
+        try
+        {
+            config = new CurnConfig (configPath);
+            MetaPlugIn.getMetaPlugIn().runPostConfigurationHook (config);
+            return config;
+        }
+
+        catch (FileNotFoundException ex)
+        {
+            throw new CurnException (Util.BUNDLE_NAME,
+                                     "Curn.cantFindConfig",
+                                     "Cannot find configuration file \"{0}\"",
+                                     new Object[] {configPath},
+                                     ex);
+        }
+
+        catch (IOException ex)
+        {
+            throw new CurnException (Util.BUNDLE_NAME,
+                                     "Curn.cantReadConfig",
+                                     "I/O error reading configuration file "
+                                   + "\"{0}\"",
+                                     new Object[] {configPath},
+                                     ex);
+        }
+
+        catch (ConfigurationException ex)
+        {
+            throw new CurnException (ex);
+        }
+    }
 
     private void loadOutputHandlers (CurnConfig         configuration,
                                      Collection<String> emailAddresses)

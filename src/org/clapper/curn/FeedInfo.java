@@ -700,25 +700,26 @@ public class FeedInfo
         this.userAgent = userAgent;
     }
 
-    /*----------------------------------------------------------------------*\
-                          Package-visible Methods
-    \*----------------------------------------------------------------------*/
-
     /**
      * Get the parsed channel data for this feed. This field is set by the
      * main processing logic and does not come from the configuration.
      *
      * @return the <tt>RSSChannel</tt> object representing the current
-     *         parsed data from this feed, or null if not set
+     *         parsed data from this feed, or null if the data has not been
+     *         parsed yet.
      *
      * @see #setParsedChannelData
      * @see Curn
      * @see RSSChannel
      */
-    RSSChannel getParsedChannelData()
+    public RSSChannel getParsedChannelData()
     {
         return parsedChannelData;
     } 
+
+    /*----------------------------------------------------------------------*\
+                          Package-visible Methods
+    \*----------------------------------------------------------------------*/
 
     /**
      * Set the parsed channel data for this feed. This field is set by the

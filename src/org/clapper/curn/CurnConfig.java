@@ -31,9 +31,9 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -204,10 +204,12 @@ public class CurnConfig extends Configuration
      *
      * @throws IOException             can't open or read file
      * @throws ConfigurationException  error in configuration data
+     * @throws CurnException           some other error
      */
     CurnConfig (File f)
         throws IOException,
-               ConfigurationException
+               ConfigurationException,
+               CurnException
     {
         super (f);
         validate();
@@ -222,11 +224,13 @@ public class CurnConfig extends Configuration
      * @throws FileNotFoundException   specified file doesn't exist
      * @throws IOException             can't open or read file
      * @throws ConfigurationException  error in configuration data
+     * @throws CurnException           some other error
      */
     CurnConfig (String path)
         throws FileNotFoundException,
                IOException,
-               ConfigurationException
+               ConfigurationException,
+               CurnException
     {
         super (path);
         validate();
@@ -240,10 +244,12 @@ public class CurnConfig extends Configuration
      *
      * @throws IOException             can't open or read URL
      * @throws ConfigurationException  error in configuration data
+     * @throws CurnException           some other error
      */
     CurnConfig (URL url)
         throws IOException,
-               ConfigurationException
+               ConfigurationException,
+               CurnException
     {
         super (url);
         validate();
@@ -257,10 +263,12 @@ public class CurnConfig extends Configuration
      *
      * @throws IOException             can't open or read URL
      * @throws ConfigurationException  error in configuration data
+     * @throws CurnException           some other error
      */
     CurnConfig (InputStream iStream)
         throws IOException,
-               ConfigurationException
+               ConfigurationException,
+               CurnException
     {
         super (iStream);
         validate();
@@ -720,10 +728,12 @@ public class CurnConfig extends Configuration
     /**
      * Validate the loaded configuration.
      *
-     * @throws ConfigurationException on error
+     * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other error
      */
     private void validate()
-        throws ConfigurationException
+        throws ConfigurationException,
+               CurnException
     {
         // First, verify that the main section is there and process it.
 
@@ -738,16 +748,21 @@ public class CurnConfig extends Configuration
 
             else if (sectionName.startsWith (OUTPUT_HANDLER_PREFIX))
                 processOutputHandlerSection (sectionName);
+
+            else
+                processUnknownSection (sectionName);
         }
     }
 
     /**
      * Verify existence of main section and process it.
      *
-     * @throws ConfigurationException on error
+     * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other error
      */
     private void processMainSection()
-        throws ConfigurationException
+        throws ConfigurationException,
+               CurnException
     {
         if (! this.containsSection (MAIN_SECTION))
         {
@@ -759,115 +774,232 @@ public class CurnConfig extends Configuration
                                               new Object[] {MAIN_SECTION});
         }
 
-        try
+        for (String varName : getVariableNames (MAIN_SECTION))
         {
-            String s;
-
-            s = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_FILE, null);
-            if (s != null)
+            try
             {
-                cacheFile = new File (s);
+                processMainSectionVariable (varName);
+            }
 
+            catch (NoSuchVariableException ex)
+            {
+                throw new ConfigurationException (Util.BUNDLE_NAME,
+                                                  "CurnConfig.missingReqVar",
+                                                  "The configuration file is "
+                                                + "missing required variable "
+                                                + "\"{0}\" in section "
+                                                + "\"{1}\".",
+                                                  new Object[]
+                                                  {
+                                                      ex.getVariableName(),
+                                                      ex.getSectionName()
+                                                  });
+            }
+        }
+    }
+
+    /**
+     * Process a single variable from the main section
+     *
+     * @param varName the variable name
+     *
+     * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other error
+     */
+    private void processMainSectionVariable (String varName)
+        throws ConfigurationException,
+               CurnException
+    {
+        String val = null;
+
+        if (varName.equals (VAR_CACHE_FILE))
+        {
+            val = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_FILE, null);
+            if (val != null)
+            {
+                cacheFile = new File (val);
                 if (cacheFile.isDirectory())
                 {
                     throw new ConfigurationException
                         (Util.BUNDLE_NAME,
                          "CurnConfig.cacheIsDir",
                          "Configured cache file \"{0}\" is a directory.",
-                         new Object[]
-                         {
-                             cacheFile.getPath()
-                         });
+                         new Object[] {cacheFile.getPath()});
                 }
             }
-
-            defaultCacheDays = parseMaxDaysParameter (MAIN_SECTION,
-                                                      VAR_DAYS_TO_CACHE,
-                                                      DEF_DAYS_TO_CACHE);
-            totalCacheBackups = getOptionalCardinalValue (MAIN_SECTION,
-                                                          VAR_TOTAL_CACHE_BACKUPS,
-                                                          DEF_TOTAL_CACHE_BACKUPS);
-            updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
-                                                     VAR_NO_CACHE_UPDATE,
-                                                     DEF_NO_CACHE_UPDATE));
-            summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
-                                                   VAR_SUMMARY_ONLY,
-                                                   DEF_SUMMARY_ONLY);
-            maxSummarySize = getOptionalCardinalValue (MAIN_SECTION,
-                                                       VAR_MAX_SUMMARY_SIZE,
-                                                       DEF_MAX_SUMMARY_SIZE);
-            showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
-                                                     VAR_SHOW_RSS_VERSION,
-                                                     DEF_SHOW_RSS_VERSION);
-            showDates = getOptionalBooleanValue (MAIN_SECTION,
-                                                 VAR_SHOW_DATES,
-                                                 DEF_SHOW_DATES);
-            parserClassName = getOptionalStringValue (MAIN_SECTION,
-                                                      VAR_PARSER_CLASS_NAME,
-                                                      DEF_PARSER_CLASS_NAME);
-            smtpHost = getOptionalStringValue (MAIN_SECTION,
-                                               VAR_SMTP_HOST,
-                                               DEF_SMTP_HOST);
-            emailSender = getOptionalStringValue (MAIN_SECTION,
-                                                  VAR_EMAIL_SENDER,
-                                                  null);
-            emailSubject = getOptionalStringValue (MAIN_SECTION,
-                                                   VAR_EMAIL_SUBJECT,
-                                                   DEF_EMAIL_SUBJECT);
-            showAuthors = getOptionalBooleanValue (MAIN_SECTION,
-                                                   VAR_SHOW_AUTHORS,
-                                                   DEF_SHOW_AUTHORS);
-            allowEmbeddedHTML = getOptionalBooleanValue (MAIN_SECTION,
-                                                         VAR_ALLOW_EMBEDDED_HTML,
-                                                         DEF_ALLOW_EMBEDDED_HTML);
-            getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
-                                                       VAR_GET_GZIPPED_FEEDS,
-                                                       DEF_GET_GZIPPED_FEEDS);
-
-            s = getOptionalStringValue (MAIN_SECTION, VAR_SORT_BY, null);
-            defaultSortBy = (s == null) ? DEF_SORT_BY
-                                        : parseSortByValue (MAIN_SECTION, s);
-
-            setMaxThreads (getOptionalCardinalValue (MAIN_SECTION,
-                                                     VAR_MAX_THREADS,
-                                                     DEF_MAX_THREADS));
-
-            defaultUserAgent = getOptionalStringValue (MAIN_SECTION,
-                                                       VAR_USER_AGENT,
-                                                       null);
-            if (defaultUserAgent == null)
-            {
-                StringBuffer buf = new StringBuffer();
-
-                // Standard format seems to be:
-                //
-                // tool/version (+url)
-                //
-                // e.g.: Googlebot/2.1 (+http://www.google.com/bot.htm
-
-                buf.append (Version.getUtilityName());
-                buf.append ('/');
-                buf.append (Version.getVersionNumber());
-                buf.append (" (+");
-                buf.append (Version.getWebSite());
-                buf.append (')');
-                defaultUserAgent = buf.toString();
-            }
         }
 
-        catch (NoSuchVariableException ex)
+        else if (varName.equals (VAR_DAYS_TO_CACHE))
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "CurnConfig.missingReqVar",
-                                              "The configuration file is "
-                                            + "missing required variable "
-                                            + "\"{0}\" in section \"{1}\".",
-                                              new Object[]
-                                              {
-                                                  ex.getVariableName(),
-                                                  ex.getSectionName()
-                                              });
+            defaultCacheDays = parseMaxDaysParameter (MAIN_SECTION,
+                                                      varName,
+                                                      DEF_DAYS_TO_CACHE);
+            val = String.valueOf (defaultCacheDays);
         }
+
+        else if (varName.equals (VAR_TOTAL_CACHE_BACKUPS))
+        {
+            totalCacheBackups =
+                getOptionalCardinalValue (MAIN_SECTION,
+                                          varName,
+                                          DEF_TOTAL_CACHE_BACKUPS);
+            val = String.valueOf (totalCacheBackups);
+        }
+
+        else if (varName.equals (VAR_NO_CACHE_UPDATE))
+        {
+            updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
+                                                     varName,
+                                                     DEF_NO_CACHE_UPDATE));
+            val = String.valueOf (updateCache);
+        }
+
+        else if (varName.equals (VAR_SUMMARY_ONLY))
+        {
+            summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
+                                                   varName,
+                                                   DEF_SUMMARY_ONLY);
+            val = String.valueOf (summaryOnly);
+        }
+
+        else if (varName.equals (VAR_MAX_SUMMARY_SIZE))
+        {
+            maxSummarySize = getOptionalCardinalValue (MAIN_SECTION,
+                                                       varName,
+                                                       DEF_MAX_SUMMARY_SIZE);
+            val = String.valueOf (maxSummarySize);
+        }
+
+        else if (varName.equals (VAR_SHOW_RSS_VERSION))
+        {
+            showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
+                                                     varName,
+                                                     DEF_SHOW_RSS_VERSION);
+            val = String.valueOf (showRSSFormat);
+        }
+
+        else if (varName.equals (VAR_SHOW_DATES))
+        {
+            showDates = getOptionalBooleanValue (MAIN_SECTION,
+                                                 varName,
+                                                 DEF_SHOW_DATES);
+            val = String.valueOf (showDates);
+        }
+
+        else if (varName.equals (VAR_PARSER_CLASS_NAME))
+        {
+            parserClassName = getOptionalStringValue (MAIN_SECTION,
+                                                      varName,
+                                                      DEF_PARSER_CLASS_NAME);
+            val = String.valueOf (parserClassName);
+        }
+
+        else if (varName.equals (VAR_SMTP_HOST))
+        {
+            smtpHost = getOptionalStringValue (MAIN_SECTION,
+                                               varName,
+                                               DEF_SMTP_HOST);
+            val = smtpHost;
+        }
+
+        else if (varName.equals (VAR_EMAIL_SENDER))
+        {
+            emailSender = getOptionalStringValue (MAIN_SECTION,
+                                                  varName,
+                                                  null);
+            val = emailSender;
+        }
+
+        else if (varName.equals (VAR_EMAIL_SUBJECT))
+        {
+            emailSubject = getOptionalStringValue (MAIN_SECTION,
+                                                   varName,
+                                                   DEF_EMAIL_SUBJECT);
+            val = emailSubject;
+        }
+
+        else if (varName.equals (VAR_SHOW_AUTHORS))
+        {
+            showAuthors = getOptionalBooleanValue (MAIN_SECTION,
+                                                   varName,
+                                                   DEF_SHOW_AUTHORS);
+            val = String.valueOf (showAuthors);
+        }
+
+        else if (varName.equals (VAR_ALLOW_EMBEDDED_HTML))
+        {
+            allowEmbeddedHTML =
+                getOptionalBooleanValue (MAIN_SECTION,
+                                         varName,
+                                         DEF_ALLOW_EMBEDDED_HTML);
+            val = String.valueOf (allowEmbeddedHTML);
+        }
+
+        else if (varName.equals (VAR_GET_GZIPPED_FEEDS))
+        {
+            getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
+                                                       varName,
+                                                       DEF_GET_GZIPPED_FEEDS);
+            val = String.valueOf (getGzippedFeeds);
+        }
+
+        else if (varName.equals (VAR_SORT_BY))
+        {
+            val = getOptionalStringValue (MAIN_SECTION, varName, null);
+            defaultSortBy = (val == null) ? DEF_SORT_BY
+                                          : parseSortByValue (MAIN_SECTION,
+                                                              val);
+        }
+
+        else if (varName.equals (VAR_MAX_THREADS))
+        {
+            int maxThreads = getOptionalCardinalValue (MAIN_SECTION,
+                                                       varName,
+                                                       DEF_MAX_THREADS);
+            setMaxThreads (maxThreads);
+            val = String.valueOf (maxThreads);
+        }
+
+        else if (varName.equals (VAR_USER_AGENT))
+        {
+            defaultUserAgent = getOptionalStringValue (MAIN_SECTION,
+                                                       varName,
+                                                       null);
+            val = defaultUserAgent;
+        }
+
+        else
+        {
+            val = getOptionalStringValue (MAIN_SECTION, varName, null);
+        }
+
+        if (val != null)
+        {
+            MetaPlugIn.getMetaPlugIn().runConfigurationEntryHook (MAIN_SECTION,
+                                                                  varName,
+                                                                  val);
+        }
+
+        if (defaultUserAgent == null)
+        {
+            StringBuilder buf = new StringBuilder();
+
+            // Standard format seems to be:
+            //
+            // tool/version (+url)
+            //
+            // e.g.: Googlebot/2.1 (+http://www.google.com/bot.htm
+
+            buf.append (Version.getUtilityName());
+            buf.append ('/');
+            buf.append (Version.getVersionNumber());
+            buf.append (" (+");
+            buf.append (Version.getWebSite());
+            buf.append (')');
+            defaultUserAgent = buf.toString();
+        }
+
+        val = defaultUserAgent;
     }
 
     /**
@@ -876,26 +1008,31 @@ public class CurnConfig extends Configuration
      * @param sectionName  the section name
      *
      * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other error
      */
     private void processFeedSection (String sectionName)
-        throws ConfigurationException
+        throws ConfigurationException,
+               CurnException
     {
         FeedInfo    feedInfo = null;
         String      feedURLString = null;
-        Collection<String> varNames = getVariableNames (sectionName);
         Collection<String> preparseEditCommands = new ArrayList<String>();
         String      saveAs = null;
         boolean     saveOnly = false;
-        String      s;
         URL         url = null;
+        MetaPlugIn  metaPlugIn = MetaPlugIn.getMetaPlugIn();
 
         feedURLString = getConfigurationValue (sectionName, VAR_FEED_URL);
 
         try
         {
             url = Util.normalizeURL (feedURLString);
-            log.debug ("Configured feed: URL=\"" + url.toString() + "\"");
+            String urlString = url.toString();
+            log.debug ("Configured feed: URL=\"" + urlString + "\"");
             feedInfo = new FeedInfo (url);
+            metaPlugIn.runConfigurationEntryHook (sectionName,
+                                                  VAR_FEED_URL,
+                                                  urlString);
         }
 
         catch (MalformedURLException ex)
@@ -912,6 +1049,7 @@ public class CurnConfig extends Configuration
                                               });
         }
 
+
         feedInfo.setPruneURLsFlag (DEF_PRUNE_URLS);
         feedInfo.setDaysToCache (defaultCacheDays);
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
@@ -921,117 +1059,137 @@ public class CurnConfig extends Configuration
         feedInfo.setShowAuthorsFlag (showAuthors);
         feedInfo.setAllowEmbeddedHTMLFlag (allowEmbeddedHTML);
 
-        for (Iterator it = varNames.iterator(); it.hasNext(); )
+        for (String varName : getVariableNames (sectionName))
         {
-            String varName = (String) it.next();
+            String value   = null;
+            boolean flag;
 
             if (varName.equals (VAR_DAYS_TO_CACHE))
             {
-                feedInfo.setDaysToCache
-                               (parseMaxDaysParameter (sectionName,
-                                                       VAR_DAYS_TO_CACHE,
-                                                       defaultCacheDays));
+                int maxDays = parseMaxDaysParameter (sectionName,
+                                                     varName,
+                                                     defaultCacheDays);
+                feedInfo.setDaysToCache (maxDays);
+                value = String.valueOf (maxDays);
             }
 
             else if (varName.equals (VAR_PRUNE_URLS))
             {
-                feedInfo.setPruneURLsFlag
-                    (getRequiredBooleanValue (sectionName, VAR_PRUNE_URLS));
+                flag = getRequiredBooleanValue (sectionName, varName);
+                feedInfo.setPruneURLsFlag (flag);
+                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_SUMMARY_ONLY))
             {
-                feedInfo.setSummarizeOnlyFlag
-                    (getRequiredBooleanValue (sectionName, VAR_SUMMARY_ONLY));
+                flag = getRequiredBooleanValue (sectionName, varName);
+                feedInfo.setSummarizeOnlyFlag (flag);
+                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_MAX_SUMMARY_SIZE))
             {
-                feedInfo.setMaxSummarySize
-                             (getRequiredCardinalValue (sectionName,
-                                                        VAR_MAX_SUMMARY_SIZE));
+                int maxSummarySize = getRequiredCardinalValue (sectionName,
+                                                               varName);
+                feedInfo.setMaxSummarySize (maxSummarySize);
+                value = String.valueOf (maxSummarySize);
             }
 
             else if (varName.equals (VAR_DISABLED))
             {
-                feedInfo.setEnabledFlag
-                    (! getRequiredBooleanValue (sectionName, VAR_DISABLED));
+                flag = getRequiredBooleanValue (sectionName, varName);
+                feedInfo.setEnabledFlag (! flag);
+                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_IGNORE_DUP_TITLES))
             {
-                feedInfo.setIgnoreItemsWithDuplicateTitlesFlag
-                    (getRequiredBooleanValue (sectionName,
-                                              VAR_IGNORE_DUP_TITLES));
+                flag = getRequiredBooleanValue (sectionName, varName);
+                feedInfo.setIgnoreItemsWithDuplicateTitlesFlag (flag);
+                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_TITLE_OVERRIDE))
             {
-                feedInfo.setTitleOverride
-                    (getConfigurationValue (sectionName, VAR_TITLE_OVERRIDE));
+                value = getConfigurationValue (sectionName, varName);
+                feedInfo.setTitleOverride (value);
             }
 
             else if (varName.equals (VAR_EDIT_ITEM_URL))
             {
-                feedInfo.setItemURLEditCommand
-                    (getConfigurationValue (sectionName, VAR_EDIT_ITEM_URL));
+                value = getConfigurationValue (sectionName, varName);
+                feedInfo.setItemURLEditCommand (value);
             }
 
             else if (varName.equals (VAR_SAVE_FEED_AS))
             {
-                saveAs = getConfigurationValue (sectionName, VAR_SAVE_FEED_AS);
+                value = getConfigurationValue (sectionName, varName);
+                saveAs = value;
                 feedInfo.setSaveAsFile (new File (saveAs));
             }
 
             else if (varName.equals (VAR_SAVE_AS_ENCODING))
             {
-                s = getConfigurationValue (sectionName, VAR_SAVE_AS_ENCODING);
-                feedInfo.setSaveAsEncoding (s);
+                value = getConfigurationValue (sectionName, varName);
+                feedInfo.setSaveAsEncoding (value);
             }
 
             else if (varName.equals (VAR_SAVE_ONLY))
             {
-                saveOnly = getRequiredBooleanValue (sectionName,
-                                                    VAR_SAVE_ONLY);
+                saveOnly = getRequiredBooleanValue (sectionName, varName);
                 feedInfo.setSaveOnlyFlag (saveOnly);
+                value = String.valueOf (saveOnly);
             }
 
             else if (varName.equals (VAR_FORCE_ENCODING) ||
                      varName.equals (VAR_FORCE_CHAR_ENCODING))
             {
-                feedInfo.setForcedCharacterEncoding
-                    (getConfigurationValue (sectionName, varName));
+                value = getConfigurationValue (sectionName, varName);
+                feedInfo.setForcedCharacterEncoding (value);
             }
 
             else if (varName.equals (VAR_SORT_BY))
             {
-                s = getConfigurationValue (sectionName, VAR_SORT_BY);
-                feedInfo.setSortBy (parseSortByValue (sectionName, s));
+                value = getConfigurationValue (sectionName, varName);
+                feedInfo.setSortBy (parseSortByValue (sectionName, value));
             }
 
             else if (varName.startsWith (VAR_PREPARSE_EDIT))
             {
-                s = getConfigurationValue (sectionName, varName);
-                preparseEditCommands.add (s);
+                value = getConfigurationValue (sectionName, varName);
+                preparseEditCommands.add (value);
             }
 
             else if (varName.equals (VAR_USER_AGENT))
             {
-                feedInfo.setUserAgent
-                    (getConfigurationValue (sectionName, VAR_USER_AGENT));
+                value = getConfigurationValue (sectionName, varName);
+                feedInfo.setUserAgent (value);
             }
 
             else if (varName.equals (VAR_SHOW_AUTHORS))
             {
-                feedInfo.setShowAuthorsFlag
-                    (getRequiredBooleanValue (sectionName, VAR_SHOW_AUTHORS));
+                flag = getRequiredBooleanValue (sectionName, varName);
+                feedInfo.setShowAuthorsFlag (flag);
+                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_ALLOW_EMBEDDED_HTML))
             {
-                feedInfo.setAllowEmbeddedHTMLFlag
-                    (getRequiredBooleanValue (sectionName,
-                                              VAR_ALLOW_EMBEDDED_HTML));
+                flag = getRequiredBooleanValue (sectionName, varName);
+                feedInfo.setAllowEmbeddedHTMLFlag (flag);
+                value = String.valueOf (flag);
+            }
+
+            else
+            {
+                value = getConfigurationValue (sectionName, varName);
+            }
+
+            if (value != null)
+            {
+                metaPlugIn.runConfigurationEntryHook (sectionName,
+                                                      varName,
+                                                      value);
             }
         }
 
@@ -1081,25 +1239,44 @@ public class CurnConfig extends Configuration
      * @param sectionName  the section name
      *
      * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other error
      */
     private void processOutputHandlerSection (String sectionName)
-        throws ConfigurationException
+        throws ConfigurationException,
+               CurnException
     {
         // Get the required class name.
 
-        String                   className;
-        ConfiguredOutputHandler  handlerWrapper;
+        String                  className;
+        ConfiguredOutputHandler handlerWrapper;
+        MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
 
         className = getConfigurationValue (sectionName, VAR_CLASS);
         handlerWrapper = new ConfiguredOutputHandler (sectionName,
                                                       sectionName,
                                                       className);
-
+        metaPlugIn.runConfigurationEntryHook (sectionName,
+                                              VAR_CLASS,
+                                              className);
+        
         // Only process the rest if it's not disabled.
 
-        if (! getOptionalBooleanValue (sectionName, VAR_DISABLED, false))
+        boolean disabled = false;
+        String value = getOptionalStringValue (sectionName,
+                                               VAR_DISABLED,
+                                               null);
+        if (value != null)
         {
-            
+            disabled = getOptionalBooleanValue (sectionName,
+                                                VAR_DISABLED,
+                                                false);
+            metaPlugIn.runConfigurationEntryHook (sectionName,
+                                                  VAR_DISABLED,
+                                                  className);
+        }
+
+        if (! disabled)
+        {
             for (String variableName : getVariableNames (sectionName))
             {
                 // Skip the ones we've already processed.
@@ -1110,9 +1287,12 @@ public class CurnConfig extends Configuration
                 if (variableName.equals (VAR_CLASS))
                     continue;
 
-                String value = getConfigurationValue (sectionName,
-                                                      variableName);
+                value = getConfigurationValue (sectionName, variableName);
                 handlerWrapper.addExtraVariable (variableName, value);
+
+                metaPlugIn.runConfigurationEntryHook (sectionName,
+                                                      variableName,
+                                                      value);
             }
 
             log.debug ("Saving output handler \""
@@ -1120,6 +1300,29 @@ public class CurnConfig extends Configuration
                      + "\" of type "
                      + handlerWrapper.getClassName());
             outputHandlers.add (handlerWrapper);
+        }
+    }
+
+    /**
+     * Process an unknown section (passing its values to the plug-ins).
+     *
+     * @param sectionName  the section name
+     *
+     * @throws ConfigurationException  configuration error
+     * @throws CurnException           some other error
+     */
+    private void processUnknownSection (String sectionName)
+        throws ConfigurationException,
+               CurnException
+    {
+        for (String varName : getVariableNames (sectionName))
+        {
+            String value = getConfigurationValue (sectionName, varName);
+            if (value != null)
+            {
+                MetaPlugIn.getMetaPlugIn().runConfigurationEntryHook
+                    (sectionName, varName, value);
+            }
         }
     }
 
