@@ -6,7 +6,9 @@ $Id$
 Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 2.6.5 (...)
+Version 2.7 (...)
+
+- Added plug-in capability.
 
 - Fixed bug: curn wasn't caching data about the overall feed (as opposed to
   the individual items in the feed, which were being cache). For
