@@ -96,6 +96,16 @@ public class MetaPlugIn implements PlugIn
     \*----------------------------------------------------------------------*/
 
     /**
+     * Get a displayable name for the plug-in.
+     *
+     * @return the name
+     */
+    public String getName()
+    {
+        return getClass().getName();
+    }
+
+    /**
      * Get the <tt>MetaPlugIn</tt> singleton.
      *
      * @return the <tt>MetaPlugIn</tt> singleton
