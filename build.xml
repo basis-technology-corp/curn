@@ -579,8 +579,6 @@ source and documentation packages.
   <property name="izpack.home" value="/usr/local/java/IzPack"/>
   <property name="src.install" value="${src.top}/installer"/>
 
-  <target name="foo" depends="-installer.prep"/>
-
   <target name="-installer.prep">
 
     <!-- Define the IzPack task -->
@@ -669,12 +667,11 @@ source and documentation packages.
 
     <!-- Build the installer -->
 
-    <izpack output="${release_dir}/install-curn.jar"
+    <izpack input="${install.tmp}/install.xml"
+            output="${release_dir}/install-curn.jar"
             installerType="standard"
             basedir="."
             izPackDir="${izpack.home}">
-      <config><![CDATA[
-      ]]></config>
     </izpack>
 
     <delete dir="${install.tmp}"/>
