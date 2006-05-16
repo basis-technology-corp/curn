@@ -142,8 +142,16 @@ public interface PlugIn
     \*----------------------------------------------------------------------*/
 
     /**
+     * Get a displayable name for the plug-in.
+     *
+     * @return the name
+     */
+    public String getName();
+
+    /**
      * Called by the plug-in manager right after <i>curn</i> has started,
-     * but before it has loaded its configuration file or its cache.
+     * but before it has loaded its configuration file or its cache. This
+     * method can be used for plug-in initialization.
      *
      * @throws CurnException on error
      */
