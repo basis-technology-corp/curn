@@ -1,0 +1,162 @@
+<!-- IzPack installer configuration file template. Edited by build.xml. -->
+
+<!-- $Id$ -->
+
+<installation version="1.0">
+  <info>
+    <appname>curn (Customizable Utilitarian RSS Notifier)</appname>
+    <appversion>@CURN_VERSION@</appversion>
+    <appsubpath>clapper.org/curn</appsubpath>
+    <authors>
+      <author name="Brian M. Clapper" email="bmc@clapper.org"/>
+    </authors>
+    <url>http://www.clapper.org/software/java/curn/</url>
+    <javaversion>1.5</javaversion>
+  </info>
+
+  <guiprefs height="600" resizable="yes" width="800">
+    <laf name="looks">
+        <os family="windows"/>
+        <param name="variant" value="extwin"/>
+    </laf>
+  </guiprefs>
+
+  <locale>
+    <langpack iso3="eng"/>
+  </locale>
+
+  <resources>
+    <res id="LicencePanel.licence" src="@INSTALL_TMP@/LICENSE"/>
+    <res id="Installer.image" src="@SRC_INSTALL@/curn-logo.png"/>
+    <res id="HTMLInfoPanel.info" src="README.html"/>
+    <res id="TargetPanel.dir.windows" src="@SRC_INSTALL@/path_windows.txt"/>
+    <res id="TargetPanel.dir.unix" src="@SRC_INSTALL@/path_unix.txt"/>
+    <res id="XInfoPanel.info" src="@SRC_INSTALL@/final_screen.txt"/>
+    <res id="ProcessPanel.Spec.xml" src="@SRC_INSTALL@/cleanup.xml"/>
+  </resources>
+
+  <panels>
+    <panel classname="HelloPanel"/>
+    <panel classname="HTMLInfoPanel"/>
+    <panel classname="LicencePanel"/>
+    <panel classname="TargetPanel"/>
+    <panel classname="PacksPanel"/>
+    <panel classname="InstallPanel"/>
+    <panel classname="ProcessPanel"/>
+    <panel classname="XInfoPanel"/>
+    <panel classname="FinishPanel"/>
+  </panels>
+
+  <packs>
+    <pack name="Core" required="yes">
+      <description>The curn jar file, binaries, and dependent jars</description>
+      <singlefile src="LICENSE" target="$INSTALL_PATH/LICENSE.txt"/>
+      <singlefile src="README.html" target="$INSTALL_PATH/README.html"/>
+      <singlefile src="README" target="$INSTALL_PATH/README.txt"/>
+
+      <singlefile src="@RELEASE_DIR@/@VERSIONED_CODE_JAR_FILE@"
+                 target="$INSTALL_PATH/lib/curn.jar"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/commons-logging.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/freemarker.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/activation.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/mail.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/xerces.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/asm-2.2.1.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/asm-commons-2.2.1.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/asm-util-2.2.1.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <fileset dir="@INSTALL_TMP@"
+               includes="ocutil.jar"
+               targetdir="$INSTALL_PATH/lib"/>
+
+      <!-- curn shell file (Unix only) -->
+
+      <singlefile src="@SRC_TOP@/installer/curn.sh"
+                  target="$INSTALL_PATH/bin/curn">
+        <os family="unix"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/bin/curn">
+        <os family="unix"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/bin/curn" stage="never" os="unix"/>
+
+      <!-- curn.bat (Windows only) -->
+
+      <singlefile src="@SRC_TOP@/installer/curn.bat"
+                  target="$INSTALL_PATH/bin/curn.bat">
+        <os family="windows"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/bin/curn.bat">
+        <os family="windows"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/bin/curn.bat" stage="never"
+                  os="windows"/>
+
+      <!-- for cleaning up -->
+
+      <singlefile src="@SRC_TOP@/installer/cleanup.sh"
+                  target="$INSTALL_PATH/scripts/cleanup.sh">
+        <os family="unix"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/scripts/cleanup.sh">
+        <os family="unix"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/scripts/cleanup.sh"
+                  stage="never" os="unix"/>
+
+      <singlefile src="@SRC_TOP@/installer/cleanup.bat"
+                  target="$INSTALL_PATH/scripts/cleanup.bat">
+        <os family="windows"/>
+      </singlefile>
+      <parsable targetfile="$INSTALL_PATH/scripts/cleanup.bat">
+        <os family="windows"/>
+      </parsable>
+      <executable targetfile="$INSTALL_PATH/scripts/cleanup.bat" stage="never"
+                  os="windows"/>
+    </pack>
+
+    <pack name="Docs" required="no">
+      <description>The curn User's Guide and the Javadocs</description>
+      <file src="javadocs"
+            targetdir="$INSTALL_PATH/docs"/>
+      <file src="docs/users-guide"
+            targetdir="$INSTALL_PATH/docs"/>
+      <file src="docs/CHANGELOG"
+            targetdir="$INSTALL_PATH/docs"/>
+    </pack>
+
+    <pack name="Sources" required="no">
+      <description>The sources</description>
+      <!--
+          WARNING: This file set is essentially a duplicate of the
+          sources <zipfileset>, earlier in this file. There's no
+          way around that, unfortunately.
+
+          KLUDGE: For some reason, the IzPack <fileset> element doesn't
+          properly include properties files with @SRC_TOP@/**/*.properties,
+          and exclusion via @BUILD_DIR@ doesn't work, either. (It's not quite
+          like the Ant <fileset>, no matter what the docs say.) So, we'll
+          clean up the incorrectly copied build directory in the final panel.
+      -->
+      <fileset dir="." targetdir="$INSTALL_PATH/sources">
+        <exclude name="@DIST_DIR@/**"/>
+        <exclude name="@BUILD_DIR@/**"/>
+        <exclude name="**/CVS"/>
+        <include name="**/*.java"/>
+        <include name="**/package.html"/>
+        <include name="overview.html"/>
+        <include name="build.xml"/>
+        <include name="**.xml"/>
+        <include name="**.properties"/>
+        <include name="**.ftl"/>
+      </fileset>
+    </pack>
+  </packs>
+</installation>
