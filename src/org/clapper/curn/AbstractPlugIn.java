@@ -46,11 +46,22 @@ import java.io.File;
  *
  * @version <tt>$Revision: 5749 $</tt>
  */
-public abstract class AbstractPlugIn
+public abstract class AbstractPlugIn implements PlugIn
 {
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Get a displayable name for the plug-in. This default version just
+     * returns the class name.
+     *
+     * @return the name
+     */
+    public String getName()
+    {
+        return getClass().getName();
+    }
 
     /**
      * Called by the plug-in manager right after <i>curn</i> has started,
