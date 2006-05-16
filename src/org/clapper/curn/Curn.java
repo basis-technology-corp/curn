@@ -117,6 +117,7 @@ public class Curn
     public Curn (String configPath)
         throws CurnException
     {
+        MetaPlugIn.getMetaPlugIn().runStartupHook();
         this.config = loadConfig (configPath);
     }
 
@@ -141,7 +142,6 @@ public class Curn
      * Read the RSS feeds specified in a parsed configuration, writing them
      * to the output handler(s) specified in the configuration.
      *
-     * @param configuration   the parsed configuration
      * @param emailAddresses  a collection of (string) email addresses to
      *                        receive the output, or null (or empty collection)
      *                        for none.
