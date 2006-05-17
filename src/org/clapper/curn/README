@@ -1,4 +1,4 @@
-Even though ant compiles everything at once, to avoid package cycles, the
+Even though ant compiles everything at once, to avoid package cycles the
 code is organized so that each package and subpackage *could* be compiled
 individually, as long as they're compiled in this order:
 
