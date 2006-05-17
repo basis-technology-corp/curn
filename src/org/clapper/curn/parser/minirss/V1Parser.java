@@ -34,7 +34,6 @@ import org.xml.sax.Attributes;
 
 import org.clapper.util.logging.Logger;
 
-import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSLink;
 
@@ -78,14 +77,14 @@ public class V1Parser extends ParserCommon
      * parsed contents.
      *
      * @param channel      the <tt>Channel</tt> to be filled
-     * @param feedInfo     the associated {@link FeedInfo} data
+     * @param url          the URL for the feed
      * @param firstElement the first element in the file, which was already
      *                     parsed by a <tt>MiniRSSParser</tt> object, before
      *                     it handed control to this object
      */
-    V1Parser (Channel channel, FeedInfo feedInfo, String firstElement)
+    V1Parser (Channel channel, URL url, String firstElement)
     {
-        super (channel, feedInfo, log);
+        super (channel, url, log);
         elementStack.push (new ElementStackEntry (firstElement, firstElement));
     }
 
@@ -337,7 +336,7 @@ public class V1Parser extends ParserCommon
                     // feed for a bad <link> element.
 
                     log.error ("Feed \""
-                             + feedInfo.getURL().toString()
+                             + url.toString()
                              + "\": Bad <link> element \""
                              + chars
                              + "\"", ex);

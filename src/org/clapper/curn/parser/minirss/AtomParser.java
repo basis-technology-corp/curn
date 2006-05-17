@@ -26,7 +26,6 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
@@ -152,15 +151,15 @@ public class AtomParser extends ParserCommon
      * parsed contents.
      *
      * @param channel      the <tt>Channel</tt> to be filled
-     * @param feedInfo     the associated {@link FeedInfo} data
+     * @param URL          URL for the feed
      * @param firstElement the first element in the file, which was already
      *                     parsed by a <tt>MiniRSSParser</tt> object, before
      *                     it handed control to this object
      */
-    AtomParser (Channel channel, FeedInfo feedInfo, String elementName)
+    AtomParser (Channel channel, URL url, String elementName)
         throws SAXException
     {
-        super (channel, feedInfo, log);
+        super (channel, url, log);
         startChannel (elementName, null);
     }
 
@@ -754,7 +753,7 @@ public class AtomParser extends ParserCommon
                     // feed for a bad <link> element.
 
                     log.error ("Feed \""
-                             + feedInfo.getURL().toString()
+                             + url.toString()
                              + "\": Bad <link> element \""
                              + sURL
                              + "\"", ex);

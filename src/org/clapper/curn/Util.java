@@ -24,7 +24,7 @@
   a pointer to or a copy of the original.
 \*---------------------------------------------------------------------------*/
 
-package org.clapper.curn.util;
+package org.clapper.curn;
 
 import java.util.ResourceBundle;
 import java.util.Locale;
@@ -71,11 +71,6 @@ public class Util
     /*----------------------------------------------------------------------*\
                              Public Constants
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Default resource bundle name for externalized strings
-     */
-    public static final String BUNDLE_NAME = "org.clapper.curn.Curn";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -179,7 +174,7 @@ public class Util
         if (locale == null)
             locale = Locale.getDefault();
 
-        return ResourceBundle.getBundle (BUNDLE_NAME, locale);
+        return ResourceBundle.getBundle (Constants.BUNDLE_NAME, locale);
     }
     
     /**
@@ -311,7 +306,7 @@ public class Util
 
         catch (IOException ex)
         {
-            throw new IOExceptionExt (Util.BUNDLE_NAME,
+            throw new IOExceptionExt (Constants.BUNDLE_NAME,
                                       "Util.cantOpenFile",
                                       "Unable to open file \"{0}\" for output",
                                       new Object[] {file.getPath()});

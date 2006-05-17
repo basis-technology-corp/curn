@@ -59,6 +59,23 @@ public interface OutputHandler
     \*----------------------------------------------------------------------*/
 
     /**
+     * Get the name of this output handler. The name must be unique.
+     *
+     * @return the name
+     */
+    public String getName();
+
+    /**
+     * Set the name of this output handler. Called by <i>curn</i>.
+     *
+     * @param name  the name
+     *
+     * @throws CurnException on error
+     */
+    public void setName (String name)
+        throws CurnException;
+
+    /**
      * Initializes the output handler for another set of RSS channels.
      *
      * @param config     the parsed <i>curn</i> configuration data. The
@@ -85,16 +102,12 @@ public interface OutputHandler
      * is defined for the underlying class. Output should be written to the
      * <tt>PrintWriter</tt> that was passed to the {@link #init init()} method.
      *
-     * @param channel  The channel containing the items to emit. The method
-     *                 should emit all the items in the channel; the caller
-     *                 is responsible for clearing out any items that should
-     *                 not be seen.
-     * @param feedInfo Information about the feed, from the configuration
+     * @param channel  The parsed channel data
+     * @param feedInfo The feed.
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (RSSChannel  channel,
-                                FeedInfo    feedInfo)
+    public void displayChannel (RSSChannel channel, FeedInfo feedInfo)
         throws CurnException;
 
     /**
@@ -133,6 +146,13 @@ public interface OutputHandler
      */
     public File getGeneratedOutput()
         throws CurnException;
+
+    /**
+     * Get the output encoding.
+     *
+     * @return the encoding
+     */
+    public String getOutputEncoding();
 
     /**
      * Determine whether this handler has produced any actual output (i.e.,

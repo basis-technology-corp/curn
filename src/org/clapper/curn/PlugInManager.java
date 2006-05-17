@@ -47,12 +47,14 @@ import org.clapper.util.classutil.InterfaceOnlyClassFilter;
 import org.clapper.util.classutil.NotClassFilter;
 import org.clapper.util.classutil.RegexClassFilter;
 import org.clapper.util.classutil.SubclassClassFilter;
+import org.clapper.util.classutil.ClassLoaderBuilder;
 
 import java.io.File;
 import java.io.FileFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -81,6 +83,11 @@ public class PlugInManager
      * For log messages
      */
     private static Logger log = new Logger (PlugInManager.class);
+
+    /**
+     * List of located plug-in jars, zips, and subdirectories
+     */
+    private static Collection<File> plugInLocations = new ArrayList<File>();
 
     /**
      * File filter to use when looking for jars, zip files, and directories.
@@ -132,35 +139,37 @@ public class PlugInManager
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+                          Package-visible Methods
     \*----------------------------------------------------------------------*/
 
     /**
-     * Load the plug-ins and create the {@link MetaPlugIn} singleton.
+     * Find the plug-in jars.
+     *
+     * @return an unmodifiable collection of <tt>File</tt> objects representing
+     *         the jars, zip and subdirectories found in the various plug-in
+     *         directories. This collection is also stored internally.
      *
      * @throws CurnException on error
      */
-    public static void loadPlugIns()
+    static Collection<File> findPlugInLocations()
         throws CurnException
     {
-        MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
-
-        // First, find all directories, jars and zip files in the
-        // appropriate plug-in directories, and load them into the
-        // ClassFinder for searching. Try <install-path>/plugins, then
-        // $HOME/curn/plugins, then $HOME/.curn/plugins. Also, add
-        // the latter two directories themselves, in case they contain
-        // package-less classes.
-
-        ClassFinder classFinder = new ClassFinder();
+        // Find all directories, jars and zip files in the appropriate
+        // plug-in directories, and load them into the ClassFinder for
+        // searching. Try <install-path>/plugins, then $HOME/curn/plugins,
+        // then $HOME/.curn/plugins. Also, add the latter two directories
+        // themselves, in case they contain package-less classes.
 
         String curnHome = System.getProperty ("org.clapper.curn.home");
+log.debug("org.clapper.curn.home=" + ((curnHome==null) ? "null" : curnHome));
         File dir;
         if (curnHome != null)
         {
             dir = new File (curnHome + File.separator + "plugins");
-            preparePlugInSearch (dir, classFinder);
-            classFinder.add (dir);
+log.debug("curnHome=" + dir.getPath());
+log.debug("curnHome.exists()=" + dir.exists());
+            preparePlugInSearch (dir, plugInLocations);
+            plugInLocations.add (dir);
         }
 
         String userHome = System.getProperty ("user.home");
@@ -169,18 +178,58 @@ public class PlugInManager
                       + "curn"
                       + File.separator
                       + "plugins");
-        preparePlugInSearch (dir, classFinder);
-        classFinder.add (dir);
+        preparePlugInSearch (dir, plugInLocations);
+        plugInLocations.add (dir);
 
         dir = new File (userHome
                       + File.separator
                       + ".curn"
                       + File.separator
                       + "plugins");
-        preparePlugInSearch (dir, classFinder);
-        classFinder.add (dir);
+        preparePlugInSearch (dir, plugInLocations);
+        plugInLocations.add (dir);
 
-        // Now, configure the ClassFinder's filter.
+        return Collections.unmodifiableCollection (plugInLocations);
+    }
+
+    /**
+     * Get a <tt>ClassLoader</tt> that will use the plug-in locations as
+     * part of its search path.
+     *
+     * @param plugInLocations list of plug-in locations previously found
+     *                        via a call to {@link findPlugInLocations}
+     *
+     * @throws CurnException on error
+     */
+    static ClassLoader getClassLoader (Collection<File> plugInLocations)
+        throws CurnException
+    {
+        ClassLoaderBuilder clb = new ClassLoaderBuilder();
+        clb.addClassPath();
+        clb.add (plugInLocations);
+        return clb.createClassLoader();
+    }
+
+    /**
+     * Load the plug-ins and create the {@link MetaPlugIn} singleton.
+     *
+     * @param plugInLocations list of plug-in locations previously found
+     *                        via a call to {@link findPlugInLocations}
+     * @param classLoader     class loader to use
+     *
+     * @throws CurnException on error
+     */
+    static void loadPlugIns (Collection<File> plugInLocations,
+                             ClassLoader      classLoader)
+        throws CurnException
+    {
+        MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn (classLoader);
+
+        ClassFinder classFinder = new ClassFinder();
+        classFinder.add (plugInLocations);
+        classFinder.addClassPath();
+
+        // Configure the ClassFinder's filter.
 
         ClassFilter classFilter =
             new AndClassFilter
@@ -193,9 +242,8 @@ public class PlugInManager
 
                  new NotClassFilter (new AbstractClassFilter()),
 
-                 // Cannot be one of ours, or one of Java's
+                 // Weed out certain things
 
-                 new NotClassFilter (new RegexClassFilter ("^org\\.clapper")),
                  new NotClassFilter (new RegexClassFilter ("^java\\.")),
                  new NotClassFilter (new RegexClassFilter ("^javax\\."))
                 );
@@ -206,7 +254,7 @@ public class PlugInManager
         if (classes.size() == 0)
             log.info ("No plug-ins found.");
         else
-            loadPlugInClasses (classes);
+            loadPlugInClasses (classes, classLoader);
     }
 
     /*----------------------------------------------------------------------*\
@@ -217,11 +265,11 @@ public class PlugInManager
      * Find the jars, zip files and directories under the specified directory
      * and load them into a ClassFinder.
      *
-     * @param dir          the directory
-     * @parma classFinder  where to put them
+     * @param dir              the directory
+     * @parma plugInLocations  where to put them
      */
-    private static void preparePlugInSearch (File        dir,
-                                             ClassFinder classFinder)
+    private static void preparePlugInSearch (File             dir,
+                                             Collection<File> plugInLocations)
     {
         if (! dir.exists())
         {
@@ -239,6 +287,12 @@ public class PlugInManager
         {
             log.debug ("Looking for jars, etc., in directory \"" +
                        dir.getPath() + "\"");
+
+            for (File f : dir.listFiles (plugInLocFilter))
+            {
+                log.debug ("Found " + f.getPath());
+                plugInLocations.add (f);
+            }
         }
     }
 
@@ -246,8 +300,10 @@ public class PlugInManager
      * Load the plug-ins.
      *
      * @param classNames  the class names of the plug-ins
+     * @param classLoader class loader to use
      */
-    private static void loadPlugInClasses (Collection<ClassInfo> classes)
+    private static void loadPlugInClasses (Collection<ClassInfo> classes,
+                                           ClassLoader           classLoader)
     {
         MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
 
@@ -257,15 +313,25 @@ public class PlugInManager
             try
             {
                 log.info ("Loading plug-in \"" + className + "\"");
-                Class<?> cls = Class.forName (className);
+                Class cls = classLoader.loadClass (className);
 
                 // Instantite the plug-in via the default constructor and
                 // add it to the meta-plug-in
 
-                metaPlugIn.addPlugIn ((PlugIn) cls.newInstance());
+                PlugIn plugIn = (PlugIn) cls.newInstance();
+                log.info ("Loaded plug-in \"" + plugIn.getName() + "\"");
+                metaPlugIn.addPlugIn (plugIn);
             }
 
             catch (ClassNotFoundException ex)
+            {
+                log.error ("Can't load plug-in \""
+                         + className
+                         + "\": "
+                         + ex.toString());
+            }
+
+            catch (ClassCastException ex)
             {
                 log.error ("Can't load plug-in \""
                          + className

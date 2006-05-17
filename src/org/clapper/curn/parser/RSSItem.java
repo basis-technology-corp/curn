@@ -26,8 +26,6 @@
 
 package org.clapper.curn.parser;
 
-import org.clapper.curn.FeedInfo;
-
 import org.clapper.util.text.TextUtil;
 import org.clapper.util.text.HTMLUtil;
 
@@ -66,6 +64,11 @@ public abstract class RSSItem
      * Constant defining the pseudo-MIME type to use for default content.
      */
     public static final String DEFAULT_CONTENT_TYPE = "*";
+
+    /**
+     * Unlimited summary size
+     */
+    public static final int NO_SUMMARY_LIMIT = 0;
 
     /*----------------------------------------------------------------------*\
                            Private Instance Data
@@ -192,46 +195,47 @@ public abstract class RSSItem
 
     /**
      * Utility method to get the summary to display for an
-     * <tt>RSSItem</tt>. Consults the configuration data in the specified
-     * {@link FeedInfo} object to determine whether to truncate the
-     * summary, use the description (i.e., content) if the summary isn't
-     * available, etc. Strips HTML by default. (Use the
-     * {@link #getSummaryToDisplay(FeedInfo,String[],boolean) alternate version}
+     * <tt>RSSItem</tt>. Strips HTML by default. (Use the
+     * {@link #getSummaryToDisplay(boolean,int,String[],boolean) other version}
      * of this method to control the HTML-stripping behavior.
      *
-     * @param feedInfo  the corresponding feed's <tt>FeedInfo</tt> object
-     * @param mimeTypes desired MIME types; used only if no summary is
-     *                  available, and the content field should be used
+     * @param summaryOnly    if only the summary is desired
+     * @param maxSummarySize maximum summary size, or {@link #NO_SUMMARY_LIMIT}
+     * @param mimeTypes      desired MIME types; used only if no summary is
+     *                       available, and the content field should be used
      *
      * @return the summary string to use, or null if unavailable
      *
      * @see #getSummary
      * @see #getFirstContentOfType
      */
-    public String getSummaryToDisplay (FeedInfo feedInfo,
+    public String getSummaryToDisplay (boolean  summaryOnly,
+                                       int      maxSummarySize,
                                        String[] mimeTypes)
     {
-        return getSummaryToDisplay (feedInfo, mimeTypes, true);
+        return getSummaryToDisplay (summaryOnly,
+                                    maxSummarySize,
+                                    mimeTypes,
+                                    true);
     }
 
     /**
      * Utility method to get the summary to display for an
-     * <tt>RSSItem</tt>. Consults the configuration data in the specified
-     * {@link FeedInfo} object to determine whether to truncate the
-     * summary, use the description if the summary isn't available, etc.
-     * Optionally strips HTML from the resulting string.
+     * <tt>RSSItem</tt>. Optionally strips HTML from the resulting string.
      *
-     * @param feedInfo  the corresponding feed's <tt>FeedInfo</tt> object
-     * @param mimeTypes desired MIME types; used only if no summary is
-     *                  available, and the content field should be used
-     * @param stripHTML whether or not to strip HTML from the string
+     * @param summaryOnly    if only the summary is desired
+     * @param maxSummarySize maximum summary size, or {@link #NO_SUMMARY_LIMIT}
+     * @param mimeTypes      desired MIME types; used only if no summary is
+     *                       available, and the content field should be used
+     * @param stripHTML      whether or not to strip HTML from the string
      *
      * @return the summary string to use, or null if unavailable
      *
      * @see #getSummary
      * @see #getFirstContentOfType
      */
-    public String getSummaryToDisplay (FeedInfo feedInfo,
+    public String getSummaryToDisplay (boolean  summaryOnly,
+                                       int      maxSummarySize,
                                        String[] mimeTypes,
                                        boolean  stripHTML)
     {
@@ -240,7 +244,7 @@ public abstract class RSSItem
         if (TextUtil.stringIsEmpty (summary))
             summary = null;
 
-        if ((summary == null) && (! feedInfo.summarizeOnly()))
+        if ((summary == null) && (! summaryOnly))
         {
             assert (mimeTypes != null);
             summary = getFirstContentOfType (mimeTypes);
@@ -253,9 +257,7 @@ public abstract class RSSItem
             if (stripHTML)
                 summary = HTMLUtil.textFromHTML (summary);
 
-            int maxSize = feedInfo.getMaxSummarySize();
-            if (maxSize != FeedInfo.NO_MAX_SUMMARY_SIZE)
-                summary = truncateSummary (summary, maxSize);
+            summary = truncateSummary (summary, maxSummarySize);
         }
 
         return summary;

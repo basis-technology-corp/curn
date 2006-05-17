@@ -31,15 +31,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java.text.DecimalFormat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Iterator;
 
-import org.clapper.curn.util.Util;
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
@@ -48,6 +51,13 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
+
+import org.clapper.util.mail.EmailMessage;
+import org.clapper.util.mail.EmailTransport;
+import org.clapper.util.mail.SMTPEmailTransport;
+import org.clapper.util.mail.EmailAddress;
+import org.clapper.util.mail.EmailException;
+import org.clapper.util.misc.MIMETypeUtil;
 
 /**
  * <p><i>curn</i>: Customizable Utilitarian RSS Notifier.</p>
@@ -82,9 +92,6 @@ public class Curn
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String EMAIL_HANDLER_CLASS =
-                        "org.clapper.curn.output.email.EmailOutputHandlerImpl";
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -93,6 +100,7 @@ public class Curn
     private boolean useCache = true;
     private FeedCache cache = null;
     private Date currentTime = new Date();
+    private MetaPlugIn metaPlugIn = null;
 
     private Collection<ConfiguredOutputHandler> outputHandlers =
         new ArrayList<ConfiguredOutputHandler>();
@@ -107,23 +115,59 @@ public class Curn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Instantiate a new <tt>Curn</tt> object that reads its configuration
-     * data from the specified file.
-     *
-     * @param configPath  path to the configuration data
+     * Instantiate a new <tt>Curn</tt> object and loads its plugins.
      *
      * @throws CurnException on error
      */
-    public Curn (String configPath)
+    public Curn()
         throws CurnException
     {
-        MetaPlugIn.getMetaPlugIn().runStartupHook();
-        this.config = loadConfig (configPath);
+        metaPlugIn = MetaPlugIn.getMetaPlugIn();
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Run <i>curn</i> against a configuration file.
+     *     
+     * @param configPath      path to the configuration data
+     * @param emailAddresses  a collection of (string) email addresses to
+     *                        receive the output, or null (or empty collection)
+     *                        for none.
+     * @param useCache        whether or not to use the cache
+     *
+     * @throws CurnException on error
+     */
+    public void run (String             configPath,
+                     Collection<String> emailAddresses,
+                     boolean            useCache)
+        throws CurnException
+    {
+        metaPlugIn.runStartupHook();
+
+        try
+        {
+            this.config = loadConfig (configPath);
+            processRSSFeeds (emailAddresses, useCache);
+        }
+
+        catch (ConfigurationException ex)
+        {
+            throw new CurnException (ex);
+        }
+
+        catch (RSSParserException ex)
+        {
+            throw new CurnException (ex);
+        }
+
+        finally
+        {
+            metaPlugIn.runShutdownHook();
+        }
+    }
 
     /**
      * Set the cache's notion of the current time. This method will change
@@ -138,6 +182,10 @@ public class Curn
         this.currentTime = newTime;
     }
 
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
     /**
      * Read the RSS feeds specified in a parsed configuration, writing them
      * to the output handler(s) specified in the configuration.
@@ -147,43 +195,44 @@ public class Curn
      *                        for none.
      * @param useCache        whether or not to use the cache
      *
-     * @throws IOException              unable to open or read a required file
-     * @throws ConfigurationException   error in configuration file
-     * @throws RSSParserException       error parsing XML feed(s)
-     * @throws CurnException          any other error
+     * @throws IOException             unable to open or read a required file
+     * @throws ConfigurationException  error in configuration file
+     * @throws RSSParserException      error parsing XML feed(s)
+     * @throws CurnException           any other error
      */
-    public void processRSSFeeds (Collection<String> emailAddresses,
-                                 boolean            useCache)
+    private void processRSSFeeds (Collection<String> emailAddresses,
+                                  boolean            useCache)
         throws ConfigurationException,
                RSSParserException,
                CurnException
     {
-        String               parserClassName;
-        Collection<FeedInfo> channels;
-        boolean              parsingEnabled = true;
-        File                 cacheFile = config.getCacheFile();
+        String                   parserClassName;
+        Map<FeedInfo,RSSChannel> channels;
+        boolean                  parsingEnabled = true;
+        File                     cacheFile = config.getCacheFile();
 
-        loadOutputHandlers (config, emailAddresses);
+        loadOutputHandlers (config);
 
         if (useCache && (cacheFile != null))
         {
             cache = new FeedCache (config);
             cache.setCurrentTime (currentTime);
             cache.loadCache();
+            metaPlugIn.runCacheLoadedHook (cache);
         }
 
-        if (outputHandlers.size() == 0)
+        if (config.isDownloadOnly())
         {
             // No output handlers. No need to instantiate a parser.
 
-            log.debug ("No output handlers. Skipping XML parse phase.");
+            log.debug ("Config is download-only. Skipping XML parse phase.");
             parsingEnabled = false;
         }
 
-        Collection feeds = config.getFeeds();
+        Collection<FeedInfo> feeds = config.getFeeds();
         if (feeds.size() == 0)
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
+            throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "Curn.noConfiguredFeeds",
                                               "No configured RSS feed URLs.");
         }
@@ -201,8 +250,17 @@ public class Curn
                  + channels.size());
 
         if (channels.size() > 0)
-            displayChannels (channels, emailAddresses);
+        {
+            // Note: If we're not emailing the output, then dump the output
+            // from the first handler to the screen.
 
+            displayChannels (channels, emailAddresses.size() == 0);
+        }
+
+        // If there are email addresses, then mail the output.
+
+        if ((emailAddresses != null) && (emailAddresses.size() > 0))
+            emailOutput (outputHandlers, emailAddresses);
 
         log.debug ("cacheFile="
                  + ((cacheFile == null) ? "null" : cacheFile.getPath())
@@ -212,13 +270,10 @@ public class Curn
         if ((cache != null) && config.mustUpdateCache())
         {
             int totalCacheBackups = config.totalCacheBackups();
+            metaPlugIn.runPreCacheSaveHook (cache);
             cache.saveCache (totalCacheBackups);
         }
     }
-
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
 
     private CurnConfig loadConfig (String configPath)
         throws CurnException
@@ -232,7 +287,7 @@ public class Curn
 
         catch (FileNotFoundException ex)
         {
-            throw new CurnException (Util.BUNDLE_NAME,
+            throw new CurnException (Constants.BUNDLE_NAME,
                                      "Curn.cantFindConfig",
                                      "Cannot find configuration file \"{0}\"",
                                      new Object[] {configPath},
@@ -241,7 +296,7 @@ public class Curn
 
         catch (IOException ex)
         {
-            throw new CurnException (Util.BUNDLE_NAME,
+            throw new CurnException (Constants.BUNDLE_NAME,
                                      "Curn.cantReadConfig",
                                      "I/O error reading configuration file "
                                    + "\"{0}\"",
@@ -255,8 +310,7 @@ public class Curn
         }
     }
 
-    private void loadOutputHandlers (CurnConfig         configuration,
-                                     Collection<String> emailAddresses)
+    private void loadOutputHandlers (CurnConfig configuration)
         throws ConfigurationException,
                CurnException
     {
@@ -280,40 +334,6 @@ public class Curn
 
                 outputHandlers.add (cfgHandler);
             }
-
-            // If there are email addresses, then attempt to load the email
-            // handler, and wrap the other output handlers inside it.
-
-            if ((emailAddresses != null) && (emailAddresses.size() > 0))
-            {
-                ConfiguredOutputHandler emailHandlerWrapper;
-                EmailOutputHandler      emailHandler;
-
-                log.debug ("There are email addresses.");
-                emailHandlerWrapper = new ConfiguredOutputHandler
-                                                        ("*email*",
-                                                         null,
-                                                          EMAIL_HANDLER_CLASS);
-                emailHandler = (EmailOutputHandler)
-                                       emailHandlerWrapper.getOutputHandler();
-
-                // Place all the other handlers inside the EmailOutputHandler
-
-                for (ConfiguredOutputHandler cfgHandler : outputHandlers)
-                    emailHandler.addOutputHandler (cfgHandler);
-
-                // Add the email addresses to the handler
-
-                for (String emailAddress : emailAddresses)
-                    emailHandler.addRecipient (emailAddress);
-
-                // Clear the existing set of output handlers and replace it
-                // with the email handler. Note that the collection contains
-                // ConfiguredOutputHandler objects, not OutputHandler objects.
-
-                outputHandlers.clear();
-                outputHandlers.add (emailHandlerWrapper);
-            }
         }
     }
 
@@ -326,12 +346,13 @@ public class Curn
      * @param feedCache      the loaded cache of feed data; may be modified
      * @param configuration  the parsed configuration
      *
-     * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects
+     * @return a <tt>Map</tt> of <tt>RSSChannel</tt> objects, indexed
+     *         by <tt>FeedInfo</tt>
      *
      * @throws RSSParserException error parsing feeds
      * @throws CurnException      some other error
      */
-    private Collection<FeedInfo>
+    private Map<FeedInfo,RSSChannel>
     doSingleThreadedFeedDownload (boolean    parsingEnabled,
                                   FeedCache  feedCache,
                                   CurnConfig configuration)
@@ -341,22 +362,34 @@ public class Curn
         // Instantiate a single FeedDownloadThread object, but call it
         // within this thread, instead of spawning another thread.
 
-        Collection<FeedInfo> channels = new ArrayList<FeedInfo>();
-        FeedDownloadThread   downloadThread;
+        final Map<FeedInfo,RSSChannel> channels =
+            new LinkedHashMap<FeedInfo,RSSChannel>();
+
+        FeedDownloadThread  downloadThread;
 
         log.info ("Doing single-threaded download of feeds.");
 
-        downloadThread = new FeedDownloadThread ("main",
-                                                 getRSSParser (configuration),
-                                                 feedCache,
-                                                 configuration,
-                                                 null);
+        downloadThread =
+            new FeedDownloadThread
+                ("main",
+                 getRSSParser (configuration),
+                 feedCache,
+                 configuration,
+                 null,
+                 new FeedDownloadDoneHandler()
+                 {
+                     public void feedFinished (FeedInfo  feedInfo,
+                                               RSSChannel channel)
+                     {
+                         channels.put (feedInfo, channel);
+                     }
+                 });
 
         for (Iterator it = configuration.getFeeds().iterator(); it.hasNext(); )
         {
             FeedInfo feedInfo = (FeedInfo) it.next();
 
-            if (! feedShouldBeProcessed (feedInfo, parsingEnabled))
+            if (! feedShouldBeProcessed (feedInfo))
             {
                 // Log messages already emitted.
 
@@ -373,10 +406,9 @@ public class Curn
                 throw downloadThread.getException();
             */
 
-            RSSChannel channel = feedInfo.getParsedChannelData();
-
+            RSSChannel channel = downloadThread.getParsedChannelData();
             if (channel != null)
-                channels.add (feedInfo);
+                channels.put (feedInfo, channel);
         }
 
         return channels;
@@ -392,12 +424,13 @@ public class Curn
      * @param feedCache      the loaded cache of feed data; may be modified
      * @param configuration  the parsed configuration
      *
-     * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects
+     * @return a <tt>Map</tt> of <tt>RSSChannel</tt> objects, indexed
+     *         by <tt>FeedInfo</tt>
      *
      * @throws RSSParserException error parsing feeds
      * @throws CurnException      some other error
      */
-    private Collection<FeedInfo>
+    private Map<FeedInfo,RSSChannel>
     doMultithreadedFeedDownload (boolean    parsingEnabled,
                                  FeedCache  feedCache,
                                  CurnConfig configuration)
@@ -405,9 +438,10 @@ public class Curn
                CurnException
     {
         int maxThreads = configuration.getMaxThreads();
-        Collection<FeedInfo> feeds      = configuration.getFeeds();
+        Collection<FeedInfo> feeds = configuration.getFeeds();
         int totalFeeds = feeds.size();
-        Collection<FeedInfo> channels = new ArrayList<FeedInfo>();
+        final Map<FeedInfo,RSSChannel> channels =
+            new LinkedHashMap<FeedInfo,RSSChannel>();
         List<FeedDownloadThread> threads = new ArrayList<FeedDownloadThread>();
         List<FeedInfo> feedQueue  = new LinkedList<FeedInfo>();
         Iterator it;
@@ -426,7 +460,7 @@ public class Curn
         {
             FeedInfo feedInfo = (FeedInfo) it.next();
 
-            if (! feedShouldBeProcessed (feedInfo, parsingEnabled))
+            if (! feedShouldBeProcessed (feedInfo))
             {
                 // Log messages already emitted.
 
@@ -438,7 +472,7 @@ public class Curn
 
         if (feedQueue.size() == 0)
         {
-            throw new CurnException (Util.BUNDLE_NAME,
+            throw new CurnException (Constants.BUNDLE_NAME,
                                      "Curn.allFeedsDisabled",
                                      "All configured RSS feeds are disabled.");
         }
@@ -455,11 +489,20 @@ public class Curn
             if (parsingEnabled)
                 parser = getRSSParser (configuration);
 
-            thread = new FeedDownloadThread (String.valueOf (i),
-                                             parser,
-                                             feedCache,
-                                             configuration,
-                                             feedQueue);
+            thread = new FeedDownloadThread
+                         (String.valueOf (i),
+                          parser,
+                          feedCache,
+                          configuration,
+                          feedQueue,
+                          new FeedDownloadDoneHandler()
+                          {
+                              public void feedFinished (FeedInfo  feedInfo,
+                                                        RSSChannel channel)
+                              {
+                                  channels.put (feedInfo, channel);
+                              }
+                          });
             thread.start();
             threads.add (thread);
         }
@@ -490,17 +533,6 @@ public class Curn
             log.info ("Joined thread " + threadName);
         }
 
-        // Now, scan the list of feeds and find those with channel data.
-
-        for (it = feeds.iterator(); it.hasNext(); )
-        {
-            FeedInfo   feedInfo = (FeedInfo) it.next();
-            RSSChannel channel  = feedInfo.getParsedChannelData();
-
-            if (channel != null)
-                channels.add (feedInfo);
-        }
-
         return channels;
     }
 
@@ -526,14 +558,15 @@ public class Curn
      * determines that a feed should not be processed, it emits appropriate
      * log messages.
      *
-     * @param feedInfo        the feed information
-     * @param parsingEnabled  whether or not RSS parsing is enabled
+     * @param feedInfo  the feed information
      *
      * @return <tt>true</tt> if the feed should be processed,
      *         <tt>false</tt> if it should be skipped
+     *
+     * @throws CurnException on error
      */
-    private boolean feedShouldBeProcessed (FeedInfo feedInfo,
-                                           boolean  parsingEnabled)
+    private boolean feedShouldBeProcessed (FeedInfo feedInfo)
+        throws CurnException
     {
         boolean process = true;
 
@@ -544,20 +577,11 @@ public class Curn
             process = false;
         }
 
-        else if ((! parsingEnabled) && (feedInfo.getSaveAsFile() == null))
-        {
-            log.debug ("Feed "
-                     + feedInfo.getURL().toString()
-                     + ": RSS parsing is disabled and there's no save "
-                     + "file. There's no sense processing this feed.");
-            process = false;
-        }
-
         return process;
     }
 
-    private void displayChannels (Collection<FeedInfo> channels,
-                                  Collection<String>   emailAddresses)
+    private void displayChannels (Map<FeedInfo,RSSChannel> channels,
+                                  boolean                  showFirstOutput)
         throws CurnException,
                ConfigurationException
     {
@@ -576,19 +600,34 @@ public class Curn
             handler = cfgHandler.getOutputHandler();
             handler.init (config, cfgHandler);
 
-            for (FeedInfo fi : channels)
-                handler.displayChannel (fi.getParsedChannelData(), fi);
+            for (FeedInfo fi : channels.keySet())
+            {
+                RSSChannel channel = channels.get (fi);
+                metaPlugIn.runPreFeedOutputHook (fi,
+                                                 channel.makeCopy(),
+                                                 handler);
+                handler.displayChannel (channel, fi);
+                metaPlugIn.runPostFeedOutputHook (fi, handler);
+            }
 
             handler.flush();
+            ReadOnlyOutputHandler ro = new ReadOnlyOutputHandler (handler);
+            if (metaPlugIn.runPostOutputHandlerFlushHook (ro))
+            {
+                // Okay to consider this one.
 
-            if ((firstOutput == null) && (handler.hasGeneratedOutput()))
-                firstOutput = cfgHandler;
+                if ((firstOutput == null) && (handler.hasGeneratedOutput()))
+                    firstOutput = cfgHandler;
+            }
+
+            else
+            {
+                cfgHandler.disable();
+            }
         }
 
-        // If we're not emailing the output, then dump the output from the
-        // first handler to the screen.
 
-        if (emailAddresses.size() == 0)
+        if (showFirstOutput)
         {
             if (firstOutput == null)
                 log.info ("None of the output handlers produced output.");
@@ -606,7 +645,7 @@ public class Curn
 
                 catch (IOException ex)
                 {
-                    throw new CurnException (Util.BUNDLE_NAME,
+                    throw new CurnException (Constants.BUNDLE_NAME,
                                              "Curn.outputCopyFailed",
                                              "Failed to copy output from "
                                            + "handler \"{0}\" to standard "
@@ -619,6 +658,158 @@ public class Curn
 
                 }
             }
+        }
+    }
+
+    private void
+    emailOutput (Collection<ConfiguredOutputHandler> outputHandlers,
+                 Collection<String>                  emailAddresses)
+        throws CurnException
+    {
+        try
+        {
+            log.debug ("There are email addresses.");
+
+            Iterator                 it;
+            OutputHandler            firstHandlerWithOutput = null;
+            OutputHandler            handler;
+            ConfiguredOutputHandler  handlerWrapper;
+            int                      totalAttachments = 0;
+
+            // First, figure out whether we have any attachments or not.
+
+            for (ConfiguredOutputHandler cfgHandler : outputHandlers)
+            {
+                handler = cfgHandler.getOutputHandler();
+
+                if (handler.hasGeneratedOutput())
+                {
+                    totalAttachments++;
+                    if (firstHandlerWithOutput == null)
+                    {
+                        log.debug ("First handler with output="
+                                 + cfgHandler.getName());
+                        firstHandlerWithOutput = handler;
+                    }
+                }
+            }
+
+            if (totalAttachments == 0)
+            {
+                // None of the handlers produced any output.
+
+                System.err.println ("Warning: None of the output handlers "
+                                  + "produced any emailable output.");
+            }
+
+            else
+            {
+                // Create an SMTP transport and a new email message.
+
+                String smtpHost = config.getSMTPHost();
+                String sender = config.getEmailSender();
+                EmailTransport transport = new SMTPEmailTransport (smtpHost);
+                EmailMessage message = new EmailMessage();
+
+                log.debug ("SMTP host = " + smtpHost);
+
+                // Fill 'er up.
+
+                for (String emailAddress : emailAddresses)
+                {
+                    try
+                    {
+                        message.addTo (new EmailAddress (emailAddress));
+                    }
+
+                    catch (EmailException ex)
+                    {
+                        throw new CurnException ("\""
+                                               + emailAddress
+                                               + "\" is invalid",
+                                                 ex);
+                    }
+                }
+
+                message.addHeader ("X-Mailer", Version.getFullVersion());
+                message.setSubject (config.getEmailSubject());
+
+                if (sender != null)
+                    message.setSender (sender);
+
+                if (log.isDebugEnabled())
+                    log.debug ("Email sender = " + message.getSender());
+
+                // Add the output. If there's only one attachment, and its
+                // output is text, then there's no need for attachments.
+                // Just set it as the text part, and set the appropriate
+                // Content-type: header. Otherwise, make a
+                // multipart-alternative message with separate attachments
+                // for each output.
+
+                DecimalFormat fmt  = new DecimalFormat ("##000");
+                StringBuffer  name = new StringBuffer();
+                String        ext;
+                String        contentType;
+                File          file;
+
+                if (totalAttachments == 1)
+                {
+                    handler = firstHandlerWithOutput;
+                    contentType = handler.getContentType();
+                    ext = MIMETypeUtil.fileExtensionForMIMEType (contentType);
+                    file = handler.getGeneratedOutput();
+                    message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
+
+                    name.append (fmt.format (1));
+                    name.append ('.');
+                    name.append (ext);
+
+                    if (contentType.startsWith ("text/"))
+                        message.setText (file, name.toString(), contentType);
+                    else
+                        message.addAttachment (file,
+                                               name.toString(),
+                                               contentType);
+                }
+
+                else
+                {
+                    message.setMultipartSubtype
+                                          (EmailMessage.MULTIPART_ALTERNATIVE);
+
+                    int i = 1;
+                    for (ConfiguredOutputHandler cfgHandler : outputHandlers)
+                    {
+                        handler = cfgHandler.getOutputHandler();
+
+                        contentType = handler.getContentType();
+                        ext = MIMETypeUtil.fileExtensionForMIMEType
+                                                                (contentType);
+                        file = handler.getGeneratedOutput();
+                        if (file != null)
+                        {
+                            name.setLength (0);
+                            name.append (fmt.format (i));
+                            name.append ('.');
+                            name.append (ext);
+                            i++;
+                            message.addAttachment (file,
+                                                   name.toString(),
+                                                   contentType);
+                        }
+                    }
+                }
+
+                log.debug ("Sending message.");
+                transport.send (message);
+                message.clear();
+            }
+        }
+
+        catch (EmailException ex)
+        {
+            throw new CurnException (ex);
         }
     }
 }

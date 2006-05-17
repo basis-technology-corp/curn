@@ -26,8 +26,8 @@
 
 package org.clapper.curn.output.freemarker;
 
+import org.clapper.curn.Constants;
 import org.clapper.curn.CurnException;
-import org.clapper.curn.util.Util;
 
 import org.clapper.util.text.TextUtil;
 
@@ -84,7 +84,7 @@ public class TemplateLocation implements Comparable<TemplateLocation>
 
         if (tokens.length != 2)
         {
-            throw new CurnException (Util.BUNDLE_NAME,
+            throw new CurnException (Constants.BUNDLE_NAME,
                                      "TemplateLocation.tooManyTokensInName",
                                      "Cannot decode TemplateLocation from "
                                    + "string \"{0}\":  String should have 2 "

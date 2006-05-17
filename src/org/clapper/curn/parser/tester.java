@@ -26,7 +26,6 @@
 
 package org.clapper.curn.parser;
 
-import org.clapper.curn.FeedInfo;
 import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.text.TextUtil;
 import java.io.*;
@@ -86,7 +85,7 @@ public class tester
 
             File f = new File (args[i]);
             FileInputStream is = new FileInputStream (f);
-            RSSChannel channel = parser.parseRSSFeed (new FeedInfo (f.toURL()),
+            RSSChannel channel = parser.parseRSSFeed (f.toURL(),
                                                       is,
                                                       null);
             if (channel != null)

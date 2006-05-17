@@ -29,7 +29,6 @@ package org.clapper.curn;
 import java.net.URL;
 import java.io.File;
 
-import org.clapper.curn.util.Util;
 import org.clapper.curn.parser.RSSChannel;
 
 /**
@@ -80,14 +79,6 @@ public class FeedInfo
      */
     public static final String DEFAULT_SAVE_AS_ENCODING = "utf-8";
 
-    /**
-     * Default value for the maximum summary size. Indicates "no maximum."
-     *
-     * @see #getMaxSummarySize
-     * @see #setMaxSummarySize
-     */
-    public static final int NO_MAX_SUMMARY_SIZE = 0;
-
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
@@ -99,20 +90,17 @@ public class FeedInfo
     private boolean     pruneURLsFlag         = false;
     private boolean     summaryOnly           = false;
     private boolean     enabled               = true;
-    private boolean     saveOnly              = false;
     private int         daysToCache           = 0;
     private String      titleOverride         = null;
     private String      itemURLEditCmd        = null;
     private URL         siteURL               = null;
-    private File        saveAsFile            = null;
-    private String      saveAsEncoding        = DEFAULT_SAVE_AS_ENCODING;
     private int         sortBy                = SORT_BY_NONE;
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
     private String[]    preparseEditCommands  = null;
     private String      userAgent             = null;
-    private int         maxSummarySize        = NO_MAX_SUMMARY_SIZE;
+    private int         maxSummarySize        = Integer.MAX_VALUE;
     private boolean     showAuthors           = false;
     private boolean     allowEmbeddedHTML     = false;
 
@@ -482,95 +470,6 @@ public class FeedInfo
     {
         assert (newSize >= 0);
         this.maxSummarySize = newSize;
-    }
-
-    /**
-     * Get the file to which the downloaded XML feed should be saved, if any.
-     *
-     * @return the file, or null if not specified. Note that this method
-     *         does not verify that the file can be opened, written to, or
-     *         otherwise accessed.
-     *
-     * @see #setSaveAsFile
-     */
-    public File getSaveAsFile()
-    {
-        return saveAsFile;
-    }
-
-    /**
-     * Set the file to which the downloaded XML feed should be saved, if any.
-     *
-     * @param f the file, or null to clear the field. Note that this method
-     *          does not verify that the file can be opened, written to, or
-     *          otherwise accessed.
-     *
-     * @see #getSaveAsFile
-     */
-    public void setSaveAsFile (File f)
-    {
-        this.saveAsFile = f;
-    }
-
-    /**
-     * Get the encoding to use when saving the downloaded file. Only applicable
-     * if the "save as" file is also defined.
-     *
-     * @return the encoding
-     *
-     * @see #setSaveAsEncoding
-     * @see #getSaveAsFile
-     */
-    public String getSaveAsEncoding()
-    {
-        return saveAsEncoding;
-    }
-
-    /**
-     * Set the encoding to use when saving the downloaded file. Only applicable
-     * if the "save as" file is also defined.
-     *
-     * @param encoding the encoding to use, or null to reset to the default
-     *                 <i>curn</i> encoding of "utf-8"
-     *
-     * @see #getSaveAsEncoding
-     * @see #setSaveAsFile
-     */
-    public void setSaveAsEncoding (String encoding)
-    {
-        if (encoding == null)
-            encoding = "utf-8";
-
-        this.saveAsEncoding = encoding;
-    }
-
-    /**
-     * Get the value of the "save only" flag. If this flag is set, then the
-     * feed is retrieved and saved (provided a "save as" value is specified),
-     * but not parsed.
-     *
-     * @return <tt>true</tt> if "save only" is set, <tt>false</tt> otherwise
-     *
-     * @see #setSaveOnlyFlag
-     */
-    public boolean saveOnly()
-    {
-        return saveOnly;
-    }
-
-    /**
-     * Set the value of the "save only" flag. If this flag is set, then the
-     * feed is retrieved and saved (provided a "save as" value is specified),
-     * but not parsed.
-     *
-     * @param newValue <tt>true</tt> to set the "save only" flag,
-     *                 <tt>false</tt> to clear it
-     *
-     * @see #saveOnly
-     */
-    public void setSaveOnlyFlag (boolean newValue)
-    {
-        this.saveOnly = newValue;
     }
 
     /**

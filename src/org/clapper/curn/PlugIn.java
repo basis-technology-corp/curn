@@ -53,13 +53,40 @@ import java.io.File;
  *     <td>{@link #runStartupHook}</td>
  *   </tr>
  *   <tr>
- *     <td><i>Configuration Entry Read</i></td>
- *     <td>Called after a configuration item is encountered and read.
- *         All configuration data items are passed to all plug-ins.
- *         If a plug-in is not interested in a configuration it, should
- *         simply ignore it.
+ *     <td><i>Main Configuration Entry Read</i></td>
+ *     <td>Called after a configuration item is encountered and read in the
+ *         main [curn*] configuration file section. All configuration data
+ *         items are passed to all plug-ins. If a plug-in is not interested
+ *         in a configuration item, should simply ignore it.
  *     </td>
- *     <td>{@link #runConfigurationEntryHook}</td>
+ *     <td>{@link #runMainConfigItemHook}</td>
+ *   </tr>
+ *   <tr>
+ *     <td><i>Feed Configuration Entry Read</i></td>
+ *     <td>Called after a configuration item is encountered and read in a
+ *         [Feed*] configuration file section. All configuration data items
+ *         are passed to all plug-ins. If a plug-in is not interested in a
+ *         configuration item, should simply ignore it.
+ *     </td>
+ *     <td>{@link #runFeedConfigItemHook}</td>
+ *   </tr>
+ *   <tr>
+ *     <td><i>Output Handler Configuration Entry Read</i></td>
+ *     <td>Called after a configuration item is encountered and read in an
+ *         [OutputHandler*] configuration file section. All configuration
+ *         data items are passed to all plug-ins. If a plug-in is not
+ *         interested in a configuration item, should simply ignore it.
+ *     </td>
+ *     <td>{@link #runOutputHandlerConfigItemHook}</td>
+ *   </tr>
+ *   <tr>
+ *     <td><i>Unknown Section Configuration Entry Read</i></td>
+ *     <td>Called after a configuration item is encountered and read in an
+ *         unknown configuration file section. All configuration
+ *         data items are passed to all plug-ins. If a plug-in is not
+ *         interested in a configuration item, should simply ignore it.
+ *     </td>
+ *     <td>{@link #runUnknownSectionConfigItemHook}</td>
  *   </tr>
  *   <tr>
  *     <td><i>Post-Configuration</i></td>
@@ -70,7 +97,7 @@ import java.io.File;
  *         plug-in event so it can adjust the configuration to account for
  *         command line options.
  *     </td>
- *     <td>{@link #runPostConfigurationHook}</td>
+ *     <td>{@link #runPostConfigHook}</td>
  *   </tr>
  *   <tr>
  *     <td><i>Cache Loaded</i></td>
@@ -160,25 +187,114 @@ public interface PlugIn
 
     /**
      * Called by the plug-in manager right after <i>curn</i> has read and
-     * processed a configuration item. All configuration items are passed,
-     * one by one, to each loaded plug-in. If a plug-in class is not
-     * interested in a particular configuration item, this method should
-     * simply return without doing anything. Note that some configuration
-     * items may simply be variable assignment; there's no real way to
-     * distinguish a variable assignment from a blessed configuration item.
+     * processed a configuration item in the main [curn] configuration
+     * section. All configuration items are passed, one by one, to each
+     * loaded plug-in. If a plug-in class is not interested in a particular
+     * configuration item, this method should simply return without doing
+     * anything. Note that some configuration items may simply be variable
+     * assignment; there's no real way to distinguish a variable assignment
+     * from a blessed configuration item.
      *
      * @param sectionName  the name of the configuration section where
      *                     the item was found
      * @param paramName    the name of the parameter
-     * @param paramValue   the parameter value
+     * @param config       the {@link CurnConfig} object
      * 
      * @throws CurnException on error
      *
      * @see CurnConfig
      */
-    public void runConfigurationEntryHook (String sectionName,
-					   String paramName,
-					   String paramValue)
+    public void runMainConfigItemHook (String     sectionName,
+                                       String     paramName,
+                                       CurnConfig config)
+	throws CurnException;
+
+    /**
+     * Called by the plug-in manager right after <i>curn</i> has read and
+     * processed a configuration item in a "feed" configuration section.
+     * All configuration items are passed, one by one, to each loaded
+     * plug-in. If a plug-in class is not interested in a particular
+     * configuration item, this method should simply return without doing
+     * anything. Note that some configuration items may simply be variable
+     * assignment; there's no real way to distinguish a variable assignment
+     * from a blessed configuration item.
+     *
+     * @param sectionName  the name of the configuration section where
+     *                     the item was found
+     * @param paramName    the name of the parameter
+     * @param config       the {@link CurnConfig} object
+     * @param feedInfo     partially complete <tt>FeedInfo</tt> object
+     *                     for the feed. The URL is guaranteed to be
+     *                     present, but no other fields are.
+     * 
+     * @throws CurnException on error
+     *
+     * @see CurnConfig
+     * @see FeedInfo
+     * @see FeedInfo#getURL
+     */
+    public void runFeedConfigItemHook (String     sectionName,
+                                       String     paramName,
+                                       CurnConfig config,
+                                       FeedInfo   feedInfo)
+	throws CurnException;
+
+    /**
+     * Called by the plug-in manager right after <i>curn</i> has read and
+     * processed a configuration item in an output handler configuration
+     * section. All configuration items are passed, one by one, to each
+     * loaded plug-in. If a plug-in class is not interested in a particular
+     * configuration item, this method should simply return without doing
+     * anything. Note that some configuration items may simply be variable
+     * assignment; there's no real way to distinguish a variable assignment
+     * from a blessed configuration item.
+     *
+     * @param sectionName  the name of the configuration section where
+     *                     the item was found
+     * @param paramName    the name of the parameter
+     * @param config       the {@link CurnConfig} object
+     * @param handler      partially complete {@link ConfiguredOutputHanlder}
+     *                     object. The class name is guaranteed to be set,
+     *                     but the other fields may not be.
+     * 
+     * @throws CurnException on error
+     *
+     * @see CurnConfig
+     * @see FeedInfo
+     * @see FeedInfo#getURL
+     */
+    public void
+    runOutputHandlerConfigItemHook (String                  sectionName,
+                                    String                  paramName,
+                                    CurnConfig              config,
+                                    ConfiguredOutputHandler handler)
+	throws CurnException;
+
+    /**
+     * Called by the plug-in manager right after <i>curn</i> has read and
+     * processed a configuration item in an unknown configuration section.
+     * All configuration items are passed, one by one, to each loaded
+     * plug-in. If a plug-in class is not interested in a particular
+     * configuration item, this method should simply return without doing
+     * anything. Note that some configuration items may simply be variable
+     * assignment; there's no real way to distinguish a variable assignment
+     * from a blessed configuration item.
+     *
+     * @param sectionName  the name of the configuration section where
+     *                     the item was found
+     * @param paramName    the name of the parameter
+     * @param config       the {@link CurnConfig} object
+     * 
+     * @throws CurnException on error
+     *
+     * @see CurnConfig
+     * @see FeedInfo
+     * @see FeedInfo#getURL
+     */
+    public void
+    runUnknownSectionConfigItemHook (String     sectionName,
+                                     String     paramName,
+                                     CurnConfig config)
 	throws CurnException;
 
     /**
@@ -242,6 +358,8 @@ public interface PlugIn
      * @param feedDataFile  the file containing the downloaded, unparsed feed 
      *                      XML. <b><i>curn</i> may delete this file after all
      *                      plug-ins are notified!</b>
+     * @param encoding      the encoding used to store the data in the file,
+     *                      or null for the default
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
      *         feed, <tt>false</tt> to skip the feed. A return value of
@@ -254,7 +372,8 @@ public interface PlugIn
      * @see FeedInfo
      */
     public boolean runPostFeedDownloadHook (FeedInfo feedInfo,
-					    File     feedDataFile)
+					    File     feedDataFile,
+                                            String   encoding)
 	throws CurnException;
 
     /**
@@ -266,10 +385,9 @@ public interface PlugIn
      * plug-in that edits the parsed data (removing or editing individual
      * items, for instance) could use method to do so.
      *
-     * @param channel       the {@link RSSChannel} object containing the
-     *                      parsed feed data
-     * @param feedInfo      the {@link FeedInfo} object for the feed that
-     *                      has been downloaded and parsed
+     * @param feedInfo  the {@link FeedInfo} object for the feed that
+     *                  has been downloaded and parsed.
+     * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
      *         feed, <tt>false</tt> to skip the feed. A return value of
@@ -282,28 +400,72 @@ public interface PlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParseHook (RSSChannel channel,
-					 FeedInfo   feedInfo)
+    public boolean runPostFeedParseHook (FeedInfo feedInfo, RSSChannel channel)
 	throws CurnException;
 
     /**
-     * Called immediately before a parsed feed is passed to the configured
-     * output handlers. This method cannot affect the feed's processing.
-     * (The time to stop the processing of a feed is in one of the
-     * other, preceding phases.)
+     * Called immediately before a parsed feed is passed to an output
+     * handler. This method cannot affect the feed's processing. (The time
+     * to stop the processing of a feed is in one of the other, preceding
+     * phases.) This method will be called multiple times for each feed if
+     * there are multiple output handlers.
      *
-     * @param channel       the {@link RSSChannel} object containing the
-     *                      parsed feed data
      * @param feedInfo      the {@link FeedInfo} object for the feed that
-     *                      has been downloaded and parsed
+     *                      has been downloaded and parsed.
+     * @param channel       the parsed channel data. The plug-in is free
+     *                      to edit this data; it's receiving a copy
+     *                      that's specific to the output handler.
+     * @param outputHandler the {@link OutputHandler} that is about to be
+     *                      called. This object is read-only.
      *
      * @throws CurnException on error
      *
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPreFeedOutputHook (RSSChannel channel,
-					 FeedInfo   feedInfo)
+    public void runPreFeedOutputHook (FeedInfo      feedInfo,
+                                      RSSChannel    channel,
+                                      OutputHandler outputHandler)
+	throws CurnException;
+
+    /**
+     * Called immediately after a parsed feed is passed to an output
+     * handler. This method cannot affect the feed's processing. (The time
+     * to stop the processing of a feed is in one of the other, preceding
+     * phases.) This method will be called multiple times for each feed if
+     * there are multiple output handlers.
+     *
+     * @param feedInfo      the {@link FeedInfo} object for the feed that
+     *                      has been downloaded and parsed.
+     * @param outputHandler the {@link OutputHandler} that is about to be
+     *                      called. This object is read-only.
+     *
+     * @throws CurnException on error
+     *
+     * @see RSSChannel
+     * @see FeedInfo
+     */
+    public void runPostFeedOutputHook (FeedInfo      feedInfo,
+                                       OutputHandler outputHandler)
+	throws CurnException;
+
+    /**
+     * Called immediately after an output handler is flushed (i.e., after
+     * its output has been written to a temporary file), but before that
+     * output is displayed, emailed, etc.
+     *
+     * @param outputHandler the {@link OutputHandler} that is about to be
+     *                      called. This object is read-only.
+     *
+     * @return <tt>true</tt> if <i>curn</i> should process the output,
+     *         <tt>false</tt> to skip the output from the handler.
+     *
+     * @throws CurnException on error
+     *
+     * @see RSSChannel
+     * @see FeedInfo
+     */
+    public boolean runPostOutputHandlerFlushHook (OutputHandler outputHandler)
 	throws CurnException;
 
     /**

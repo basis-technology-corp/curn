@@ -26,12 +26,13 @@
 
 package org.clapper.curn.output;
 
+import org.clapper.curn.Constants;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
-import org.clapper.curn.util.Util;
+import org.clapper.curn.Util;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -60,18 +61,6 @@ import java.util.Iterator;
  * <tt>OutputHandler</tt> subclasses that write RSS feed summaries to a
  * file. It consolidates common logic and configuration handling for such
  * classes, providing both consistent implementation and configuration.
- * It handles two additional output handler-specific configuration items:</p>
- *
- * <ul>
- *   <li><tt>SaveAs</tt> takes a file name argument and specifies a file
- *       where the handler should save its output permanently. It's useful
- *       if the user wants to keep a copy of the output the handler generates,
- *       in addition to having the output reported by <i>curn</i>.
- *   <li><tt>SaveOnly</tt> instructs the handler to save the output in the
- *       <tt>SaveAs</tt> file, but not report the output to <i>curn</i>.
- *       From <i>curn</i>'s perspective, the handler generates no output
- *       at all.
- * </ul>
  *
  * @see OutputHandler
  * @see org.clapper.curn.Curn
@@ -123,10 +112,10 @@ public abstract class FileOutputHandler implements OutputHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
+    private String      name           = null;
     private File        outputFile     = null;
     private CurnConfig  config         = null;
     private boolean     saveOnly       = false;
-    private String      name           = null;
     private boolean     showToolInfo   = true;
     private int         savedBackups   = 0;
     private String      encoding       = null;
@@ -150,6 +139,30 @@ public abstract class FileOutputHandler implements OutputHandler
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+
+    /**
+     * Get the name of this output handler. The name must be unique.
+     *
+     * @return the name
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Set the name of this output handler. Called by <i>curn</i>.
+     *
+     * @param name  the name
+     *
+     * @throws CurnException on error
+     */
+    public void setName (String name)
+        throws CurnException
+    {
+        this.name = name;
+    }
 
     /**
      * Initializes the output handler for another set of RSS channels.
@@ -229,7 +242,7 @@ public abstract class FileOutputHandler implements OutputHandler
 
             catch (IOException ex)
             {
-                throw new CurnException (Util.BUNDLE_NAME,
+                throw new CurnException (Constants.BUNDLE_NAME,
                                          "FileOutputHandler.cantMakeTempFile",
                                          "Cannot create temporary file",
                                          ex);
@@ -263,20 +276,15 @@ public abstract class FileOutputHandler implements OutputHandler
 
     /**
      * Display the list of <tt>RSSItem</tt> news items to whatever output
-     * is defined for the underlying class. Output is written to the
-     * <tt>PrintWriter</tt> that was passed to the {@link #init init()}
-     * method.
+     * is defined for the underlying class. Output should be written to the
+     * <tt>PrintWriter</tt> that was passed to the {@link #init init()} method.
      *
-     * @param channel  The channel containing the items to emit. The method
-     *                 should emit all the items in the channel; the caller
-     *                 is responsible for clearing out any items that should
-     *                 not be seen.
-     * @param feedInfo Information about the feed, from the configuration
+     * @param channel  The parsed channel data
+     * @param feedInfo The feed.
      *
      * @throws CurnException  unable to write output
      */
-    public abstract void displayChannel (RSSChannel  channel,
-                                         FeedInfo    feedInfo)
+    public abstract void displayChannel (RSSChannel channel, FeedInfo feedInfo)
         throws CurnException;
 
     /**
@@ -309,6 +317,16 @@ public abstract class FileOutputHandler implements OutputHandler
         throws CurnException
     {
         return hasGeneratedOutput() ? outputFile : null;
+    }
+
+    /**
+     * Get the output encoding.
+     *
+     * @return the encoding
+     */
+    public String getOutputEncoding()
+    {
+        return encoding;
     }
 
     /**
@@ -400,18 +418,6 @@ public abstract class FileOutputHandler implements OutputHandler
     }
 
     /**
-     * Get the configured encoding.
-     *
-     * @return the encoding, or null if not configured
-     *
-     * @see #setEncoding
-     */
-    protected final String getEncoding()
-    {
-        return encoding;
-    }
-
-    /**
      * Override the encoding specified by the {@link #CFG_ENCODING}
      * configuration parameter. To have any effect, this method must be
      * called before {@link #openOutputFile}
@@ -420,7 +426,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @see #getEncoding
      */
-    protected final void setEncoding (String newEncoding)
+    protected final void setOutputEncoding (String newEncoding)
     {
         this.encoding = newEncoding;
     }

@@ -54,8 +54,6 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
@@ -82,15 +80,17 @@ class FeedDownloadThread extends Thread
                            Private Instance Data
     \*----------------------------------------------------------------------*/ 
 
-    private Logger         log             = null;
-    private String         id              = null;
-    private CurnConfig     configuration   = null;
-    private RSSParser      rssParser       = null;
-    private FeedCache      cache           = null;
-    private RegexUtil      regexUtil       = new RegexUtil();
-    private List           feedQueue       = null;
-    private FeedException  exception       = null;
-
+    private Logger                  log           = null;
+    private String                  id            = null;
+    private CurnConfig              configuration = null;
+    private RSSParser               rssParser     = null;
+    private FeedCache               cache         = null;
+    private RegexUtil               regexUtil     = new RegexUtil();
+    private List                    feedQueue     = null;
+    private FeedException           exception     = null;
+    private MetaPlugIn              metaPlugIn    = MetaPlugIn.getMetaPlugIn();
+    private RSSChannel              channel       = null;
+    private FeedDownloadDoneHandler doneHandler   = null;
     /*----------------------------------------------------------------------*\
                                Inner Classes
     \*----------------------------------------------------------------------*/ 
@@ -180,20 +180,23 @@ class FeedDownloadThread extends Thread
     /**
      * Create a new <tt>FeedDownloadThread</tt> object to download feeds.
      *
-     * @param threadId   the unique identifier for the thread, for log messages
-     * @param parser     the RSS parser to use
-     * @param feedCache  the feed cache to save cache data to
-     * @param configFile the parsed configuration file
-     * @param feedQueue  list of feeds to be processed. This list must contain
-     *                   contain <tt>FeedInfo</tt> objects. The list is assumed
-     *                   to be shared across multiple threads, and should be
-     *                   thread safe.
+     * @param threadId    the unique identifier for the thread, for log
+     *                    messages
+     * @param parser      the RSS parser to use
+     * @param feedCache   the feed cache to save cache data to
+     * @param configFile  the parsed configuration file
+     * @param feedQueue   list of feeds to be processed. This list must contain
+     *                    contain <tt>FeedInfo</tt> objects. The list is
+     *                    assumed to be shared across multiple threads, and
+     *                    should be thread safe.
+     * @param doneHandler Callback to notify when feed downloads are done
      */
     FeedDownloadThread (String     threadId,
                         RSSParser  parser,
                         FeedCache  feedCache,
                         CurnConfig configFile,
-                        List       feedQueue)
+                        List       feedQueue,
+                        FeedDownloadDoneHandler doneHandler)
     {
 
         this.id = threadId;
@@ -206,6 +209,7 @@ class FeedDownloadThread extends Thread
         this.rssParser = parser;
         this.cache = feedCache;
         this.feedQueue = feedQueue;
+        this.doneHandler = doneHandler;
 
         //setPriority (getPriority() + 1);
     }
@@ -271,13 +275,28 @@ class FeedDownloadThread extends Thread
     void processFeed (FeedInfo feed)
     {
         this.exception = null;
+        this.channel = null;
 
         try
         {
             log.info ("Processing feed: " + feed.getURL().toString());
-            feed.setParsedChannelData (handleFeed (feed,
-                                                   rssParser,
-                                                   configuration));
+
+            if (! metaPlugIn.runPreFeedDownloadHook (feed))
+            {
+                log.debug ("Feed "
+                         + feed.getURL().toString()
+                         + ": A plug-in disabled the feed.");
+            }
+
+            else
+            {
+                channel = handleFeed (feed, rssParser, configuration);
+                if (channel != null)
+                {
+                    metaPlugIn.runPostFeedParseHook (feed, channel);
+                    doneHandler.feedFinished (feed, channel);
+                }
+            }
         }
 
         catch (FeedException ex)
@@ -285,6 +304,22 @@ class FeedDownloadThread extends Thread
             log.error (ex.getMessage(), ex);
             this.exception = ex;
         }
+
+        catch (CurnException ex)
+        {
+            log.error (ex.getMessage(), ex);
+            this.exception = new FeedException (feed, ex);
+        }
+    }
+
+    /**
+     * Get the parsed channel data.
+     *
+     * @return the channel data
+     */
+    RSSChannel getParsedChannelData()
+    {
+        return channel;
     }
 
     /**
@@ -335,12 +370,14 @@ class FeedDownloadThread extends Thread
      * @return the <tt>RSSChannel</tt> representing the parsed feed, if
      *         parsing was enabled; otherwise, null.
      *
-     * @throws FeedException  error
+     * @throws FeedException  feed download error
+     * @throws CurnException  some other error (e.g., plug-in error)
      */
     private RSSChannel handleFeed (FeedInfo   feedInfo,
                                    RSSParser  parser,
                                    CurnConfig configuration)
-        throws FeedException
+        throws FeedException,
+               CurnException
     {
         URL         feedURL = feedInfo.getURL();
         String      feedURLString = feedURL.toString();
@@ -400,28 +437,9 @@ class FeedDownloadThread extends Thread
 
                 else
                 {
-                    File saveAsFile = feedInfo.getSaveAsFile();
-
-                    if (saveAsFile != null)
-                    {
-                        s = ((tempFile.encoding == null) ? "default"
-                                                         : tempFile.encoding);
-
-                        String saveAsEncoding = feedInfo.getSaveAsEncoding();
-                        log.debug ("Copying temporary file \""
-                                 + tempFile.file.getPath()
-                                 + "\" (encoding="
-                                 + s
-                                 + ") to \""
-                                 + saveAsFile.getPath()
-                                 + "\" (encoding="
-                                 + saveAsEncoding
-                                 + ")");
-                        FileUtil.copyTextFile (tempFile.file,
-                                               tempFile.encoding,
-                                               saveAsFile,
-                                               saveAsEncoding);
-                    }
+                    metaPlugIn.runPostFeedDownloadHook (feedInfo,
+                                                        tempFile.file,
+                                                        tempFile.encoding);
 
                     if (parser == null)
                     {
@@ -438,7 +456,7 @@ class FeedDownloadThread extends Thread
                                  + " to parse the feed.");
 
                         InputStream is = new FileInputStream (tempFile.file);
-                        channel = parser.parseRSSFeed (feedInfo,
+                        channel = parser.parseRSSFeed (feedInfo.getURL(),
                                                        is,
                                                        tempFile.encoding);
                         is.close();
@@ -535,7 +553,7 @@ class FeedDownloadThread extends Thread
             // Assume the same default encoding used by "SaveAsEncoding",
             // unless explicitly specified.
 
-            encoding = FeedInfo.DEFAULT_SAVE_AS_ENCODING;
+            encoding = Constants.DEFAULT_SAVE_AS_ENCODING;
             log.debug ("Default encoding for \""
                      + feedURLString
                      + "\" is \""

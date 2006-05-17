@@ -26,7 +26,6 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSLink;
 
@@ -64,9 +63,9 @@ class ParserCommon extends DefaultHandler
     protected Channel channel = null;
 
     /**
-     * The feed data about the channel.
+     * The URL for the feed;
      */
-    protected FeedInfo feedInfo = null;
+    protected URL url = null;
 
     /**
      * Element stack. Contains ElementStackEntry objects.
@@ -92,14 +91,14 @@ class ParserCommon extends DefaultHandler
      * element stack.
      *
      * @param channel  the {@link Channel} object
-     * @param feedInfo the associated {@link FeedInfo} data
+     * @param url      the URL for the feed
      * @param log      logger to use
      */
-    protected ParserCommon (Channel channel, FeedInfo feedInfo, Logger log)
+    protected ParserCommon (Channel channel, URL url, Logger log)
     {
-        this.channel  = channel;
-        this.feedInfo = feedInfo;
-        this.log      = log;
+        this.channel = channel;
+        this.url     = url;
+        this.log     = log;
     }
 
     /*----------------------------------------------------------------------*\

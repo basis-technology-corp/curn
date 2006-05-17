@@ -26,8 +26,6 @@
 
 package org.clapper.curn;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.util.misc.BundleUtil;
 
 import java.util.Locale;
@@ -281,7 +279,7 @@ public class FeedException extends CurnException
 	StringBuffer buf = new StringBuffer();
         String       msg = null;
 
-        buf.append (BundleUtil.getMessage (Util.BUNDLE_NAME,
+        buf.append (BundleUtil.getMessage (Constants.BUNDLE_NAME,
                                            locale,
                                            "FeedException.feedPrefix",
                                            "feed"));

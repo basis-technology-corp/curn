@@ -26,6 +26,7 @@
 
 package org.clapper.curn.output.freemarker;
 
+import org.clapper.curn.Constants;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
@@ -35,7 +36,6 @@ import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
-import org.clapper.curn.util.Util;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -511,7 +511,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         freemarkerDataModel.put ("title", title);
         freemarkerDataModel.put ("extraText", extraText);
 
-        String encoding = super.getEncoding();
+        String encoding = super.getOutputEncoding();
         if (encoding == null)
             encoding = FileUtil.getDefaultEncoding();
 
@@ -699,9 +699,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                 itemTitle = "(No Title)";
             itemData.put ("title", itemTitle);
 
-            String desc =  item.getSummaryToDisplay (feedInfo,
-                                                     desiredItemDescTypes,
-                                                     (! permitEmbeddedHTML));
+            String desc =
+                item.getSummaryToDisplay (feedInfo.summarizeOnly(),
+                                          feedInfo.getMaxSummarySize(),
+                                          desiredItemDescTypes,
+                                          (! permitEmbeddedHTML));
 
             if (desc == null)
                 desc = "";
@@ -740,7 +742,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         {
             log.error ("Error creating FreeMarker template", ex);
             throw new CurnException
-                         (Util.BUNDLE_NAME,
+                         (Constants.BUNDLE_NAME,
                           "FreeMarkerOutputHandler.cantGetFreeMarkerTemplate",
                           "Cannot create FreeMarker template",
                           ex);
@@ -755,7 +757,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         {
             log.error ("Error processing FreeMarker template", ex);
             throw new CurnException
-                          (Util.BUNDLE_NAME,
+                          (Constants.BUNDLE_NAME,
                            "FreeMarkerOutputHandler.cantProcessTemplate",
                            "Error while processing FreeMarker template "
                          + "\"{0}\"",
@@ -765,7 +767,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         catch (IOException ex)
         {
             throw new CurnException
-                          (Util.BUNDLE_NAME,
+                          (Constants.BUNDLE_NAME,
                            "FreeMarkerOutputHandler.cantProcessTemplate",
                            "Error while processing FreeMarker template "
                          + "\"{0}\"",

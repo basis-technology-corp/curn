@@ -42,8 +42,6 @@ import java.util.Map;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.util.config.Configuration;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
@@ -61,6 +59,71 @@ import org.clapper.util.logging.Logger;
  */
 public class CurnConfig extends Configuration
 {
+    /*----------------------------------------------------------------------*\
+                             Public Constants
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Variable names
+     */
+    public static final String VAR_CACHE_FILE        = "CacheFile";
+    public static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
+    public static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
+    public static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
+    public static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
+    public static final String VAR_SMTPHOST          = "SMTPHost";
+    public static final String VAR_MAIL_SUBJECT      = "Subject";
+    public static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
+    public static final String VAR_PARSER_CLASS_NAME = "ParserClass";
+    public static final String VAR_PRUNE_URLS        = "PruneURLs";
+    public static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
+    public static final String VAR_SMTP_HOST         = "SMTPHost";
+    public static final String VAR_EMAIL_SENDER      = "MailFrom";
+    public static final String VAR_EMAIL_SUBJECT     = "MailSubject";
+    public static final String VAR_SHOW_DATES        = "ShowDates";
+    public static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
+    public static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
+    public static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
+    public static final String VAR_DISABLED          = "Disabled";
+    public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
+    public static final String VAR_FEED_URL          = "URL";
+    public static final String VAR_CLASS             = "Class";
+    public static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
+    public static final String VAR_SORT_BY           = "SortBy";
+    public static final String VAR_MAX_THREADS       = "MaxThreads";
+    public static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
+    public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
+    public static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
+    public static final String VAR_USER_AGENT        = "UserAgent";
+    public static final String VAR_ALLOW_EMBEDDED_HTML= "AllowEmbeddedHTML";
+
+    /**
+     * Default values
+     */
+    public static final int     DEF_DAYS_TO_CACHE     = 365;
+    public static final boolean DEF_PRUNE_URLS        = false;
+    public static final boolean DEF_NO_CACHE_UPDATE   = false;
+    public static final boolean DEF_SUMMARY_ONLY      = false;
+    public static final int     DEF_MAX_SUMMARY_SIZE  = Integer.MAX_VALUE;
+    public static final boolean DEF_SHOW_RSS_VERSION  = false;
+    public static final boolean DEF_SHOW_DATES        = false;
+    public static final boolean DEF_SHOW_AUTHORS      = false;
+    public static final boolean DEF_GET_GZIPPED_FEEDS = true;
+    public static final boolean DEF_SAVE_ONLY         = false;
+    public static final String  DEF_SMTP_HOST         = "localhost";
+    public static final String  DEF_EMAIL_SUBJECT     = "curn output";
+    public static final String  DEF_PARSER_CLASS_NAME =
+                             "org.clapper.curn.parser.minirss.MiniRSSParser";
+    public static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
+    public static final int     DEF_MAX_THREADS       = 5;
+    public static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
+    public static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
+
+    /**
+     * Others
+     */
+    public static final String  NO_LIMIT_VALUE         = "NoLimit";
+
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
@@ -81,43 +144,6 @@ public class CurnConfig extends Configuration
     private static final String OUTPUT_HANDLER_PREFIX = "OutputHandler";
 
     /**
-     * Variable names
-     */
-    private static final String VAR_CACHE_FILE        = "CacheFile";
-    private static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
-    private static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
-    private static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
-    private static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
-    private static final String VAR_SMTPHOST          = "SMTPHost";
-    private static final String VAR_MAIL_SUBJECT      = "Subject";
-    private static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
-    private static final String VAR_PARSER_CLASS_NAME = "ParserClass";
-    private static final String VAR_PRUNE_URLS        = "PruneURLs";
-    private static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
-    private static final String VAR_SMTP_HOST         = "SMTPHost";
-    private static final String VAR_EMAIL_SENDER      = "MailFrom";
-    private static final String VAR_EMAIL_SUBJECT     = "MailSubject";
-    private static final String VAR_SHOW_DATES        = "ShowDates";
-    private static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
-    private static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
-    private static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
-    private static final String VAR_DISABLED          = "Disabled";
-    private static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
-    private static final String VAR_SAVE_FEED_AS      = "SaveAs";
-    private static final String VAR_SAVE_AS_ENCODING  = "SaveAsEncoding";
-    private static final String VAR_SAVE_ONLY         = "SaveOnly";
-    private static final String VAR_FEED_URL          = "URL";
-    private static final String VAR_CLASS             = "Class";
-    private static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
-    private static final String VAR_SORT_BY           = "SortBy";
-    private static final String VAR_MAX_THREADS       = "MaxThreads";
-    private static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
-    private static final String VAR_FORCE_ENCODING    = "ForceEncoding";
-    private static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
-    private static final String VAR_USER_AGENT        = "UserAgent";
-    private static final String VAR_ALLOW_EMBEDDED_HTML= "AllowEmbeddedHTML";
-
-    /**
      * Legal values
      */
     private static final Map<String,Integer> LEGAL_SORT_BY_VALUES
@@ -131,34 +157,6 @@ public class CurnConfig extends Configuration
         LEGAL_SORT_BY_VALUES.put ("title",
                                   new Integer (FeedInfo.SORT_BY_TITLE));
     }
-
-    /**
-     * Default values
-     */
-    private static final int     DEF_DAYS_TO_CACHE     = 365;
-    private static final boolean DEF_PRUNE_URLS        = false;
-    private static final boolean DEF_NO_CACHE_UPDATE   = false;
-    private static final boolean DEF_SUMMARY_ONLY      = false;
-    private static final int     DEF_MAX_SUMMARY_SIZE  =
-                                                 FeedInfo.NO_MAX_SUMMARY_SIZE;
-    private static final boolean DEF_SHOW_RSS_VERSION  = false;
-    private static final boolean DEF_SHOW_DATES        = false;
-    private static final boolean DEF_SHOW_AUTHORS      = false;
-    private static final boolean DEF_GET_GZIPPED_FEEDS = true;
-    private static final boolean DEF_SAVE_ONLY         = false;
-    private static final String  DEF_SMTP_HOST         = "localhost";
-    private static final String  DEF_EMAIL_SUBJECT     = "curn output";
-    private static final String  DEF_PARSER_CLASS_NAME =
-                             "org.clapper.curn.parser.minirss.MiniRSSParser";
-    private static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
-    private static final int     DEF_MAX_THREADS       = 5;
-    private static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
-    private static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
-
-    /**
-     * Others
-     */
-    private static final String  NO_LIMIT_VALUE         = "NoLimit";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -304,6 +302,18 @@ public class CurnConfig extends Configuration
     }
 
     /**
+     * Determine whether the configuration is a "download-only" configuration
+     * (i.e., one that downloads various RSS feed data but doesn't parse it.).
+     *
+     * @return <tt>true</tt> if this is a download-only configuration,
+     *         <tt>false</tt> otherwise
+     */
+    public boolean isDownloadOnly()
+    {
+        return outputHandlers.size() == 0;
+    }
+
+    /**
      * Return the total number of configured output handlers.
      *
      * @return the total number of configured output handlers, or 0 if there
@@ -380,7 +390,7 @@ public class CurnConfig extends Configuration
     {
         if (newValue <= 0)
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
+            throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.badPositiveInteger",
                                               "The \"{0}\" configuration "
                                             + "parameter cannot be set to "
@@ -766,7 +776,7 @@ public class CurnConfig extends Configuration
     {
         if (! this.containsSection (MAIN_SECTION))
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
+            throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.missingReqSection",
                                               "The configuration file is "
                                             + "missing the required \"{0}\" "
@@ -783,7 +793,7 @@ public class CurnConfig extends Configuration
 
             catch (NoSuchVariableException ex)
             {
-                throw new ConfigurationException (Util.BUNDLE_NAME,
+                throw new ConfigurationException (Constants.BUNDLE_NAME,
                                                   "CurnConfig.missingReqVar",
                                                   "The configuration file is "
                                                 + "missing required variable "
@@ -821,7 +831,7 @@ public class CurnConfig extends Configuration
                 if (cacheFile.isDirectory())
                 {
                     throw new ConfigurationException
-                        (Util.BUNDLE_NAME,
+                        (Constants.BUNDLE_NAME,
                          "CurnConfig.cacheIsDir",
                          "Configured cache file \"{0}\" is a directory.",
                          new Object[] {cacheFile.getPath()});
@@ -975,9 +985,9 @@ public class CurnConfig extends Configuration
 
         if (val != null)
         {
-            MetaPlugIn.getMetaPlugIn().runConfigurationEntryHook (MAIN_SECTION,
-                                                                  varName,
-                                                                  val);
+            MetaPlugIn.getMetaPlugIn().runMainConfigItemHook (MAIN_SECTION,
+                                                              varName,
+                                                              this);
         }
 
         if (defaultUserAgent == null)
@@ -1014,13 +1024,11 @@ public class CurnConfig extends Configuration
         throws ConfigurationException,
                CurnException
     {
-        FeedInfo    feedInfo = null;
-        String      feedURLString = null;
+        FeedInfo           feedInfo = null;
+        String             feedURLString = null;
         Collection<String> preparseEditCommands = new ArrayList<String>();
-        String      saveAs = null;
-        boolean     saveOnly = false;
-        URL         url = null;
-        MetaPlugIn  metaPlugIn = MetaPlugIn.getMetaPlugIn();
+        URL                url = null;
+        MetaPlugIn         metaPlugIn = MetaPlugIn.getMetaPlugIn();
 
         feedURLString = getConfigurationValue (sectionName, VAR_FEED_URL);
 
@@ -1030,14 +1038,15 @@ public class CurnConfig extends Configuration
             String urlString = url.toString();
             log.debug ("Configured feed: URL=\"" + urlString + "\"");
             feedInfo = new FeedInfo (url);
-            metaPlugIn.runConfigurationEntryHook (sectionName,
-                                                  VAR_FEED_URL,
-                                                  urlString);
+            metaPlugIn.runFeedConfigItemHook (sectionName,
+                                              VAR_FEED_URL,
+                                              this,
+                                              feedInfo);
         }
 
         catch (MalformedURLException ex)
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
+            throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.badFeedURL",
                                               "Configuration file section "
                                             + "\"{0}\" specifies a bad RSS "
@@ -1121,26 +1130,6 @@ public class CurnConfig extends Configuration
                 feedInfo.setItemURLEditCommand (value);
             }
 
-            else if (varName.equals (VAR_SAVE_FEED_AS))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                saveAs = value;
-                feedInfo.setSaveAsFile (new File (saveAs));
-            }
-
-            else if (varName.equals (VAR_SAVE_AS_ENCODING))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                feedInfo.setSaveAsEncoding (value);
-            }
-
-            else if (varName.equals (VAR_SAVE_ONLY))
-            {
-                saveOnly = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setSaveOnlyFlag (saveOnly);
-                value = String.valueOf (saveOnly);
-            }
-
             else if (varName.equals (VAR_FORCE_ENCODING) ||
                      varName.equals (VAR_FORCE_CHAR_ENCODING))
             {
@@ -1187,9 +1176,10 @@ public class CurnConfig extends Configuration
 
             if (value != null)
             {
-                metaPlugIn.runConfigurationEntryHook (sectionName,
-                                                      varName,
-                                                      value);
+                metaPlugIn.runFeedConfigItemHook (sectionName,
+                                                  varName,
+                                                  this,
+                                                  feedInfo);
             }
         }
 
@@ -1202,7 +1192,7 @@ public class CurnConfig extends Configuration
 
         if (url == null)
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
+            throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.missingReqVar",
                                               "The configuration file is "
                                             + "missing required variable "
@@ -1211,21 +1201,6 @@ public class CurnConfig extends Configuration
                                               {
                                                   VAR_FEED_URL,
                                                   sectionName
-                                              });
-        }
-
-        if (saveOnly && (saveAs == null))
-        {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
-                                              "CurnConfig.saveOnlyButNoSaveAs",
-                                              "Configuration section \"{0}\": "
-                                            + "\"[1}\" may only be specified "
-                                            + "if \"{2}\" is set.",
-                                              new Object[]
-                                              {
-                                                  sectionName,
-                                                  VAR_SAVE_ONLY,
-                                                  VAR_SAVE_FEED_AS
                                               });
         }
 
@@ -1255,9 +1230,10 @@ public class CurnConfig extends Configuration
         handlerWrapper = new ConfiguredOutputHandler (sectionName,
                                                       sectionName,
                                                       className);
-        metaPlugIn.runConfigurationEntryHook (sectionName,
-                                              VAR_CLASS,
-                                              className);
+        metaPlugIn.runOutputHandlerConfigItemHook (sectionName,
+                                                   VAR_CLASS,
+                                                   this,
+                                                   handlerWrapper);
         
         // Only process the rest if it's not disabled.
 
@@ -1270,9 +1246,10 @@ public class CurnConfig extends Configuration
             disabled = getOptionalBooleanValue (sectionName,
                                                 VAR_DISABLED,
                                                 false);
-            metaPlugIn.runConfigurationEntryHook (sectionName,
-                                                  VAR_DISABLED,
-                                                  className);
+            metaPlugIn.runOutputHandlerConfigItemHook (sectionName,
+                                                       VAR_DISABLED,
+                                                       this,
+                                                       handlerWrapper);
         }
 
         if (! disabled)
@@ -1290,9 +1267,10 @@ public class CurnConfig extends Configuration
                 value = getConfigurationValue (sectionName, variableName);
                 handlerWrapper.addExtraVariable (variableName, value);
 
-                metaPlugIn.runConfigurationEntryHook (sectionName,
-                                                      variableName,
-                                                      value);
+                metaPlugIn.runOutputHandlerConfigItemHook (sectionName,
+                                                           variableName,
+                                                           this,
+                                                           handlerWrapper);
             }
 
             log.debug ("Saving output handler \""
@@ -1320,8 +1298,8 @@ public class CurnConfig extends Configuration
             String value = getConfigurationValue (sectionName, varName);
             if (value != null)
             {
-                MetaPlugIn.getMetaPlugIn().runConfigurationEntryHook
-                    (sectionName, varName, value);
+                MetaPlugIn.getMetaPlugIn().runUnknownSectionConfigItemHook
+                    (sectionName, varName, this);
             }
         }
     }
@@ -1343,7 +1321,7 @@ public class CurnConfig extends Configuration
 
         if (val == null)
         {
-            throw new ConfigurationException (Util.BUNDLE_NAME,
+            throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.badVarValue",
                                               "Section \"{0}\" in the "
                                             + "configuration file has a bad "
@@ -1397,7 +1375,7 @@ public class CurnConfig extends Configuration
                 catch (NumberFormatException ex)
                 {
                     throw new ConfigurationException
-                                         (Util.BUNDLE_NAME,
+                                         (Constants.BUNDLE_NAME,
                                           "CurnConfig.badNumericValue",
                                           "Bad numeric value \"{0}\" for "
                                         + "variable \"{1}\" in section "
@@ -1413,7 +1391,7 @@ public class CurnConfig extends Configuration
                 if (result < 0)
                 {
                     throw new ConfigurationException
-                                      (Util.BUNDLE_NAME,
+                                      (Constants.BUNDLE_NAME,
                                        "CurnConfig.negativeCardinalValue",
                                        "Unexpected negative numeric value "
                                      + "{0} for variable \"{1}\" in section "

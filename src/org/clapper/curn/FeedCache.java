@@ -69,8 +69,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import org.clapper.curn.util.Util;
-
 import org.clapper.util.io.IOExceptionExt;
 import org.clapper.util.io.XMLWriter;
 import org.clapper.util.logging.Logger;
@@ -195,7 +193,7 @@ public class FeedCache implements Serializable
 
             if (this.cacheByID == null)
             {
-                throw new CurnException (Util.BUNDLE_NAME,
+                throw new CurnException (Constants.BUNDLE_NAME,
                                          "FeedCache.badCacheFile",
                                          "Unable to load cache file \"{0}\" "
                                        + "as either a file of serialized Java "
@@ -564,7 +562,7 @@ public class FeedCache implements Serializable
 
             if (! rootTagName.equals (XML_ROOT_ELEMENT_TAG))
             {
-                throw new CurnException (Util.BUNDLE_NAME,
+                throw new CurnException (Constants.BUNDLE_NAME,
                                          "FeedCache.nonCacheXML",
                                          "File \"{0}\" is not a curn XML "
                                        + "cache file. The root XML element is "
@@ -611,7 +609,7 @@ public class FeedCache implements Serializable
 
         catch (SAXException ex)
         {
-            throw new CurnException (Util.BUNDLE_NAME,
+            throw new CurnException (Constants.BUNDLE_NAME,
                                      "FeedCache.xmlParseFailure",
                                      "Unable to parse cache file \"{0}\" "
                                    + "as an XML file.",
@@ -621,7 +619,7 @@ public class FeedCache implements Serializable
 
         catch (IOException ex)
         {
-            throw new CurnException (Util.BUNDLE_NAME,
+            throw new CurnException (Constants.BUNDLE_NAME,
                                      "FeedCache.xmlParseFailure",
                                      "Unable to parse cache file \"{0}\" "
                                    + "as an XML file.",

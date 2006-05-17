@@ -26,7 +26,6 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSParser;
 import org.clapper.curn.parser.RSSParserException;
@@ -99,7 +98,7 @@ public class MiniRSSParser
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private FeedInfo  feedInfo        = null;
+    private URL       url             = null;
     private Channel   channel         = null;
     private String    parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
     private XMLReader xmlReader       = null;
@@ -150,7 +149,7 @@ public class MiniRSSParser
      * callback-driven) parsing, an instance of this object must maintain
      * parser state as instance data.
      *
-     * @param feedInfo The <i>curn</i> {@link FeedInfo} object for the feed
+     * @param url      the URL for the feed
      * @param stream   the <tt>InputStream</tt> for the feed
      * @param encoding the encoding of the data in the field, if known, or
      *                 null
@@ -164,7 +163,7 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final RSSChannel parseRSSFeed (FeedInfo    feedInfo,
+    public final RSSChannel parseRSSFeed (URL         url,
                                           InputStream stream,
                                           String      encoding)
         throws IOException,
@@ -177,7 +176,7 @@ public class MiniRSSParser
         else
             r = new InputStreamReader (stream, encoding);
 
-        return parse (feedInfo, r);
+        return parse (url, r);
     }
 
     /*----------------------------------------------------------------------*\
@@ -262,7 +261,7 @@ public class MiniRSSParser
         {
             channel.setRSSFormat ("RSS 1.0");
             xmlReader.setContentHandler (new V1Parser (channel,
-                                                       feedInfo,
+                                                       url,
                                                        elementName));
         }
 
@@ -274,7 +273,7 @@ public class MiniRSSParser
             else
                 channel.setRSSFormat ("Atom " + version);
             xmlReader.setContentHandler (new AtomParser (channel,
-                                                         feedInfo,
+                                                         url,
                                                          elementName));
         }
 
@@ -290,7 +289,7 @@ public class MiniRSSParser
             if (version.startsWith ("0.9") || version.startsWith ("2."))
             {
                 xmlReader.setContentHandler (new V2Parser (channel,
-                                                           feedInfo,
+                                                           url,
                                                            elementName));
             }
 
@@ -316,8 +315,8 @@ public class MiniRSSParser
     /**
      * Parses an RSS feed from an already-open <tt>Reader</tt> object.
      *
-     * @param feedInfo The <i>curn</i> {@link FeedInfo} object for the feed
-     * @param r        The <tt>Reader</tt> that will produce the RSS XML
+     * @param url  The URL for the feed
+     * @param r    The <tt>Reader</tt> that will produce the RSS XML
      *
      * @return the <tt>Channel</tt> object containing the parsed RSS data
      *
@@ -328,7 +327,7 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    private RSSChannel parse (FeedInfo feedInfo, Reader r)
+    private RSSChannel parse (URL url, Reader r)
 	throws IOException,
 	       RSSParserException
     {
@@ -338,7 +337,7 @@ public class MiniRSSParser
             xmlReader.setContentHandler (this);
             xmlReader.setErrorHandler (this);
 
-            this.feedInfo = feedInfo;
+            this.url = url;
             xmlReader.parse (new InputSource (r));
         }
 
@@ -349,7 +348,7 @@ public class MiniRSSParser
 
         finally
         {
-            this.feedInfo = null;
+            this.url = null;
         }
 
         return channel;

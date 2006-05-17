@@ -26,10 +26,10 @@
 
 package org.clapper.curn.parser;
 
-import  org.clapper.curn.FeedInfo;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.net.URL;
 
 /**
  * This interface defines a simplified view of an RSS parser, providing
@@ -54,7 +54,7 @@ public interface RSSParser
     /**
      * Parse an RSS feed.
      *
-     * @param feedInfo The <i>curn</i> {@link FeedInfo} object for the feed
+     * @param url      the URL for the feed
      * @param stream   the <tt>InputStream</tt> for the feed
      * @param encoding the encoding of the data in the field, if known, or
      *                 null
@@ -65,7 +65,7 @@ public interface RSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      */
-    public RSSChannel parseRSSFeed (FeedInfo    feedInfo,
+    public RSSChannel parseRSSFeed (URL         url,
                                     InputStream stream,
                                     String      encoding)
         throws IOException,

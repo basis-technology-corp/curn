@@ -96,28 +96,17 @@ public class MetaPlugIn implements PlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Get a displayable name for the plug-in.
-     *
-     * @return the name
-     */
-    public String getName()
-    {
-        return getClass().getName();
-    }
-
-    /**
      * Get the <tt>MetaPlugIn</tt> singleton.
      *
+     * @param classLoader class loader to use
+     *
      * @return the <tt>MetaPlugIn</tt> singleton
+     *
+     * @throws CurnException on error
      */
     public static MetaPlugIn getMetaPlugIn()
     {
-        synchronized (lock)
-        {
-            if (metaPlugIn == null)
-                metaPlugIn = new MetaPlugIn();
-        }
-
+        assert (metaPlugIn != null);
         return metaPlugIn;
     }
 
@@ -139,12 +128,11 @@ public class MetaPlugIn implements PlugIn
                 Public Methods Required by PlugIn Interface
     \*----------------------------------------------------------------------*/
 
-    /**
-     * Called by the plug-in manager right after <i>curn</i> has started,
-     * but before it has loaded its configuration file or its cache.
-     *
-     * @throws CurnException on error
-     */
+    public String getName()
+    {
+        return getClass().getName();
+    }
+
     public void runStartupHook()
         throws CurnException
     {
@@ -158,59 +146,92 @@ public class MetaPlugIn implements PlugIn
         }
     }
 
-    /**
-     * Called by the plug-in manager right after <i>curn</i> has read and
-     * processed a configuration item. All configuration items are passed,
-     * one by one, to each loaded plug-in. If a plug-in class is not
-     * interested in a particular configuration item, this method should
-     * simply return without doing anything. Note that some configuration
-     * items may simply be variable assignment; there's no real way to
-     * distinguish a variable assignment from a blessed configuration item.
-     *
-     * @param sectionName  the name of the configuration section where
-     *                     the item was found
-     * @param paramName    the name of the parameter
-     * @param paramValue   the parameter value
-     * 
-     * @throws CurnException on error
-     *
-     * @see CurnConfig
-     */
-    public void runConfigurationEntryHook (String sectionName,
-                                           String paramName,
-                                           String paramValue)
+    public void runMainConfigItemHook (String     sectionName,
+                                       String     paramName,
+                                       CurnConfig config)
 	throws CurnException
     {
         synchronized (lock)
         {
             for (PlugIn plugIn : plugIns)
             {
-                logHookInvocation ("runConfigurationEntryHook",
+                logHookInvocation ("runMainConfigItemHook",
                                    plugIn,
                                    sectionName,
-                                   paramName,
-                                   paramValue);
-                plugIn.runConfigurationEntryHook (sectionName,
-                                                  paramName,
-                                                  paramValue);
+                                   paramName);
+                plugIn.runMainConfigItemHook (sectionName,
+                                              paramName,
+                                              config);
             }
         }
     }
 
-    /**
-     * Called after the entire configuration has been read and parsed, but
-     * before any feeds are processed. Intercepting this event is useful
-     * for plug-ins that want to adjust the configuration. For instance,
-     * the <i>curn</i> command-line wrapper intercepts this plug-in event
-     * so it can adjust the configuration to account for command line
-     * options.
-     *
-     * @param config  the parsed {@link CurnConfig} object
-     * 
-     * @throws CurnException on error
-     *
-     * @see CurnConfig
-     */
+    public void runFeedConfigItemHook (String     sectionName,
+                                       String     paramName,
+                                       CurnConfig config,
+                                       FeedInfo   feedInfo)
+	throws CurnException
+    {
+        synchronized (lock)
+        {
+            for (PlugIn plugIn : plugIns)
+            {
+                logHookInvocation ("runFeedConfigItemHook",
+                                   plugIn,
+                                   sectionName,
+                                   paramName);
+                plugIn.runFeedConfigItemHook (sectionName,
+                                              paramName,
+                                              config,
+                                              feedInfo);
+            }
+        }
+    }
+
+    public void
+    runOutputHandlerConfigItemHook (String                  sectionName,
+                                    String                  paramName,
+                                    CurnConfig              config,
+                                    ConfiguredOutputHandler handler)
+	throws CurnException
+    {
+        synchronized (lock)
+        {
+            for (PlugIn plugIn : plugIns)
+            {
+                logHookInvocation ("runOutputHandlerConfigItemHook",
+                                   plugIn,
+                                   sectionName,
+                                   paramName);
+                plugIn.runOutputHandlerConfigItemHook (sectionName,
+                                                       paramName,
+                                                       config,
+                                                       handler);
+            }
+        }
+    }
+
+    public void
+    runUnknownSectionConfigItemHook (String     sectionName,
+                                     String     paramName,
+                                     CurnConfig config)
+	throws CurnException
+    {
+        synchronized (lock)
+        {
+            for (PlugIn plugIn : plugIns)
+            {
+                logHookInvocation ("runUnknownSectionConfigItemHook",
+                                   plugIn,
+                                   sectionName,
+                                   paramName);
+                plugIn.runUnknownSectionConfigItemHook (sectionName,
+                                                        paramName,
+                                                        config);
+            }
+        }
+    }
+
     public void runPostConfigurationHook (CurnConfig config)
 	throws CurnException
     {
@@ -224,16 +245,6 @@ public class MetaPlugIn implements PlugIn
         }
     }
 
-    /**
-     * Called after the <i>curn</i> cache has been read (and after any
-     * expired entries have been purged), but before any feeds are processed.
-     *
-     * @param cache  the loaded {@link FeedCache} object
-     * 
-     * @throws CurnException on error
-     *
-     * @see FeedCache
-     */
     public void runCacheLoadedHook (FeedCache cache)
 	throws CurnException
     {
@@ -247,25 +258,6 @@ public class MetaPlugIn implements PlugIn
         }
     }
 
-    /**
-     * Called just before a feed is downloaded. This method can return
-     * <tt>false</tt> to signal <i>curn</i> that the feed should be skipped.
-     * For instance, a plug-in that filters on feed URL could use this
-     * method to weed out non-matching feeds before they are downloaded.
-     *
-     * @param feedInfo  the {@link FeedInfo} object for the feed to be
-     *                  downloaded
-     *
-     * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed. A return value of
-     *         <tt>false</tt> aborts all further processing on the feed.
-     *         In particular, <i>curn</i> will not pass the feed along to
-     *         other plug-ins that have yet to be notified of this event.
-     *
-     * @throws CurnException on error
-     *
-     * @see FeedInfo
-     */
     public boolean runPreFeedDownloadHook (FeedInfo feedInfo)
 	throws CurnException
     {
@@ -285,31 +277,9 @@ public class MetaPlugIn implements PlugIn
         return keepGoing;
     }
 
-    /**
-     * Called immediately after a feed is downloaded. This method can
-     * return <tt>false</tt> to signal <i>curn</i> that the feed should be
-     * skipped. For instance, a plug-in that filters on the unparsed XML
-     * feed content could use this method to weed out non-matching feeds
-     * before they are downloaded.
-     *
-     * @param feedInfo      the {@link FeedInfo} object for the feed that
-     *                      has been downloaded
-     * @param feedDataFile  the file containing the downloaded, unparsed feed 
-     *                      XML. <b><i>curn</i> may delete this file after all
-     *                      plug-ins are notified!</b>
-     *
-     * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed. A return value of
-     *         <tt>false</tt> aborts all further processing on the feed.
-     *         In particular, <i>curn</i> will not pass the feed along to
-     *         other plug-ins that have yet to be notified of this event.
-     *
-     * @throws CurnException on error
-     *
-     * @see FeedInfo
-     */
     public boolean runPostFeedDownloadHook (FeedInfo feedInfo,
-					    File     feedDataFile)
+					    File     feedDataFile,
+                                            String   encoding)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -320,7 +290,8 @@ public class MetaPlugIn implements PlugIn
             {
                 logHookInvocation ("runPostFeedDownloadHook", plugIn);
                 keepGoing = plugIn.runPostFeedDownloadHook (feedInfo,
-                                                            feedDataFile);
+                                                            feedDataFile,
+                                                            encoding);
                 if (! keepGoing)
                     break;
             }
@@ -329,33 +300,7 @@ public class MetaPlugIn implements PlugIn
         return keepGoing;
     }
 
-    /**
-     * Called immediately after a feed is parsed, but before it is
-     * otherwise processed. This method can return <tt>false</tt> to signal
-     * <i>curn</i> that the feed should be skipped. For instance, a plug-in
-     * that filters on the parsed feed data could use this method to weed
-     * out non-matching feeds before they are downloaded. Similarly, a
-     * plug-in that edits the parsed data (removing or editing individual
-     * items, for instance) could use method to do so.
-     *
-     * @param channel       the {@link RSSChannel} object containing the
-     *                      parsed feed data
-     * @param feedInfo      the {@link FeedInfo} object for the feed that
-     *                      has been downloaded and parsed
-     *
-     * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed. A return value of
-     *         <tt>false</tt> aborts all further processing on the feed.
-     *         In particular, <i>curn</i> will not pass the feed along to
-     *         other plug-ins that have yet to be notified of this event.
-     *
-     * @throws CurnException on error
-     *
-     * @see RSSChannel
-     * @see FeedInfo
-     */
-    public boolean runPostFeedParseHook (RSSChannel channel,
-					 FeedInfo   feedInfo)
+    public boolean runPostFeedParseHook (FeedInfo feedInfo, RSSChannel channel)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -365,7 +310,7 @@ public class MetaPlugIn implements PlugIn
             for (PlugIn plugIn : plugIns)
             {
                 logHookInvocation ("runPostFeedParseHook", plugIn);
-                keepGoing = plugIn.runPostFeedParseHook (channel, feedInfo);
+                keepGoing = plugIn.runPostFeedParseHook (feedInfo, channel);
                 if (! keepGoing)
                     break;
             }
@@ -374,24 +319,36 @@ public class MetaPlugIn implements PlugIn
         return keepGoing;
     }
 
-    /**
-     * Called immediately before a parsed feed is passed to the configured
-     * output handlers. This method cannot affect the feed's processing.
-     * (The time to stop the processing of a feed is in one of the
-     * other, preceding phases.)
-     *
-     * @param channel       the {@link RSSChannel} object containing the
-     *                      parsed feed data
-     * @param feedInfo      the {@link FeedInfo} object for the feed that
-     *                      has been downloaded and parsed
-     *
-     * @throws CurnException on error
-     *
-     * @see RSSChannel
-     * @see FeedInfo
-     */
-    public boolean runPreFeedOutputHook (RSSChannel channel,
-					 FeedInfo   feedInfo)
+    public void runPreFeedOutputHook (FeedInfo      feedInfo,
+                                      RSSChannel    channel,
+                                      OutputHandler outputHandler)
+	throws CurnException
+    {
+        synchronized (lock)
+        {
+            for (PlugIn plugIn : plugIns)
+            {
+                logHookInvocation ("runPreFeedOutputHook", plugIn);
+                plugIn.runPreFeedOutputHook (feedInfo, channel, outputHandler);
+            }
+        }
+    }
+
+    public void runPostFeedOutputHook (FeedInfo      feedInfo,
+                                       OutputHandler outputHandler)
+	throws CurnException
+    {
+        synchronized (lock)
+        {
+            for (PlugIn plugIn : plugIns)
+            {
+                logHookInvocation ("runPreFeedOutputHook", plugIn);
+                plugIn.runPostFeedOutputHook (feedInfo, outputHandler);
+            }
+        }
+    }
+
+    public boolean runPostOutputHandlerFlushHook (OutputHandler outputHandler)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -400,26 +357,15 @@ public class MetaPlugIn implements PlugIn
         {
             for (PlugIn plugIn : plugIns)
             {
-                logHookInvocation ("runPreFeedOutputHook", plugIn);
-                keepGoing = plugIn.runPreFeedOutputHook (channel, feedInfo);
-                if (! keepGoing)
-                    break;
+                logHookInvocation ("runPostOutputHandlerFlushHook", plugIn);
+                if (! plugIn.runPostOutputHandlerFlushHook (outputHandler))
+                    keepGoing = false;
             }
         }
 
         return keepGoing;
     }
 
-    /**
-     * Called right before the <i>curn</i> cache is to be saved. A plug-in
-     * might choose to edit the cache at this point.
-     *
-     * @param cache  the {@link FeedCache} object
-     * 
-     * @throws CurnException on error
-     *
-     * @see FeedCache
-     */
     public void runPreCacheSaveHook (FeedCache cache)
 	throws CurnException
     {
@@ -433,13 +379,6 @@ public class MetaPlugIn implements PlugIn
         }
     }
 
-    /**
-     * Called by the plug-in manager right before <i>curn</i> gets ready
-     * to exit. This hook allows plug-ins to perform any clean-up they
-     * require.
-     *
-     * @throws CurnException on error
-     */
     public void runShutdownHook()
         throws CurnException
     {
@@ -450,6 +389,36 @@ public class MetaPlugIn implements PlugIn
                 logHookInvocation ("runShutdownHook", plugIn);
                 plugIn.runShutdownHook();
             }
+        }
+    }
+
+    /*----------------------------------------------------------------------*\
+                          Package-visible Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Create the MetaPlugIn
+     *
+     * @param classLoader class loader to use
+     *
+     * @return the created MetaPlugIn
+     *
+     * @throws CurnException on error
+     */
+    static MetaPlugIn createMetaPlugIn (ClassLoader classLoader)
+        throws CurnException
+    {
+        assert (metaPlugIn == null);
+        try
+        {
+            Class cls = classLoader.loadClass ("org.clapper.curn.MetaPlugIn");
+            metaPlugIn = (MetaPlugIn) cls.newInstance();
+            return metaPlugIn;
+        }
+
+        catch (Exception ex)
+        {
+            throw new CurnException ("Can't allocate MetaPlugIn", ex);
         }
     }
 

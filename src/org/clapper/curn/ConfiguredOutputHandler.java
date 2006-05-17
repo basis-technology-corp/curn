@@ -51,6 +51,7 @@ public class ConfiguredOutputHandler implements Comparable
     private String        className;
     private String        name;
     private OutputHandler handler = null;
+    private boolean       disabled = false;
     private Map<String,String> extraVariables = new HashMap<String,String>();
 
     /**
@@ -117,6 +118,29 @@ public class ConfiguredOutputHandler implements Comparable
     }
 
     /**
+     * Mark this handler disabled, usually in response to a plug-in
+     * action.
+     *
+     * @see #isDisabled
+     */
+    public void disable()
+    {
+        disabled = true;
+    }
+
+    /**
+     * Determine whether this handler is disabled.
+     *
+     * @return <tt>true</tt> if disabled, <tt>false</tt> if enabled
+     *
+     * @see #disable
+     */
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
+
+    /**
      * Get the actual <tt>OutputHandler</tt> object, instantiating it if
      * it hasn't already been instantiated.
      *
@@ -128,7 +152,10 @@ public class ConfiguredOutputHandler implements Comparable
         throws CurnException
     {
         if (handler == null)
+        {
             handler = OutputHandlerFactory.getOutputHandler (className);
+            handler.setName (name);
+        }
 
         return handler;
     }
