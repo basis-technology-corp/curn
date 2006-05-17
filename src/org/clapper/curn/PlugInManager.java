@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  $Id: OutputHandler.java 5749 2006-03-24 16:21:51Z bmc $
+  $Id$
   ---------------------------------------------------------------------------
   This software is released under a Berkeley-style license:
 
@@ -71,7 +71,7 @@ import java.util.regex.PatternSyntaxException;
  * @see AbstractPlugIn
  * @see Curn
  *
- * @version <tt>$Revision: 5749 $</tt>
+ * @version <tt>$Revision$</tt>
  */
 public class PlugInManager
 {
