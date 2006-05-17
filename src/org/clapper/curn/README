@@ -1,0 +1,11 @@
+Even though ant compiles everything at once, to avoid package cycles, the
+code is organized so that each package and subpackage *could* be compiled
+individually, as long as they're compiled in this order:
+
+- org.clapper.curn.parser
+- org.clapper.curn
+- org.clapper.curn.output
+- org.clapper.curn.output.freemarker
+- org.clapper.curn.output.script
+- org.clapper.curn.plugins
+
