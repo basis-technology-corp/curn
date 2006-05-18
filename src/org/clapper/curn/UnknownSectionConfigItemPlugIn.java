@@ -69,8 +69,8 @@ public interface UnknownSectionConfigItemPlugIn extends PlugIn
      * @see FeedInfo#getURL
      */
     public void
-    runUnknownSectionConfigItemHook (String     sectionName,
-                                     String     paramName,
-                                     CurnConfig config)
+    runUnknownSectionConfigItemPlugIn (String     sectionName,
+                                       String     paramName,
+                                       CurnConfig config)
 	throws CurnException;
 }

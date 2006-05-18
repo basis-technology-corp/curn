@@ -985,9 +985,9 @@ public class CurnConfig extends Configuration
 
         if (val != null)
         {
-            MetaPlugIn.getMetaPlugIn().runMainConfigItemHook (MAIN_SECTION,
-                                                              varName,
-                                                              this);
+            MetaPlugIn.getMetaPlugIn().runMainConfigItemPlugIn (MAIN_SECTION,
+                                                                varName,
+                                                                this);
         }
 
         if (defaultUserAgent == null)
@@ -1038,10 +1038,10 @@ public class CurnConfig extends Configuration
             String urlString = url.toString();
             log.debug ("Configured feed: URL=\"" + urlString + "\"");
             feedInfo = new FeedInfo (url);
-            metaPlugIn.runFeedConfigItemHook (sectionName,
-                                              VAR_FEED_URL,
-                                              this,
-                                              feedInfo);
+            metaPlugIn.runFeedConfigItemPlugIn (sectionName,
+                                                VAR_FEED_URL,
+                                                this,
+                                                feedInfo);
         }
 
         catch (MalformedURLException ex)
@@ -1176,10 +1176,10 @@ public class CurnConfig extends Configuration
 
             if (value != null)
             {
-                metaPlugIn.runFeedConfigItemHook (sectionName,
-                                                  varName,
-                                                  this,
-                                                  feedInfo);
+                metaPlugIn.runFeedConfigItemPlugIn (sectionName,
+                                                    varName,
+                                                    this,
+                                                    feedInfo);
             }
         }
 
@@ -1230,10 +1230,10 @@ public class CurnConfig extends Configuration
         handlerWrapper = new ConfiguredOutputHandler (sectionName,
                                                       sectionName,
                                                       className);
-        metaPlugIn.runOutputHandlerConfigItemHook (sectionName,
-                                                   VAR_CLASS,
-                                                   this,
-                                                   handlerWrapper);
+        metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
+                                                     VAR_CLASS,
+                                                     this,
+                                                     handlerWrapper);
         
         // Only process the rest if it's not disabled.
 
@@ -1246,10 +1246,10 @@ public class CurnConfig extends Configuration
             disabled = getOptionalBooleanValue (sectionName,
                                                 VAR_DISABLED,
                                                 false);
-            metaPlugIn.runOutputHandlerConfigItemHook (sectionName,
-                                                       VAR_DISABLED,
-                                                       this,
-                                                       handlerWrapper);
+            metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
+                                                         VAR_DISABLED,
+                                                         this,
+                                                         handlerWrapper);
         }
 
         if (! disabled)
@@ -1267,10 +1267,10 @@ public class CurnConfig extends Configuration
                 value = getConfigurationValue (sectionName, variableName);
                 handlerWrapper.addExtraVariable (variableName, value);
 
-                metaPlugIn.runOutputHandlerConfigItemHook (sectionName,
-                                                           variableName,
-                                                           this,
-                                                           handlerWrapper);
+                metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
+                                                             variableName,
+                                                             this,
+                                                             handlerWrapper);
             }
 
             log.debug ("Saving output handler \""
@@ -1298,7 +1298,7 @@ public class CurnConfig extends Configuration
             String value = getConfigurationValue (sectionName, varName);
             if (value != null)
             {
-                MetaPlugIn.getMetaPlugIn().runUnknownSectionConfigItemHook
+                MetaPlugIn.getMetaPlugIn().runUnknownSectionConfigItemPlugIn
                     (sectionName, varName, this);
             }
         }

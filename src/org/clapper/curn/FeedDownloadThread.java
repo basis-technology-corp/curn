@@ -281,7 +281,7 @@ class FeedDownloadThread extends Thread
         {
             log.info ("Processing feed: " + feed.getURL().toString());
 
-            if (! metaPlugIn.runPreFeedDownloadHook (feed))
+            if (! metaPlugIn.runPreFeedDownloadPlugIn (feed))
             {
                 log.debug ("Feed "
                          + feed.getURL().toString()
@@ -293,7 +293,7 @@ class FeedDownloadThread extends Thread
                 channel = handleFeed (feed, rssParser, configuration);
                 if (channel != null)
                 {
-                    metaPlugIn.runPostFeedParseHook (feed, channel);
+                    metaPlugIn.runPostFeedParsePlugIn (feed, channel);
                     doneHandler.feedFinished (feed, channel);
                 }
             }
@@ -437,9 +437,9 @@ class FeedDownloadThread extends Thread
 
                 else
                 {
-                    metaPlugIn.runPostFeedDownloadHook (feedInfo,
-                                                        tempFile.file,
-                                                        tempFile.encoding);
+                    metaPlugIn.runPostFeedDownloadPlugIn (feedInfo,
+                                                          tempFile.file,
+                                                          tempFile.encoding);
 
                     if (parser == null)
                     {

@@ -32,7 +32,7 @@ package org.clapper.curn;
  *
  * @see PlugIn
  * @see MetaPlugIn
- * @see PreCacheSavePlugin
+ * @see PreCacheSavePlugIn
  * @see Curn
  *
  * @version <tt>$Revision: 5916 $</tt>
@@ -53,6 +53,6 @@ public interface CacheLoadedPlugIn extends PlugIn
      *
      * @see FeedCache
      */
-    public void runCacheLoadedHook (FeedCache cache)
+    public void runCacheLoadedPlugIn (FeedCache cache)
 	throws CurnException;
 }

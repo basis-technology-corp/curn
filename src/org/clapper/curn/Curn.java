@@ -145,7 +145,7 @@ public class Curn
                      boolean            useCache)
         throws CurnException
     {
-        metaPlugIn.runStartupHook();
+        metaPlugIn.runStartupPlugIn();
 
         try
         {
@@ -165,7 +165,7 @@ public class Curn
 
         finally
         {
-            metaPlugIn.runShutdownHook();
+            metaPlugIn.runShutdownPlugIn();
         }
     }
 
@@ -218,7 +218,7 @@ public class Curn
             cache = new FeedCache (config);
             cache.setCurrentTime (currentTime);
             cache.loadCache();
-            metaPlugIn.runCacheLoadedHook (cache);
+            metaPlugIn.runCacheLoadedPlugIn (cache);
         }
 
         if (config.isDownloadOnly())
@@ -270,7 +270,7 @@ public class Curn
         if ((cache != null) && config.mustUpdateCache())
         {
             int totalCacheBackups = config.totalCacheBackups();
-            metaPlugIn.runPreCacheSaveHook (cache);
+            metaPlugIn.runPreCacheSavePlugIn (cache);
             cache.saveCache (totalCacheBackups);
         }
     }
@@ -281,7 +281,7 @@ public class Curn
         try
         {
             config = new CurnConfig (configPath);
-            MetaPlugIn.getMetaPlugIn().runPostConfigurationHook (config);
+            MetaPlugIn.getMetaPlugIn().runPostConfigurationPlugIn (config);
             return config;
         }
 
@@ -603,16 +603,16 @@ public class Curn
             for (FeedInfo fi : channels.keySet())
             {
                 RSSChannel channel = channels.get (fi);
-                metaPlugIn.runPreFeedOutputHook (fi,
-                                                 channel.makeCopy(),
-                                                 handler);
+                metaPlugIn.runPreFeedOutputPlugIn (fi,
+                                                   channel.makeCopy(),
+                                                   handler);
                 handler.displayChannel (channel, fi);
-                metaPlugIn.runPostFeedOutputHook (fi, handler);
+                metaPlugIn.runPostFeedOutputPlugIn (fi, handler);
             }
 
             handler.flush();
             ReadOnlyOutputHandler ro = new ReadOnlyOutputHandler (handler);
-            if (metaPlugIn.runPostOutputHandlerFlushHook (ro))
+            if (metaPlugIn.runPostOutputHandlerFlushPlugIn (ro))
             {
                 // Okay to consider this one.
 

@@ -30,122 +30,24 @@ package org.clapper.curn;
  * This interface defines the methods that must be supported by a class
  * that is to be plugged into <i>curn</i> as a generalized plug-in.
  * <i>curn</i> plug-ins are invoked at various phases of <i>curn</i>
- * execution:
+ * execution.
  *
- * <table>
- *   <tr>
- *     <th>Plug-in Phase</th>
- *     <th>Explanation</th>
- *     <th>Method ("hook")</th>
- *   </tr>
- *   <tr>
- *     <td><i>Startup</i></td>
- *     <td>Called after <i>curn</i> has started, but before it has loaded
- *         its configuration file or its cache.</td>
- *     <td>{@link #runStartupHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Main Configuration Entry Read</i></td>
- *     <td>Called after a configuration item is encountered and read in the
- *         main [curn*] configuration file section. All configuration data
- *         items are passed to all plug-ins. If a plug-in is not interested
- *         in a configuration item, should simply ignore it.
- *     </td>
- *     <td>{@link #runMainConfigItemHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Feed Configuration Entry Read</i></td>
- *     <td>Called after a configuration item is encountered and read in a
- *         [Feed*] configuration file section. All configuration data items
- *         are passed to all plug-ins. If a plug-in is not interested in a
- *         configuration item, should simply ignore it.
- *     </td>
- *     <td>{@link #runFeedConfigItemHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Output Handler Configuration Entry Read</i></td>
- *     <td>Called after a configuration item is encountered and read in an
- *         [OutputHandler*] configuration file section. All configuration
- *         data items are passed to all plug-ins. If a plug-in is not
- *         interested in a configuration item, should simply ignore it.
- *     </td>
- *     <td>{@link #runOutputHandlerConfigItemHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Unknown Section Configuration Entry Read</i></td>
- *     <td>Called after a configuration item is encountered and read in an
- *         unknown configuration file section. All configuration
- *         data items are passed to all plug-ins. If a plug-in is not
- *         interested in a configuration item, should simply ignore it.
- *     </td>
- *     <td>{@link #runUnknownSectionConfigItemHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Post-Configuration</i></td>
- *     <td>Called after the entire configuration has been read and parsed,
- *         but before any feeds are processed. Intercepting this event is
- *         useful for plug-ins that want to adjust the configuration. For
- *         instance, the <i>curn</i> command-line wrapper intercepts this
- *         plug-in event so it can adjust the configuration to account for
- *         command line options.
- *     </td>
- *     <td>{@link #runPostConfigHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Cache Loaded</i></td>
- *     <td>Called after the <i>curn</i> cache has been read (and after
- *         any expired entries have been purged), but before any feeds
- *         are processed.
- *     </td>
- *     <td>{@link #runCacheLoadedHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Pre-feed download</i></td>
- *     <td>Called right before a feed is downloaded.</td>
- *     <td>{@link #runPreFeedDownloadHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Post-feed download</i></td>
- *     <td>Called right after a feed's XML has been downloaded,
- *         but before it has been parsed. Receives a <tt>File</tt> that
- *         points to the downloaded XML.</td>
- *     <td>{@link #runPostFeedDownloadHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Post-feed parse</td>
- *     <td>Gets an individual parsed {@link RSSChannel}, right after
- *         it has been parsed and before it is processed. It is at this
- *         point that plug-ins could weed out or reorder channel items.</td>
- *     <td>{@link #runPostFeedParseHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Pre-channel output</td>
- *     <td>Called with an {@link RSSChannel} object just before it is
- *         passed to the output handlers. This method will get the opportunity
- *         to suppress the output, by returning <tt>false</tt>.</td>
- *     <td>{@link #runPreFeedOutputHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Pre-cache save</i></td>
- *     <td>Called just before <i>curn</i> saves its cache. This phase gives
- *         a plug-in the opportunity to alter the cache.</td>
- *     <td>{@link #runPreCacheSaveHook}</td>
- *   </tr>
- *   <tr>
- *     <td><i>Shutdown</i></td>
- *     <td>Called after <i>curn</i> saves its cache, just before it exits.</td>
- *     <td>{@link #runShutdownHook}</td>
- *   </tr>
- * </table>
- *
- * <p>A plug-in class must define all the methods defined by this interface;
- * however, for plug-ins that don't want to intercept all the phases, there's
- * an {@link AbstractPlugIn} class that defines no-op methods for each of the
- * methods in this interface. A plug-in class can extend the
- * {@link AbstractPlugIn} class and provide only those methods it wants.</p>
- *
- * @see AbstractPlugIn
  * @see MetaPlugIn
+ * @see CacheLoadedPlugIn
+ * @see FeedConfigItemPlugIn
+ * @see MainConfigItemPlugIn
+ * @see OutputHandlerConfigItemPlugIn
+ * @see PostConfigPlugIn
+ * @see PostFeedDownloadPlugIn
+ * @see PostFeedOutputPlugIn
+ * @see PostFeedParsePlugIn
+ * @see PostOutputHandlerFlushPlugIn
+ * @see PreCacheSavePlugIn
+ * @see PreFeedDownloadPlugIn
+ * @see PreFeedOutputPlugIn
+ * @see ShutdownPlugIn
+ * @see StartupPlugIn
+ * @see UnknownSectionConfigItemPlugIn
  * @see Curn
  *
  * @version <tt>$Revision$</tt>

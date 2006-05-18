@@ -166,7 +166,7 @@ public class Util
      *
      * @return the resource bundle
      *
-     * @see #BUNDLE_NAME
+     * @see Constants#BUNDLE_NAME
      * @see #getResourceFromBundle
      */
     public static ResourceBundle getResourceBundle (Locale locale)
@@ -185,7 +185,7 @@ public class Util
      *
      * @return the resource bundle, or null if the resource doesn't exist
      *
-     * @see #BUNDLE_NAME
+     * @see Constants#BUNDLE_NAME
      * @see #getResourceBundle
      */
     public static String getResourceFromBundle (String key, Locale locale)

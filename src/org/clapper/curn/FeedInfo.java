@@ -73,9 +73,6 @@ public class FeedInfo
 
     /**
      * Default encoding for "save as" file.
-     *
-     * @see #getSaveAsFile
-     * @see #setSaveAsEncoding
      */
     public static final String DEFAULT_SAVE_AS_ENCODING = "utf-8";
 

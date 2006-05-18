@@ -59,10 +59,10 @@ public interface PostFeedOutputPlugIn extends PlugIn
      *
      * @throws CurnException on error
      *
-     * @see RSSChannel
      * @see FeedInfo
+     * @see OutputHandler
      */
-    public void runPostFeedOutputHook (FeedInfo      feedInfo,
-                                       OutputHandler outputHandler)
+    public void runPostFeedOutputPlugIn (FeedInfo      feedInfo,
+                                         OutputHandler outputHandler)
 	throws CurnException;
 }

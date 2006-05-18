@@ -34,7 +34,7 @@ package org.clapper.curn;
  * @see MetaPlugIn
  * @see FeedConfigItemPlugIn
  * @see OutputHandlerConfigItemPlugIn
- * @see UnknownConfigItemPlugIn
+ * @see UnknownSectionConfigItemPlugIn
  * @see Curn
  *
  * @version <tt>$Revision: 5916 $</tt>
@@ -64,8 +64,8 @@ public interface MainConfigItemPlugIn extends PlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemHook (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config)
+    public void runMainConfigItemPlugIn (String     sectionName,
+                                         String     paramName,
+                                         CurnConfig config)
 	throws CurnException;
 }

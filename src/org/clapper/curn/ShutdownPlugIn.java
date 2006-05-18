@@ -44,11 +44,11 @@ public interface ShutdownPlugIn extends PlugIn
 
     /**
      * Called by the plug-in manager right before <i>curn</i> gets ready
-     * to exit. This hook allows plug-ins to perform any clean-up they
+     * to exit. This method allows plug-ins to perform any clean-up they
      * require.
      *
      * @throws CurnException on error
      */
-    public void runShutdownHook()
+    public void runShutdownPlugIn()
         throws CurnException;
 }

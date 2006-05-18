@@ -49,6 +49,6 @@ public interface StartupPlugIn extends PlugIn
      *
      * @throws CurnException on error
      */
-    public void runStartupHook()
+    public void runStartupPlugIn()
         throws CurnException;
 }

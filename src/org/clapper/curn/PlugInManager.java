@@ -68,7 +68,6 @@ import java.util.regex.PatternSyntaxException;
  * @see PlugIn
  * @see PlugInManager
  * @see MetaPlugIn
- * @see AbstractPlugIn
  * @see Curn
  *
  * @version <tt>$Revision$</tt>

@@ -69,11 +69,6 @@ import java.util.HashMap;
  *   </tr>
  * </table>
  *
- * @see PlugIn
- * @see PlugInManager
- * @see AbstractPlugIn
- * @see Curn
- *
  * @version <tt>$Revision$</tt>
  */
 public class RawFeedSaveAsPlugIn
@@ -182,10 +177,10 @@ public class RawFeedSaveAsPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public void runFeedConfigItemHook (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config,
-                                       FeedInfo   feedInfo)
+    public void runFeedConfigItemPlugIn (String     sectionName,
+                                         String     paramName,
+                                         CurnConfig config,
+                                         FeedInfo   feedInfo)
 	throws CurnException
     {
         try
@@ -243,7 +238,7 @@ public class RawFeedSaveAsPlugIn
      *
      * @see CurnConfig
      */
-    public void runPostConfigurationHook (CurnConfig config)
+    public void runPostConfigurationPlugIn (CurnConfig config)
 	throws CurnException
     {
         this.config = config;
@@ -288,7 +283,7 @@ public class RawFeedSaveAsPlugIn
      *
      * @see FeedInfo
      */
-    public boolean runPreFeedDownloadHook (FeedInfo feedInfo)
+    public boolean runPreFeedDownloadPlugIn (FeedInfo feedInfo)
 	throws CurnException
     {
         boolean processFeed = true;
@@ -338,9 +333,9 @@ public class RawFeedSaveAsPlugIn
      *
      * @see FeedInfo
      */
-    public boolean runPostFeedDownloadHook (FeedInfo feedInfo,
-					    File     feedDataFile,
-                                            String   encoding)
+    public boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
+                                              File     feedDataFile,
+                                              String   encoding)
 	throws CurnException
     {
         boolean keepGoing = true;

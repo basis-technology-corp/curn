@@ -71,9 +71,9 @@ public interface PostFeedDownloadPlugIn extends PlugIn
      *
      * @see FeedInfo
      */
-    public boolean runPostFeedDownloadHook (FeedInfo feedInfo,
-					    File     feedDataFile,
-                                            String   encoding)
+    public boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
+                                              File     feedDataFile,
+                                              String   encoding)
 	throws CurnException;
 
 }

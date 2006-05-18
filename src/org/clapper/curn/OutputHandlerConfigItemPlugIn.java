@@ -36,7 +36,7 @@ import java.io.File;
  * @see MetaPlugIn
  * @see FeedConfigItemPlugIn
  * @see MainConfigItemPlugIn
- * @see UnknownConfigItemPlugIn
+ * @see UnknownSectionConfigItemPlugIn
  * @see Curn
  *
  * @version <tt>$Revision: 5916 $</tt>
@@ -61,20 +61,19 @@ public interface OutputHandlerConfigItemPlugIn extends PlugIn
      *                     the item was found
      * @param paramName    the name of the parameter
      * @param config       the {@link CurnConfig} object
-     * @param handler      partially complete {@link ConfiguredOutputHanlder}
+     * @param handler      partially complete {@link ConfiguredOutputHandler}
      *                     object. The class name is guaranteed to be set,
      *                     but the other fields may not be.
      * 
      * @throws CurnException on error
      *
      * @see CurnConfig
-     * @see FeedInfo
-     * @see FeedInfo#getURL
+     * @see ConfiguredOutputHandler
      */
     public void
-    runOutputHandlerConfigItemHook (String                  sectionName,
-                                    String                  paramName,
-                                    CurnConfig              config,
-                                    ConfiguredOutputHandler handler)
+    runOutputHandlerConfigItemPlugIn (String                  sectionName,
+                                      String                  paramName,
+                                      CurnConfig              config,
+                                      ConfiguredOutputHandler handler)
 	throws CurnException;
 }

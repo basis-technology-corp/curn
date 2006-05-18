@@ -50,7 +50,21 @@ import java.util.Map;
  *
  * @see PlugIn
  * @see PlugInManager
- * @see AbstractPlugIn
+ * @see CacheLoadedPlugIn
+ * @see FeedConfigItemPlugIn
+ * @see MainConfigItemPlugIn
+ * @see OutputHandlerConfigItemPlugIn
+ * @see PostConfigPlugIn
+ * @see PostFeedDownloadPlugIn
+ * @see PostFeedOutputPlugIn
+ * @see PostFeedParsePlugIn
+ * @see PostOutputHandlerFlushPlugIn
+ * @see PreCacheSavePlugIn
+ * @see PreFeedDownloadPlugIn
+ * @see PreFeedOutputPlugIn
+ * @see ShutdownPlugIn
+ * @see StartupPlugIn
+ * @see UnknownSectionConfigItemPlugIn
  * @see Curn
  *
  * @version <tt>$Revision: 5749 $</tt>
@@ -155,8 +169,6 @@ public class MetaPlugIn
     /**
      * Get the <tt>MetaPlugIn</tt> singleton.
      *
-     * @param classLoader class loader to use
-     *
      * @return the <tt>MetaPlugIn</tt> singleton
      *
      * @throws CurnException on error
@@ -239,32 +251,32 @@ public class MetaPlugIn
         return getClass().getName();
     }
 
-    public synchronized void runStartupHook()
+    public synchronized void runStartupPlugIn()
         throws CurnException
     {
         for (StartupPlugIn plugIn : startupPlugIns)
         {
-            logHookInvocation ("runStartupHook", plugIn);
-            plugIn.runStartupHook();
+            logPlugInInvocation ("runStartupPlugIn", plugIn);
+            plugIn.runStartupPlugIn();
         }
     }
 
-    public synchronized void runMainConfigItemHook (String     sectionName,
+    public synchronized void runMainConfigItemPlugIn (String     sectionName,
                                                     String     paramName,
                                                     CurnConfig config)
 	throws CurnException
     {
         for (MainConfigItemPlugIn plugIn : mainConfigItemPlugIns)
         {
-            logHookInvocation ("runMainConfigItemHook",
-                               plugIn,
-                               sectionName,
-                               paramName);
-            plugIn.runMainConfigItemHook (sectionName, paramName, config);
+            logPlugInInvocation ("runMainConfigItemPlugIn",
+                                 plugIn,
+                                 sectionName,
+                                 paramName);
+            plugIn.runMainConfigItemPlugIn (sectionName, paramName, config);
         }
     }
 
-    public synchronized void runFeedConfigItemHook (String     sectionName,
+    public synchronized void runFeedConfigItemPlugIn (String     sectionName,
                                                     String     paramName,
                                                     CurnConfig config,
                                                     FeedInfo   feedInfo)
@@ -272,19 +284,19 @@ public class MetaPlugIn
     {
         for (FeedConfigItemPlugIn plugIn : feedConfigItemPlugIns)
         {
-            logHookInvocation ("runFeedConfigItemHook",
-                               plugIn,
-                               sectionName,
-                               paramName);
-            plugIn.runFeedConfigItemHook (sectionName,
-                                          paramName,
-                                          config,
-                                          feedInfo);
+            logPlugInInvocation ("runFeedConfigItemPlugIn",
+                                 plugIn,
+                                 sectionName,
+                                 paramName);
+            plugIn.runFeedConfigItemPlugIn (sectionName,
+                                            paramName,
+                                            config,
+                                            feedInfo);
         }
     }
 
     public synchronized void
-    runOutputHandlerConfigItemHook (String                  sectionName,
+    runOutputHandlerConfigItemPlugIn (String                  sectionName,
                                     String                  paramName,
                                     CurnConfig              config,
                                     ConfiguredOutputHandler handler)
@@ -293,19 +305,19 @@ public class MetaPlugIn
         for (OutputHandlerConfigItemPlugIn plugIn :
                  outputHandlerConfigItemPlugIns)
         {
-            logHookInvocation ("runOutputHandlerConfigItemHook",
-                               plugIn,
-                               sectionName,
-                               paramName);
-            plugIn.runOutputHandlerConfigItemHook (sectionName,
-                                                   paramName,
-                                                   config,
-                                                   handler);
+            logPlugInInvocation ("runOutputHandlerConfigItemPlugIn",
+                                 plugIn,
+                                 sectionName,
+                                 paramName);
+            plugIn.runOutputHandlerConfigItemPlugIn (sectionName,
+                                                     paramName,
+                                                     config,
+                                                     handler);
         }
     }
 
     public synchronized void
-    runUnknownSectionConfigItemHook (String     sectionName,
+    runUnknownSectionConfigItemPlugIn (String     sectionName,
                                      String     paramName,
                                      CurnConfig config)
 	throws CurnException
@@ -313,45 +325,45 @@ public class MetaPlugIn
         for (UnknownSectionConfigItemPlugIn plugIn :
                  unknownSectionConfigItemPlugIns)
         {
-            logHookInvocation ("runUnknownSectionConfigItemHook",
-                               plugIn,
-                               sectionName,
-                               paramName);
-            plugIn.runUnknownSectionConfigItemHook (sectionName,
-                                                    paramName,
-                                                    config);
+            logPlugInInvocation ("runUnknownSectionConfigItemPlugIn",
+                                 plugIn,
+                                 sectionName,
+                                 paramName);
+            plugIn.runUnknownSectionConfigItemPlugIn (sectionName,
+                                                      paramName,
+                                                      config);
         }
     }
 
-    public synchronized void runPostConfigurationHook (CurnConfig config)
+    public synchronized void runPostConfigurationPlugIn (CurnConfig config)
 	throws CurnException
     {
         for (PostConfigPlugIn plugIn : postConfigPlugIns)
         {
-            logHookInvocation ("runPostConfigurationHook", plugIn);
-            plugIn.runPostConfigurationHook (config);
+            logPlugInInvocation ("runPostConfigurationPlugIn", plugIn);
+            plugIn.runPostConfigurationPlugIn (config);
         }
     }
 
-    public synchronized void runCacheLoadedHook (FeedCache cache)
+    public synchronized void runCacheLoadedPlugIn (FeedCache cache)
 	throws CurnException
     {
         for (CacheLoadedPlugIn plugIn : cacheLoadedPlugIns)
         {
-            logHookInvocation ("runCacheLoadedHook", plugIn);
-            plugIn.runCacheLoadedHook (cache);
+            logPlugInInvocation ("runCacheLoadedPlugIn", plugIn);
+            plugIn.runCacheLoadedPlugIn (cache);
         }
     }
 
-    public synchronized boolean runPreFeedDownloadHook (FeedInfo feedInfo)
+    public synchronized boolean runPreFeedDownloadPlugIn (FeedInfo feedInfo)
 	throws CurnException
     {
         boolean keepGoing = true;
 
         for (PreFeedDownloadPlugIn plugIn : preFeedDownloadPlugIns)
         {
-            logHookInvocation ("runPreFeedDownloadHook", plugIn);
-            keepGoing = plugIn.runPreFeedDownloadHook (feedInfo);
+            logPlugInInvocation ("runPreFeedDownloadPlugIn", plugIn);
+            keepGoing = plugIn.runPreFeedDownloadPlugIn (feedInfo);
 
             if (! keepGoing)
                 break;
@@ -360,7 +372,7 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized boolean runPostFeedDownloadHook (FeedInfo feedInfo,
+    public synchronized boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
                                                          File     feedDataFile,
                                                          String   encoding)
 	throws CurnException
@@ -369,10 +381,10 @@ public class MetaPlugIn
 
         for (PostFeedDownloadPlugIn plugIn : postFeedDownloadPlugIns)
         {
-            logHookInvocation ("runPostFeedDownloadHook", plugIn);
-            keepGoing = plugIn.runPostFeedDownloadHook (feedInfo,
-                                                        feedDataFile,
-                                                        encoding);
+            logPlugInInvocation ("runPostFeedDownloadPlugIn", plugIn);
+            keepGoing = plugIn.runPostFeedDownloadPlugIn (feedInfo,
+                                                          feedDataFile,
+                                                          encoding);
             if (! keepGoing)
                 break;
         }
@@ -380,7 +392,7 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized boolean runPostFeedParseHook (FeedInfo   feedInfo,
+    public synchronized boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                                       RSSChannel channel)
 	throws CurnException
     {
@@ -388,8 +400,8 @@ public class MetaPlugIn
 
         for (PostFeedParsePlugIn plugIn : postFeedParsePlugIns)
         {
-            logHookInvocation ("runPostFeedParseHook", plugIn);
-            keepGoing = plugIn.runPostFeedParseHook (feedInfo, channel);
+            logPlugInInvocation ("runPostFeedParsePlugIn", plugIn);
+            keepGoing = plugIn.runPostFeedParsePlugIn (feedInfo, channel);
             if (! keepGoing)
                 break;
         }
@@ -397,31 +409,31 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized void runPreFeedOutputHook (FeedInfo      feedInfo,
+    public synchronized void runPreFeedOutputPlugIn (FeedInfo      feedInfo,
                                                    RSSChannel    channel,
                                                    OutputHandler outputHandler)
 	throws CurnException
     {
         for (PreFeedOutputPlugIn plugIn : preFeedOutputPlugIns)
         {
-            logHookInvocation ("runPreFeedOutputHook", plugIn);
-            plugIn.runPreFeedOutputHook (feedInfo, channel, outputHandler);
+            logPlugInInvocation ("runPreFeedOutputPlugIn", plugIn);
+            plugIn.runPreFeedOutputPlugIn (feedInfo, channel, outputHandler);
         }
     }
 
-    public synchronized void runPostFeedOutputHook (FeedInfo      feedInfo,
+    public synchronized void runPostFeedOutputPlugIn (FeedInfo      feedInfo,
                                        OutputHandler outputHandler)
 	throws CurnException
     {
         for (PostFeedOutputPlugIn plugIn : postFeedOutputPlugIns)
         {
-            logHookInvocation ("runPostFeedOutputHook", plugIn);
-            plugIn.runPostFeedOutputHook (feedInfo, outputHandler);
+            logPlugInInvocation ("runPostFeedOutputPlugIn", plugIn);
+            plugIn.runPostFeedOutputPlugIn (feedInfo, outputHandler);
         }
     }
 
     public synchronized boolean
-    runPostOutputHandlerFlushHook (OutputHandler outputHandler)
+    runPostOutputHandlerFlushPlugIn (OutputHandler outputHandler)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -429,8 +441,8 @@ public class MetaPlugIn
         for (PostOutputHandlerFlushPlugIn plugIn :
                  postOutputHandlerFlushPlugIns)
         {
-            logHookInvocation ("runPostOutputHandlerFlushHook", plugIn);
-            keepGoing = plugIn.runPostOutputHandlerFlushHook (outputHandler);
+            logPlugInInvocation ("runPostOutputHandlerFlushPlugIn", plugIn);
+            keepGoing = plugIn.runPostOutputHandlerFlushPlugIn (outputHandler);
 
             if (! keepGoing)
                 break;
@@ -439,23 +451,23 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized void runPreCacheSaveHook (FeedCache cache)
+    public synchronized void runPreCacheSavePlugIn (FeedCache cache)
 	throws CurnException
     {
         for (PreCacheSavePlugIn plugIn : preCacheSavePlugIns)
         {
-            logHookInvocation ("runPreCacheSaveHook", plugIn);
-            plugIn.runPreCacheSaveHook (cache);
+            logPlugInInvocation ("runPreCacheSavePlugIn", plugIn);
+            plugIn.runPreCacheSavePlugIn (cache);
         }
     }
 
-    public synchronized void runShutdownHook()
+    public synchronized void runShutdownPlugIn()
         throws CurnException
     {
         for (ShutdownPlugIn plugIn : shutdownPlugIns)
         {
-            logHookInvocation ("runShutdownHook", plugIn);
-            plugIn.runShutdownHook();
+            logPlugInInvocation ("runShutdownPlugIn", plugIn);
+            plugIn.runShutdownPlugIn();
         }
     }
 
@@ -494,15 +506,15 @@ public class MetaPlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Log a hook invocation.
+     * Log a plug-in invocation.
      *
      * @param methodName  calling method name
      * @param plugIn      plug-in class
      * @param args        method args, if any
      */
-    private void logHookInvocation (String    methodName,
-                                    PlugIn    plugIn,
-                                    Object... args)
+    private void logPlugInInvocation (String    methodName,
+                                      PlugIn    plugIn,
+                                      Object... args)
     {
         if (log.isDebugEnabled())
         {

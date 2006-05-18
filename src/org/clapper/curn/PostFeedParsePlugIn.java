@@ -34,8 +34,8 @@ import org.clapper.curn.parser.RSSChannel;
  *
  * @see PlugIn
  * @see MetaPlugIn
- * @see PreFeedParsePlugIn
- * @see PostFeedParsePlugIn
+ * @see PreFeedDownloadPlugIn
+ * @see PostFeedDownloadPlugIn
  * @see Curn
  *
  * @version <tt>$Revision: 5916 $</tt>
@@ -70,6 +70,7 @@ public interface PostFeedParsePlugIn extends PlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParseHook (FeedInfo feedInfo, RSSChannel channel)
+    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
+                                           RSSChannel channel)
 	throws CurnException;
 }

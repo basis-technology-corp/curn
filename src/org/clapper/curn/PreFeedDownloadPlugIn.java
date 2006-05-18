@@ -60,6 +60,6 @@ public interface PreFeedDownloadPlugIn extends PlugIn
      *
      * @see FeedInfo
      */
-    public boolean runPreFeedDownloadHook (FeedInfo feedInfo)
+    public boolean runPreFeedDownloadPlugIn (FeedInfo feedInfo)
 	throws CurnException;
 }

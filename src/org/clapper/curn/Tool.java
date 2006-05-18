@@ -193,7 +193,7 @@ public class Tool
         return "curn command-line interface";
     }
 
-    public void runPostConfigurationHook (CurnConfig config)
+    public void runPostConfigurationPlugIn (CurnConfig config)
 	throws CurnException
     {
         try

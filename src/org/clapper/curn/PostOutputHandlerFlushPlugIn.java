@@ -58,9 +58,9 @@ public interface PostOutputHandlerFlushPlugIn extends PlugIn
      *
      * @throws CurnException on error
      *
-     * @see RSSChannel
-     * @see FeedInfo
+     * @see OutputHandler
      */
-    public boolean runPostOutputHandlerFlushHook (OutputHandler outputHandler)
+    public boolean
+    runPostOutputHandlerFlushPlugIn (OutputHandler outputHandler)
 	throws CurnException;
 }

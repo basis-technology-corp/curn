@@ -424,7 +424,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @param newEncoding  the new encoding, or null to use the default
      *
-     * @see #getEncoding
+     * @see #getOutputEncoding
      */
     protected final void setOutputEncoding (String newEncoding)
     {
