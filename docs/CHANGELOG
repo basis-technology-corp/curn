@@ -6,9 +6,24 @@ $Id$
 Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 2.7 (...)
+Version 3.0 (...)
 
-- Added plug-in capability.
+- Added plug-in capability. See the Users' Guide for details on writing
+  and deploying plug-ins.
+
+- Converted some base curn functionality into (built-in) plug-ins.
+
+- Replaced OutputHandler.displayChannel(RSSChannel,FeedInfo)
+  with OutputHandler.displayChannel(FeedInfo), since RSSChannel object
+  is now accessible from FeedInfo.
+
+  NOTE: This change will break existing custom output handlers.
+
+- The org.clapper.curn.output.TextOutputHandler,
+  org.clapper.curn.output.SimpleSummaryOutputHandler, and
+  org.clapper.curn.output.html.HTMLOutputHandler classes are gone. They'd
+  been deprecated as of version 2.6 and reimplemented in terms of the
+  FreeMarkerOutputHandler. Use the FreeMarkerOutputHandler, instead.
 
 - Fixed bug: curn wasn't caching data about the overall feed (as opposed to
   the individual items in the feed, which were being cache). For
