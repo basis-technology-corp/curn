@@ -26,13 +26,16 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.AbstractPlugIn;
 import org.clapper.curn.Constants;
 import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.curn.FeedConfigItemPlugIn;
+import org.clapper.curn.PostConfigPlugIn;
+import org.clapper.curn.PreFeedDownloadPlugIn;
+import org.clapper.curn.PostFeedDownloadPlugIn;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.FileUtil;
@@ -73,7 +76,11 @@ import java.util.HashMap;
  *
  * @version <tt>$Revision$</tt>
  */
-public class RawFeedSaveAsPlugIn extends AbstractPlugIn
+public class RawFeedSaveAsPlugIn
+    implements FeedConfigItemPlugIn,
+               PostConfigPlugIn,
+               PreFeedDownloadPlugIn,
+               PostFeedDownloadPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
