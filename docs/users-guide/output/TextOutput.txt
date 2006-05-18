@@ -1,36 +1,6 @@
 RSS Feeds
 
 ---------------------------------------------------------------------------
-The Daily Irrelevant
-http://irrelevant.clapper.org/
-
-    Fifteen Philadelphia motorists cited for stupidity
-    http://irrelevant.clapper.org/2004/06/13/stupidity.html
-
-        During rush hour this morning, on the city's busy Schuylkill Expressway,
-        Philadelphia police stopped fifteen motorists and cited them under
-        Philadelphia's new, controversial "stupid driver" ordinance.
-
-    Joe Sixpack to retire
-    http://irrelevant.clapper.org/2004/06/13/joe6.html
-
-        Joe Sixpack, whose name is frequently used to represent an average guy,
-        is retiring at the end of July. "After that, they're just gonna hafta
-        use someone else's name," Sixpack said, grinning, "'less they wanna pay
-        me royalties or somethin'."
-
-    Tripwell caught with pants down
-    http://irrelevant.clapper.org/2004/06/13/televangelist.html
-
-        Police, responding to neighbors' reports of disturbing sounds from
-        televangelist Gerard Tripwell's home, found his garage door open and the
-        door to his home ajar. Upon entering, police encountered Tripwell and a
-        young woman having sex on the kitchen table. The woman has been
-        identified as Tripwell's secretary. Tripwell is married, but his wife,
-        Trudy, had left an hour earlier to catch a plane to Little Rock,
-        Arkansas, to visit her dying father.
-
----------------------------------------------------------------------------
 News Bites
 http://bites.clapper.org/
 
@@ -50,6 +20,36 @@ http://bites.clapper.org/
         of treatment for multiple bite wounds.
 
 ---------------------------------------------------------------------------
+The Daily Irrelevant
+http://irrelevant.clapper.org/
+
+    Joe Sixpack to retire
+    http://irrelevant.clapper.org/2004/06/13/joe6.html
+
+        Joe Sixpack, whose name is frequently used to represent an average guy,
+        is retiring at the end of July. "After that, they're just gonna hafta
+        use someone else's name," Sixpack said, grinning, "'less they wanna pay
+        me royalties or somethin'."
+
+    Fifteen Philadelphia motorists cited for stupidity
+    http://irrelevant.clapper.org/2004/06/13/stupidity.html
+
+        During rush hour this morning, on the city's busy Schuylkill Expressway,
+        Philadelphia police stopped fifteen motorists and cited them under
+        Philadelphia's new, controversial "stupid driver" ordinance.
+
+    Tripwell caught with pants down
+    http://irrelevant.clapper.org/2004/06/13/televangelist.html
+
+        Police, responding to neighbors' reports of disturbing sounds from
+        televangelist Gerard Tripwell's home, found his garage door open and the
+        door to his home ajar. Upon entering, police encountered Tripwell and a
+        young woman having sex on the kitchen table. The woman has been
+        identified as Tripwell's secretary. Tripwell is married, but his wife,
+        Trudy, had left an hour earlier to catch a plane to Little Rock,
+        Arkansas, to visit her dying father.
+
+---------------------------------------------------------------------------
 Simple News Summaries
 http://justthefactsmaam.clapper.org/
 
@@ -65,5 +65,5 @@ http://justthefactsmaam.clapper.org/
 
 
 ---------------------------------------------------------------------------
-curn, 2.6
-Generated Thursday, 24 November, 2005 at 11:42:25 EST
+curn, 3.0
+Generated Wednesday, 17 May, 2006 at 23:47:21 EDT
