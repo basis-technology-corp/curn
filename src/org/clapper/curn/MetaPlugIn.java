@@ -36,8 +36,10 @@ import org.clapper.util.logging.Logger;
 
 import java.io.File;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A <tt>MetaPlugIn</tt> object is basically a plug-in that contains all the
@@ -53,21 +55,77 @@ import java.util.ArrayList;
  *
  * @version <tt>$Revision: 5749 $</tt>
  */
-public class MetaPlugIn implements PlugIn
+public class MetaPlugIn
+    implements CacheLoadedPlugIn,
+               FeedConfigItemPlugIn,
+               MainConfigItemPlugIn,
+               OutputHandlerConfigItemPlugIn,
+               PostConfigPlugIn,
+               PostFeedDownloadPlugIn,
+               PostFeedOutputPlugIn,
+               PostFeedParsePlugIn,
+               PostOutputHandlerFlushPlugIn,
+               PreCacheSavePlugIn,
+               PreFeedDownloadPlugIn,
+               PreFeedOutputPlugIn,
+               ShutdownPlugIn,
+               StartupPlugIn,
+               UnknownSectionConfigItemPlugIn
 {
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
     /**
-     * The loaded plug-ins.
+     * The loaded plug-ins, by type.
      */
-    private Collection<PlugIn> plugIns = null;
+    private Collection<CacheLoadedPlugIn>
+        cacheLoadedPlugIns = new ArrayList<CacheLoadedPlugIn>();
 
-    /**
-     * Lock object, for synchronization
-     */
-    private static Object lock = new Object();
+    private Collection<FeedConfigItemPlugIn>
+        feedConfigItemPlugIns = new ArrayList<FeedConfigItemPlugIn>();
+
+    private Collection<MainConfigItemPlugIn>
+        mainConfigItemPlugIns = new ArrayList<MainConfigItemPlugIn>();
+
+    private Collection<OutputHandlerConfigItemPlugIn>
+        outputHandlerConfigItemPlugIns =
+            new ArrayList<OutputHandlerConfigItemPlugIn>();
+
+    private Collection<PostConfigPlugIn>
+        postConfigPlugIns = new ArrayList<PostConfigPlugIn>();
+
+    private Collection<PostFeedDownloadPlugIn>
+        postFeedDownloadPlugIns = new ArrayList<PostFeedDownloadPlugIn>();
+
+    private Collection<PostFeedOutputPlugIn>
+        postFeedOutputPlugIns = new ArrayList<PostFeedOutputPlugIn>();
+
+    private Collection<PostFeedParsePlugIn>
+        postFeedParsePlugIns = new ArrayList<PostFeedParsePlugIn>();
+
+    private Collection<PostOutputHandlerFlushPlugIn>
+        postOutputHandlerFlushPlugIns =
+            new ArrayList<PostOutputHandlerFlushPlugIn>();
+
+    private Collection<PreCacheSavePlugIn>
+        preCacheSavePlugIns = new ArrayList<PreCacheSavePlugIn>();
+
+    private Collection<PreFeedDownloadPlugIn>
+        preFeedDownloadPlugIns = new ArrayList<PreFeedDownloadPlugIn>();
+
+    private Collection<PreFeedOutputPlugIn>
+        preFeedOutputPlugIns = new ArrayList<PreFeedOutputPlugIn>();
+
+    private Collection<ShutdownPlugIn>
+        shutdownPlugIns = new ArrayList<ShutdownPlugIn>();
+
+    private Collection<StartupPlugIn>
+        startupPlugIns = new ArrayList<StartupPlugIn>();
+
+    private Collection<UnknownSectionConfigItemPlugIn>
+        unknownSectionConfigItemPlugIns =
+            new ArrayList<UnknownSectionConfigItemPlugIn>();
 
     /**
      * The singleton
@@ -88,7 +146,6 @@ public class MetaPlugIn implements PlugIn
      */
     private MetaPlugIn()
     {
-        plugIns = new ArrayList<PlugIn>();
     }
 
     /*----------------------------------------------------------------------*\
@@ -118,9 +175,58 @@ public class MetaPlugIn implements PlugIn
      */
     public void addPlugIn (PlugIn plugIn)
     {
-        synchronized (lock)
+        synchronized (MetaPlugIn.class)
         {
-            plugIns.add (plugIn);
+            if (plugIn instanceof CacheLoadedPlugIn)
+                cacheLoadedPlugIns.add ((CacheLoadedPlugIn) plugIn);
+
+            else if (plugIn instanceof FeedConfigItemPlugIn)
+                feedConfigItemPlugIns.add ((FeedConfigItemPlugIn) plugIn);
+
+            else if (plugIn instanceof MainConfigItemPlugIn)
+                mainConfigItemPlugIns.add ((MainConfigItemPlugIn) plugIn);
+
+            else if (plugIn instanceof OutputHandlerConfigItemPlugIn)
+                outputHandlerConfigItemPlugIns.add
+                    ((OutputHandlerConfigItemPlugIn) plugIn);
+
+            else if (plugIn instanceof PostConfigPlugIn)
+                postConfigPlugIns.add ((PostConfigPlugIn) plugIn);
+
+            else if (plugIn instanceof PostFeedDownloadPlugIn)
+                postFeedDownloadPlugIns.add ((PostFeedDownloadPlugIn) plugIn);
+
+            else if (plugIn instanceof PostFeedOutputPlugIn)
+                postFeedOutputPlugIns.add ((PostFeedOutputPlugIn) plugIn);
+
+            else if (plugIn instanceof PostFeedParsePlugIn)
+                postFeedParsePlugIns.add ((PostFeedParsePlugIn) plugIn);
+
+            else if (plugIn instanceof PostOutputHandlerFlushPlugIn)
+                postOutputHandlerFlushPlugIns.add
+                    ((PostOutputHandlerFlushPlugIn) plugIn);
+
+            else if (plugIn instanceof PreCacheSavePlugIn)
+                preCacheSavePlugIns.add ((PreCacheSavePlugIn) plugIn);
+
+            else if (plugIn instanceof PreFeedDownloadPlugIn)
+                preFeedDownloadPlugIns.add ((PreFeedDownloadPlugIn) plugIn);
+
+            else if (plugIn instanceof PreFeedOutputPlugIn)
+                preFeedOutputPlugIns.add ((PreFeedOutputPlugIn) plugIn);
+
+            else if (plugIn instanceof ShutdownPlugIn)
+                shutdownPlugIns.add ((ShutdownPlugIn) plugIn);
+
+            else if (plugIn instanceof StartupPlugIn)
+                startupPlugIns.add ((StartupPlugIn) plugIn);
+
+            else if (plugIn instanceof UnknownSectionConfigItemPlugIn)
+                unknownSectionConfigItemPlugIns.add
+                    ((UnknownSectionConfigItemPlugIn) plugIn);
+
+            else
+                assert (false);
         }
     }
 
@@ -133,262 +239,223 @@ public class MetaPlugIn implements PlugIn
         return getClass().getName();
     }
 
-    public void runStartupHook()
+    public synchronized void runStartupHook()
         throws CurnException
     {
-        synchronized (lock)
+        for (StartupPlugIn plugIn : startupPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runStartupHook", plugIn);
-                plugIn.runStartupHook();
-            }
+            logHookInvocation ("runStartupHook", plugIn);
+            plugIn.runStartupHook();
         }
     }
 
-    public void runMainConfigItemHook (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config)
+    public synchronized void runMainConfigItemHook (String     sectionName,
+                                                    String     paramName,
+                                                    CurnConfig config)
 	throws CurnException
     {
-        synchronized (lock)
+        for (MainConfigItemPlugIn plugIn : mainConfigItemPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runMainConfigItemHook",
-                                   plugIn,
-                                   sectionName,
-                                   paramName);
-                plugIn.runMainConfigItemHook (sectionName,
-                                              paramName,
-                                              config);
-            }
+            logHookInvocation ("runMainConfigItemHook",
+                               plugIn,
+                               sectionName,
+                               paramName);
+            plugIn.runMainConfigItemHook (sectionName, paramName, config);
         }
     }
 
-    public void runFeedConfigItemHook (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config,
-                                       FeedInfo   feedInfo)
+    public synchronized void runFeedConfigItemHook (String     sectionName,
+                                                    String     paramName,
+                                                    CurnConfig config,
+                                                    FeedInfo   feedInfo)
 	throws CurnException
     {
-        synchronized (lock)
+        for (FeedConfigItemPlugIn plugIn : feedConfigItemPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runFeedConfigItemHook",
-                                   plugIn,
-                                   sectionName,
-                                   paramName);
-                plugIn.runFeedConfigItemHook (sectionName,
-                                              paramName,
-                                              config,
-                                              feedInfo);
-            }
+            logHookInvocation ("runFeedConfigItemHook",
+                               plugIn,
+                               sectionName,
+                               paramName);
+            plugIn.runFeedConfigItemHook (sectionName,
+                                          paramName,
+                                          config,
+                                          feedInfo);
         }
     }
 
-    public void
+    public synchronized void
     runOutputHandlerConfigItemHook (String                  sectionName,
                                     String                  paramName,
                                     CurnConfig              config,
                                     ConfiguredOutputHandler handler)
 	throws CurnException
     {
-        synchronized (lock)
+        for (OutputHandlerConfigItemPlugIn plugIn :
+                 outputHandlerConfigItemPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runOutputHandlerConfigItemHook",
-                                   plugIn,
-                                   sectionName,
-                                   paramName);
-                plugIn.runOutputHandlerConfigItemHook (sectionName,
-                                                       paramName,
-                                                       config,
-                                                       handler);
-            }
+            logHookInvocation ("runOutputHandlerConfigItemHook",
+                               plugIn,
+                               sectionName,
+                               paramName);
+            plugIn.runOutputHandlerConfigItemHook (sectionName,
+                                                   paramName,
+                                                   config,
+                                                   handler);
         }
     }
 
-    public void
+    public synchronized void
     runUnknownSectionConfigItemHook (String     sectionName,
                                      String     paramName,
                                      CurnConfig config)
 	throws CurnException
     {
-        synchronized (lock)
+        for (UnknownSectionConfigItemPlugIn plugIn :
+                 unknownSectionConfigItemPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runUnknownSectionConfigItemHook",
-                                   plugIn,
-                                   sectionName,
-                                   paramName);
-                plugIn.runUnknownSectionConfigItemHook (sectionName,
-                                                        paramName,
-                                                        config);
-            }
+            logHookInvocation ("runUnknownSectionConfigItemHook",
+                               plugIn,
+                               sectionName,
+                               paramName);
+            plugIn.runUnknownSectionConfigItemHook (sectionName,
+                                                    paramName,
+                                                    config);
         }
     }
 
-    public void runPostConfigurationHook (CurnConfig config)
+    public synchronized void runPostConfigurationHook (CurnConfig config)
 	throws CurnException
     {
-        synchronized (lock)
+        for (PostConfigPlugIn plugIn : postConfigPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPostConfigurationHook", plugIn);
-                plugIn.runPostConfigurationHook (config);
-            }
+            logHookInvocation ("runPostConfigurationHook", plugIn);
+            plugIn.runPostConfigurationHook (config);
         }
     }
 
-    public void runCacheLoadedHook (FeedCache cache)
+    public synchronized void runCacheLoadedHook (FeedCache cache)
 	throws CurnException
     {
-        synchronized (lock)
+        for (CacheLoadedPlugIn plugIn : cacheLoadedPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runCacheLoadedHook", plugIn);
-                plugIn.runCacheLoadedHook (cache);
-            }
+            logHookInvocation ("runCacheLoadedHook", plugIn);
+            plugIn.runCacheLoadedHook (cache);
         }
     }
 
-    public boolean runPreFeedDownloadHook (FeedInfo feedInfo)
+    public synchronized boolean runPreFeedDownloadHook (FeedInfo feedInfo)
 	throws CurnException
     {
         boolean keepGoing = true;
 
-        synchronized (lock)
+        for (PreFeedDownloadPlugIn plugIn : preFeedDownloadPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPreFeedDownloadHook", plugIn);
-                keepGoing = plugIn.runPreFeedDownloadHook (feedInfo);
-                if (! keepGoing)
-                    break;
-            }
+            logHookInvocation ("runPreFeedDownloadHook", plugIn);
+            keepGoing = plugIn.runPreFeedDownloadHook (feedInfo);
+
+            if (! keepGoing)
+                break;
         }
 
         return keepGoing;
     }
 
-    public boolean runPostFeedDownloadHook (FeedInfo feedInfo,
-					    File     feedDataFile,
-                                            String   encoding)
+    public synchronized boolean runPostFeedDownloadHook (FeedInfo feedInfo,
+                                                         File     feedDataFile,
+                                                         String   encoding)
 	throws CurnException
     {
         boolean keepGoing = true;
 
-        synchronized (lock)
+        for (PostFeedDownloadPlugIn plugIn : postFeedDownloadPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPostFeedDownloadHook", plugIn);
-                keepGoing = plugIn.runPostFeedDownloadHook (feedInfo,
-                                                            feedDataFile,
-                                                            encoding);
-                if (! keepGoing)
-                    break;
-            }
+            logHookInvocation ("runPostFeedDownloadHook", plugIn);
+            keepGoing = plugIn.runPostFeedDownloadHook (feedInfo,
+                                                        feedDataFile,
+                                                        encoding);
+            if (! keepGoing)
+                break;
         }
 
         return keepGoing;
     }
 
-    public boolean runPostFeedParseHook (FeedInfo feedInfo, RSSChannel channel)
+    public synchronized boolean runPostFeedParseHook (FeedInfo   feedInfo,
+                                                      RSSChannel channel)
 	throws CurnException
     {
         boolean keepGoing = true;
 
-        synchronized (lock)
+        for (PostFeedParsePlugIn plugIn : postFeedParsePlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPostFeedParseHook", plugIn);
-                keepGoing = plugIn.runPostFeedParseHook (feedInfo, channel);
-                if (! keepGoing)
-                    break;
-            }
+            logHookInvocation ("runPostFeedParseHook", plugIn);
+            keepGoing = plugIn.runPostFeedParseHook (feedInfo, channel);
+            if (! keepGoing)
+                break;
         }
 
         return keepGoing;
     }
 
-    public void runPreFeedOutputHook (FeedInfo      feedInfo,
-                                      RSSChannel    channel,
-                                      OutputHandler outputHandler)
+    public synchronized void runPreFeedOutputHook (FeedInfo      feedInfo,
+                                                   RSSChannel    channel,
+                                                   OutputHandler outputHandler)
 	throws CurnException
     {
-        synchronized (lock)
+        for (PreFeedOutputPlugIn plugIn : preFeedOutputPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPreFeedOutputHook", plugIn);
-                plugIn.runPreFeedOutputHook (feedInfo, channel, outputHandler);
-            }
+            logHookInvocation ("runPreFeedOutputHook", plugIn);
+            plugIn.runPreFeedOutputHook (feedInfo, channel, outputHandler);
         }
     }
 
-    public void runPostFeedOutputHook (FeedInfo      feedInfo,
+    public synchronized void runPostFeedOutputHook (FeedInfo      feedInfo,
                                        OutputHandler outputHandler)
 	throws CurnException
     {
-        synchronized (lock)
+        for (PostFeedOutputPlugIn plugIn : postFeedOutputPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPreFeedOutputHook", plugIn);
-                plugIn.runPostFeedOutputHook (feedInfo, outputHandler);
-            }
+            logHookInvocation ("runPostFeedOutputHook", plugIn);
+            plugIn.runPostFeedOutputHook (feedInfo, outputHandler);
         }
     }
 
-    public boolean runPostOutputHandlerFlushHook (OutputHandler outputHandler)
+    public synchronized boolean
+    runPostOutputHandlerFlushHook (OutputHandler outputHandler)
 	throws CurnException
     {
         boolean keepGoing = true;
 
-        synchronized (lock)
+        for (PostOutputHandlerFlushPlugIn plugIn :
+                 postOutputHandlerFlushPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPostOutputHandlerFlushHook", plugIn);
-                if (! plugIn.runPostOutputHandlerFlushHook (outputHandler))
-                    keepGoing = false;
-            }
+            logHookInvocation ("runPostOutputHandlerFlushHook", plugIn);
+            keepGoing = plugIn.runPostOutputHandlerFlushHook (outputHandler);
+
+            if (! keepGoing)
+                break;
         }
 
         return keepGoing;
     }
 
-    public void runPreCacheSaveHook (FeedCache cache)
+    public synchronized void runPreCacheSaveHook (FeedCache cache)
 	throws CurnException
     {
-        synchronized (lock)
+        for (PreCacheSavePlugIn plugIn : preCacheSavePlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runPreCacheSaveHook", plugIn);
-                plugIn.runPreCacheSaveHook (cache);
-            }
+            logHookInvocation ("runPreCacheSaveHook", plugIn);
+            plugIn.runPreCacheSaveHook (cache);
         }
     }
 
-    public void runShutdownHook()
+    public synchronized void runShutdownHook()
         throws CurnException
     {
-        synchronized (lock)
+        for (ShutdownPlugIn plugIn : shutdownPlugIns)
         {
-            for (PlugIn plugIn : plugIns)
-            {
-                logHookInvocation ("runShutdownHook", plugIn);
-                plugIn.runShutdownHook();
-            }
+            logHookInvocation ("runShutdownHook", plugIn);
+            plugIn.runShutdownHook();
         }
     }
 

@@ -78,7 +78,7 @@ import org.clapper.util.misc.BuildInfo;
  */
 public class Tool
     extends CommandLineUtility
-    implements PlugIn
+    implements PostConfigPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -182,6 +182,29 @@ public class Tool
 
     private Tool()
     {
+    }
+
+    /*----------------------------------------------------------------------*\
+                Public Methods Required by PlugIn Interface
+    \*----------------------------------------------------------------------*/
+
+    public String getName()
+    {
+        return "curn command-line interface";
+    }
+
+    public void runPostConfigurationHook (CurnConfig config)
+	throws CurnException
+    {
+        try
+        {
+            adjustConfiguration (config);
+        }
+
+        catch (ConfigurationException ex)
+        {
+            throw new CurnException (ex);
+        }
     }
 
     /*----------------------------------------------------------------------*\
@@ -505,120 +528,6 @@ public class Tool
             ex.printStackTrace (System.err);
             throw new CommandLineException (ex);
         }
-    }
-
-    /*----------------------------------------------------------------------*\
-                Public Methods Required by PlugIn Interface
-    \*----------------------------------------------------------------------*/
-
-    public String getName()
-    {
-        return "curn command-line interface";
-    }
-
-    public void runStartupHook()
-        throws CurnException
-    {
-    }
-
-    public void runMainConfigItemHook (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config)
-	throws CurnException
-    {
-    }
-
-    public void runFeedConfigItemHook (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config,
-                                       FeedInfo   feedInfo)
-	throws CurnException
-    {
-    }
-
-    public void
-    runOutputHandlerConfigItemHook (String                  sectionName,
-                                    String                  paramName,
-                                    CurnConfig              config,
-                                    ConfiguredOutputHandler handler)
-	throws CurnException
-    {
-    }
-
-    public void
-    runUnknownSectionConfigItemHook (String     sectionName,
-                                     String     paramName,
-                                     CurnConfig config)
-	throws CurnException
-    {
-    }
-
-    public void runPostConfigurationHook (CurnConfig config)
-	throws CurnException
-    {
-        try
-        {
-            adjustConfiguration (config);
-        }
-
-        catch (ConfigurationException ex)
-        {
-            throw new CurnException (ex);
-        }
-    }
-
-    public void runCacheLoadedHook (FeedCache cache)
-	throws CurnException
-    {
-    }
-
-    public boolean runPreFeedDownloadHook (FeedInfo feedInfo)
-	throws CurnException
-    {
-        return true;
-    }
-
-    public boolean runPostFeedDownloadHook (FeedInfo feedInfo,
-					    File     feedDataFile,
-                                            String   encoding)
-	throws CurnException
-    {
-        return true;
-    }
-
-    public boolean runPostFeedParseHook (FeedInfo feedInfo, RSSChannel channel)
-	throws CurnException
-    {
-        return true;
-    }
-
-    public void runPreFeedOutputHook (FeedInfo      feedInfo,
-                                      RSSChannel    channel,
-                                      OutputHandler outputHandler)
-	throws CurnException
-    {
-    }
-
-    public void runPostFeedOutputHook (FeedInfo      feedInfo,
-                                       OutputHandler outputHandler)
-	throws CurnException
-    {
-    }
-
-    public boolean runPostOutputHandlerFlushHook (OutputHandler outputHandler)
-	throws CurnException
-    {
-        return true;
-    }
-
-    public void runPreCacheSaveHook (FeedCache cache)
-	throws CurnException
-    {
-    }
-
-    public void runShutdownHook()
-        throws CurnException
-    {
     }
 
     /*----------------------------------------------------------------------*\
