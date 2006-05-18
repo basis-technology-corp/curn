@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  $Id: PlugIn.java 5916 2006-05-17 12:54:05Z bmc $
+  $Id$
   ---------------------------------------------------------------------------
   This software is released under a Berkeley-style license:
 
@@ -37,7 +37,7 @@ package org.clapper.curn;
  * @see UnknownSectionConfigItemPlugIn
  * @see Curn
  *
- * @version <tt>$Revision: 5916 $</tt>
+ * @version <tt>$Revision$</tt>
  */
 public interface MainConfigItemPlugIn extends PlugIn
 {
