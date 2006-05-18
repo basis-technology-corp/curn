@@ -63,10 +63,15 @@ source and documentation packages.
   <property name="javac.source" value="1.5"/>
   <property name="javac.debug" value="true"/>
   <property name="javac.depend" value="false"/>
-  <property name="code_jar_name" value="curn"/>
-  <property name="code_jar_file" value="${code_jar_name}.jar"/>
-  <property name="code_jar_dir" value="${dist}/lib"/>
-  <property name="code_jar_path" value="${code_jar_dir}/${code_jar_file}"/>
+  <property name="curn_jar_name" value="curn"/>
+  <property name="curn_jar_file" value="${curn_jar_name}.jar"/>
+  <property name="curn_jar_dir" value="${dist}/lib"/>
+  <property name="curn_jar_path" value="${curn_jar_dir}/${curn_jar_file}"/>
+  <property name="plugins_jar_name" value="curn-plugins"/>
+  <property name="plugins_jar_file" value="${plugins_jar_name}.jar"/>
+  <property name="plugins_jar_dir" value="${dist}/lib/plugins"/>
+  <property name="plugins_jar_path"
+            value="${plugins_jar_dir}/${plugins_jar_file}"/>
   <property name="docs_top_dir" value="docs"/>
   <property name="javadocs_top_dir" value="javadocs"/>
   <property name="javadocs_api_dir" value="${javadocs_top_dir}/curn/api"/>
@@ -144,6 +149,7 @@ source and documentation packages.
 
       <include name="${pkg.path}/*.java"/>
       <include name="${pkg.path}/util/*.java"/>
+      <include name="${pkg.path}/plugins/*.java"/>
       <include name="${pkg.path}/parser/*.java"/>
       <include name="${pkg.path}/parser/minirss/*.java"/>
       <include name="${pkg.path}/parser/tester.java"/>
@@ -494,8 +500,11 @@ source and documentation packages.
     <property name="versioned_src_zipfile"
               value="src-${curn.version}.zip"/>
 
-    <property name="versioned_code_jar_file"
-              value="${code_jar_name}-${curn.version}.jar"/>
+    <property name="versioned_curn_jar_file"
+              value="${curn_jar_name}-${curn.version}.jar"/>
+
+    <property name="versioned_plugins_jar_file"
+              value="${plugins_jar_name}-${curn.version}.jar"/>
 
     <property name="versioned_docs_zipfile"
               value="docs-${curn.version}.zip"/>
@@ -504,14 +513,30 @@ source and documentation packages.
               value="javadocs-${curn.version}.zip"/>
   </target>
 
-  <target name="code.jar" depends="all"
+  <target name="code.jar" depends="curn.jar"/>
+  <target name="curn.jar" depends="all"
           description="Generate the binary jar file">
-    <mkdir dir="${code_jar_dir}"/>
-    <jar jarfile="${code_jar_path}" basedir="${build}"/>
+    <mkdir dir="${curn_jar_dir}"/>
+    <jar jarfile="${curn_jar_path}">
+      <fileset dir="${build}">
+        <exclude name="**/plugins/*.class"/>
+      </fileset>
+    </jar>
   </target>
 
-  <target name="dist" depends="code.jar"
-          description="Synonym for code.jar"/>
+  <target name="plugins.jar" depends="all"
+          description="Generate the binary jar file">
+    <mkdir dir="${plugins_jar_dir}"/>
+    <jar jarfile="${plugins_jar_path}">
+      <fileset dir="${build}">
+        <include name="**/plugins/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="dist" depends="jar"/>
+  <target name="jar" depends="curn.jar, plugins.jar"
+          description="Build the code jars"/>
 
   <target name="javadoczip" depends="javadocs"
           description="Builds the javadocs zip file">
@@ -561,8 +586,8 @@ source and documentation packages.
                    doczip,
                    javadoczip"
           description="Generate the distribution and source jars">
-    <copy file="${code_jar_path}"
-          tofile="${release_dir}/${versioned_code_jar_file}"/>
+    <copy file="${curn_jar_path}"
+          tofile="${release_dir}/${versioned_curn_jar_file}"/>
   </target>
 
   <!--
@@ -603,8 +628,10 @@ source and documentation packages.
         <filter token="SRC_TOP" value="${src.top}"/>
         <filter token="DIST_DIR" value="${dist}"/>
         <filter token="BUILD_DIR" value="${build}"/>
-        <filter token="VERSIONED_CODE_JAR_FILE"
-                value="${versioned_code_jar_file}"/>
+        <filter token="VERSIONED_CURN_JAR_FILE"
+                value="${versioned_curn_jar_file}"/>
+        <filter token="VERSIONED_PLUGINS_JAR_FILE"
+                value="${versioned_plugins_jar_file}"/>
       </filterset>
     </copy>
 

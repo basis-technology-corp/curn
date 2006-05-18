@@ -54,8 +54,10 @@
       <singlefile src="README.html" target="$INSTALL_PATH/README.html"/>
       <singlefile src="README" target="$INSTALL_PATH/README.txt"/>
 
-      <singlefile src="@RELEASE_DIR@/@VERSIONED_CODE_JAR_FILE@"
+      <singlefile src="@RELEASE_DIR@/@VERSIONED_CURN_JAR_FILE@"
                  target="$INSTALL_PATH/lib/curn.jar"/>
+      <singlefile src="@RELEASE_DIR@/@VERSIONED_PLUGINS_JAR_FILE@"
+                 target="$INSTALL_PATH/plugins/curn-plugins.jar"/>
       <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/commons-logging.jar"
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/freemarker.jar"
