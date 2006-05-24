@@ -43,9 +43,8 @@ public interface ShutdownPlugIn extends PlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Called by the plug-in manager right before <i>curn</i> gets ready
-     * to exit. This method allows plug-ins to perform any clean-up they
-     * require.
+     * Called just before <i>curn</i> gets ready to exit. This method
+     * allows plug-ins to perform any clean-up they require.
      *
      * @throws CurnException on error
      */

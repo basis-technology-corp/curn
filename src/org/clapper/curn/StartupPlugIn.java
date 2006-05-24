@@ -43,9 +43,9 @@ public interface StartupPlugIn extends PlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Called by the plug-in manager right after <i>curn</i> has started,
-     * but before it has loaded its configuration file or its cache. This
-     * method can be used for plug-in initialization.
+     * Called immediately after <i>curn</i> has started, but before it has
+     * loaded its configuration file or its cache. This method can be used
+     * for plug-in initialization.
      *
      * @throws CurnException on error
      */

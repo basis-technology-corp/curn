@@ -48,14 +48,14 @@ public interface UnknownSectionConfigItemPlugIn extends PlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Called by the plug-in manager right after <i>curn</i> has read and
-     * processed a configuration item in an unknown configuration section.
-     * All configuration items are passed, one by one, to each loaded
-     * plug-in. If a plug-in class is not interested in a particular
-     * configuration item, this method should simply return without doing
-     * anything. Note that some configuration items may simply be variable
-     * assignment; there's no real way to distinguish a variable assignment
-     * from a blessed configuration item.
+     * Called immediately after <i>curn</i> has read and processed a
+     * configuration item in an unknown configuration section. All
+     * configuration items are passed, one by one, to each loaded plug-in.
+     * If a plug-in class is not interested in a particular configuration
+     * item, this method should simply return without doing anything. Note
+     * that some configuration items may simply be variable assignment;
+     * there's no real way to distinguish a variable assignment from a
+     * blessed configuration item.
      *
      * @param sectionName  the name of the configuration section where
      *                     the item was found
