@@ -319,6 +319,19 @@ public abstract class RSSItem
         return cmp;
     }
 
+    /**
+     * Return the string value of the item (which, right now, is its
+     * title).
+     *
+     * @return the title
+     */
+    public String toString()
+    {
+        String title = getTitle();
+
+        return (title == null) ? "" : title;
+    }
+
     /*----------------------------------------------------------------------*\
                           Public Abstract Methods
     \*----------------------------------------------------------------------*/
