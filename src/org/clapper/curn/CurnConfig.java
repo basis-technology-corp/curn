@@ -89,7 +89,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_FEED_URL          = "URL";
     public static final String VAR_CLASS             = "Class";
     public static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
-    public static final String VAR_SORT_BY           = "SortBy";
     public static final String VAR_MAX_THREADS       = "MaxThreads";
     public static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
     public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
@@ -114,7 +113,6 @@ public class CurnConfig extends Configuration
     public static final String  DEF_EMAIL_SUBJECT     = "curn output";
     public static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
-    public static final int     DEF_SORT_BY           = FeedInfo.SORT_BY_NONE;
     public static final int     DEF_MAX_THREADS       = 5;
     public static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
     public static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
@@ -143,21 +141,6 @@ public class CurnConfig extends Configuration
      */
     private static final String OUTPUT_HANDLER_PREFIX = "OutputHandler";
 
-    /**
-     * Legal values
-     */
-    private static final Map<String,Integer> LEGAL_SORT_BY_VALUES
-        = new HashMap<String,Integer>();
-    static
-    {
-        LEGAL_SORT_BY_VALUES.put ("none",
-                                  new Integer (FeedInfo.SORT_BY_NONE));
-        LEGAL_SORT_BY_VALUES.put ("time",
-                                  new Integer (FeedInfo.SORT_BY_TIME));
-        LEGAL_SORT_BY_VALUES.put ("title",
-                                  new Integer (FeedInfo.SORT_BY_TITLE));
-    }
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -178,7 +161,6 @@ public class CurnConfig extends Configuration
     private String emailSubject = DEF_EMAIL_SUBJECT;
     private boolean showAuthors = false;
     private boolean getGzippedFeeds = true;
-    private int defaultSortBy = DEF_SORT_BY;
     private int maxThreads = DEF_MAX_THREADS;
     private String defaultUserAgent = null;
     private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
@@ -953,14 +935,6 @@ public class CurnConfig extends Configuration
             val = String.valueOf (getGzippedFeeds);
         }
 
-        else if (varName.equals (VAR_SORT_BY))
-        {
-            val = getOptionalStringValue (MAIN_SECTION, varName, null);
-            defaultSortBy = (val == null) ? DEF_SORT_BY
-                                          : parseSortByValue (MAIN_SECTION,
-                                                              val);
-        }
-
         else if (varName.equals (VAR_MAX_THREADS))
         {
             int maxThreads = getOptionalCardinalValue (MAIN_SECTION,
@@ -1062,7 +1036,6 @@ public class CurnConfig extends Configuration
         feedInfo.setPruneURLsFlag (DEF_PRUNE_URLS);
         feedInfo.setDaysToCache (defaultCacheDays);
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
-        feedInfo.setSortBy (defaultSortBy);
         feedInfo.setUserAgent (defaultUserAgent);
         feedInfo.setMaxSummarySize (maxSummarySize);
         feedInfo.setShowAuthorsFlag (showAuthors);
@@ -1135,12 +1108,6 @@ public class CurnConfig extends Configuration
             {
                 value = getConfigurationValue (sectionName, varName);
                 feedInfo.setForcedCharacterEncoding (value);
-            }
-
-            else if (varName.equals (VAR_SORT_BY))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                feedInfo.setSortBy (parseSortByValue (sectionName, value));
             }
 
             else if (varName.startsWith (VAR_PREPARSE_EDIT))
@@ -1302,40 +1269,6 @@ public class CurnConfig extends Configuration
                     (sectionName, varName, this);
             }
         }
-    }
-
-    /**
-     * Parse a "SortBy" value.
-     *
-     * @param sectionName section name (for error messages)
-     * @param value       the value from the config
-     *
-     * @return the value, or the appropriate default
-     *
-     * @throws ConfigurationException bad value for config item
-     */
-    private int parseSortByValue (String sectionName, String value)
-        throws ConfigurationException
-    {
-        Integer val = (Integer) LEGAL_SORT_BY_VALUES.get (value);
-
-        if (val == null)
-        {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "CurnConfig.badVarValue",
-                                              "Section \"{0}\" in the "
-                                            + "configuration file has a bad "
-                                            + "value (\"{1}\") for the \"{2}\""
-                                            + "parameter",
-                                              new Object[]
-                                              {
-                                                  sectionName,
-                                                  value,
-                                                  VAR_SORT_BY
-                                              });
-        }
-
-        return val.intValue();
     }
 
     /**
