@@ -192,53 +192,50 @@ public class MetaPlugIn
             if (plugIn instanceof CacheLoadedPlugIn)
                 cacheLoadedPlugIns.add ((CacheLoadedPlugIn) plugIn);
 
-            else if (plugIn instanceof FeedConfigItemPlugIn)
+            if (plugIn instanceof FeedConfigItemPlugIn)
                 feedConfigItemPlugIns.add ((FeedConfigItemPlugIn) plugIn);
 
-            else if (plugIn instanceof MainConfigItemPlugIn)
+            if (plugIn instanceof MainConfigItemPlugIn)
                 mainConfigItemPlugIns.add ((MainConfigItemPlugIn) plugIn);
 
-            else if (plugIn instanceof OutputHandlerConfigItemPlugIn)
+            if (plugIn instanceof OutputHandlerConfigItemPlugIn)
                 outputHandlerConfigItemPlugIns.add
                     ((OutputHandlerConfigItemPlugIn) plugIn);
 
-            else if (plugIn instanceof PostConfigPlugIn)
+            if (plugIn instanceof PostConfigPlugIn)
                 postConfigPlugIns.add ((PostConfigPlugIn) plugIn);
 
-            else if (plugIn instanceof PostFeedDownloadPlugIn)
+            if (plugIn instanceof PostFeedDownloadPlugIn)
                 postFeedDownloadPlugIns.add ((PostFeedDownloadPlugIn) plugIn);
 
-            else if (plugIn instanceof PostFeedOutputPlugIn)
+            if (plugIn instanceof PostFeedOutputPlugIn)
                 postFeedOutputPlugIns.add ((PostFeedOutputPlugIn) plugIn);
 
-            else if (plugIn instanceof PostFeedParsePlugIn)
+            if (plugIn instanceof PostFeedParsePlugIn)
                 postFeedParsePlugIns.add ((PostFeedParsePlugIn) plugIn);
 
-            else if (plugIn instanceof PostOutputHandlerFlushPlugIn)
+            if (plugIn instanceof PostOutputHandlerFlushPlugIn)
                 postOutputHandlerFlushPlugIns.add
                     ((PostOutputHandlerFlushPlugIn) plugIn);
 
-            else if (plugIn instanceof PreCacheSavePlugIn)
+            if (plugIn instanceof PreCacheSavePlugIn)
                 preCacheSavePlugIns.add ((PreCacheSavePlugIn) plugIn);
 
-            else if (plugIn instanceof PreFeedDownloadPlugIn)
+            if (plugIn instanceof PreFeedDownloadPlugIn)
                 preFeedDownloadPlugIns.add ((PreFeedDownloadPlugIn) plugIn);
 
-            else if (plugIn instanceof PreFeedOutputPlugIn)
+            if (plugIn instanceof PreFeedOutputPlugIn)
                 preFeedOutputPlugIns.add ((PreFeedOutputPlugIn) plugIn);
 
-            else if (plugIn instanceof ShutdownPlugIn)
+            if (plugIn instanceof ShutdownPlugIn)
                 shutdownPlugIns.add ((ShutdownPlugIn) plugIn);
 
-            else if (plugIn instanceof StartupPlugIn)
+            if (plugIn instanceof StartupPlugIn)
                 startupPlugIns.add ((StartupPlugIn) plugIn);
 
-            else if (plugIn instanceof UnknownSectionConfigItemPlugIn)
+            if (plugIn instanceof UnknownSectionConfigItemPlugIn)
                 unknownSectionConfigItemPlugIns.add
                     ((UnknownSectionConfigItemPlugIn) plugIn);
-
-            else
-                assert (false);
         }
     }
 
@@ -318,8 +315,8 @@ public class MetaPlugIn
 
     public synchronized void
     runUnknownSectionConfigItemPlugIn (String     sectionName,
-                                     String     paramName,
-                                     CurnConfig config)
+                                       String     paramName,
+                                       CurnConfig config)
 	throws CurnException
     {
         for (UnknownSectionConfigItemPlugIn plugIn :
@@ -373,8 +370,8 @@ public class MetaPlugIn
     }
 
     public synchronized boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
-                                                         File     feedDataFile,
-                                                         String   encoding)
+                                                           File     feedDataFile,
+                                                           String   encoding)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -393,7 +390,7 @@ public class MetaPlugIn
     }
 
     public synchronized boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                                      RSSChannel channel)
+                                                        RSSChannel channel)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -410,8 +407,8 @@ public class MetaPlugIn
     }
 
     public synchronized void runPreFeedOutputPlugIn (FeedInfo      feedInfo,
-                                                   RSSChannel    channel,
-                                                   OutputHandler outputHandler)
+                                                     RSSChannel    channel,
+                                                     OutputHandler outputHandler)
 	throws CurnException
     {
         for (PreFeedOutputPlugIn plugIn : preFeedOutputPlugIns)
