@@ -25,6 +25,9 @@ exec $JAVA_HOME/bin/java \
 -client \
 $vm_opts \
 -classpath \
+$INSTALL_PATH/lib/asm-2.2.1.jar:\
+$INSTALL_PATH/lib/asm-commons-2.2.1.jar:\
+$INSTALL_PATH/lib/asm-util-2.2.1.jar:\
 $INSTALL_PATH/lib/ocutil.jar:\
 $INSTALL_PATH/lib/xerces.jar:\
 $INSTALL_PATH/lib/activation.jar:\
