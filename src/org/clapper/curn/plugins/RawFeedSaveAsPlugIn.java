@@ -109,7 +109,7 @@ public class RawFeedSaveAsPlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * The loaded plug-ins.
+     * Feed save data, by feed
      */
     private Map<FeedInfo,FeedSaveInfo> perFeedSaveAsMap =
         new HashMap<FeedInfo,FeedSaveInfo>();
