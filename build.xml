@@ -588,6 +588,8 @@ source and documentation packages.
           description="Generate the distribution and source jars">
     <copy file="${curn_jar_path}"
           tofile="${release_dir}/${versioned_curn_jar_file}"/>
+    <copy file="${plugins_jar_path}"
+          tofile="${release_dir}/${versioned_plugins_jar_file}"/>
   </target>
 
   <!--
