@@ -247,6 +247,21 @@ public class Util
     }
 
     /**
+     * Create a temporary file for XML content.
+     *
+     * @return the temp file
+     *
+     * @throws IOException error creating temporary file
+     */
+    public static File createTempXMLFile()
+        throws IOException
+    {
+        File f = File.createTempFile ("curn", ".xml", null);
+        f.deleteOnExit();
+        return f;
+    }
+
+    /**
      * Open a file that might require backing up. Takes care of transforming
      * the file name into a <tt>RollingFileWriter</tt> pattern, if necessary.
      *

@@ -69,7 +69,6 @@ public class FeedInfo
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
-    private String[]    preparseEditCommands  = null;
     private String      userAgent             = null;
     private int         maxSummarySize        = Integer.MAX_VALUE;
     private boolean     showAuthors           = false;
@@ -349,44 +348,6 @@ public class FeedInfo
     public void setItemURLEditCommand (String cmd)
     {
         itemURLEditCmd = cmd;
-    }
-
-    /**
-     * Get the list of edit commands to be applied to the downloaded XML
-     * before it is parsed. Each element in the returned array is a
-     * Perl-style substitution command, e.g.:
-     *
-     * <pre>s/foo/bar/g</pre>
-     *
-     * They're intended to be used with the
-     * <tt>org.clapper.util.regex.RegexUtil</tt>
-     * class's <tt>substitute()</tt> method to edit the XML before parsing it.
-     *
-     * @return an array of edit commands, or null if not specified in the
-     *         configuration for this feed
-     */
-    public String[] getPreparseEditCommands()
-    {
-        return preparseEditCommands;
-    }
-
-    /**
-     * Set the list of edit commands to be applied to the downloaded XML
-     * before it is parsed. Each element in the returned array is a
-     * Perl-style substitution command, e.g.:
-     *
-     * <pre>s/foo/bar/g</pre>
-     *
-     * They're intended to be used with the
-     * <tt>org.clapper.util.regex.RegexUtil</tt>
-     * class's <tt>substitute()</tt> method to edit the XML before parsing it.
-     *
-     * @param cmds an array of edit commands, or null if not specified in the
-     *             configuration for this feed
-     */
-    public void setPreparseEditCommands (String[] cmds)
-    {
-        preparseEditCommands = cmds;
     }
 
     /**

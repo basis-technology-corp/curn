@@ -61,9 +61,9 @@ import org.clapper.curn.parser.RSSParserException;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
+import org.clapper.util.text.TextUtil;
 import org.clapper.util.regex.RegexUtil;
 import org.clapper.util.regex.RegexException;
-import org.clapper.util.text.TextUtil;
 
 class FeedDownloadThread extends Thread
 {
@@ -389,9 +389,6 @@ class FeedDownloadThread extends Thread
 
                     else
                     {
-                        if (feedInfo.getPreparseEditCommands() != null)
-                            handlePreparseEdit (feedInfo, tempFile);
-
                         log.debug ("Using RSS parser "
                                  + parser.getClass().getName()
                                  + " to parse the feed.");
@@ -458,7 +455,7 @@ class FeedDownloadThread extends Thread
         URL feedURL = feedInfo.getURL();
         String feedURLString = feedURL.toString();
         int totalBytes = 0;
-        File tempFile = createTempXMLFile();
+        File tempFile = Util.createTempXMLFile();
 
         log.debug ("Downloading \""
                  + feedURLString
@@ -754,86 +751,6 @@ class FeedDownloadThread extends Thread
         return hasChanged;
     }
 
-
-    /**
-     * Apply one or more preparse edit commands to a downloaded, but not yet
-     * parsed, feed XML file.
-     *
-     * @param feedInfo    the FeedInfo data
-     * @param tempFile    the downloaded temp file. This method modifies
-     *                    this parameter
-     *
-     * @throws RegexException encountered a bad regular expression
-     * @throws IOException    failed to open a file
-     */
-    private void handlePreparseEdit (FeedInfo           feedInfo,
-                                     DownloadedTempFile tempFile)
-        throws RegexException,
-               IOException
-    {
-        // Allocate a new temp file
-
-        File outputFile = createTempXMLFile();
-        BufferedReader in;
-        PrintWriter out;
-
-        if (tempFile.encoding != null)
-        {
-            in = new BufferedReader
-                     (new InputStreamReader
-                         (new FileInputStream (tempFile.file),
-                          tempFile.encoding));
-            out = new PrintWriter
-                      (new OutputStreamWriter
-                          (new FileOutputStream (outputFile),
-                           tempFile.encoding));
-        }
-
-        else
-        {
-            in  = new BufferedReader (new FileReader (tempFile.file));
-            out = new PrintWriter (new FileWriter (outputFile));
-        }
-
-        try
-        {
-            String[] editCommands = feedInfo.getPreparseEditCommands();
-            String   line;
-            int      lineNumber = 0;
-
-            while ((line = in.readLine()) != null)
-            {
-                lineNumber++;
-                for (int i = 0; i < editCommands.length; i++)
-                {
-                    if (log.isDebugEnabled() && (lineNumber == 1))
-                    {
-                        log.debug ("Applying edit command \""
-                                 + editCommands[i]
-                                 + "\" to XML file, line "
-                                 + lineNumber);
-                    }
-
-                    line = regexUtil.substitute (editCommands[i], line);
-                }
-
-                out.println (line);
-            }
-
-            out.flush();
-            out.close();
-
-            tempFile.file.delete();
-            tempFile.file = outputFile;
-        }
-
-        finally
-        {
-            in.close();
-            out.close();
-        }
-    }
-
     /**
      * Process all the items for a channel.
      *
@@ -1110,20 +1027,5 @@ class FeedDownloadThread extends Thread
         }
 
         return result;
-    }
-
-    /**
-     * Create a temporary file for XML content.
-     *
-     * @return the temp file
-     *
-     * @throws IOException error creating temporary file
-     */
-    private File createTempXMLFile()
-        throws IOException
-    {
-        File f = File.createTempFile ("curn", ".xml", null);
-        f.deleteOnExit();
-        return f;
     }
 }

@@ -318,7 +318,9 @@ log.debug("curnHome.exists()=" + dir.exists());
                 // add it to the meta-plug-in
 
                 PlugIn plugIn = (PlugIn) cls.newInstance();
-                log.info ("Loaded plug-in \"" + plugIn.getName() + "\"");
+                log.info ("Loaded plug-in \""
+                        + plugIn.getName()
+                        + "\" plug-in");
                 metaPlugIn.addPlugIn (plugIn);
             }
 

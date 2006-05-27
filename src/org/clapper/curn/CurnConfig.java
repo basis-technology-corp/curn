@@ -83,7 +83,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_SHOW_DATES        = "ShowDates";
     public static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
     public static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
-    public static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
     public static final String VAR_DISABLED          = "Disabled";
     public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     public static final String VAR_FEED_URL          = "URL";
@@ -998,11 +997,10 @@ public class CurnConfig extends Configuration
         throws ConfigurationException,
                CurnException
     {
-        FeedInfo           feedInfo = null;
-        String             feedURLString = null;
-        Collection<String> preparseEditCommands = new ArrayList<String>();
-        URL                url = null;
-        MetaPlugIn         metaPlugIn = MetaPlugIn.getMetaPlugIn();
+        FeedInfo   feedInfo = null;
+        String     feedURLString = null;
+        URL        url = null;
+        MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
 
         feedURLString = getConfigurationValue (sectionName, VAR_FEED_URL);
 
@@ -1110,12 +1108,6 @@ public class CurnConfig extends Configuration
                 feedInfo.setForcedCharacterEncoding (value);
             }
 
-            else if (varName.startsWith (VAR_PREPARSE_EDIT))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                preparseEditCommands.add (value);
-            }
-
             else if (varName.equals (VAR_USER_AGENT))
             {
                 value = getConfigurationValue (sectionName, varName);
@@ -1148,13 +1140,6 @@ public class CurnConfig extends Configuration
                                                     this,
                                                     feedInfo);
             }
-        }
-
-        if (preparseEditCommands.size() > 0)
-        {
-            String[] cmds = new String[preparseEditCommands.size()];
-            cmds = (String[]) preparseEditCommands.toArray (cmds);
-            feedInfo.setPreparseEditCommands (cmds);
         }
 
         if (url == null)
