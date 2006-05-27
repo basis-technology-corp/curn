@@ -45,7 +45,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Comparator;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -91,68 +90,10 @@ class FeedDownloadThread extends Thread
     private MetaPlugIn              metaPlugIn    = MetaPlugIn.getMetaPlugIn();
     private RSSChannel              channel       = null;
     private FeedDownloadDoneHandler doneHandler   = null;
+
     /*----------------------------------------------------------------------*\
                                Inner Classes
     \*----------------------------------------------------------------------*/ 
-
-    private class ItemComparator implements Comparator<RSSItem>
-    {
-        private Date  now = new Date();
-        private int   sortBy;
-
-        ItemComparator (int sortBy)
-        {
-            this.sortBy = sortBy;
-        }
-
-        public int compare (RSSItem i1, RSSItem i2)
-        {
-            int      cmp = 0;
-
-            switch (sortBy)
-            {
-                case FeedInfo.SORT_BY_TITLE:
-                    String title1 = i1.getTitle();
-                    if (title1 == null)
-                        title1 = "";
-
-                    String title2 = i2.getTitle();
-                    if (title2 == null)
-                        title2 = "";
-
-                    cmp = title1.compareToIgnoreCase (title2);
-                    break;
-
-                case FeedInfo.SORT_BY_TIME:
-                    Date time1 = i1.getPublicationDate();
-                    if (time1 == null)
-                        time1 = now;
-
-                    Date time2 = i2.getPublicationDate();
-                    if (time2 == null)
-                        time2 = now;
-
-                    cmp = time1.compareTo (time2);
-                    break;
-
-                default:
-                    cmp = -1;
-                    break;
-            }
-
-            return cmp;
-        }
-
-        public int hashCode()
-        {
-            return super.hashCode();
-        }
-
-        public boolean equals (Object o)
-        {
-            return (o instanceof ItemComparator);
-        }
-    }
 
     /**
      * Encapsulates information about a downloaded feed.
@@ -933,7 +874,7 @@ class FeedDownloadThread extends Thread
                      + editCmd);
         }
 
-        items = sortChannelItems (channel.getItems(), feedInfo);
+        items = channel.getItems();
 
         // First, weed out the ones we don't care about.
 
@@ -1139,51 +1080,6 @@ class FeedDownloadThread extends Thread
         }
 
         return isNew;
-    }
-
-    /**
-     * Sort downloaded items according to the sort criteria for the feed
-     *
-     * @param items    the downloaded items
-     * @param feedInfo info about the feed, used to determine the desired
-     *                 sort criteria
-     *
-     * @return a new <tt>Collection</tt> of the same items, possibly sorted
-     */
-    private Collection<RSSItem> sortChannelItems (Collection<RSSItem> items,
-                                                  FeedInfo            feedInfo)
-    {
-        List<RSSItem> result = null;
-        int           total  = items.size();
-
-        if (total > 0)
-        {
-            int sortBy = feedInfo.getSortBy();
-
-            switch (sortBy)
-            {
-                case FeedInfo.SORT_BY_NONE:
-                    result = new ArrayList<RSSItem> (items);
-                    break;
-
-                case FeedInfo.SORT_BY_TITLE:
-                case FeedInfo.SORT_BY_TIME:
-
-                    // Can't just use a TreeSet, with a Comparator, because
-                    // then items with the same title will be weeded out.
-
-                    result = new ArrayList<RSSItem> (items);
-                    Collections.sort (result, new ItemComparator (sortBy));
-                break;
-
-            default:
-                throw new IllegalStateException ("Bad FeedInfo.getSortBy() "
-                                               + "value of "
-                                               + String.valueOf (sortBy));
-            }
-        }
-
-        return result;
     }
 
     /**

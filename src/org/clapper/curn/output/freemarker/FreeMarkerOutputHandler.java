@@ -581,7 +581,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         // Add the channel information to the data model.
 
-        Collection<RSSItem> items = channel.getSortedItems();
+        Collection<RSSItem> items = channel.getItems();
         int totalItemsInChannel = items.size();
 
         if (totalItemsInChannel == 0)

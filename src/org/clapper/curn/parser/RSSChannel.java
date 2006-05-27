@@ -104,19 +104,6 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
         return newChannel;
     }
 
-    /**
-     * Get a <tt>Collection</tt> of the items in this channel, sorted by the
-     * {@link RSSItem#compareTo RSSItem.compareTo()} method.
-     *
-     * @return a (new) <tt>Collection</tt> of <tt>RSSItem</tt> objects.
-     *         The collection will be empty (never null) if there are no
-     *         items.
-     */
-    public Collection<RSSItem> getSortedItems()
-    {
-        return new TreeSet<RSSItem> (getItems());
-    }
-
     /*----------------------------------------------------------------------*\
                           Abstract Public Methods
     \*----------------------------------------------------------------------*/
@@ -141,10 +128,8 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *         store its <tt>RSSItem</tt> objects, it should not return
      *         that <tt>Collection</tt> directly; instead, it should return
      *         a copy.) The order of items in the returned collection
-     *         is arbitrary and not guaranteed to be sorted. Use
-     *         {@link #getSortedItems} to force the items to be sorted
-     *         by the {@link RSSItem#compareTo RSSItem.compareTo()}
-     *         method.
+     *         is arbitrary and not guaranteed to be sorted, unless sorted
+     *         by a plug-in.
      */
     public abstract Collection<RSSItem> getItems();
 

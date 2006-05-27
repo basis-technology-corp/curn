@@ -47,31 +47,6 @@ public class FeedInfo
     \*----------------------------------------------------------------------*/
 
     /**
-     * Possible value for the "SortBy" parameter; indicates that items
-     * within a feed should not be sorted (i.e., should be presented in
-     * feed order).
-     *
-     * @see #getSortBy
-     */
-    public static final int SORT_BY_NONE = 0;
-
-    /**
-     * Possible value for the "SortBy" parameter; indicates that items
-     * within a feed should be sorted by timestamp.
-     *
-     * @see #getSortBy
-     */
-    public static final int SORT_BY_TIME = 1;
-
-    /**
-     * Possible value for the "SortBy" parameter; indicates that items
-     * within a feed should be sorted by title.
-     *
-     * @see #getSortBy
-     */
-    public static final int SORT_BY_TITLE = 2;
-
-    /**
      * Default encoding for "save as" file.
      */
     public static final String DEFAULT_SAVE_AS_ENCODING = "utf-8";
@@ -91,7 +66,6 @@ public class FeedInfo
     private String      titleOverride         = null;
     private String      itemURLEditCmd        = null;
     private URL         siteURL               = null;
-    private int         sortBy                = SORT_BY_NONE;
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
@@ -467,55 +441,6 @@ public class FeedInfo
     {
         assert (newSize >= 0);
         this.maxSummarySize = newSize;
-    }
-
-    /**
-     * Get the "sort by" value, indicating how items from this feed are to
-     * be sorted for presentation.
-     *
-     * @return one of:
-     *         <ul>
-     *           <li> {@link #SORT_BY_NONE}: don't sort the items
-     *           <li> {@link #SORT_BY_TITLE}: sort by title
-     *           <li> {@link #SORT_BY_TIME}: sort by timestamp
-     *         </ul>
-     *
-     * @see #setSortBy
-     */
-    public int getSortBy()
-    {
-        return sortBy;
-    }
-
-    /**
-     * Set the "sort by" value, indicating how items from this feed are to
-     * be sorted for presentation.
-     *
-     * @param val  The new value, which must be one of:
-     *             <ul>
-     *               <li> {@link #SORT_BY_NONE}: don't sort the items
-     *               <li> {@link #SORT_BY_TITLE}: sort by title
-     *               <li> {@link #SORT_BY_TIME}: sort by timestamp
-     *             </ul>
-     *
-     * @see #getSortBy
-     */
-    public void setSortBy (int val)
-    {
-        switch (val)
-        {
-            case SORT_BY_NONE:
-            case SORT_BY_TITLE:
-            case SORT_BY_TIME:
-                sortBy = val;
-                break;
-
-            default:
-                throw new IllegalArgumentException ("(BUG) Bad value "
-                                                  + String.valueOf (val)
-                                                  + " for setSortBy() "
-                                                  + "parameter.");
-        }
     }
 
     /**
