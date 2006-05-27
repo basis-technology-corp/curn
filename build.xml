@@ -622,7 +622,7 @@ source and documentation packages.
 
     <copy file="${src.install}/install.xml" todir="${install.tmp}">
       <filterset>
-        <filter token="CURN_VERSION" value="${findclass.version}"/>
+        <filter token="CURN_VERSION" value="${curn.version}"/>
         <filter token="INSTALL_TMP" value="${install.tmp}"/>
         <filter token="SRC_INSTALL" value="${src.install}"/>
         <filter token="RELEASE_DIR" value="${release_dir}"/>
