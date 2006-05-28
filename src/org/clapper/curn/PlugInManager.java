@@ -272,14 +272,14 @@ log.debug("curnHome.exists()=" + dir.exists());
     {
         if (! dir.exists())
         {
-            log.error ("Plug-in directory \"" + dir.getPath() +
-                       "\" does not exist.");
+            log.info ("Plug-in directory \"" + dir.getPath() +
+                      "\" does not exist.");
         }
 
         else if (! dir.isDirectory())
         {
-            log.error ("Plug-in directory \"" + dir.getPath() +
-                       "\" is not a directory.");
+            log.info ("Plug-in directory \"" + dir.getPath() +
+                      "\" is not a directory.");
         }
 
         else
