@@ -40,6 +40,11 @@ Changes:
 - Completely removed support for old-style curn binary cache file. curn
   will no longer read and convert a pre-2.0 binary cache file.
 
+- The old HTMLOutputHandler, TextOutputHandler and SimpleSummaryOutputHandler
+  classes have been removed. They were deprecated in version 2.6, in favor
+  of the (then new) FreemarkerOutputHandler which, in combination with some
+  predefined templates shipped with curn, produces the same output.
+
 Bug Fixes:
 
 - Fixed bug: curn wasn't caching data about the overall feed (as opposed to
