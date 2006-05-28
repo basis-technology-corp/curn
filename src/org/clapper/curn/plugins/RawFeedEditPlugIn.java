@@ -70,6 +70,7 @@ import java.util.Map;
  *         expressions may be specified per feed. See the User's Guide for
  *         details.
  *     </td>
+ *   </tr>
  * </table>
  *
  * @version <tt>$Revision$</tt>
@@ -89,11 +90,11 @@ public class RawFeedEditPlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Feed save info
+     * Feed edit info
      */
     class FeedEditInfo
     {
-        List<String> regexps = new ArrayList<String>();
+        List<String> editCommands = new ArrayList<String>();
 
         FeedEditInfo()
         {
@@ -107,7 +108,7 @@ public class RawFeedEditPlugIn
     /**
      * Feed save data, by feed
      */
-    private Map<FeedInfo,FeedEditInfo> perFeedSaveAsMap =
+    private Map<FeedInfo,FeedEditInfo> perFeedEditInfoMap =
         new HashMap<FeedInfo,FeedEditInfo>();
 
     /**
@@ -191,7 +192,7 @@ public class RawFeedEditPlugIn
                 FeedEditInfo editInfo = getOrMakeFeedEditInfo (feedInfo);
                 String value = config.getConfigurationValue (sectionName,
                                                              paramName);
-                editInfo.regexps.add (value);
+                editInfo.editCommands.add (value);
                 log.debug ("[" + sectionName + "]: added regexp " + value);
             }
         }
@@ -232,9 +233,9 @@ public class RawFeedEditPlugIn
                                               String   encoding)
 	throws CurnException
     {
-        FeedEditInfo editInfo  = perFeedSaveAsMap.get (feedInfo);
+        FeedEditInfo editInfo  = perFeedEditInfoMap.get (feedInfo);
 
-        if ((editInfo != null) && (editInfo.regexps.size() > 0))
+        if ((editInfo != null) && (editInfo.editCommands.size() > 0))
             doEdit (feedInfo, feedDataFile, encoding);
 
         return true;
@@ -246,11 +247,11 @@ public class RawFeedEditPlugIn
 
     private FeedEditInfo getOrMakeFeedEditInfo (FeedInfo feedInfo)
     {
-        FeedEditInfo editInfo = perFeedSaveAsMap.get (feedInfo);
+        FeedEditInfo editInfo = perFeedEditInfoMap.get (feedInfo);
         if (editInfo == null)
         {
             editInfo = new FeedEditInfo();
-            perFeedSaveAsMap.put (feedInfo, editInfo);
+            perFeedEditInfoMap.put (feedInfo, editInfo);
         }
 
         return editInfo;
@@ -286,12 +287,12 @@ public class RawFeedEditPlugIn
 
             String       line;
             int          lineNumber = 0;
-            FeedEditInfo editInfo = perFeedSaveAsMap.get (feedInfo);
+            FeedEditInfo editInfo = perFeedEditInfoMap.get (feedInfo);
 
             while ((line = in.readLine()) != null)
             {
                 lineNumber++;
-                for (String editCommand : editInfo.regexps)
+                for (String editCommand : editInfo.editCommands)
                 {
                     if (log.isDebugEnabled() && (lineNumber == 1))
                     {
