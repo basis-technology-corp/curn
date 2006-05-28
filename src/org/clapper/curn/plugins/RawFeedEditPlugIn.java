@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  $Id: RawFeedEditPlugIn.java 5935 2006-05-27 01:38:33Z bmc $
+  $Id$
   ---------------------------------------------------------------------------
   This software is released under a Berkeley-style license:
 
@@ -72,7 +72,7 @@ import java.util.Map;
  *     </td>
  * </table>
  *
- * @version <tt>$Revision: 5935 $</tt>
+ * @version <tt>$Revision$</tt>
  */
 public class RawFeedEditPlugIn
     implements FeedConfigItemPlugIn,

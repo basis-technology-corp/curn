@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  $Id: RawFeedSaveAsPlugIn.java 5932 2006-05-24 01:53:55Z bmc $
+  $Id$
   ---------------------------------------------------------------------------
   This software is released under a Berkeley-style license:
 
@@ -74,7 +74,7 @@ import java.util.HashMap;
  *   </tr>
  * </table>
  *
- * @version <tt>$Revision: 5932 $</tt>
+ * @version <tt>$Revision$</tt>
  */
 public class SortItemsPlugIn
     implements MainConfigItemPlugIn,
