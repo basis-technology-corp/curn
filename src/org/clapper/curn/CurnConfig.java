@@ -75,14 +75,12 @@ public class CurnConfig extends Configuration
     public static final String VAR_MAIL_SUBJECT      = "Subject";
     public static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
     public static final String VAR_PARSER_CLASS_NAME = "ParserClass";
-    public static final String VAR_PRUNE_URLS        = "PruneURLs";
     public static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
     public static final String VAR_SMTP_HOST         = "SMTPHost";
     public static final String VAR_EMAIL_SENDER      = "MailFrom";
     public static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     public static final String VAR_SHOW_DATES        = "ShowDates";
     public static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
-    public static final String VAR_EDIT_ITEM_URL     = "EditItemURL";
     public static final String VAR_DISABLED          = "Disabled";
     public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     public static final String VAR_FEED_URL          = "URL";
@@ -99,7 +97,6 @@ public class CurnConfig extends Configuration
      * Default values
      */
     public static final int     DEF_DAYS_TO_CACHE     = 365;
-    public static final boolean DEF_PRUNE_URLS        = false;
     public static final boolean DEF_NO_CACHE_UPDATE   = false;
     public static final boolean DEF_SUMMARY_ONLY      = false;
     public static final int     DEF_MAX_SUMMARY_SIZE  = Integer.MAX_VALUE;
@@ -1032,7 +1029,6 @@ public class CurnConfig extends Configuration
         }
 
 
-        feedInfo.setPruneURLsFlag (DEF_PRUNE_URLS);
         feedInfo.setDaysToCache (defaultCacheDays);
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
         feedInfo.setUserAgent (defaultUserAgent);
@@ -1052,13 +1048,6 @@ public class CurnConfig extends Configuration
                                                      defaultCacheDays);
                 feedInfo.setDaysToCache (maxDays);
                 value = String.valueOf (maxDays);
-            }
-
-            else if (varName.equals (VAR_PRUNE_URLS))
-            {
-                flag = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setPruneURLsFlag (flag);
-                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_SUMMARY_ONLY))
@@ -1094,12 +1083,6 @@ public class CurnConfig extends Configuration
             {
                 value = getConfigurationValue (sectionName, varName);
                 feedInfo.setTitleOverride (value);
-            }
-
-            else if (varName.equals (VAR_EDIT_ITEM_URL))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                feedInfo.setItemURLEditCommand (value);
             }
 
             else if (varName.equals (VAR_FORCE_ENCODING) ||

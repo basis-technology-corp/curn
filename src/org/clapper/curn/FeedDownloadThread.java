@@ -768,10 +768,7 @@ class FeedDownloadThread extends Thread
                RegexException
     {
         Collection<RSSItem> items;
-        Iterator            it;
         String              titleOverride = feedInfo.getTitleOverride();
-        boolean             pruneURLs = feedInfo.pruneURLs();
-        String              editCmd = feedInfo.getItemURLEditCommand();
         String              channelName;
 
         RSSLink selfLink = channel.getLink (RSSLink.Type.SELF);
@@ -783,14 +780,6 @@ class FeedDownloadThread extends Thread
         if (titleOverride != null)
             channel.setTitle (titleOverride);
 
-        if (editCmd != null)
-        {
-            log.debug ("Channel \""
-                     + channelName
-                     + "\": Edit command is: "
-                     + editCmd);
-        }
-
         items = channel.getItems();
 
         // First, weed out the ones we don't care about.
@@ -800,11 +789,11 @@ class FeedDownloadThread extends Thread
                 + "\": "
                 + String.valueOf (items.size())
                 + " total items");
-        for (it = items.iterator(); it.hasNext(); )
+        for (Iterator<RSSItem> it = items.iterator(); it.hasNext(); )
         {
-            RSSItem item = (RSSItem) it.next();
-
+            RSSItem item     = it.next();
             RSSLink itemLink = item.getURL();
+
             if (itemLink == null)
             {
                 log.debug ("Skipping item with null URL.");
@@ -813,31 +802,6 @@ class FeedDownloadThread extends Thread
             }
 
             URL itemURL  = itemLink.getURL();
-            if (pruneURLs || (editCmd != null))
-            {
-                // Prune the URL of its parameters, if configured for this
-                // site. This must be done before checking the cache, because
-                // the pruned URLs are what end up in the cache.
-
-                String sURL = itemURL.toExternalForm();
-
-                if (pruneURLs)
-                {
-                    int i = sURL.indexOf ("?");
-
-                    if (i != -1)
-                        sURL = sURL.substring (0, i);
-                }
-
-                if (editCmd != null)
-                {
-                    log.debug ("Before editing, item URL=" + sURL);
-                    sURL = regexUtil.substitute (editCmd, sURL);
-                    log.debug ("After editing, item URL=" + sURL);
-                }
-
-                itemURL = new URL (sURL);
-            }
 
             // Normalize the URL and save it.
 
@@ -875,10 +839,8 @@ class FeedDownloadThread extends Thread
 
         if (items.size() > 0)
         {
-            for (it = items.iterator(); it.hasNext(); )
+            for (RSSItem item : items)
             {
-                RSSItem item = (RSSItem) it.next();
-
                 if (cache != null)
                 {
                     RSSLink itemLink = item.getURL();

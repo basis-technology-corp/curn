@@ -59,12 +59,10 @@ public class FeedInfo
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private boolean     pruneURLsFlag         = false;
     private boolean     summaryOnly           = false;
     private boolean     enabled               = true;
     private int         daysToCache           = 0;
     private String      titleOverride         = null;
-    private String      itemURLEditCmd        = null;
     private URL         siteURL               = null;
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
@@ -209,34 +207,6 @@ public class FeedInfo
     }
 
     /**
-     * Get the "prune URLs" flag. If this flag is set, then URLs from this
-     * feed should be displayed without any HTTP parameter information.
-     * Otherwise, they should be displayed as is.
-     *
-     * @return <tt>true</tt> if the flag is set, <tt>false</tt> otherwise
-     *
-     * @see #setPruneURLsFlag
-     */
-    public boolean pruneURLs()
-    {
-        return pruneURLsFlag;
-    }
-
-    /**
-     * Set the "prune URLs" flag. If this flag is set, then URLs from this
-     * feed should be displayed without any HTTP parameter information.
-     * Otherwise, they should be displayed as is.
-     *
-     * @param val <tt>true</tt> to set the flag, <tt>false</tt> to clear it
-     *
-     * @see #pruneURLs
-     */
-    public void setPruneURLsFlag (boolean val)
-    {
-        pruneURLsFlag = val;
-    }
-
-    /**
      * Return the value of "summary only" flag. If this flag is set, then
      * any description for this feed should be suppressed. If this flag is
      * not set, then this feed's description (if any) should be displayed.
@@ -312,42 +282,6 @@ public class FeedInfo
     public void setTitleOverride (String s)
     {
         titleOverride = s;
-    }
-
-    /**
-     * Get the item URL edit command for this feed. This command, if supplied,
-     * is a Perl-style substitution command, e.g.:
-     *
-     * <pre>s/foo/bar/g</pre>
-     *
-     * It's intended to be used with the
-     * <tt>org.clapper.util.regex.RegexUtil</tt> class's
-     * <tt>substitute()</tt> method to edit the item URLs before displaying
-     * them.
-     *
-     * @return the item URL edit command, or null if none
-     */
-    public String getItemURLEditCommand()
-    {
-        return itemURLEditCmd;
-    }
-
-    /**
-     * Set the item URL edit command for this feed. This command, if supplied,
-     * is a Perl-style substitution command, e.g.:
-     *
-     * <pre>s/foo/bar/g</pre>
-     *
-     * It's intended to be used with the
-     * <tt>org.clapper.util.regex.RegexUtil</tt> class's class's
-     * <tt>substitute()</tt> method to edit the item URLs before displaying
-     * them.
-     *
-     * @param cmd   the item URL edit command, or null if none
-     */
-    public void setItemURLEditCommand (String cmd)
-    {
-        itemURLEditCmd = cmd;
     }
 
     /**
