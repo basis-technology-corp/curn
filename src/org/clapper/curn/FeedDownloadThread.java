@@ -62,8 +62,6 @@ import org.clapper.curn.parser.RSSParserException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.TextUtil;
-import org.clapper.util.regex.RegexUtil;
-import org.clapper.util.regex.RegexException;
 
 class FeedDownloadThread extends Thread
 {
@@ -84,7 +82,6 @@ class FeedDownloadThread extends Thread
     private CurnConfig              configuration = null;
     private RSSParser               rssParser     = null;
     private FeedCache               cache         = null;
-    private RegexUtil               regexUtil     = new RegexUtil();
     private List                    feedQueue     = null;
     private FeedException           exception     = null;
     private MetaPlugIn              metaPlugIn    = MetaPlugIn.getMetaPlugIn();
@@ -222,21 +219,11 @@ class FeedDownloadThread extends Thread
         {
             log.info ("Processing feed: " + feed.getURL().toString());
 
-            if (! metaPlugIn.runPreFeedDownloadPlugIn (feed))
+            channel = handleFeed (feed, rssParser, configuration);
+            if (channel != null)
             {
-                log.debug ("Feed "
-                         + feed.getURL().toString()
-                         + ": A plug-in disabled the feed.");
-            }
-
-            else
-            {
-                channel = handleFeed (feed, rssParser, configuration);
-                if (channel != null)
-                {
-                    metaPlugIn.runPostFeedParsePlugIn (feed, channel);
-                    doneHandler.feedFinished (feed, channel);
-                }
+                metaPlugIn.runPostFeedParsePlugIn (feed, channel);
+                doneHandler.feedFinished (feed, channel);
             }
         }
 
@@ -333,6 +320,62 @@ class FeedDownloadThread extends Thread
 
             URLConnection conn = feedURL.openConnection();
 
+            if (! metaPlugIn.runPreFeedDownloadPlugIn (feedInfo, conn))
+            {
+                log.debug ("Feed "
+                         + feedInfo.getURL().toString()
+                         + ": A plug-in disabled the feed.");
+            }
+
+            else
+            {
+                channel = downloadAndProcessFeed (feedInfo,
+                                                  parser,
+                                                  configuration,
+                                                  conn);
+            }
+        }
+
+        catch (MalformedURLException ex)
+        {
+            throw new FeedException (feedInfo, ex);
+        }
+
+        catch (IOException ex)
+        {
+            throw new FeedException (feedInfo, ex);
+        }
+
+        return channel;
+    }
+
+    /**
+     * Unconditionally download and process a feed. Only called by
+     * handleFeed().
+     *
+     * @param feedInfo      the info about the feed
+     * @param parser        the RSS parser to use, or null if parsing is to
+     *                      be skipped
+     * @param configuration the parsed configuration data
+     * @param urlConn       open URLConnection for the feed
+     *
+     * @return the <tt>RSSChannel</tt> representing the parsed feed, if
+     *         parsing was enabled; otherwise, null.
+     *
+     * @throws FeedException  feed download error
+     * @throws CurnException  some other error (e.g., plug-in error)
+     */
+    private RSSChannel downloadAndProcessFeed (FeedInfo      feedInfo,
+                                               RSSParser     parser,
+                                               CurnConfig    configuration,
+                                               URLConnection urlConn)
+        throws FeedException,
+               CurnException
+    {
+        try
+        {
+            RSSChannel  channel = null;
+
             // Don't download the channel if it hasn't been modified since
             // we last checked it. We set the If-Modified-Since header, to
             // tell the web server not to return the content if it's not
@@ -342,20 +385,20 @@ class FeedDownloadThread extends Thread
             // newer, we don't bother to parse and process the returned
             // XML.
 
-            setIfModifiedSinceHeader (conn, feedInfo, cache);
+            setIfModifiedSinceHeader (urlConn, feedInfo, cache);
 
             // If the config allows us to transfer gzipped content, then
             // set that header, too.
 
-            setGzipHeader (conn, configuration);
+            setGzipHeader (urlConn, configuration);
 
             // Set the user-agent header.
 
-            conn.setRequestProperty ("User-Agent", feedInfo.getUserAgent());
+            urlConn.setRequestProperty ("User-Agent", feedInfo.getUserAgent());
 
             // If the feed has actually changed, process it.
 
-            if (! feedHasChanged (conn, feedInfo, cache))
+            if (! feedHasChanged (urlConn, feedInfo, cache))
             {
                 log.info ("Feed has not changed. Skipping it.");
             }
@@ -363,16 +406,16 @@ class FeedDownloadThread extends Thread
             else
             {
                 log.debug ("Feed may have changed. "
-                         + "Downloading and processing it.");
+                           + "Downloading and processing it.");
 
                 // Download the feed to a file. We'll parse the file.
 
-                DownloadedTempFile tempFile = downloadFeed (conn, feedInfo);
+                DownloadedTempFile tempFile = downloadFeed (urlConn, feedInfo);
 
                 if (tempFile.bytesDownloaded == 0)
                 {
                     log.debug ("Feed \""
-                             + feedURLString
+                             + feedInfo.getURL()
                              + "\" returned no data.");
                 }
 
@@ -390,8 +433,8 @@ class FeedDownloadThread extends Thread
                     else
                     {
                         log.debug ("Using RSS parser "
-                                 + parser.getClass().getName()
-                                 + " to parse the feed.");
+                                   + parser.getClass().getName()
+                                   + " to parse the feed.");
 
                         InputStream is = new FileInputStream (tempFile.file);
                         channel = parser.parseRSSFeed (feedInfo.getURL(),
@@ -409,29 +452,19 @@ class FeedDownloadThread extends Thread
                 if (cache != null)
                 {
                     cache.addToCache (null,
-                                      feedURL,
-                                      new Date (conn.getLastModified()),
+                                      feedInfo.getURL(),
+                                      new Date (urlConn.getLastModified()),
                                       feedInfo);
                 }
             }
         }
 
-        catch (RegexException ex)
-        {
-            throw new FeedException (feedInfo, ex);
-        }
-
-        catch (MalformedURLException ex)
+        catch (IOException ex)
         {
             throw new FeedException (feedInfo, ex);
         }
 
         catch (RSSParserException ex)
-        {
-            throw new FeedException (feedInfo, ex);
-        }
-
-        catch (IOException ex)
         {
             throw new FeedException (feedInfo, ex);
         }
@@ -759,13 +792,11 @@ class FeedDownloadThread extends Thread
      *
      * @throws RSSParserException    parser exception
      * @throws MalformedURLException bad URL
-     * @throws RegexException        substitution error
      */
     private void processChannelItems (RSSChannel  channel,
                                       FeedInfo    feedInfo)
         throws RSSParserException,
-               MalformedURLException,
-               RegexException
+               MalformedURLException
     {
         Collection<RSSItem> items;
         String              titleOverride = feedInfo.getTitleOverride();
