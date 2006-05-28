@@ -38,6 +38,9 @@ Version 3.0 (...)
 
 - Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
 
+- Completely removed support for old-style curn binary cache file. curn
+  will no longer read and convert a pre-2.0 binary cache file.
+
 
 Version 2.6.4 (5 February, 2006)
 
