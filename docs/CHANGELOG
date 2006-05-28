@@ -8,22 +8,39 @@ Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 
 Version 3.0 (...)
 
+Enhancements:
+
 - Added plug-in capability. See the Users' Guide for details on writing
   and deploying plug-ins.
 
 - Converted some base curn functionality into (built-in) plug-ins.
-
-- Replaced OutputHandler.displayChannel(RSSChannel,FeedInfo)
-  with OutputHandler.displayChannel(FeedInfo), since RSSChannel object
-  is now accessible from FeedInfo.
-
-  NOTE: This change will break existing custom output handlers.
 
 - The org.clapper.curn.output.TextOutputHandler,
   org.clapper.curn.output.SimpleSummaryOutputHandler, and
   org.clapper.curn.output.html.HTMLOutputHandler classes are gone. They'd
   been deprecated as of version 2.6 and reimplemented in terms of the
   FreeMarkerOutputHandler. Use the FreeMarkerOutputHandler, instead.
+
+- Enhanced error reporting (exception handling) in some areas.
+
+- The "EditItemURL" feed configuration parameter may now be specified multiple
+  times within a feed, provided each instance has its own unique suffix (e.g.,
+  "EditItemURL1", "EditItemURL2", "EditItemURLFoo", etc.)
+
+- curn now supports a per-feed "EditFeedURL" configuration parameter. Like
+  "EditItemURL", this parameter may be be specified multiple times within a
+  feed, provided each instance has its own unique suffix. "EditFeedURL" can
+  be used to edit the feed's URL, as opposed to the URLs of the individual
+  items within a feed.
+
+Changes:
+
+- Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
+
+- Completely removed support for old-style curn binary cache file. curn
+  will no longer read and convert a pre-2.0 binary cache file.
+
+Bug Fixes:
 
 - Fixed bug: curn wasn't caching data about the overall feed (as opposed to
   the individual items in the feed, which were being cache). For
@@ -33,13 +50,6 @@ Version 3.0 (...)
 
 - Fixed bug: The built-in MiniRSSParser wasn't handling relative URLs inside
   <link> elements (in any of the RSS formats).
-
-- Enhanced error reporting (exception handling) in some areas.
-
-- Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
-
-- Completely removed support for old-style curn binary cache file. curn
-  will no longer read and convert a pre-2.0 binary cache file.
 
 
 Version 2.6.4 (5 February, 2006)
