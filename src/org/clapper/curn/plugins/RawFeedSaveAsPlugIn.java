@@ -44,6 +44,8 @@ import org.clapper.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import java.net.URLConnection;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -265,25 +267,37 @@ public class RawFeedSaveAsPlugIn
     }
 
     /**
-     * Called just before a feed is downloaded. This method can return
-     * <tt>false</tt> to signal <i>curn</i> that the feed should be skipped.
-     * For instance, a plug-in that filters on feed URL could use this
-     * method to weed out non-matching feeds before they are downloaded.
+     * <p>Called just before a feed is downloaded. This method can return
+     * <tt>false</tt> to signal <i>curn</i> that the feed should be
+     * skipped. The plug-in method can also set values on the
+     * <tt>URLConnection</tt> used to download the plug-in, via
+     * <tt>URL.setRequestProperty()</tt>. (Note that <i>all</i> URLs, even
+     * <tt>file:</tt> URLs, are passed into this method. Setting a request
+     * property on the <tt>URLConnection</tt> object for a <tt>file:</tt>
+     * URL will have no effect--though it isn't specifically harmful.)</p>
+     *
+     * <p>Possible uses for a pre-feed download plug-in include:</p>
+     *
+     * <ul>
+     *   <li>filtering on feed URL to prevent downloading non-matching feeds
+     *   <li>changing the default User-Agent value
+     *   <li>setting a non-standard HTTP header field
+     * </ul>
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed to be
      *                  downloaded
+     * @param urlConn   the <tt>java.net.URLConnection</tt> object that will
+     *                  be used to download the feed's XML.
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed. A return value of
-     *         <tt>false</tt> aborts all further processing on the feed.
-     *         In particular, <i>curn</i> will not pass the feed along to
-     *         other plug-ins that have yet to be notified of this event.
+     *         feed, <tt>false</tt> to skip the feed
      *
      * @throws CurnException on error
      *
      * @see FeedInfo
      */
-    public boolean runPreFeedDownloadPlugIn (FeedInfo feedInfo)
+    public boolean runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
+                                             URLConnection urlConn)
 	throws CurnException
     {
         boolean processFeed = true;

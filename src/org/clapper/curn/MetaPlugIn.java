@@ -36,6 +36,8 @@ import org.clapper.util.logging.Logger;
 
 import java.io.File;
 
+import java.net.URLConnection;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -352,7 +354,9 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized boolean runPreFeedDownloadPlugIn (FeedInfo feedInfo)
+    public synchronized boolean
+    runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
+                              URLConnection urlConn)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -360,7 +364,7 @@ public class MetaPlugIn
         for (PreFeedDownloadPlugIn plugIn : preFeedDownloadPlugIns)
         {
             logPlugInInvocation ("runPreFeedDownloadPlugIn", plugIn);
-            keepGoing = plugIn.runPreFeedDownloadPlugIn (feedInfo);
+            keepGoing = plugIn.runPreFeedDownloadPlugIn (feedInfo, urlConn);
 
             if (! keepGoing)
                 break;
