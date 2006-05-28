@@ -646,7 +646,8 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Get the configured RSS feeds.
+     * Get the configured RSS feeds. The feeds are returned in the order
+     * they were specified in the configuration file.
      *
      * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects.
      *
