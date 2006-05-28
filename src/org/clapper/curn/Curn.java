@@ -449,8 +449,6 @@ public class Curn
             new LinkedHashMap<FeedInfo,RSSChannel>();
         List<FeedDownloadThread> threads = new ArrayList<FeedDownloadThread>();
         List<FeedInfo> feedQueue  = new LinkedList<FeedInfo>();
-        Iterator it;
-        FeedDownloadThread thread;
 
         if (maxThreads > totalFeeds)
             maxThreads = totalFeeds;
@@ -459,12 +457,16 @@ public class Curn
                 + maxThreads
                 + " threads.");
 
-        // Fill the feed queue and make it a synchronized list.
+        // Fill the feed queue and make it a synchronized list. Also, prime
+        // the "channels" LinkedHashMap with the feeds. This ensures that
+        // the channels are traversed in the original order they were
+        // specified in the configuration file. If we don't do this, then
+        // the channels will be put in the LinkedHashMap in the order the
+        // feed threads finish with them, which might not match the
+        // original order.
 
-        for (it = feeds.iterator(); it.hasNext(); )
+        for (FeedInfo feedInfo : feeds)
         {
-            FeedInfo feedInfo = (FeedInfo) it.next();
-
             if (! feedShouldBeProcessed (feedInfo))
             {
                 // Log messages already emitted.
@@ -473,6 +475,7 @@ public class Curn
             }
 
             feedQueue.add (feedInfo);
+            channels.put (feedInfo, null);
         }
 
         if (feedQueue.size() == 0)
@@ -481,6 +484,8 @@ public class Curn
                                      "Curn.allFeedsDisabled",
                                      "All configured RSS feeds are disabled.");
         }
+
+        // Create a synchronized view of the feed queue.
 
         feedQueue = Collections.synchronizedList (feedQueue);
 
@@ -494,20 +499,21 @@ public class Curn
             if (parsingEnabled)
                 parser = getRSSParser (configuration);
 
-            thread = new FeedDownloadThread
-                         (String.valueOf (i),
-                          parser,
-                          feedCache,
-                          configuration,
-                          feedQueue,
-                          new FeedDownloadDoneHandler()
-                          {
-                              public void feedFinished (FeedInfo  feedInfo,
-                                                        RSSChannel channel)
-                              {
-                                  channels.put (feedInfo, channel);
-                              }
-                          });
+            FeedDownloadThread thread =
+                new FeedDownloadThread
+                    (String.valueOf (i),
+                     parser,
+                     feedCache,
+                     configuration,
+                     feedQueue,
+                     new FeedDownloadDoneHandler()
+                     {
+                         public void feedFinished (FeedInfo  feedInfo,
+                                                   RSSChannel channel)
+                         {
+                             channels.put (feedInfo, channel);
+                         }
+                     });
             thread.start();
             threads.add (thread);
         }
@@ -518,9 +524,8 @@ public class Curn
         log.debug ("All feeds have been parceled out to threads. Waiting for "
                  + "threads to complete.");
 
-        for (it = threads.iterator(); it.hasNext(); )
+        for (FeedDownloadThread thread : threads)
         {
-            thread = (FeedDownloadThread) it.next();
             String threadName = thread.getName();
 
             log.info ("Waiting for thread " + threadName);
@@ -536,6 +541,18 @@ public class Curn
             }
 
             log.info ("Joined thread " + threadName);
+        }
+
+        // Finally, remove any entries that still have null channels. (This
+        // can happen if there's no new data in a feed.)
+
+        for (Iterator<Map.Entry<FeedInfo,RSSChannel>> it =
+                 channels.entrySet().iterator();
+             it.hasNext(); )
+        {
+            Map.Entry<FeedInfo,RSSChannel> mapEntry = it.next();
+            if (mapEntry.getValue() == null)
+                it.remove();
         }
 
         return channels;
