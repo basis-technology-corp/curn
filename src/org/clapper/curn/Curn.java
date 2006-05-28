@@ -314,21 +314,26 @@ public class Curn
         throws ConfigurationException,
                CurnException
     {
-        String                   className;
-        OutputHandler            handler;
-        Iterator                 it;
-
         if (configuration.totalOutputHandlers() > 0)
         {
             for (ConfiguredOutputHandler cfgHandler : configuration.getOutputHandlers())
             {
                 // Ensure that the output handler can be instantiated.
 
+                String className = cfgHandler.getClassName();
+
                 log.debug ("Instantiating output handler \""
                          + cfgHandler.getName()
                          + "\", of type "
-                         + cfgHandler.getClassName());
-                cfgHandler.getOutputHandler();
+                         + className);
+                OutputHandler handler = cfgHandler.getOutputHandler();
+
+                log.debug ("Initializing output handler \""
+                         + cfgHandler.getName()
+                         + "\", of type "
+                         + className);
+
+                handler.init (config, cfgHandler);
 
                 // Save it.
 
@@ -598,7 +603,6 @@ public class Curn
                     + cfgHandler.getClassName());
 
             handler = cfgHandler.getOutputHandler();
-            handler.init (config, cfgHandler);
 
             for (FeedInfo fi : channels.keySet())
             {
