@@ -160,13 +160,10 @@ public class PlugInManager
         // themselves, in case they contain package-less classes.
 
         String curnHome = System.getProperty ("org.clapper.curn.home");
-log.debug("org.clapper.curn.home=" + ((curnHome==null) ? "null" : curnHome));
         File dir;
         if (curnHome != null)
         {
             dir = new File (curnHome + File.separator + "plugins");
-log.debug("curnHome=" + dir.getPath());
-log.debug("curnHome.exists()=" + dir.exists());
             preparePlugInSearch (dir, plugInLocations);
             plugInLocations.add (dir);
         }
