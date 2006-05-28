@@ -184,13 +184,7 @@ public class FeedCache implements Serializable
 
         else
         {
-            // First, try as an old-style serialized cache. If that fails,
-            // try as a new-style XML file. If both fail, then puke.
-
-            this.cacheByID = readSerializedObjectsCache (cacheFile);
-            if (this.cacheByID == null)
-                this.cacheByID = readSerializedXMLCache (cacheFile);
-
+            this.cacheByID = readSerializedXMLCache (cacheFile);
             if (this.cacheByID == null)
             {
                 throw new CurnException (Constants.BUNDLE_NAME,
@@ -428,85 +422,6 @@ public class FeedCache implements Serializable
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Attempt to load the specified cache file as an old-style file
-     * of serialized Java objects. Logs, but does not throw any exceptions.
-     *
-     * @param cacheFile  the file to read
-     *
-     * @return a deserialized FeedCacheMap on success, or null on failure
-     */
-    private FeedCacheMap readSerializedObjectsCache (File cacheFile)
-    {
-        ObjectInputStream  objIn         = null;
-        FeedCacheMap       result        = null;
-        String             cacheFilePath = cacheFile.getPath();
-
-        try
-        {
-            log.info ("Attempting to load \""
-                     + cacheFilePath
-                     + "\" as an old-style file of serialized Java objects.");
-            objIn = new ObjectInputStream (new FileInputStream (cacheFile));
-            HashMap map = (HashMap) objIn.readObject();
-
-            result = new FeedCacheMap();
-            for (Iterator it = map.keySet().iterator(); it.hasNext(); )
-            {
-                String key = (String) it.next();
-                result.put (key, (FeedCacheEntry) map.get (key));
-            }
-
-            log.warn ("Loaded old-style cache \""
-                    + cacheFilePath
-                    + "\". If cache updating is enabled, the cache will "
-                    + "automatically be converted to a new-style XML cache.");
-        }
-
-        catch (ClassNotFoundException ex)
-        {
-            log.info ("Failed to load cache as serialized Java objects", ex);
-        }
-
-        catch (InvalidClassException ex)
-        {
-            log.info ("Failed to load cache as serialized Java objects", ex);
-        }
-
-        catch (StreamCorruptedException ex)
-        {
-            log.info ("Failed to load cache as serialized Java objects", ex);
-        }
-
-        catch (OptionalDataException ex)
-        {
-            log.info ("Failed to load cache as serialized Java objects", ex);
-        }
-
-        catch (IOException ex)
-        {
-            log.info ("Failed to load cache as serialized Java objects", ex);
-        }
-
-        finally
-        {
-            if (objIn != null)
-            {
-                try
-                {
-                    objIn.close();
-                }
-
-                catch (IOException ex)
-                {
-                    log.error ("Failed to close cache file", ex);
-                }
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Attempt to load the specified cache file as an old-style file
