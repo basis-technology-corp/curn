@@ -339,7 +339,9 @@ public class PlugInManager
 
             catch (IllegalAccessException ex)
             {
-                log.error ("Plug-in \""
+                // Not a big deal. Might be one of ours (e.g., MetaPlugIn).
+
+                log.info ("Plug-in \""
                          + className
                          + "\" has no accessible default constructor.");
             }
