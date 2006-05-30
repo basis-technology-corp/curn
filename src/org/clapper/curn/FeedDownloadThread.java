@@ -372,10 +372,10 @@ class FeedDownloadThread extends Thread
         throws FeedException,
                CurnException
     {
+        RSSChannel  channel = null;
+
         try
         {
-            RSSChannel  channel = null;
-
             // Don't download the channel if it hasn't been modified since
             // we last checked it. We set the If-Modified-Since header, to
             // tell the web server not to return the content if it's not
@@ -406,7 +406,7 @@ class FeedDownloadThread extends Thread
             else
             {
                 log.debug ("Feed may have changed. "
-                           + "Downloading and processing it.");
+                         + "Downloading and processing it.");
 
                 // Download the feed to a file. We'll parse the file.
 
@@ -469,6 +469,10 @@ class FeedDownloadThread extends Thread
             throw new FeedException (feedInfo, ex);
         }
 
+        log.debug ("downloadAndProcessFeed(): Feed="
+                 + feedInfo.getURL()
+                 + ", returning "
+                 + ((channel == null) ? "null" : channel.toString()));
         return channel;
     }
 
@@ -861,29 +865,29 @@ class FeedDownloadThread extends Thread
             if (cache != null)
             {
                 if (! itemIsNew (item, itemURL))
+                {
+                    log.debug ("Discarding old, cached item.");
                     it.remove();
+                }
             }
         }
 
         // Add all the items to the cache, and adjust whatever items are to
         // be adjusted.
 
-        if (items.size() > 0)
+        if ((items.size() > 0) && (cache != null))
         {
             for (RSSItem item : items)
             {
-                if (cache != null)
-                {
-                    RSSLink itemLink = item.getURL();
-                    assert (itemLink != null);
-                    URL itemURL = itemLink.getURL();
+                RSSLink itemLink = item.getURL();
+                assert (itemLink != null);
+                URL itemURL = itemLink.getURL();
 
-                    log.debug ("Cacheing URL: " + itemURL);
-                    cache.addToCache (item.getID(),
-                                      itemURL,
-                                      item.getPublicationDate(),
-                                      feedInfo);
-                }
+                log.debug ("Caching URL: " + itemURL);
+                cache.addToCache (item.getID(),
+                                  itemURL,
+                                  item.getPublicationDate(),
+                                  feedInfo);
             }
         }
 
@@ -896,6 +900,7 @@ class FeedDownloadThread extends Thread
 
         // Change the channel's items to the ones that are left.
 
+        log.debug ("Setting channel items: total=" + items.size());
         channel.setItems (items);
     }
 
