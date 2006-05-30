@@ -614,7 +614,7 @@ public class Curn
 
         for (ConfiguredOutputHandler cfgHandler : outputHandlers)
         {
-            log.info ("Initializing output handler \""
+            log.info ("Preparing to call output handler \""
                     + cfgHandler.getName()
                     + "\", of type "
                     + cfgHandler.getClassName());
@@ -656,12 +656,18 @@ public class Curn
             else
             {
                 handler = firstOutput.getOutputHandler();
+                log.info ("Dumping output of first output handler "
+                        + firstOutput.getName()
+                        + "\", of type "
+                        + firstOutput.getClassName());
+                          
                 File output = handler.getGeneratedOutput();
 
                 try
                 {
                     FileUtil.copyStream (new FileInputStream (output),
                                          System.out);
+                    System.out.flush();
                 }
 
                 catch (IOException ex)
