@@ -104,6 +104,36 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
         return newChannel;
     }
 
+    /**
+     * Return a string representation of this channel.
+     *
+     * @return the string
+     */
+    public String toString()
+    {
+        StringBuffer buf = new StringBuffer();
+
+        buf.append ("Channel ");
+
+        Collection<RSSLink> links = getLinks();
+        String title;
+
+        if (links.size() > 0)
+            buf.append (links.iterator().next().getURL().toString());
+        else if ((title = getTitle()) != null)
+            buf.append (title);
+        else
+            buf.append ("???");
+
+        buf.append (", ");
+        Collection<RSSItem> items = getItems();
+        int total = (items == null) ? 0 : items.size();
+        buf.append (String.valueOf (total));
+        buf.append (" item(s)");
+
+        return buf.toString();
+    }
+
     /*----------------------------------------------------------------------*\
                           Abstract Public Methods
     \*----------------------------------------------------------------------*/
