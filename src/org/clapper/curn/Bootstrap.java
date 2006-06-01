@@ -201,7 +201,6 @@ public class Bootstrap
         }
 */
 
-        System.out.println ("Loader will search:" + urlList);
         return new URLClassLoader (urlList.toArray (new URL[urlList.size()]),
                                    ClassLoader.getSystemClassLoader());
     }
@@ -248,16 +247,6 @@ public class Bootstrap
 
         try
         {
-/*
-            System.out.print ("+ (java) " + cls);
-            if ((args != null) && (args.length > 0))
-            {
-                for (String arg : args)
-                    System.out.print (" " + arg);
-            }
-            System.out.println();
-            System.out.println ("Class loader: " + cls.getClassLoader());
-*/
             Thread.currentThread().setContextClassLoader (classLoader);
             mainMethod.invoke (null, new Object[] {args});
         }
