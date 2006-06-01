@@ -87,7 +87,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_CLASS             = "Class";
     public static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
     public static final String VAR_MAX_THREADS       = "MaxThreads";
-    public static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
     public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
     public static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
     public static final String VAR_ALLOW_EMBEDDED_HTML= "AllowEmbeddedHTML";
@@ -1037,13 +1036,6 @@ public class CurnConfig extends Configuration
             {
                 flag = getRequiredBooleanValue (sectionName, varName);
                 feedInfo.setEnabledFlag (! flag);
-                value = String.valueOf (flag);
-            }
-
-            else if (varName.equals (VAR_IGNORE_DUP_TITLES))
-            {
-                flag = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setIgnoreItemsWithDuplicateTitlesFlag (flag);
                 value = String.valueOf (flag);
             }
 
