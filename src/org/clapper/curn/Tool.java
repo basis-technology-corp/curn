@@ -165,7 +165,8 @@ public class Tool
         {
             WordWrapWriter err = new WordWrapWriter (System.err);
 
-            err.println (ex.getMessage());
+            //err.println (ex.getMessage());
+            ex.printStackTrace (System.err);
             System.exit (1);
         }
 
@@ -485,8 +486,8 @@ public class Tool
     /**
      * Run the curn tool. This method parses the command line arguments,
      * storing the results in an internal configuration; then, it
-     * instantiates a {@link Curn} object and calls its
-     * {@link Curn#processRSSFeeds processRSSFeeds()} method.
+     * instantiates a <tt>Curn</tt> object and calls its <tt>run()</tt>
+     * method.
      *
      * @throws CommandLineException error occurred
      */
