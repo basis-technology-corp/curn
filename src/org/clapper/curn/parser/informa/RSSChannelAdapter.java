@@ -147,6 +147,21 @@ public class RSSChannelAdapter extends RSSChannel
     }
 
     /**
+     * Remove an item from the set of items.
+     *
+     * @param item  the item to remove
+     *
+     * @return <tt>true</tt> if removed, <tt>false</tt> if not found
+     */
+    public boolean removeItem (RSSItem item)
+    {
+        Collection<RSSItem> items = getItems();
+        boolean removed = items.remove (item);
+        setItems (items);
+        return removed;
+    }
+
+    /**
      * Get the channel's title
      *
      * @return the channel's title, or null if there isn't one
