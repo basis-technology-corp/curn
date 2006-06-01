@@ -41,13 +41,17 @@ import org.clapper.util.io.FileFilterMatchType;
 import org.clapper.util.classutil.ClassFinder;
 import org.clapper.util.classutil.ClassFilter;
 import org.clapper.util.classutil.ClassInfo;
+import org.clapper.util.classutil.ClassModifiersClassFilter;
 import org.clapper.util.classutil.AndClassFilter;
+import org.clapper.util.classutil.OrClassFilter;
 import org.clapper.util.classutil.AbstractClassFilter;
 import org.clapper.util.classutil.InterfaceOnlyClassFilter;
 import org.clapper.util.classutil.NotClassFilter;
 import org.clapper.util.classutil.RegexClassFilter;
 import org.clapper.util.classutil.SubclassClassFilter;
 import org.clapper.util.classutil.ClassLoaderBuilder;
+
+import java.lang.reflect.Modifier;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -74,6 +78,14 @@ import java.util.regex.PatternSyntaxException;
  */
 public class PlugInManager
 {
+    /*----------------------------------------------------------------------*\
+                                 Constants
+    \*----------------------------------------------------------------------*/
+
+    private static final String CURN_HOME_ENV_VAR  = "CURN_HOME";
+    private static final String CURN_HOME_PROPERTY = "org.clapper.curn.home";
+    private static final String BUNDLE_NAME = "org.clapper.curn.PlugInManager";
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -142,115 +154,82 @@ public class PlugInManager
     \*----------------------------------------------------------------------*/
 
     /**
-     * Find the plug-in jars.
-     *
-     * @return an unmodifiable collection of <tt>File</tt> objects representing
-     *         the jars, zip and subdirectories found in the various plug-in
-     *         directories. This collection is also stored internally.
-     *
-     * @throws CurnException on error
-     */
-    static Collection<File> findPlugInLocations()
-        throws CurnException
-    {
-        // Find all directories, jars and zip files in the appropriate
-        // plug-in directories, and load them into the ClassFinder for
-        // searching. Try <install-path>/plugins, then $HOME/curn/plugins,
-        // then $HOME/.curn/plugins. Also, add the latter two directories
-        // themselves, in case they contain package-less classes.
-
-        String curnHome = System.getProperty ("org.clapper.curn.home");
-        File dir;
-        if (curnHome != null)
-        {
-            dir = new File (curnHome + File.separator + "plugins");
-            preparePlugInSearch (dir, plugInLocations);
-            plugInLocations.add (dir);
-        }
-
-        String userHome = System.getProperty ("user.home");
-        dir = new File (userHome
-                      + File.separator
-                      + "curn"
-                      + File.separator
-                      + "plugins");
-        preparePlugInSearch (dir, plugInLocations);
-        plugInLocations.add (dir);
-
-        dir = new File (userHome
-                      + File.separator
-                      + ".curn"
-                      + File.separator
-                      + "plugins");
-        preparePlugInSearch (dir, plugInLocations);
-        plugInLocations.add (dir);
-
-        return Collections.unmodifiableCollection (plugInLocations);
-    }
-
-    /**
-     * Get a <tt>ClassLoader</tt> that will use the plug-in locations as
-     * part of its search path.
-     *
-     * @param plugInLocations list of plug-in locations previously found
-     *                        via a call to {@link findPlugInLocations}
-     *
-     * @throws CurnException on error
-     */
-    static ClassLoader getClassLoader (Collection<File> plugInLocations)
-        throws CurnException
-    {
-        ClassLoaderBuilder clb = new ClassLoaderBuilder();
-        clb.addClassPath();
-        clb.add (plugInLocations);
-        return clb.createClassLoader();
-    }
-
-    /**
      * Load the plug-ins and create the {@link MetaPlugIn} singleton.
      *
-     * @param plugInLocations list of plug-in locations previously found
-     *                        via a call to {@link findPlugInLocations}
-     * @param classLoader     class loader to use
-     *
      * @throws CurnException on error
      */
-    static void loadPlugIns (Collection<File> plugInLocations,
-                             ClassLoader      classLoader)
+    static void loadPlugIns()
         throws CurnException
     {
-        MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn (classLoader);
+        MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn();
 
         ClassFinder classFinder = new ClassFinder();
         classFinder.add (plugInLocations);
         classFinder.addClassPath();
 
-        // Configure the ClassFinder's filter.
+        // Configure the ClassFinder's filter for plug-in classes and
+        // output handler classes. Note that the criteria for both are
+        // slightly different, but we search for them at the same time
+        // for performance reasons.
 
         ClassFilter classFilter =
-            new AndClassFilter
+            new OrClassFilter
+            (
+                // Plug-ins
+
+                new AndClassFilter
                 (
-                 // Must implement org.clapper.curn.PlugIn
+                    // Must implement org.clapper.curn.PlugIn
 
-                 new SubclassClassFilter (PlugIn.class),
+                    new SubclassClassFilter (PlugIn.class),
 
-                 // Must be concrete
+                    // Must be concrete
 
-                 new NotClassFilter (new AbstractClassFilter()),
+                    new NotClassFilter (new AbstractClassFilter()),
 
-                 // Weed out certain things
+                    // Must be public
 
-                 new NotClassFilter (new RegexClassFilter ("^java\\.")),
-                 new NotClassFilter (new RegexClassFilter ("^javax\\."))
-                );
+                    new ClassModifiersClassFilter (Modifier.PUBLIC),
+
+                    // Weed out certain things
+
+                    new NotClassFilter (new RegexClassFilter ("^java\\.")),
+                    new NotClassFilter (new RegexClassFilter ("^javax\\."))
+                ),
+
+                // Output handlers
+
+                new AndClassFilter
+                (
+                    // Must implement org.clapper.curn.OutputHandler
+
+                    new SubclassClassFilter (OutputHandler.class),
+
+                    // Must be concrete
+
+                    new NotClassFilter (new AbstractClassFilter()),
+
+                    // Must be public
+
+                    new ClassModifiersClassFilter (Modifier.PUBLIC),
+
+                    // Make sure not to include any of the packaged curn
+                    // output handlers.
+
+                    new NotClassFilter
+                        (new RegexClassFilter ("^org\\.clapper\\.curn"))
+                )
+            );
 
         Collection<ClassInfo> classes = new ArrayList<ClassInfo>();
         classFinder.findClasses (classes, classFilter);
 
+        // Load any found plug-ins.
+
         if (classes.size() == 0)
             log.info ("No plug-ins found.");
         else
-            loadPlugInClasses (classes, classLoader);
+            loadPlugInClasses (classes);
     }
 
     /*----------------------------------------------------------------------*\
@@ -258,82 +237,71 @@ public class PlugInManager
     \*----------------------------------------------------------------------*/
 
     /**
-     * Find the jars, zip files and directories under the specified directory
-     * and load them into a ClassFinder.
+     * Load the plug-ins. For classes implementing PlugIn, the class is
+     * loaded and instantiating. For OutputHandler classes, the class is
+     * just loaded; instantiation is done by curn itself (via the
+     * OutputHandlerFactory class), if the output handler is actually used
+     * in the configuration.
      *
-     * @param dir              the directory
-     * @parma plugInLocations  where to put them
+     * @param classes  classes to load
      */
-    private static void preparePlugInSearch (File             dir,
-                                             Collection<File> plugInLocations)
-    {
-        if (! dir.exists())
-        {
-            log.info ("Plug-in directory \"" + dir.getPath() +
-                      "\" does not exist.");
-        }
-
-        else if (! dir.isDirectory())
-        {
-            log.info ("Plug-in directory \"" + dir.getPath() +
-                      "\" is not a directory.");
-        }
-
-        else
-        {
-            log.debug ("Looking for jars, etc., in directory \"" +
-                       dir.getPath() + "\"");
-
-            for (File f : dir.listFiles (plugInLocFilter))
-            {
-                log.debug ("Found " + f.getPath());
-                plugInLocations.add (f);
-            }
-        }
-    }
-
-    /**
-     * Load the plug-ins.
-     *
-     * @param classNames  the class names of the plug-ins
-     * @param classLoader class loader to use
-     */
-    private static void loadPlugInClasses (Collection<ClassInfo> classes,
-                                           ClassLoader           classLoader)
+    private static void loadPlugInClasses (Collection<ClassInfo> classes)
     {
         MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
+
+        int totalPlugInsLoaded = 0;
+        int totalOutputHandlersLoaded = 0;
 
         for (ClassInfo classInfo : classes)
         {
             String className = classInfo.getClassName();
             try
             {
-                log.info ("Loading plug-in \"" + className + "\"");
-                Class cls = classLoader.loadClass (className);
+                Class cls = Class.forName (className);
 
-                // Instantite the plug-in via the default constructor and
-                // add it to the meta-plug-in
+                if (OutputHandler.class.isAssignableFrom (cls))
+                {
+                    // It's an output handler. We're done, since the class
+                    // is now loaded.
 
-                PlugIn plugIn = (PlugIn) cls.newInstance();
-                log.info ("Loaded plug-in \""
-                        + plugIn.getName()
-                        + "\" plug-in");
-                metaPlugIn.addPlugIn (plugIn);
+                    log.info ("Loaded output handler class \""
+                            + className
+                            + "\"");
+log.info ("Output handler class loader=" + cls.getClassLoader().toString());
+                    totalOutputHandlersLoaded++;
+                }
+
+                else
+                {
+                    // It must be a plug-in. Instantite the plug-in via the
+                    // default constructor and add it to the meta-plug-in
+
+                    PlugIn plugIn = (PlugIn) cls.newInstance();
+                    log.info ("Loaded \""
+                            + plugIn.getName()
+                            + "\" plug-in");
+                    metaPlugIn.addPlugIn (plugIn);
+                    totalPlugInsLoaded++;
+                }
             }
 
             catch (ClassNotFoundException ex)
             {
-                log.error ("Can't load plug-in \""
+                log.error ("Can't load "
+                         + classInfo.getClassLocation().getPath()
+                         + "("
                          + className
-                         + "\": "
+                         + "): "
                          + ex.toString());
             }
 
             catch (ClassCastException ex)
             {
                 log.error ("Can't load plug-in \""
+                         + classInfo.getClassLocation().getPath()
+                         + "("
                          + className
-                         + "\": "
+                         + "): "
                          + ex.toString());
             }
 
@@ -341,34 +309,50 @@ public class PlugInManager
             {
                 // Not a big deal. Might be one of ours (e.g., MetaPlugIn).
 
-                log.info ("Plug-in \""
+                log.info ("Plug-in "
+                         + classInfo.getClassLocation().getPath()
+                         + "("
                          + className
-                         + "\" has no accessible default constructor.");
+                         + ") has no accessible default constructor.");
             }
 
             catch (InstantiationException ex)
             {
                 log.error ("Can't instantiate plug-in \""
+                         + classInfo.getClassLocation().getPath()
+                         + "("
                          + className
-                         + "\": "
+                         + "): "
                          + ex.toString());
             }
 
             catch (ExceptionInInitializerError ex)
             {
                 log.error ("Default constructor for plug-in \""
+                         + classInfo.getClassLocation().getPath()
+                         + "("
                          + className
-                         + "\" threw an exception.",
+                         + ") threw an exception.",
                            ex.getException());
             }
+        }
 
-            catch (Throwable ex)
-            {
-                log.error ("Error loading plug-in \""
-                         + className
-                         + "\"",
-                           ex);
-            }
+        if (log.isInfoEnabled())
+        {
+            int totalClasses = classes.size();
+            log.info ("Loaded "
+                    + totalPlugInsLoaded
+                    + " plug-in"
+                    + ((totalPlugInsLoaded == 1) ? "" : "s")
+                    + " and "
+                    + totalOutputHandlersLoaded
+                    + " output handler"
+                    + ((totalOutputHandlersLoaded == 1) ? "" : "s")
+                    + " of "
+                    + totalClasses
+                    + " plug-in class"
+                    + ((totalClasses == 1) ? "" : "es")
+                    + " found.");
         }
     }
 }
