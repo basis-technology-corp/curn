@@ -37,11 +37,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Properties;
+import java.util.TreeSet;
 
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
@@ -123,6 +126,7 @@ public class Curn
         throws CurnException
     {
         metaPlugIn = MetaPlugIn.getMetaPlugIn();
+        logJavaInfo();
     }
 
     /*----------------------------------------------------------------------*\
@@ -390,10 +394,8 @@ public class Curn
                      }
                  });
 
-        for (Iterator it = configuration.getFeeds().iterator(); it.hasNext(); )
+        for (FeedInfo feedInfo : configuration.getFeeds())
         {
-            FeedInfo feedInfo = (FeedInfo) it.next();
-
             if (! feedShouldBeProcessed (feedInfo))
             {
                 // Log messages already emitted.
@@ -697,7 +699,6 @@ public class Curn
         {
             log.debug ("There are email addresses.");
 
-            Iterator                 it;
             OutputHandler            firstHandlerWithOutput = null;
             OutputHandler            handler;
             ConfiguredOutputHandler  handlerWrapper;
@@ -838,5 +839,27 @@ public class Curn
         {
             throw new CurnException (ex);
         }
+    }
+
+    /**
+     * Log all system properties and other information about the Java VM.
+     */
+    private void logJavaInfo()
+    {
+        log.info (Version.getFullVersion());
+        
+        Properties properties = System.getProperties();
+        TreeSet<String> sortedNames = new TreeSet<String>();
+        for (Enumeration<?> e = properties.propertyNames();
+             e.hasMoreElements(); )
+        {
+            sortedNames.add ((String) e.nextElement());
+        }
+
+        log.info ("--- Start of Java properties");
+        for (String name : sortedNames)
+            log.info (name + "=" + properties.getProperty (name));
+
+        log.info ("--- End of Java properties");
     }
 }
