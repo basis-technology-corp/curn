@@ -479,20 +479,17 @@ public class MetaPlugIn
     /**
      * Create the MetaPlugIn
      *
-     * @param classLoader class loader to use
-     *
      * @return the created MetaPlugIn
      *
      * @throws CurnException on error
      */
-    static MetaPlugIn createMetaPlugIn (ClassLoader classLoader)
+    static MetaPlugIn createMetaPlugIn()
         throws CurnException
     {
         assert (metaPlugIn == null);
         try
         {
-            Class cls = classLoader.loadClass ("org.clapper.curn.MetaPlugIn");
-            metaPlugIn = (MetaPlugIn) cls.newInstance();
+            metaPlugIn = new MetaPlugIn();
             return metaPlugIn;
         }
 
