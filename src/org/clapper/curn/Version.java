@@ -52,8 +52,13 @@ public final class Version
     /**
      * The name of the resource bundle containing the build info.
      */
-    public static final String BUILD_INFO_BUNDLE_NAME
-        = "org.clapper.curn.BuildInfoBundle";
+    public static final String BUILD_INFO_BUNDLE_NAME =
+        "org.clapper.curn.BuildInfoBundle";
+
+    /**
+     * This class's bundle
+     */
+    public static final String VERSION_BUNDLE_NAME = Constants.BUNDLE_NAME;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -76,7 +81,7 @@ public final class Version
      */
     public static String getVersionNumber()
     {
-        return BundleUtil.getString (Constants.BUNDLE_NAME, "curn.version", "?");
+        return BundleUtil.getString (VERSION_BUNDLE_NAME, "curn.version", "?");
     }
 
     /**
@@ -86,7 +91,7 @@ public final class Version
      */
     public static String getUtilityName()
     {
-        return BundleUtil.getString (Constants.BUNDLE_NAME, "curn.name", "curn");
+        return BundleUtil.getString (VERSION_BUNDLE_NAME, "curn.name", "curn");
     }
 
     /**
@@ -96,7 +101,7 @@ public final class Version
      */
     public static String getWebSite()
     {
-        return BundleUtil.getString (Constants.BUNDLE_NAME, "curn.website", "?");
+        return BundleUtil.getString (VERSION_BUNDLE_NAME, "curn.website", "?");
     }
 
     /**
@@ -118,7 +123,7 @@ public final class Version
         String name = getUtilityName();
         String version = getVersionNumber();
 
-        return BundleUtil.getMessage (Constants.BUNDLE_NAME, locale,
+        return BundleUtil.getMessage (VERSION_BUNDLE_NAME, locale,
                                       "curn.fullVersion",
                                       "{0}, version {1}",
                                       new Object[] {name, version});
