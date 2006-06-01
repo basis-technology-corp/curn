@@ -67,7 +67,6 @@ public class FeedInfo
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
-    private String      userAgent             = null;
     private int         maxSummarySize        = Integer.MAX_VALUE;
     private boolean     showAuthors           = false;
     private boolean     allowEmbeddedHTML     = false;
@@ -388,32 +387,6 @@ public class FeedInfo
     public void setIgnoreItemsWithDuplicateTitlesFlag (boolean val)
     {
         this.ignoreDuplicateTitles = val;
-    }
-
-    /**
-     * Get the configured user agent for this feed. Returns a default if
-     * none has been configured.
-     *
-     * @return the user agent header to use
-     *
-     * @see #setUserAgent
-     */
-    public String getUserAgent()
-    {
-        assert (userAgent != null);
-        return userAgent;
-    }
-
-    /**
-     * Set the configured user agent for this feed.
-     *
-     * @param userAgent the user agent header to use
-     *
-     * @see #getUserAgent
-     */
-    public void setUserAgent (String userAgent)
-    {
-        this.userAgent = userAgent;
     }
 
     /**

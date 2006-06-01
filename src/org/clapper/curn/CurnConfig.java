@@ -90,7 +90,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_IGNORE_DUP_TITLES = "IgnoreDuplicateTitles";
     public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
     public static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
-    public static final String VAR_USER_AGENT        = "UserAgent";
     public static final String VAR_ALLOW_EMBEDDED_HTML= "AllowEmbeddedHTML";
 
     /**
@@ -158,7 +157,6 @@ public class CurnConfig extends Configuration
     private boolean showAuthors = false;
     private boolean getGzippedFeeds = true;
     private int maxThreads = DEF_MAX_THREADS;
-    private String defaultUserAgent = null;
     private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
     private boolean allowEmbeddedHTML = DEF_ALLOW_EMBEDDED_HTML;
     private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
@@ -941,14 +939,6 @@ public class CurnConfig extends Configuration
             val = String.valueOf (maxThreads);
         }
 
-        else if (varName.equals (VAR_USER_AGENT))
-        {
-            defaultUserAgent = getOptionalStringValue (MAIN_SECTION,
-                                                       varName,
-                                                       null);
-            val = defaultUserAgent;
-        }
-
         else
         {
             val = getOptionalStringValue (MAIN_SECTION, varName, null);
@@ -960,27 +950,6 @@ public class CurnConfig extends Configuration
                                                                 varName,
                                                                 this);
         }
-
-        if (defaultUserAgent == null)
-        {
-            StringBuilder buf = new StringBuilder();
-
-            // Standard format seems to be:
-            //
-            // tool/version (+url)
-            //
-            // e.g.: Googlebot/2.1 (+http://www.google.com/bot.htm
-
-            buf.append (Version.getUtilityName());
-            buf.append ('/');
-            buf.append (Version.getVersionNumber());
-            buf.append (" (+");
-            buf.append (Version.getWebSite());
-            buf.append (')');
-            defaultUserAgent = buf.toString();
-        }
-
-        val = defaultUserAgent;
     }
 
     /**
@@ -1031,7 +1000,6 @@ public class CurnConfig extends Configuration
 
         feedInfo.setDaysToCache (defaultCacheDays);
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
-        feedInfo.setUserAgent (defaultUserAgent);
         feedInfo.setMaxSummarySize (maxSummarySize);
         feedInfo.setShowAuthorsFlag (showAuthors);
         feedInfo.setAllowEmbeddedHTMLFlag (allowEmbeddedHTML);
@@ -1090,12 +1058,6 @@ public class CurnConfig extends Configuration
             {
                 value = getConfigurationValue (sectionName, varName);
                 feedInfo.setForcedCharacterEncoding (value);
-            }
-
-            else if (varName.equals (VAR_USER_AGENT))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                feedInfo.setUserAgent (value);
             }
 
             else if (varName.equals (VAR_SHOW_AUTHORS))

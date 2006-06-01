@@ -229,14 +229,32 @@ class FeedDownloadThread extends Thread
 
         catch (FeedException ex)
         {
-            log.error (ex.getMessage(), ex);
-            this.exception = ex;
+            this.exception = new FeedException
+                (feed,
+                 Constants.BUNDLE_NAME,
+                 "FeedDownloadThread.downloadError",
+                 "(Config file \"{0}\") error downloading feed",
+                 new Object[]
+                 {
+                     configuration.getConfigurationFileURL(),
+                 },
+                 ex);
+            log.error (ex.getMessage(), this.exception);
         }
 
         catch (CurnException ex)
         {
-            log.error (ex.getMessage(), ex);
-            this.exception = new FeedException (feed, ex);
+            this.exception = new FeedException
+                (feed,
+                 Constants.BUNDLE_NAME,
+                 "FeedDownloadThread.downloadError",
+                 "(Config file \"{0}\") error downloading feed",
+                 new Object[]
+                 {
+                     configuration.getConfigurationFileURL(),
+                 },
+                 ex);
+            log.error (ex.getMessage(), this.exception);
         }
     }
 
@@ -391,10 +409,6 @@ class FeedDownloadThread extends Thread
             // set that header, too.
 
             setGzipHeader (urlConn, configuration);
-
-            // Set the user-agent header.
-
-            urlConn.setRequestProperty ("User-Agent", feedInfo.getUserAgent());
 
             // If the feed has actually changed, process it.
 
