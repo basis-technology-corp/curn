@@ -73,6 +73,7 @@ import java.util.HashMap;
 public class UserAgentPlugIn
     implements MainConfigItemPlugIn,
                FeedConfigItemPlugIn,
+               PostConfigPlugIn,
                PreFeedDownloadPlugIn
 {
     /*----------------------------------------------------------------------*\
@@ -300,6 +301,11 @@ public class UserAgentPlugIn
 
         // Set the user-agent header.
 
+        log.debug ("Using user agent \""
+                 + userAgent
+                 + "\" for feed \""
+                 + feedInfo.getURL()
+                 + "\"");
         urlConn.setRequestProperty ("User-Agent", userAgent);
 
         return true;
