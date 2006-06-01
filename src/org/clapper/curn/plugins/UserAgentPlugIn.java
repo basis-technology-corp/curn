@@ -49,20 +49,20 @@ import java.util.HashMap;
  * HTTP user agent settings, overriding the default <i>curn</i> user agent
  * setting. It intercepts the following configuration parameters:
  *
- * <table>
- *   <tr valign="top">
+ * <table border="1">
+ *   <tr valign="top" align="left">
  *     <th>Section</th>
  *     <th>Parameter</th>
  *     <th>Meaning</th>
  *   </tr>
  *   <tr valign="top">
- *     <td>[curn]</td>
+ *     <td><tt>[curn]</tt></td>
  *     <td><tt>UserAgent</tt></td>
  *     <td>The default user agent, if none is supplied in individual feed
  *         sections.</td>
  *   </tr>
  *   <tr valign="top">
- *     <td>[Feed<i>xxx</i>]</td>
+ *     <td><tt>[Feed<i>xxx</i>]</tt></td>
  *     <td><tt>UserAgent</tt></td>
  *     <td>User agent to use for a given feed.</td>
  *   </tr>

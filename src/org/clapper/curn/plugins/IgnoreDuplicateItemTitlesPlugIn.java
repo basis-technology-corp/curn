@@ -47,8 +47,8 @@ import java.util.Map;
  * items from downloaded feeds, where "duplicate" means "has the same
  * title". It intercepts the following per-feed configuration parameters:
  *
- * <table>
- *   <tr valign="top">
+ * <table border="1">
+ *   <tr valign="top" align="left">
  *     <th>Parameter</th>
  *     <th>Meaning</th>
  *   </tr>

@@ -61,7 +61,7 @@ import java.util.Map;
  * can be used to fix known errors in the XML. It intercepts the following
  * per-feed configuration parameters:
  *
- * <table>
+ * <table border="1">
  *   <tr valign="top">
  *     <td><tt>EditItemURL<i>suffix</i></tt></td>
  *     <td>Specifies a regular expression to be applied to the URLs
@@ -69,14 +69,14 @@ import java.util.Map;
  *         per feed. See the User's Guide for details.
  *     </td>
  *   </tr>
- *   <tr>
+ *   <tr valign="top">
  *     <td><tt>EditFeedURL<i>suffix</i></tt></td>
  *     <td>Specifies a regular expression to be applied to the channel, or
  *         feed, URL. Multiple expressions may be specified per feed. See
  *         the User's Guide for details.
  *     </td>
  *   </tr>
- *   <tr>
+ *   <tr valign="top">
  *     <td><tt>PruneURLs</tt></td>
  *     <td>Specifies that all URLs should be pruned of their HTTP parameters.
  *         This action also can be accomplished with edit directives, using

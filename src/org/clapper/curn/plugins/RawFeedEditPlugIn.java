@@ -63,7 +63,7 @@ import java.util.Map;
  * parsed. It can be used to fix known errors in the XML. It intercepts the
  * following per-feed configuration parameters:
  *
- * <table>
+ * <table border="1">
  *   <tr valign="top">
  *     <td><tt>PreparseEdit<i>suffix</i></tt></td>
  *     <td>Specifies a regular expression to be applied to the XML. Multiple

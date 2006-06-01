@@ -56,21 +56,16 @@ import java.util.HashMap;
  * It looks for a default (main-configuration section) "SortBy" parameter,
  * and permits a per-feed "SortBy" parameter to override the default.
  *
- * <table>
+ * <table border="1">
  *   <tr valign="top">
- *     <td><tt>SaveAs</tt></td>
- *     <td>Path to file where raw XML should be saved.</td>
- *   </tr>
- *   <tr valign="top">
- *     <td><tt>SaveOnly</tt></td>
- *     <td>Indicates that raw XML should be saved, but not parsed. This
- *         parameter can only be specified if <tt>SaveAs</tt> is also
- *         specified.</td>
- *   </tr>
- *   <tr valign="top">
- *     <td><tt>SaveAsEncoding</tt></td>
- *     <td>The character set encoding to use when saving the file. Default:
- *     "utf-8"</td>
+ *     <td><tt>SortBy</tt></td>
+ *     <td>Criteria by which to sort. Legal values are:
+ *         <ul>
+ *           <li><tt>none</tt> &#8212; Leave items in whatever order they
+ *               appear in the feed.
+ *           <li><tt>time</tt> &#8212; Sort items by timestamp
+ *           <li><tt>title</tt> &#8212; Sort items by title
+ *     </td>
  *   </tr>
  * </table>
  *
@@ -118,7 +113,6 @@ public class SortItemsPlugIn
 
         ItemComparator (SortBy sortBy)
         {
-log.debug ("ItemComparator: SortBy=" + sortBy);
             this.sortBy = sortBy;
         }
 

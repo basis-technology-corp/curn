@@ -53,7 +53,7 @@ import java.util.HashMap;
  * The <tt>RawFeedSaveAsPlugIn</tt> handles saving a feed to a known location.
  * It intercepts the following per-feed configuration parameters:
  *
- * <table>
+ * <table border="1">
  *   <tr valign="top">
  *     <td><tt>SaveAs</tt></td>
  *     <td>Path to file where raw XML should be saved.</td>
