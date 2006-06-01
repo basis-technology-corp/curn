@@ -905,13 +905,6 @@ class FeedDownloadThread extends Thread
             }
         }
 
-        // If we're to ignore items with duplicate titles, now is the time
-        // to do it. It must be done AFTER caching, to be sure we don't show
-        // the weeded-out duplicates during the next run.
-
-        if (feedInfo.ignoreItemsWithDuplicateTitles())
-            items = pruneDuplicateTitles (items);
-
         // Change the channel's items to the ones that are left.
 
         log.debug ("Setting channel items: total=" + items.size());
@@ -1009,35 +1002,5 @@ class FeedDownloadThread extends Thread
         }
 
         return isNew;
-    }
-
-    /**
-     * Prune all items with duplicate titles.
-     *
-     * @param items the list of items
-     *
-     * @return a new <tt>Collection</tt> of items, possibly pruned
-     */
-    private Collection<RSSItem>
-    pruneDuplicateTitles (Collection<RSSItem> items)
-    {
-        Set<String>          titlesSeen = new HashSet<String>();
-        Collection<RSSItem>  result     = new ArrayList<RSSItem>();
-
-        for (RSSItem item : items)
-        {
-            String  title = item.getTitle().toLowerCase();
-
-            if (title == null)
-                title = "";
-
-            if (! titlesSeen.contains (title))
-            {
-                result.add (item);
-                titlesSeen.add (title);
-            }
-        }
-
-        return result;
     }
 }

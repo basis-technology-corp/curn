@@ -359,37 +359,6 @@ public class FeedInfo
     }
      
     /**
-     * Determine whether items with duplicate titles should be ignored.
-     * This feature (hack, really) is useful for sites (like Yahoo! News)
-     * whose feeds often contain duplicate items that have different IDs
-     * and different URLs (and thus appear to be unique).
-     *
-     * @return <tt>true</tt> if items whose titles match other items
-     *         should be cached, but otherwise ignored, <tt>false</tt>
-     *         otherwise.
-     *
-     * @see #setIgnoreItemsWithDuplicateTitlesFlag
-     */
-    public boolean ignoreItemsWithDuplicateTitles()
-    {
-        return ignoreDuplicateTitles;
-    }
-
-    /**
-     * Set or clear the "ignore items with duplicate titles" flag.
-     *
-     * @param val <tt>true</tt> if items whose titles match other items
-     *            should be cached, but otherwise ignored, <tt>false</tt>
-     *            otherwise.
-     *
-     * @see #ignoreItemsWithDuplicateTitles
-     */
-    public void setIgnoreItemsWithDuplicateTitlesFlag (boolean val)
-    {
-        this.ignoreDuplicateTitles = val;
-    }
-
-    /**
      * Get the parsed channel data for this feed. This field is set by the
      * main processing logic and does not come from the configuration.
      *
