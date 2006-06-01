@@ -188,7 +188,7 @@ public abstract class FileOutputHandler implements OutputHandler
         sectionName = cfgHandler.getSectionName();
         this.name   = sectionName;
 
-        log = new Logger (FileOutputHandler.class.getName()
+        log = new Logger (getClass().getName()
                         + "["
                         + name
                         + "]");
