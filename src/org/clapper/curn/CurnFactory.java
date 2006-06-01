@@ -78,33 +78,10 @@ public class CurnFactory
     public static Curn newCurn()
         throws CurnException
     {
-        // Find all the plug-in locations.
-
-        Collection<File> plugInLocs = PlugInManager.findPlugInLocations();
-
-        // Get a class loader that uses those locations.
-
-        ClassLoader classLoader = PlugInManager.getClassLoader (plugInLocs);
-
         // Load the plug-ins.
 
-        PlugInManager.loadPlugIns (plugInLocs, classLoader);
+        PlugInManager.loadPlugIns();
 
-        try
-        {
-            // Load the Curn object.
-
-            Class curnClass = classLoader.loadClass ("org.clapper.curn.Curn");
-
-            // Return it.
-
-            return (Curn) curnClass.newInstance();
-        }
-
-        catch (Exception ex)
-        {
-            throw new CurnException ("Can't load and instantiate Curn class",
-                                     ex);
-        }
+        return new Curn();
     }
 }
