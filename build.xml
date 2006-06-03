@@ -67,9 +67,14 @@ source and documentation packages.
   <property name="curn_jar_file" value="${curn_jar_name}.jar"/>
   <property name="curn_jar_dir" value="${dist}/lib"/>
   <property name="curn_jar_path" value="${curn_jar_dir}/${curn_jar_file}"/>
+  <property name="curnboot_jar_name" value="curnboot"/>
+  <property name="curnboot_jar_file" value="${curnboot_jar_name}.jar"/>
+  <property name="curnboot_jar_dir" value="${curn_jar_dir}"/>
+  <property name="curnboot_jar_path"
+            value="${curnboot_jar_dir}/${curnboot_jar_file}"/>
   <property name="plugins_jar_name" value="curn-plugins"/>
   <property name="plugins_jar_file" value="${plugins_jar_name}.jar"/>
-  <property name="plugins_jar_dir" value="${dist}/lib/plugins"/>
+  <property name="plugins_jar_dir" value="${dist}/plugins"/>
   <property name="plugins_jar_path"
             value="${plugins_jar_dir}/${plugins_jar_file}"/>
   <property name="docs_top_dir" value="docs"/>
@@ -439,6 +444,8 @@ source and documentation packages.
     <echo>Version: ${curn.version}</echo>
   </target>
 
+  <target name="show.version" depends="-get.version"/>
+
   <target name="version" depends="-get.version"/>
 
   <target name="-build.info" depends="-get.version">
@@ -503,6 +510,9 @@ source and documentation packages.
     <property name="versioned_curn_jar_file"
               value="${curn_jar_name}-${curn.version}.jar"/>
 
+    <property name="versioned_curnboot_jar_file"
+              value="${curnboot_jar_name}-${curn.version}.jar"/>
+
     <property name="versioned_plugins_jar_file"
               value="${plugins_jar_name}-${curn.version}.jar"/>
 
@@ -513,13 +523,24 @@ source and documentation packages.
               value="javadocs-${curn.version}.zip"/>
   </target>
 
-  <target name="code.jar" depends="curn.jar"/>
+  <target name="code.jar" depends="curn.jar, curnboot.jar"/>
   <target name="curn.jar" depends="all"
           description="Generate the binary jar file">
     <mkdir dir="${curn_jar_dir}"/>
     <jar jarfile="${curn_jar_path}">
       <fileset dir="${build}">
         <exclude name="**/plugins/*.class"/>
+        <exclude name="org/clapper/curn/Bootstrap.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="curnboot.jar" depends="all"
+          description="Generate the binary bootstrap jar file">
+    <mkdir dir="${curnboot_jar_dir}"/>
+    <jar jarfile="${curnboot_jar_path}">
+      <fileset dir="${build}">
+        <include name="org/clapper/curn/Bootstrap*.class"/>
       </fileset>
     </jar>
   </target>
@@ -535,7 +556,7 @@ source and documentation packages.
   </target>
 
   <target name="dist" depends="jar"/>
-  <target name="jar" depends="curn.jar, plugins.jar"
+  <target name="jar" depends="curnboot.jar, curn.jar, plugins.jar"
           description="Build the code jars"/>
 
   <target name="javadoczip" depends="javadocs"
@@ -586,6 +607,8 @@ source and documentation packages.
                    doczip,
                    javadoczip"
           description="Generate the distribution and source jars">
+    <copy file="${curnboot_jar_path}"
+          tofile="${release_dir}/${versioned_curnboot_jar_file}"/>
     <copy file="${curn_jar_path}"
           tofile="${release_dir}/${versioned_curn_jar_file}"/>
     <copy file="${plugins_jar_path}"
@@ -632,6 +655,8 @@ source and documentation packages.
         <filter token="BUILD_DIR" value="${build}"/>
         <filter token="VERSIONED_CURN_JAR_FILE"
                 value="${versioned_curn_jar_file}"/>
+        <filter token="VERSIONED_CURNBOOT_JAR_FILE"
+                value="${versioned_curnboot_jar_file}"/>
         <filter token="VERSIONED_PLUGINS_JAR_FILE"
                 value="${versioned_plugins_jar_file}"/>
       </filterset>
