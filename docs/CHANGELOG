@@ -11,7 +11,8 @@ Version 3.0 (...)
 Enhancements:
 
 - Added plug-in capability. See the Users' Guide for details on writing
-  and deploying plug-ins.
+  and deploying plug-ins. NOTE: For this capability to work properly, you
+  must invoke curn via the supplied shell script (Unix) or .bat file.
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
@@ -44,6 +45,10 @@ Changes:
   classes have been removed. They were deprecated in version 2.6, in favor
   of the (then new) FreemarkerOutputHandler which, in combination with some
   predefined templates shipped with curn, produces the same output.
+
+- All classes extending org.clapper.curn.parser.RSSChannel must now provide
+  a "removeItem()" method. This change only affects custom adapters for RSS
+  parsers.
 
 Bug Fixes:
 
