@@ -56,6 +56,8 @@
 
       <singlefile src="@RELEASE_DIR@/@VERSIONED_CURN_JAR_FILE@"
                  target="$INSTALL_PATH/lib/curn.jar"/>
+      <singlefile src="@RELEASE_DIR@/@VERSIONED_CURNBOOT_JAR_FILE@"
+                 target="$INSTALL_PATH/lib/curnboot.jar"/>
       <singlefile src="@RELEASE_DIR@/@VERSIONED_PLUGINS_JAR_FILE@"
                  target="$INSTALL_PATH/plugins/curn-plugins.jar"/>
       <file src="@THIRD_PARTY_JAR_DIR@/software/java/third-party/commons-logging.jar"
