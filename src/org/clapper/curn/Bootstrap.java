@@ -41,24 +41,43 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * Main program that bootstraps <i>curn</i> by adding new elements to the
+ * <p>Main program that bootstraps <i>curn</i> by adding new elements to the
  * classpath on the fly. This utility takes a list of jar files, zip files
  * and/or directories. It loads them all into a class loader and, at the
  * same time, searches any directories (not recursively) for jars and zip
- * files. It then invokes the tool specified on the command line. Usage:
+ * files. It then invokes the tool specified on the command line. Usage:</p>
  *
  * <pre>
  * java org.clapper.curn.Bootstrap [jar|zip|dir] ... -- programClassName [args]
  * </pre>
  *
- * Supports the following substitutions in the <tt>[jar|zip|dir]</tt>
- * parameters:
+ * <p>This utility performs the following parameter substitutions on the
+ * <tt>[jar|zip|dir]</tt> parameters:</p>
  *
- * <table border="0">
+ * <table border="1">
+ *   <tr valign="top" align="left">
+ *     <th>Parameter</th>
+ *     <th>Substituted with</th>
+ *   </tr>
  *   <tr valign="top">
  *     <td><tt>@user.home</tt></td>
- *     <td>Replaced with the value of the "user.home" Java system property.
- *     </td>
+ *     <td>The value of the "user.home" Java system property (i.e., the
+ *         user's home directory, if any).</td>
+ *   </tr>
+ *   <tr valign="top">
+ *     <td><tt>@user.name</tt></td>
+ *     <td>The value of the "user.name" Java system property (i.e., the
+ *         invoking user's name, if known).</td>
+ *   </tr>
+ *   <tr valign="top">
+ *     <td><tt>@java.home</tt></td>
+ *     <td>The value of the "java.home" Java system property (i.e., the
+ *         location of the Java JRE).</td>
+ *   </tr>
+ *   <tr valign="top">
+ *     <td><tt>@pwd</tt></td>
+ *     <td>The current working directory (i.e., the value of the "user.dir"
+ *         Java system property).</td>
  *   </tr>
  * </table>
  *
@@ -100,10 +119,16 @@ public class Bootstrap
 
             endOfArgsIndex = i;
             File[] searchItems = new File[endOfArgsIndex];
-            String userHome = System.getProperty ("user.home");
             for (i = 0; i < endOfArgsIndex; i++)
             {
-                String path = args[i].replaceAll ("@user.home", userHome);
+                String path = args[i].replaceAll ("@user.home",
+                                                  getProperty ("user.home"))
+                                     .replaceAll ("@user.name",
+                                                  getProperty ("user.name"))
+                                     .replaceAll ("@java.home",
+                                                  getProperty ("java.home"))
+                                     .replaceAll ("@pwd",
+                                                  getProperty ("user.dir"));
                 searchItems[i] = new File (path);
             }
 
@@ -257,29 +282,10 @@ public class Bootstrap
         }
     }
 
-
-static class BootstrapMainThread extends Thread
-{
-    private Method mainMethod;
-    private String[] args;
-
-    BootstrapMainThread (Method mainMethod, String[] args)
+    private static String getProperty (String name)
     {
-        this.mainMethod = mainMethod;
-        this.args = args;
-    }
+        String val = System.getProperty (name);
 
-    public void run()
-    {
-        try
-        {
-            mainMethod.invoke (null, new Object[] {args});
-        }
-
-        catch (Throwable ex)
-        {
-            throw new UndeclaredThrowableException (ex);
-        }
+        return (val == null) ? "" : val;
     }
-}
 }
