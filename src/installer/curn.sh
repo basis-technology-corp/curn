@@ -25,6 +25,7 @@ $INSTALL_PATH/lib/curnboot.jar \
 -ea \
 -client \
 $vm_opts \
+-Dorg.clapper.curn.home=$INSTALL_PATH \
 org.clapper.curn.Bootstrap \
 $INSTALL_PATH/lib \
 $INSTALL_PATH/plugins \
