@@ -44,7 +44,6 @@ source and documentation packages.
   <!-- set global properties for this build -->
 
   <property environment="env"/>
-  <property name="build" location="classes"/>
   <property name="pkg.path" value="org/clapper/curn"/>
   <property name="src.top" location="src"/>
   <property name="src.dir" location="${src.top}/${pkg.path}"/>
@@ -56,16 +55,17 @@ source and documentation packages.
   -->
   <property name="javac.src.dir" location="${src.top}"/>
 
-  <property name="dist"  location="dist"/>
+  <property name="build.dir"  location="build"/>
+  <property name="compiled.classes" location="${build.dir}/classes"/>
   <property name="build.info.file"
-            value="${build}/${pkg.path}/BuildInfoBundle.properties"/>
+            value="${compiled.classes}/${pkg.path}/BuildInfoBundle.properties"/>
   <property name="javac.listfiles" value="no"/>
   <property name="javac.source" value="1.5"/>
   <property name="javac.debug" value="true"/>
   <property name="javac.depend" value="false"/>
   <property name="curn_jar_name" value="curn"/>
   <property name="curn_jar_file" value="${curn_jar_name}.jar"/>
-  <property name="curn_jar_dir" value="${dist}/lib"/>
+  <property name="curn_jar_dir" value="${build.dir}/lib"/>
   <property name="curn_jar_path" value="${curn_jar_dir}/${curn_jar_file}"/>
   <property name="curnboot_jar_name" value="curnboot"/>
   <property name="curnboot_jar_file" value="${curnboot_jar_name}.jar"/>
@@ -74,15 +74,15 @@ source and documentation packages.
             value="${curnboot_jar_dir}/${curnboot_jar_file}"/>
   <property name="plugins_jar_name" value="curn-plugins"/>
   <property name="plugins_jar_file" value="${plugins_jar_name}.jar"/>
-  <property name="plugins_jar_dir" value="${dist}/plugins"/>
+  <property name="plugins_jar_dir" value="${build.dir}/plugins"/>
   <property name="plugins_jar_path"
             value="${plugins_jar_dir}/${plugins_jar_file}"/>
-  <property name="docs_top_dir" value="docs"/>
-  <property name="javadocs_top_dir" value="javadocs"/>
-  <property name="javadocs_api_dir" value="${javadocs_top_dir}/curn/api"/>
+  <property name="docs.dir" value="docs"/>
+  <property name="javadocs.dir" value="${build.dir}/javadocs"/>
+  <property name="javadocs.api.dir" value="${javadocs.dir}/curn/api"/>
   <property name="zip_dir_prefix" value="curn/"/>
   <property name="javadoc_zip_dir_prefix" value=""/>
-  <property name="release_dir" value="${dist}/release"/>
+  <property name="release_dir" value="${build.dir}/release"/>
 
   <!--
   ***************************************************************************
@@ -109,8 +109,8 @@ source and documentation packages.
               locale="en"/>
     </tstamp>
     <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-    <depend srcdir="${src.dir}" destdir="${build}"/>
+    <mkdir dir="${compiled.classes}"/>
+    <depend srcdir="${src.dir}" destdir="${compiled.classes}"/>
   </target>
 
   <!--
@@ -140,7 +140,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${build}">
+           destdir="${compiled.classes}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -173,7 +173,7 @@ source and documentation packages.
   -->
 
   <target name="bundles">
-    <copy todir="${build}">
+    <copy todir="${compiled.classes}">
       <fileset dir="${src.top}">
         <include name="**/*.properties"/>
       </fileset>
@@ -181,7 +181,7 @@ source and documentation packages.
   </target>
 
   <target name="freemarker.templates">
-    <copy todir="${build}">
+    <copy todir="${compiled.classes}">
       <fileset dir="${src.top}">
         <include name="**/*.ftl"/>
       </fileset>
@@ -221,7 +221,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${build}">
+           destdir="${compiled.classes}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -274,7 +274,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${build}">
+           destdir="${compiled.classes}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -310,7 +310,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${build}">
+           destdir="${compiled.classes}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -350,7 +350,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${build}">
+           destdir="${compiled.classes}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -412,7 +412,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${build}">
+           destdir="${compiled.classes}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -440,7 +440,7 @@ source and documentation packages.
   <!-- Load the API version from the appropriate resource bundle -->
 
   <target name="-get.version" description="Get the version stamp">
-    <property file="${build}/org/clapper/curn/Curn.properties"/>
+    <property file="${compiled.classes}/org/clapper/curn/Curn.properties"/>
     <echo>Version: ${curn.version}</echo>
   </target>
 
@@ -475,9 +475,9 @@ source and documentation packages.
   -->
 
   <target name="javadocs" description="Generate API Javadocs">
-    <mkdir dir="${javadocs_api_dir}"/>
+    <mkdir dir="${javadocs.api.dir}"/>
     <javadoc
-             destdir="${javadocs_api_dir}"
+             destdir="${javadocs.api.dir}"
              sourcepath="${src.top}"
              source="${javac.source}"
              breakiterator="true"
@@ -528,7 +528,7 @@ source and documentation packages.
           description="Generate the binary jar file">
     <mkdir dir="${curn_jar_dir}"/>
     <jar jarfile="${curn_jar_path}">
-      <fileset dir="${build}">
+      <fileset dir="${compiled.classes}">
         <exclude name="**/plugins/*.class"/>
         <exclude name="org/clapper/curn/Bootstrap.class"/>
       </fileset>
@@ -539,7 +539,7 @@ source and documentation packages.
           description="Generate the binary bootstrap jar file">
     <mkdir dir="${curnboot_jar_dir}"/>
     <jar jarfile="${curnboot_jar_path}">
-      <fileset dir="${build}">
+      <fileset dir="${compiled.classes}">
         <include name="org/clapper/curn/Bootstrap*.class"/>
       </fileset>
     </jar>
@@ -549,13 +549,13 @@ source and documentation packages.
           description="Generate the binary jar file">
     <mkdir dir="${plugins_jar_dir}"/>
     <jar jarfile="${plugins_jar_path}">
-      <fileset dir="${build}">
+      <fileset dir="${compiled.classes}">
         <include name="**/plugins/*.class"/>
       </fileset>
     </jar>
   </target>
 
-  <target name="dist" depends="jar"/>
+  <target name="build" depends="jar"/>
   <target name="jar" depends="curnboot.jar, curn.jar, plugins.jar"
           description="Build the code jars"/>
 
@@ -563,7 +563,7 @@ source and documentation packages.
           description="Builds the javadocs zip file">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_javadocs_zipfile}">
-      <zipfileset dir="${javadocs_top_dir}"
+      <zipfileset dir="${javadocs.dir}"
                   prefix="${javadoc_zip_dir_prefix}"/>
     </zip>
   </target>
@@ -572,7 +572,7 @@ source and documentation packages.
           description="Builds the non-Javadocs documentation zip file">
     <mkdir dir="${release_dir}"/>
     <zip destfile="${release_dir}/${versioned_docs_zipfile}">
-      <zipfileset dir="${docs_top_dir}"
+      <zipfileset dir="${docs.dir}"
                   prefix="${zip_dir_prefix}"/>
     </zip>
   </target>
@@ -587,8 +587,8 @@ source and documentation packages.
       -->
       <zipfileset id="source.fileset" dir="."
                   prefix="${zip_dir_prefix}" casesensitive="yes">
-        <exclude name="${dist}/**"/>
-        <exclude name="${build}"/>
+        <exclude name="${build.dir}/**"/>
+        <exclude name="${compiled.classes}"/>
         <exclude name="**/CVS"/>
         <include name="**/*.java"/>
         <include name="**/package.html"/>
@@ -600,8 +600,8 @@ source and documentation packages.
     </zip>
   </target>
 
-  <target name="fulldist"
-          depends="dist,
+  <target name="release"
+          depends="build,
                    -set.version.properties,
                    srczip,
                    doczip,
@@ -637,7 +637,7 @@ source and documentation packages.
 
     <!-- Create a temporary installation directory -->
 
-    <property name="install.tmp" location="${dist}/install"/>
+    <property name="install.tmp" location="${build.dir}/install"/>
     <delete dir="${install.tmp}"/>
     <mkdir dir="${install.tmp}"/>
 
@@ -651,8 +651,10 @@ source and documentation packages.
         <filter token="RELEASE_DIR" value="${release_dir}"/>
         <filter token="THIRD_PARTY_JAR_DIR" value="${env.wwwtest}"/>
         <filter token="SRC_TOP" value="${src.top}"/>
-        <filter token="DIST_DIR" value="${dist}"/>
-        <filter token="BUILD_DIR" value="${build}"/>
+        <filter token="BUILD_DIR" value="${build.dir}"/>
+        <filter token="JAVADOCS_DIR" value="${javadocs.dir}"/>
+        <filter token="DOCS_DIR" value="${docs.dir}"/>
+        <filter token="CLASSES_DIR" value="${compiled.classes}"/>
         <filter token="VERSIONED_CURN_JAR_FILE"
                 value="${versioned_curn_jar_file}"/>
         <filter token="VERSIONED_CURNBOOT_JAR_FILE"
@@ -741,15 +743,15 @@ source and documentation packages.
           description="clean up" >
 
     <delete failonerror="false" includeEmptyDirs="true">
-      <fileset dir="${build}"/>
+      <fileset dir="${compiled.classes}"/>
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
-      <fileset dir="${javadocs_top_dir}"/>
+      <fileset dir="${javadocs.dir}"/>
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
-      <fileset dir="${dist}"/>
+      <fileset dir="${build.dir}"/>
     </delete>
 
     <delete dir="${install.tmp}"/>

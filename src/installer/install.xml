@@ -128,11 +128,11 @@
 
     <pack name="Docs" required="no">
       <description>The curn User's Guide and the Javadocs</description>
-      <file src="javadocs"
+      <file src="@JAVADOCS_DIR@"
             targetdir="$INSTALL_PATH/docs"/>
-      <file src="docs/users-guide"
+      <file src="@DOCS_DIR@/users-guide"
             targetdir="$INSTALL_PATH/docs"/>
-      <file src="docs/CHANGELOG"
+      <file src="@DOCS_DIR@/CHANGELOG"
             targetdir="$INSTALL_PATH/docs"/>
     </pack>
 
@@ -150,8 +150,8 @@
           clean up the incorrectly copied build directory in the final panel.
       -->
       <fileset dir="." targetdir="$INSTALL_PATH/sources">
-        <exclude name="@DIST_DIR@/**"/>
         <exclude name="@BUILD_DIR@/**"/>
+        <exclude name="@CLASSES_DIR@/**"/>
         <exclude name="**/CVS"/>
         <include name="**/*.java"/>
         <include name="**/package.html"/>
