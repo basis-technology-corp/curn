@@ -45,7 +45,8 @@ source and documentation packages.
 
   <property environment="env"/>
   <property name="pkg.path" value="org/clapper/curn"/>
-  <property name="src.top" location="src"/>
+  <dirname property="top.dir" file="${ant.file}"/> <!-- path to this dir -->
+  <property name="src.top" location="${top.dir}/src"/>
   <property name="src.dir" location="${src.top}/${pkg.path}"/>
 
   <!--
@@ -55,7 +56,7 @@ source and documentation packages.
   -->
   <property name="javac.src.dir" location="${src.top}"/>
 
-  <property name="build.dir"  location="build"/>
+  <property name="build.dir"  location="${top.dir}/build"/>
   <property name="compiled.classes" location="${build.dir}/classes"/>
   <property name="build.info.file"
             value="${compiled.classes}/${pkg.path}/BuildInfoBundle.properties"/>
@@ -77,7 +78,7 @@ source and documentation packages.
   <property name="plugins_jar_dir" value="${build.dir}/plugins"/>
   <property name="plugins_jar_path"
             value="${plugins_jar_dir}/${plugins_jar_file}"/>
-  <property name="docs.dir" value="docs"/>
+  <property name="docs.dir" value="${top.dir}/docs"/>
   <property name="javadocs.dir" value="${build.dir}/javadocs"/>
   <property name="javadocs.api.dir" value="${javadocs.dir}/curn/api"/>
   <property name="zip_dir_prefix" value="curn/"/>
@@ -650,6 +651,7 @@ source and documentation packages.
         <filter token="SRC_INSTALL" value="${src.install}"/>
         <filter token="RELEASE_DIR" value="${release_dir}"/>
         <filter token="THIRD_PARTY_JAR_DIR" value="${env.wwwtest}"/>
+        <filter token="TOP_DIR" value="${top.dir}"/>
         <filter token="SRC_TOP" value="${src.top}"/>
         <filter token="BUILD_DIR" value="${build.dir}"/>
         <filter token="JAVADOCS_DIR" value="${javadocs.dir}"/>
