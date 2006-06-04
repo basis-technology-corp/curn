@@ -57,9 +57,9 @@ source and documentation packages.
   <property name="javac.src.dir" location="${src.top}"/>
 
   <property name="build.dir"  location="${top.dir}/build"/>
-  <property name="compiled.classes" location="${build.dir}/classes"/>
+  <property name="compiled.classes.dir" location="${build.dir}/classes"/>
   <property name="build.info.file"
-            value="${compiled.classes}/${pkg.path}/BuildInfoBundle.properties"/>
+            value="${compiled.classes.dir}/${pkg.path}/BuildInfoBundle.properties"/>
   <property name="javac.listfiles" value="no"/>
   <property name="javac.source" value="1.5"/>
   <property name="javac.debug" value="true"/>
@@ -110,8 +110,8 @@ source and documentation packages.
               locale="en"/>
     </tstamp>
     <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${compiled.classes}"/>
-    <depend srcdir="${src.dir}" destdir="${compiled.classes}"/>
+    <mkdir dir="${compiled.classes.dir}"/>
+    <depend srcdir="${src.dir}" destdir="${compiled.classes.dir}"/>
   </target>
 
   <!--
@@ -141,7 +141,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes}">
+           destdir="${compiled.classes.dir}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -174,7 +174,7 @@ source and documentation packages.
   -->
 
   <target name="bundles">
-    <copy todir="${compiled.classes}">
+    <copy todir="${compiled.classes.dir}">
       <fileset dir="${src.top}">
         <include name="**/*.properties"/>
       </fileset>
@@ -182,7 +182,7 @@ source and documentation packages.
   </target>
 
   <target name="freemarker.templates">
-    <copy todir="${compiled.classes}">
+    <copy todir="${compiled.classes.dir}">
       <fileset dir="${src.top}">
         <include name="**/*.ftl"/>
       </fileset>
@@ -222,7 +222,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes}">
+           destdir="${compiled.classes.dir}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -275,7 +275,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes}">
+           destdir="${compiled.classes.dir}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -311,7 +311,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes}">
+           destdir="${compiled.classes.dir}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -351,7 +351,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes}">
+           destdir="${compiled.classes.dir}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -413,7 +413,7 @@ source and documentation packages.
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes}">
+           destdir="${compiled.classes.dir}">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -441,7 +441,7 @@ source and documentation packages.
   <!-- Load the API version from the appropriate resource bundle -->
 
   <target name="-get.version" description="Get the version stamp">
-    <property file="${compiled.classes}/org/clapper/curn/Curn.properties"/>
+    <property file="${compiled.classes.dir}/org/clapper/curn/Curn.properties"/>
     <echo>Version: ${curn.version}</echo>
   </target>
 
@@ -529,7 +529,7 @@ source and documentation packages.
           description="Generate the binary jar file">
     <mkdir dir="${curn_jar_dir}"/>
     <jar jarfile="${curn_jar_path}">
-      <fileset dir="${compiled.classes}">
+      <fileset dir="${compiled.classes.dir}">
         <exclude name="**/plugins/*.class"/>
         <exclude name="org/clapper/curn/Bootstrap.class"/>
       </fileset>
@@ -540,7 +540,7 @@ source and documentation packages.
           description="Generate the binary bootstrap jar file">
     <mkdir dir="${curnboot_jar_dir}"/>
     <jar jarfile="${curnboot_jar_path}">
-      <fileset dir="${compiled.classes}">
+      <fileset dir="${compiled.classes.dir}">
         <include name="org/clapper/curn/Bootstrap*.class"/>
       </fileset>
     </jar>
@@ -550,7 +550,7 @@ source and documentation packages.
           description="Generate the binary jar file">
     <mkdir dir="${plugins_jar_dir}"/>
     <jar jarfile="${plugins_jar_path}">
-      <fileset dir="${compiled.classes}">
+      <fileset dir="${compiled.classes.dir}">
         <include name="**/plugins/*.class"/>
       </fileset>
     </jar>
@@ -589,7 +589,7 @@ source and documentation packages.
       <zipfileset id="source.fileset" dir="."
                   prefix="${zip_dir_prefix}" casesensitive="yes">
         <exclude name="${build.dir}/**"/>
-        <exclude name="${compiled.classes}"/>
+        <exclude name="${compiled.classes.dir}"/>
         <exclude name="**/CVS"/>
         <include name="**/*.java"/>
         <include name="**/package.html"/>
@@ -656,7 +656,7 @@ source and documentation packages.
         <filter token="BUILD_DIR" value="${build.dir}"/>
         <filter token="JAVADOCS_DIR" value="${javadocs.dir}"/>
         <filter token="DOCS_DIR" value="${docs.dir}"/>
-        <filter token="CLASSES_DIR" value="${compiled.classes}"/>
+        <filter token="CLASSES_DIR" value="${compiled.classes.dir}"/>
         <filter token="VERSIONED_CURN_JAR_FILE"
                 value="${versioned_curn_jar_file}"/>
         <filter token="VERSIONED_CURNBOOT_JAR_FILE"
@@ -745,7 +745,7 @@ source and documentation packages.
           description="clean up" >
 
     <delete failonerror="false" includeEmptyDirs="true">
-      <fileset dir="${compiled.classes}"/>
+      <fileset dir="${compiled.classes.dir}"/>
     </delete>
 
     <delete failonerror="false" includeEmptyDirs="true">
