@@ -38,10 +38,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -501,7 +504,8 @@ class FeedDownloadThread extends Thread
      */
     private DownloadedTempFile downloadFeed (URLConnection conn,
                                              FeedInfo      feedInfo)
-        throws IOException
+        throws CurnException,
+               IOException
     {
         URL feedURL = feedInfo.getURL();
         String feedURLString = feedURL.toString();
@@ -572,6 +576,7 @@ class FeedDownloadThread extends Thread
             reader = new InputStreamReader (urlStream, encoding);
             writer = new OutputStreamWriter (new FileOutputStream (tempFile),
                                              encoding);
+
             /*
             // Cheat by writing an encoding line to the temp file.
             writer.write ("<?xml version=\"1.0\" encoding=\""
@@ -622,8 +627,15 @@ class FeedDownloadThread extends Thread
             if (fields[i].startsWith (HTTP_CONTENT_TYPE_CHARSET_FIELD) &&
                 (fields[i].length() > HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN))
             {
-                result = fields[i].substring
-                                         (HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN);
+                // Strip any quotes from the beginning and end of the field.
+                // Some web servers tack them on, some don't. This isn't,
+                // strictly speaking, kosher, according to the HTTP spec.
+                // But curn has to deal with real-life, including server
+                // brokenness.
+
+                result = fields[i].substring (HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN)
+                                  .replace ("\"", "");
+
                 break;
             }
         }
