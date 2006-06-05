@@ -1,4 +1,4 @@
-x@echo off
+@echo off
 if "%OS%" == "Windows_NT" setlocal
 rem ---------------------------------------------------------------------------
 rem Front end Windows script for the curn RSS reader
