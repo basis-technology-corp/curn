@@ -80,7 +80,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_EMAIL_SENDER      = "MailFrom";
     public static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     public static final String VAR_SHOW_DATES        = "ShowDates";
-    public static final String VAR_TITLE_OVERRIDE    = "TitleOverride";
     public static final String VAR_DISABLED          = "Disabled";
     public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     public static final String VAR_FEED_URL          = "URL";
@@ -1037,12 +1036,6 @@ public class CurnConfig extends Configuration
                 flag = getRequiredBooleanValue (sectionName, varName);
                 feedInfo.setEnabledFlag (! flag);
                 value = String.valueOf (flag);
-            }
-
-            else if (varName.equals (VAR_TITLE_OVERRIDE))
-            {
-                value = getConfigurationValue (sectionName, varName);
-                feedInfo.setTitleOverride (value);
             }
 
             else if (varName.equals (VAR_FORCE_ENCODING) ||

@@ -817,7 +817,6 @@ class FeedDownloadThread extends Thread
                MalformedURLException
     {
         Collection<RSSItem> items;
-        String              titleOverride = feedInfo.getTitleOverride();
         String              channelName;
 
         RSSLink selfLink = channel.getLink (RSSLink.Type.SELF);
@@ -825,9 +824,6 @@ class FeedDownloadThread extends Thread
             channelName = feedInfo.getURL().toString();
         else
             channelName = selfLink.getURL().toString();
-
-        if (titleOverride != null)
-            channel.setTitle (titleOverride);
 
         items = channel.getItems();
 

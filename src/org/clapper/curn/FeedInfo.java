@@ -260,30 +260,6 @@ public class FeedInfo
     }
 
     /**
-     * Get the title override for this feed. The title override value
-     * overrides any title supplied in the RSS feed itself. This is an
-     * optional value.
-     *
-     * @return the title override, or null if none
-     */
-    public String getTitleOverride()
-    {
-        return titleOverride;
-    }
-
-    /**
-     * Set the title override for this feed. The title override value
-     * overrides any title supplied in the RSS feed itself. This is an
-     * optional value.
-     *
-     * @param s  the title override, or null if none
-     */
-    public void setTitleOverride (String s)
-    {
-        titleOverride = s;
-    }
-
-    /**
      * Determine whether this feed is enabled or not. A disabled feed will
      * not be fetched or displayed. (A feed is enabled by default.)
      *
