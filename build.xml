@@ -56,7 +56,8 @@ source and documentation packages.
   -->
   <property name="javac.src.dir" location="${src.top}"/>
 
-  <property name="build.dir"  location="${top.dir}/build"/>
+  <property name="build.dir.relative" value="build"/>
+  <property name="build.dir"  location="${build.dir.relative}"/>
   <property name="compiled.classes.dir" location="${build.dir}/classes"/>
   <property name="build.info.file"
             value="${compiled.classes.dir}/${pkg.path}/BuildInfoBundle.properties"/>
@@ -654,6 +655,7 @@ source and documentation packages.
         <filter token="TOP_DIR" value="${top.dir}"/>
         <filter token="SRC_TOP" value="${src.top}"/>
         <filter token="BUILD_DIR" value="${build.dir}"/>
+        <filter token="BUILD_DIR_RELATIVE" value="${build.dir.relative}"/>
         <filter token="JAVADOCS_DIR" value="${javadocs.dir}"/>
         <filter token="DOCS_DIR" value="${docs.dir}"/>
         <filter token="CLASSES_DIR" value="${compiled.classes.dir}"/>
