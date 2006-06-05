@@ -39,6 +39,12 @@
 
     <res id="XInfoPanel.info" src="@SRC_INSTALL@/final_screen.txt"/>
     <res id="ProcessPanel.Spec.xml" src="@SRC_INSTALL@/cleanup.xml"/>
+
+    <!--
+        Points to a (deliberately) empty text file. Specifies that native
+        look and feel should be used, if at all possible.
+    -->
+    <res id="useNativeLAF" src="@SRC_INSTALL@/nativelook.txt"/>
   </resources>
 
   <panels>
