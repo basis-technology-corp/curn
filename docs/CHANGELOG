@@ -34,6 +34,22 @@ Enhancements:
   be used to edit the feed's URL, as opposed to the URLs of the individual
   items within a feed.
 
+- curn now handles web servers that specify a feed's character set in an
+  HTTP header that looks like this:
+
+	Content-Type: text/xml; charset="utf-8"
+
+  According to the HTTP/1.1 specification
+  (http://www.w3.org/Protocols/rfc2616/rfc2616.html), the "charset"
+  field isn't supposed to be quoted. That is, a legal Content-Type header
+  with a "charset" field should look like this:
+
+	Content-Type: text/xml; charset=utf-8
+	Content-Type: text/xml; charset=ISO-8859-1
+
+  However, there are some broken HTTP servers (or servers with broken
+  configurations) that insist on quoting the field.
+
 Changes:
 
 - Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
