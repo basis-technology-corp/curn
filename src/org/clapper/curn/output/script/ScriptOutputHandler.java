@@ -336,6 +336,30 @@ public class ScriptOutputHandler extends FileOutputHandler
         }
     }
 
+    /**
+     * Container for the objects exported to the script.
+     */
+    public class CurnScriptObjects
+    {
+        public Collection channels      = null;
+        public String     outputPath    = null;
+        public CurnConfig config        = null;
+        public String     configSection = null;
+        public Logger     logger        = null;
+
+        String mimeType = null;
+
+        public void setMIMEType (String mimeType)
+        {
+            this.mimeType = mimeType;
+        }
+
+        public String getVersion()
+        {
+            return Version.getFullVersion();
+        }
+    }
+
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -348,6 +372,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     private StringWriter               mimeTypeBuffer = null;
     private String                     language       = null;
     private Logger                     scriptLogger   = null;
+    private CurnScriptObjects          scriptObjects  = null;
 
     /**
      * For logging
@@ -461,15 +486,34 @@ public class ScriptOutputHandler extends FileOutputHandler
         scriptLoggerName.append (FileUtil.getFileNameExtension (scriptName));
         scriptLogger = new Logger (scriptLoggerName.toString());
 
-        // Register the beans we know about now. The other come after we
-        // process the channels.
+        // Declare the script object. We'll fill it partially now; the rest
+        // will be filled later. Also, for backward compatibility, register
+        // BSF beans.
+
+        this.scriptObjects = new CurnScriptObjects();
+        try
+        {
+            bsfManager.declareBean ("curn",
+                                    scriptObjects,
+                                    CurnScriptObjects.class);
+        }
+
+        catch (BSFException ex)
+        {
+            throw new CurnException ("Can't register script 'curn' object",
+                                     ex);
+        }
+
+        scriptObjects.config = config;
+        scriptObjects.configSection = section;
+        scriptObjects.logger = scriptLogger;
 
         mimeTypeBuffer = new StringWriter();
         bsfManager.registerBean ("mimeType", new PrintWriter (mimeTypeBuffer));
-        bsfManager.registerBean ("config", config);
-        bsfManager.registerBean ("configSection", section);
-        bsfManager.registerBean ("logger", scriptLogger);
-        bsfManager.registerBean ("version", Version.getFullVersion());
+        bsfManager.registerBean ("config", scriptObjects.config);
+        bsfManager.registerBean ("configSection", scriptObjects.configSection);
+        bsfManager.registerBean ("logger", scriptObjects.logger);
+        bsfManager.registerBean ("version", scriptObjects.getVersion());
 
         // Load the contents of the script into an in-memory buffer.
 
@@ -515,15 +559,25 @@ public class ScriptOutputHandler extends FileOutputHandler
 
             BSFEngine scriptEngine = bsfManager.loadScriptingEngine (language);
 
-            // Register the various script beans.
+            // Register the remaining bean (backward compatibility), and set
+            // the remaining exported object fields.
 
-            bsfManager.registerBean ("channels", channels);
-            bsfManager.registerBean ("outputPath", getOutputFile().getPath());
+            scriptObjects.channels = channels;
+            scriptObjects.outputPath = getOutputFile().getPath();
+
+            bsfManager.registerBean ("channels", scriptObjects.channels);
+            bsfManager.registerBean ("outputPath", scriptObjects.outputPath);
 
             // Run the script
 
             log.debug ("Invoking " + scriptPath);
             scriptEngine.exec (scriptPath, 0, 0, scriptString);
+
+            // Handle the MIME type, backward-compatibly.
+
+            String mimeType = scriptObjects.mimeType;
+            if (mimeType != null)
+                mimeTypeBuffer.write (mimeType);
         }
 
         catch (BSFException ex)

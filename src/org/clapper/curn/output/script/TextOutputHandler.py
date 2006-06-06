@@ -49,7 +49,7 @@ HORIZONTAL_RULE = "---------------------------------------" \
                 + "---------------------------------------"
 
 
-def processChannels():
+def process_channels():
     """
     Process the channels passed in through the Bean Scripting Framework.
     """
@@ -62,18 +62,18 @@ def processChannels():
     # the end of an 80-character line. For that reason, we use the
     # Java org.clapper.util.io.WordWrapWriter class.
 
-    out = WordWrapWriter (open (outputPath, "w"))
+    out = WordWrapWriter (open (curn.outputPath, "w"))
     out.setPrefix ("")
 
-    msg = config.getOptionalStringValue (sectionName, "Message", None)
+    msg = curn.config.getOptionalStringValue (curn.configSection,
+                                              "Message",
+                                              None)
 
     totalNew = 0
 
     # First, count the total number of new items
 
-    iterator = channels.iterator()
-    while iterator.hasNext():
-        channel_wrapper = iterator.next()
+    for channel_wrapper in curn.channels:
         channel = channel_wrapper.getChannel()
         totalNew = totalNew + channel.getItems().size()
 
@@ -88,56 +88,54 @@ def processChannels():
         # Now, process the items
 
         indentation = 0
-        iterator = channels.iterator()
-        while iterator.hasNext():
-            channel_wrapper = iterator.next()
+        for channel_wrapper in curn.channels:
+            channel = channel_wrapper.getChannel()
             channel = channel_wrapper.getChannel()
             feed_info = channel_wrapper.getFeedInfo()
             process_channel (out, channel, feed_info, indentation)
 
-        mimeTypeOut.print ("text/plain")
+        curn.setMIMEType ("text/plain")
 
         # Output a footer
 
         indent (out, indentation)
         out.println ()
         out.println (HORIZONTAL_RULE)
-        out.println (version)
+        out.println (curn.getVersion())
         out.flush()
 
 def process_channel (out, channel, feed_info, indentation):
     """
     Process all items within a channel.
     """
-    logger.debug ("Processing channel \"" + str (channel.getTitle()) + "\"")
+    curn.logger.debug ("Processing channel \"" + str (channel.getTitle()) + "\"")
 
     # Print a channel header
 
     indent (out, indentation)
     out.println (HORIZONTAL_RULE)
     out.println (channel.getTitle())
-    out.println (channel.getLinks().iterator().next().toString())
+    out.println (channel.getLinks()[0].toString())
     out.println (str (channel.getItems().size()) + " item(s)")
-    if config.showDates():
+    if curn.config.showDates():
         date = channel.getPublicationDate()
         if date != None:
             out.println (str (date))
 
-    if config.showRSSVersion():
+    if curn.config.showRSSVersion():
         out.println ("(Format: " + channel.getRSSFormat() + ")")
 
     indentation = indentation + 1
     indent (out, indentation)
-    iterator = channel.getItems().iterator()
-    while iterator.hasNext():
+    for item in channel.getItems():
+
         # These are RSSItem objects
-        item = iterator.next()
 
         out.println()
         out.println (item.getTitle())
-        out.println (str (item.getLinks().iterator().next()))
+        out.println (str (item.getLinks()[0]))
 
-        if config.showDates():
+        if curn.config.showDates():
             date = item.getPublicationDate();
             if date != None:
                 out.println (str (date))
@@ -168,13 +166,4 @@ def indent (out, indentation):
 
 # ---------------------------------------------------------------------------
 
-channels    = bsf.lookupBean ("channels")
-outputPath  = bsf.lookupBean ("outputPath")
-mimeTypeOut = bsf.lookupBean ("mimeType")
-config      = bsf.lookupBean ("config")
-sectionName = bsf.lookupBean ("configSection")
-logger      = bsf.lookupBean ("logger");
-version     = bsf.lookupBean ("version")
-message     = None
-
-processChannels()
+process_channels()

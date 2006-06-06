@@ -57,13 +57,12 @@ class TextOutputHandler
         #
         # Initialize a new TextOutputHandler object.
         #
-        @channels    = $bsf.lookupBean("channels")
-        @outputPath  = $bsf.lookupBean("outputPath")
-        @mimeTypeOut = $bsf.lookupBean("mimeType")
-        @config      = $bsf.lookupBean("config")
-        @sectionName = $bsf.lookupBean("configSection")
-        @logger      = $bsf.lookupBean("logger")
-        @version     = $bsf.lookupBean("version")
+        @channels    = $curn.channels
+        @outputPath  = $curn.outputPath
+        @config      = $curn.config
+        @sectionName = $curn.configSection
+        @logger      = $curn.logger
+        @version     = $curn.getVersion()
         @message     = nil
     end
 
@@ -118,7 +117,7 @@ class TextOutputHandler
                 process_channel(out, channel, feed_info, indentation)
             end
 
-            @mimeTypeOut.print("text/plain")
+            $curn.setMIMEType("text/plain")
             # Output a footer
 
             indent(out, indentation)

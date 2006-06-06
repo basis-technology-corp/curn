@@ -29,13 +29,12 @@
 public function TextOutputHandler()
 {
     private var HORIZONTAL_RULE = "------------------------------------------------------------------------------";
-    private var channels    = bsf.lookupBean("channels");
-    private var outputPath  = bsf.lookupBean("outputPath");
-    private var mimeTypeOut = bsf.lookupBean("mimeType");
-    private var config      = bsf.lookupBean("config");
-    private var sectionName = bsf.lookupBean("configSection");
-    private var logger      = bsf.lookupBean("logger");
-    private var version     = bsf.lookupBean("version");
+    private var channels    = curn.channels;
+    private var outputPath  = curn.outputPath;
+    private var config      = curn.config;
+    private var sectionName = curn.configSection;
+    private var logger      = curn.logger;
+    private var version     = curn.getVersion();
     private var out         = null;
 
     public function getLogger()
@@ -113,7 +112,7 @@ public function TextOutputHandler()
                 process_channel (out, channel, feed_info, indentation);
             }
 
-            mimeTypeOut.print("text/plain");
+            curn.setMIMEType("text/plain");
             // Output a footer
 
             indent(out, indentation);

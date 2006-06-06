@@ -30,45 +30,28 @@
 class GroovyTextOutputHandler
 {
     def HORIZONTAL_RULE = "------------------------------------------------------------------------------"
-    def channels
-    def outputPath
-    def mimeTypeOut
-    def config
-    def sectionName
-    def logger
-    def version
     def out
+    def curn
 
-    GroovyTextOutputHandler (bsf)
+    GroovyTextOutputHandler (curnObj)
     {
-        channels    = bsf.lookupBean("channels")
-        outputPath  = bsf.lookupBean("outputPath")
-        mimeTypeOut = bsf.lookupBean("mimeType")
-        config      = bsf.lookupBean("config")
-        sectionName = bsf.lookupBean("configSection")
-        logger      = bsf.lookupBean("logger")
-        version     = bsf.lookupBean("version")
-        out         = null
-    }
-
-    org.clapper.util.logging.Logger getLogger()
-    {
-        return logger
+        curn = curnObj
+        out  = null
     }
 
     void processChannels()
     {
         try
         {
-            logger.debug ("Total channels=" + channels.size())
-            logger.debug ("Opening " + outputPath)
-            out = new org.clapper.util.io.WordWrapWriter (new java.io.PrintWriter (outputPath))
+            curn.logger.debug ("Total channels=" + curn.channels.size())
+            curn.logger.debug ("Opening " + curn.outputPath)
+            out = new org.clapper.util.io.WordWrapWriter (new java.io.PrintWriter (curn.outputPath))
             handleChannels()
         }
 
         finally
         {
-            logger.debug ("Flushing output.")
+            curn.logger.debug ("Flushing output.")
             out.flush()
             out.close()
         }
@@ -89,18 +72,18 @@ class GroovyTextOutputHandler
         */
 
         out.setPrefix ("")
-        def msg = config.getOptionalStringValue (sectionName, "Message", null)
+        def msg = curn.config.getOptionalStringValue (curn.configSection, "Message", null)
         def totalNew = 0
 
         // First, count the total number of new items
 
-        for (channel_wrapper in channels)
+        for (channel_wrapper in curn.channels)
 	{
             def channel = channel_wrapper.getChannel()
             totalNew = totalNew + channel.getItems().size()
         }
 
-        logger.debug ("totalNew=" + totalNew)
+        curn.logger.debug ("totalNew=" + totalNew)
         if (totalNew > 0)
         {
             // If the config file specifies a message for this handler,
@@ -115,21 +98,21 @@ class GroovyTextOutputHandler
             // Now, process the items
 
             def indentation = 0
-            for (channel_wrapper in channels)
+            for (channel_wrapper in curn.channels)
             {
                 def channel = channel_wrapper.getChannel()
                 def feed_info = channel_wrapper.getFeedInfo()
                 process_channel (out, channel, feed_info, indentation)
             }
 
-            mimeTypeOut.print("text/plain")
+            curn.setMIMEType("text/plain")
 
             // Output a footer
 
             indent(out, indentation)
             out.println()
             out.println(HORIZONTAL_RULE)
-            out.println(version)
+            out.println(curn.getVersion())
             out.flush()
         }
     }
@@ -139,19 +122,20 @@ class GroovyTextOutputHandler
         //
         // Process all items within a channel.
         //
-        def urlString = channel.getLinks().iterator().next().toString()
-        logger.debug("Processing channel \"" + urlString + "\"")
+        //def urlString = channel.getLinks().iterator().next().toString()
+        def urlString = channel.getLinks()[0]
+        curn.logger.debug("Processing channel \"" + urlString + "\"")
 
         // Print a channel header
 
         indent(out, indentation)
         out.println(HORIZONTAL_RULE)
-        logger.debug ("Channel title=\"" + channel.getTitle() + "\"")
-        logger.debug ("urlstring=\"" + urlString + "\"")
+        curn.logger.debug ("Channel title=\"" + channel.getTitle() + "\"")
+        curn.logger.debug ("urlstring=\"" + urlString + "\"")
         out.println(channel.getTitle())
         out.println(urlString)
         out.println(channel.getItems().size().toString() + " item(s)")
-        if (config.showDates())
+        if (curn.config.showDates())
         {
             def date = channel.getPublicationDate()
             if (date != null)
@@ -168,7 +152,7 @@ class GroovyTextOutputHandler
             out.println(item.getTitle())
             out.println(item.getLinks().iterator().next().toString())
 
-            if (config.showDates())
+            if (curn.config.showDates())
             {
                 def date = item.getPublicationDate()
                 if (date != null)
@@ -210,7 +194,7 @@ class GroovyTextOutputHandler
 
 // ---------------------------------------------------------------------------
 
-def handler = new GroovyTextOutputHandler (bsf)
+def handler = new GroovyTextOutputHandler (curn)
 try
 {
     handler.processChannels()
@@ -218,5 +202,5 @@ try
 
 catch (java.lang.Exception ex)
 {
-    handler.getLogger().debug(ex)
+    curn.logger.debug(ex)
 }
