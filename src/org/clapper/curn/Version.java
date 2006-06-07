@@ -61,6 +61,12 @@ public final class Version
     public static final String VERSION_BUNDLE_NAME = Constants.BUNDLE_NAME;
 
     /*----------------------------------------------------------------------*\
+                                Static Data
+    \*----------------------------------------------------------------------*/
+
+    private static BuildInfo buildInfo = null;
+
+    /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
@@ -105,9 +111,9 @@ public final class Version
     }
 
     /**
-     * Get the full program version string, which contains the program name
-     * and the version number. This is the string that the
-     * {@link #showVersion()} method displays.
+     * Get the full program version string, which contains the program
+     * name, the version number and the build ID string. This is the string
+     * that the {@link #showVersion()} method displays.
      *
      * @param locale the locale to use, or null for the default
      *
@@ -120,20 +126,26 @@ public final class Version
      */
     public static String getFullVersion (Locale locale)
     {
-        String name = getUtilityName();
-        String version = getVersionNumber();
+        String    name = getUtilityName();
+        String    version = getVersionNumber();
+        BuildInfo buildInfo = getBuildInfo();
 
         return BundleUtil.getMessage (VERSION_BUNDLE_NAME, locale,
                                       "curn.fullVersion",
-                                      "{0}, version {1}",
-                                      new Object[] {name, version});
+                                      "{0}, version {1} (build ID {2})",
+                                      new Object[]
+                                      {
+                                          name,
+                                          version,
+                                          buildInfo.getBuildID()
+                                      });
     }
 
     /**
-     * Get the full program version string, which contains the program name
-     * and the version number. This is the string that the
-     * {@link #showVersion()} method displays. This method assumes the default
-     * locale.
+     * Get the full program version string, which contains the program
+     * name, the version number and the build ID string. This is the string
+     * that the {@link #showVersion()} method displays. This method assumes
+     * the default locale.
      *
      * @return the full version string
      *
@@ -145,6 +157,19 @@ public final class Version
     public static String getFullVersion()
     {
         return getFullVersion (null);
+    }
+
+    /**
+     * Get the build ID. Calling this method is equivalent to:
+     * <pre>getBuildInfo().getBuildID();</pre>
+     *
+     * @return the build ID string
+     *
+     * @see #getBuildInfo
+     */
+    public static String getBuildID()
+    {
+        return getBuildInfo().getBuildID();
     }
 
     /**
@@ -221,10 +246,11 @@ public final class Version
      */
     public static void showBuildInfo (PrintWriter out)
     {
-        BuildInfo buildInfo = new BuildInfo (BUILD_INFO_BUNDLE_NAME);
+        BuildInfo buildInfo = getBuildInfo();
 
         showVersion (out);
         out.println ();
+        out.println ("Build ID:       " + buildInfo.getBuildID());
         out.println ("Build date:     " + buildInfo.getBuildDate());
         out.println ("Built by:       " + buildInfo.getBuildUserID());
         out.println ("Built on:       " + buildInfo.getBuildOperatingSystem());
@@ -246,6 +272,17 @@ public final class Version
      */
     public static BuildInfo getBuildInfo()
     {
-        return new BuildInfo (BUILD_INFO_BUNDLE_NAME);
+        synchronized (Version.class)
+        {
+            if (buildInfo == null)
+                buildInfo = new BuildInfo (BUILD_INFO_BUNDLE_NAME);
+        }
+
+        return buildInfo;
     }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
 }
