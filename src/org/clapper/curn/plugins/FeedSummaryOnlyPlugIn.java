@@ -43,7 +43,7 @@ import java.util.Map;
 
 /**
  * The <tt>FeedSummaryOnlyPlugIn</tt> optionally strips the content for a
- * feed, leaving only the summary. It intercepts the * following
+ * feed, leaving only the summary. It intercepts the following
  * configuration parameters:
  *
  * <table border="1">
