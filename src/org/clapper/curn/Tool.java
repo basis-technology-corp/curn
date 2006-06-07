@@ -126,7 +126,6 @@ public class Tool
     private String              configPath       = null;
     private boolean             useCache         = true;
     private Date                currentTime      = new Date();
-    private Collection<String>  emailAddresses   = new ArrayList<String>();
     private boolean             optShowBuildInfo = false;
     private boolean             optShowVersion   = false;
     private Boolean             optShowDates     = null;
@@ -194,7 +193,7 @@ public class Tool
         return "curn command-line interface";
     }
 
-    public void runPostConfigurationPlugIn (CurnConfig config)
+    public void runPostConfigPlugIn (CurnConfig config)
 	throws CurnException
     {
         try
@@ -364,12 +363,7 @@ public class Tool
         // the remainder of the command line.
 
         if (! (optShowBuildInfo || optShowVersion))
-        {
             configPath = it.next();
-
-            while (it.hasNext())
-                emailAddresses.add (it.next());
-        }
     }
 
     /**
@@ -478,9 +472,6 @@ public class Tool
         info.addParameter ("config",
                            "Path to configuration file",
                            true);
-        info.addParameter ("emailAddress ...",
-                           "One or more email addresses to receive the output",
-                           false);
     }
 
     /**
@@ -515,7 +506,7 @@ public class Tool
                 // Fire it up.
 
                 curn.setCurrentTime (currentTime);
-                curn.run (configPath, this.emailAddresses, this.useCache);
+                curn.run (configPath, this.useCache);
             }
         }
 
