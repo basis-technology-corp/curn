@@ -363,44 +363,29 @@ public class Tool
      */
     protected void getCustomUsageInfo (UsageInfo info)
     {
-        info.addOption ('a', "show-authors",
-                        "Show the authors for each item, if available. "
-                      + "DEPRECATED. No longer does anything.");
-        info.addOption ('A', "no-authors",
-                        "Don't the authors for each item, if available."
-                      + "DEPRECATED. No longer does anything.");
+        // Note: A null explanation denotes a "hidden" option not shown in
+        // the usage output. Here, those options are deprecated, but
+        // retained for backward compatibility.
+
+        info.addOption ('a', "show-authors", null);
+        info.addOption ('A', "no-authors", null);
         info.addOption ('B', "build-info",
                         "Show full build information, then exit. "
                       + "This option shows a bit more information than the "
                       + UsageInfo.LONG_OPTION_PREFIX
                       + "version option");
         info.addOption ('C', "no-cache", "Don't use a cache file at all.");
-        info.addOption ('d', "show-dates",
-                        "Show dates on feeds and feed items, if available."
-                      + "DEPRECATED. No longer does anything.");
-        info.addOption ('D', "no-dates",
-                        "Don't show dates on feeds and feed items."
-                      + "DEPRECATED. No longer does anything.");
-        info.addOption ('r', "rss-version",
-                        "Show the RSS version each site uses."
-                      + "DEPRECATED. No longer does anything.");
-        info.addOption ('R', "no-rss-version",
-                        "Don't show the RSS version each site uses."
-                      + "DEPRECATED. No longer does anything.");
-        info.addOption ('T', "threads", "<n>",
-                        "Set the number of concurrent download threads to "
-                      + "<n>. <n> must be greater than 0."
-                      + "DEPRECATED. No longer does anything.");
+        info.addOption ('d', "show-dates", null);
+        info.addOption ('D', "no-dates", null);
+        info.addOption ('r', "rss-version", null);
+        info.addOption ('R', "no-rss-version", null);
+        info.addOption ('T', "threads", "<n>", null);
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
         info.addOption ('v', "version",
                         "Show version information, then exit.");
-        info.addOption ('z', "gzip",
-                        "Ask remote HTTP servers to gzip content before "
-                      + "sending it. DEPRECATED. No longer does anything.");
-        info.addOption ('Z', "no-gzip",
-                        "Don't ask remote HTTP servers to gzip content before "
-                      + "sending it. DEPRECATED. No longer does anything.");
+        info.addOption ('z', "gzip", null);
+        info.addOption ('Z', "no-gzip", null);
 
         StringWriter      sw  = new StringWriter();
         PrintWriter       pw  = new PrintWriter (sw);
