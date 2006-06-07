@@ -879,6 +879,7 @@ public class CurnConfig extends Configuration
         String     feedURLString = null;
         URL        url = null;
         MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
+        boolean    keepFeed = false;
 
         feedURLString = getConfigurationValue (sectionName, VAR_FEED_URL);
 
@@ -947,11 +948,20 @@ public class CurnConfig extends Configuration
 
             if (value != null)
             {
-                metaPlugIn.runFeedConfigItemPlugIn (sectionName,
-                                                    varName,
-                                                    this,
-                                                    feedInfo);
+                keepFeed = metaPlugIn.runFeedConfigItemPlugIn (sectionName,
+                                                               varName,
+                                                               this,
+                                                               feedInfo);
+                if (! keepFeed)
+                {
+                    log.debug ("A plug-in said to skip feed ["
+                             + sectionName
+                             + "\"");
+                }
             }
+
+            if (! keepFeed)
+                break;
         }
 
         if (url == null)
@@ -968,8 +978,11 @@ public class CurnConfig extends Configuration
                                               });
         }
 
-        feeds.add (feedInfo);
-        feedMap.put (url.toString(), feedInfo);
+        if (keepFeed)
+        {
+            feeds.add (feedInfo);
+            feedMap.put (url.toString(), feedInfo);
+        }
     }
 
     /**
@@ -989,59 +1002,52 @@ public class CurnConfig extends Configuration
         String                  className;
         ConfiguredOutputHandler handlerWrapper;
         MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
+        boolean                 keep = true;
 
         className = getConfigurationValue (sectionName, VAR_CLASS);
         handlerWrapper = new ConfiguredOutputHandler (sectionName,
                                                       sectionName,
                                                       className);
-        metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
-                                                     VAR_CLASS,
-                                                     this,
-                                                     handlerWrapper);
-        
-        // Only process the rest if it's not disabled.
 
-        boolean disabled = false;
-        String value = getOptionalStringValue (sectionName,
-                                               VAR_DISABLED,
-                                               null);
-        if (value != null)
-        {
-            disabled = getOptionalBooleanValue (sectionName,
-                                                VAR_DISABLED,
-                                                false);
-            metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
-                                                         VAR_DISABLED,
-                                                         this,
-                                                         handlerWrapper);
-        }
-
-        if (! disabled)
+        keep = metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
+                                                            VAR_CLASS,
+                                                            this,
+                                                            handlerWrapper);
+        if (keep)
         {
             for (String variableName : getVariableNames (sectionName))
             {
                 // Skip the ones we've already processed.
 
-                if (variableName.equals (VAR_DISABLED))
-                    continue;
-
                 if (variableName.equals (VAR_CLASS))
                     continue;
 
-                value = getConfigurationValue (sectionName, variableName);
+                String value = getConfigurationValue (sectionName,
+                                                      variableName);
                 handlerWrapper.addExtraVariable (variableName, value);
 
-                metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
-                                                             variableName,
-                                                             this,
-                                                             handlerWrapper);
+                keep = metaPlugIn.runOutputHandlerConfigItemPlugIn
+                                                             (sectionName,
+                                                              variableName,
+                                                              this,
+                                                              handlerWrapper);
+                if (! keep)
+                {
+                    log.debug ("A plug-in has disabled output handler ["
+                             + sectionName
+                             + "]");
+                    break;
+                }
             }
 
-            log.debug ("Saving output handler \""
+            if (keep)
+            {
+                log.debug ("Saving output handler \""
                      + handlerWrapper.getName()
                      + "\" of type "
                      + handlerWrapper.getClassName());
-            outputHandlers.add (handlerWrapper);
+                outputHandlers.add (handlerWrapper);
+            }
         }
     }
 
