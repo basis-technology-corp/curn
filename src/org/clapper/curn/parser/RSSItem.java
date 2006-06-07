@@ -27,7 +27,6 @@
 package org.clapper.curn.parser;
 
 import org.clapper.util.text.TextUtil;
-import org.clapper.util.text.HTMLUtil;
 
 import java.util.Collection;
 import java.util.Date;
@@ -213,32 +212,6 @@ public abstract class RSSItem
                                        int      maxSummarySize,
                                        String[] mimeTypes)
     {
-        return getSummaryToDisplay (summaryOnly,
-                                    maxSummarySize,
-                                    mimeTypes,
-                                    true);
-    }
-
-    /**
-     * Utility method to get the summary to display for an
-     * <tt>RSSItem</tt>. Optionally strips HTML from the resulting string.
-     *
-     * @param summaryOnly    if only the summary is desired
-     * @param maxSummarySize maximum summary size, or {@link #NO_SUMMARY_LIMIT}
-     * @param mimeTypes      desired MIME types; used only if no summary is
-     *                       available, and the content field should be used
-     * @param stripHTML      whether or not to strip HTML from the string
-     *
-     * @return the summary string to use, or null if unavailable
-     *
-     * @see #getSummary
-     * @see #getFirstContentOfType
-     */
-    public String getSummaryToDisplay (boolean  summaryOnly,
-                                       int      maxSummarySize,
-                                       String[] mimeTypes,
-                                       boolean  stripHTML)
-    {
         String summary = getSummary();
 
         if (TextUtil.stringIsEmpty (summary))
@@ -253,12 +226,7 @@ public abstract class RSSItem
         }
 
         if (summary != null)
-        {
-            if (stripHTML)
-                summary = HTMLUtil.textFromHTML (summary);
-
             summary = truncateSummary (summary, maxSummarySize);
-        }
 
         return summary;
     }
