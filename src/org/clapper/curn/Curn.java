@@ -126,7 +126,7 @@ public class Curn
         throws CurnException
     {
         metaPlugIn = MetaPlugIn.getMetaPlugIn();
-        logJavaInfo();
+        logEnvironmentInfo();
     }
 
     /*----------------------------------------------------------------------*\
@@ -625,10 +625,12 @@ public class Curn
 
             for (FeedInfo fi : channels.keySet())
             {
-                RSSChannel channel = channels.get (fi);
-                metaPlugIn.runPreFeedOutputPlugIn (fi,
-                                                   channel.makeCopy(),
-                                                   handler);
+                // Use a copy of the channel. That way, the plug-ins and
+                // the output handler can modify its content freely, without
+                // affecting anyone else.
+
+                RSSChannel channel = channels.get (fi).makeCopy();
+                metaPlugIn.runPreFeedOutputPlugIn (fi, channel, handler);
                 handler.displayChannel (channel, fi);
                 metaPlugIn.runPostFeedOutputPlugIn (fi, handler);
             }
@@ -844,7 +846,7 @@ public class Curn
     /**
      * Log all system properties and other information about the Java VM.
      */
-    private void logJavaInfo()
+    private void logEnvironmentInfo()
     {
         log.info (Version.getFullVersion());
         
