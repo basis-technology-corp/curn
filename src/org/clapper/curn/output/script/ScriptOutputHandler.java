@@ -364,15 +364,16 @@ public class ScriptOutputHandler extends FileOutputHandler
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private BSFManager                 bsfManager     = null;
-    private CurnConfig                 config         = null;
-    private Collection<ChannelWrapper> channels       = new ChannelList();
-    private String                     scriptPath     = null;
-    private String                     scriptString   = null;
-    private StringWriter               mimeTypeBuffer = null;
-    private String                     language       = null;
-    private Logger                     scriptLogger   = null;
-    private CurnScriptObjects          scriptObjects  = null;
+    private BSFManager                 bsfManager         = null;
+    private CurnConfig                 config             = null;
+    private Collection<ChannelWrapper> channels           = new ChannelList();
+    private String                     scriptPath         = null;
+    private String                     scriptString       = null;
+    private StringWriter               mimeTypeBuffer     = null;
+    private String                     language           = null;
+    private Logger                     scriptLogger       = null;
+    private CurnScriptObjects          scriptObjects      = null;
+    private boolean                    allowEmbeddedHTML  = false;
 
     /**
      * For logging
@@ -423,7 +424,11 @@ public class ScriptOutputHandler extends FileOutputHandler
             {
                 scriptPath = config.getConfigurationValue (section, "Script");
                 language  = config.getConfigurationValue (section, "Language");
-
+                allowEmbeddedHTML =
+                    config.getOptionalBooleanValue
+                        (section,
+                         CurnConfig.CFG_ALLOW_EMBEDDED_HTML,
+                         false);
             }
         }
         
@@ -542,8 +547,10 @@ public class ScriptOutputHandler extends FileOutputHandler
     {
         // Save the channel.
 
-        channels.add (new ChannelWrapper (convertChannelText (channel),
-                                          feedInfo));
+        if (! allowEmbeddedHTML)
+            channel.stripHTML();
+
+        channels.add (new ChannelWrapper (channel, feedInfo));
     }
     
     /**
