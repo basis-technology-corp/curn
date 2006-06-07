@@ -114,6 +114,7 @@ Bug Fixes:
   (e.g., "<author/>", "<dc:creator/>"). Some feeds have do them.
 
 
+---------------------------------------------------------------------------
 Version 2.6.4 (5 February, 2006)
 
 - Fixed a bug reported by Manpreet Dharni <mpsdh2003 /at/ yahoo.com>: If
@@ -154,6 +155,7 @@ Version 2.6.4 (5 February, 2006)
   installed automatically for you.
 
 
+---------------------------------------------------------------------------
 Version 2.6.3 (26 January, 2006)
 
 - RFC822 parsing would fail if system locale wasn't US. Since RFC822 dates
@@ -162,6 +164,7 @@ Version 2.6.3 (26 January, 2006)
   bug report and the suggested fix.
 
 
+---------------------------------------------------------------------------
 Version 2.6.2 (2 January, 2006)
 
 - curn can now be installed (along with all dependent jars, documentation,
@@ -174,6 +177,7 @@ Version 2.6.2 (2 January, 2006)
   files.
 
 
+---------------------------------------------------------------------------
 Version 2.6.1 (13 December, 2005)
 
 - In the default FreeMarker HTML template (used to generate HTML output):
@@ -186,6 +190,7 @@ Version 2.6.1 (13 December, 2005)
   outside the FreeMarkerOutputHandler.)
 
 
+---------------------------------------------------------------------------
 Version 2.6 (25 November, 2005)
 
 - Added new FreeMarkerOutputHandler, which uses the FreeMarker template
@@ -264,6 +269,7 @@ Version 2.6 (25 November, 2005)
 *** http://www.clapper.org/software/java/util/
 
 
+---------------------------------------------------------------------------
 Version 2.5.1 (25 September, 2005)
 
 - Fixed NullPointerException in TextOutputHandler, when channel has no URL.
@@ -271,6 +277,7 @@ Version 2.5.1 (25 September, 2005)
   well-formed, XHTML within a <content> element.
 
 
+---------------------------------------------------------------------------
 Version 2.5 (19 August, 2005)
 
 - ENHANCEMENT: The MiniRSSParser class now handles and stores multiple
@@ -294,6 +301,7 @@ Version 2.5 (19 August, 2005)
   NOTE: This breaks support for some previous versions of ROME (e.g., 0.3).
 
 
+---------------------------------------------------------------------------
 Version 2.4 (15 August, 2005)
 
 - ENHANCEMENT: The HTMLOutputHandler
@@ -351,7 +359,7 @@ Version 2.4 (15 August, 2005)
   feed's entry from the (XML) cache file and re-run curn.
 
 
-
+---------------------------------------------------------------------------
 Version 2.3 (10 August, 2005)
 
 - curn now supports global and feed-specific "AllowEmbeddedHTML" configuration
@@ -382,6 +390,7 @@ library, since it uses some new methods in the
 org.clapper.util.text.TextUtil class. It will NOT run with earlier versions.
 
 
+---------------------------------------------------------------------------
 Version 2.2.1 (09 Aug, 2005)
 
 - curn's RSS date-parsing logic had a bug causing a NullPointerException
@@ -396,6 +405,7 @@ Version 2.2.1 (09 Aug, 2005)
   bug and suggesting the fix.
 
 
+---------------------------------------------------------------------------
 Version 2.2 (29 July, 2005)
 
 - curn's output handlers now support a "ShowCurnInfo" configuration
@@ -441,6 +451,7 @@ library, since it uses some new methods in the
 org.clapper.util.mail.EmailMessage class. It will NOT run with version 2.0.
 
 
+---------------------------------------------------------------------------
 Version 2.1.2 (08 July, 2005)
 
 - curn was not honoring its "MailFrom" configuration option, so it was
@@ -453,6 +464,7 @@ Version 2.1.2 (08 July, 2005)
   problem.
 
 
+---------------------------------------------------------------------------
 Version 2.1.1 (07 July, 2005)
 
 - On Windows, curn's supplied output handler classes (TextOutputHandler,
@@ -469,6 +481,7 @@ Version 2.1.1 (07 July, 2005)
   problem and the fix.
 
 
+---------------------------------------------------------------------------
 Version 2.1 (11 May, 2005)
 
 - The ShowAuthors configuration item can now be specified per-feed,
@@ -481,6 +494,7 @@ Version 2.1 (11 May, 2005)
   the backup file before updating the cache on disk.
 
 
+---------------------------------------------------------------------------
 Version 2.0 (22 April, 2005)
 
 - Now requires Java 1.5.0 JDK/JRE.
@@ -506,43 +520,7 @@ Version 2.0 (22 April, 2005)
   See the User's Guide for details.
 
 
-Version 2.1 (11 May, 2005)
-
-- The ShowAuthors configuration item can now be specified per-feed,
-  as well as globally. The global value is the default.
-
-- The HTML output now shows the author, if configured.
-
-- The configuration file can now contain a "CacheBackup" directive that
-  specifies the location of a cache backup. curn will copy the cache to
-  the backup file before updating the cache on disk.
-
-
-Version 2.0 (22 April, 2005)
-
-- Now requires Java 1.5.0 JDK/JRE.
-
-- Various classes converted to use JDK 1.5 generics.
-
-- MiniRSSParser now handles (and ignores) empty <link> elements in
-  RSS version 0.92, RSS version 2.0, and Atom XML files.
-
-- The cache file is now XML, instead of serialized Java objects. Using XML
-  makes the code less sensitive to changes in the cache-related classes.
-  curn will still load an old-style serialized Java cache file, but it will
-  convert it to XML when it saves the cache.
-
-- The "mimeType" object that the ScriptOutputHandler class publishes via
-  the Bean Scripting Framework is now a java.io.StringWriter, instead of a
-  java.io.StringBuffer. Use of a StringBuffer causes exceptions with BSF
-  and the 1.5.0 JDK.
-
-- The configuration file now supports an "env" pseudosection, to
-  interpolate the values of environment variables into a configuration.
-  (The 1.5 JDK has re-established support for environment variables.)
-  See the User's Guide for details.
-
-
+---------------------------------------------------------------------------
 Version 1.15.12 (09 Aug, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 
 - curn's RSS date-parsing logic had a bug causing a NullPointerException
@@ -599,6 +577,7 @@ library, since it uses some new methods in the
 org.clapper.util.mail.EmailMessage class. It will NOT run with version 1.1.8.
 
 
+---------------------------------------------------------------------------
 Version 1.5.11 (08 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 
 - curn was not honoring its "MailFrom" configuration option, so it was
@@ -611,6 +590,7 @@ Version 1.5.11 (08 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
   problem.
 
 
+---------------------------------------------------------------------------
 Version 1.5.10 (07 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 
 - On Windows, curn's supplied output handler classes (TextOutputHandler,
@@ -627,6 +607,7 @@ Version 1.5.10 (07 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
   problem and the fix.
 
 
+---------------------------------------------------------------------------
 Version 1.5.9 (21 April, 2005)
 
 - The "mimeType" object that the ScriptOutputHandler class publishes via
@@ -635,6 +616,7 @@ Version 1.5.9 (21 April, 2005)
   and the 1.5.0 JDK.
 
 
+---------------------------------------------------------------------------
 Version 1.5.8 (08 April, 2005)
 
 - MiniRSSParser now handles (and ignores) empty <link> elements in
@@ -644,6 +626,7 @@ Version 1.5.8 (08 April, 2005)
   feed doesn't abort the whole run.
 
 
+---------------------------------------------------------------------------
 Version 1.5.7 (09 February, 2005)
 
 - Substitution expressions (e.g., in the PreparseEdit or EditItemURL
@@ -670,6 +653,7 @@ Version 1.5.7 (09 February, 2005)
   1.22 warnings.
 
 
+---------------------------------------------------------------------------
 Version 1.5.6 (02 December, 2004)
 
 - Added new MaxSummarySize configuration parameter. If a summary exceeds
@@ -683,6 +667,7 @@ Version 1.5.6 (02 December, 2004)
   existing output handlers to use this new method.
 
 
+---------------------------------------------------------------------------
 Version 1.5.5 (10 November, 2004)
 
 - NOTE: You MUST have version 1.1.4 (or better) of the org.clapper.util
@@ -711,6 +696,7 @@ Version 1.5.5 (10 November, 2004)
   mail clients (e.g., some versions of Outlook) fits.
 
 
+---------------------------------------------------------------------------
 Version 1.5.4 (20 October, 2004)
 
 - In the org.clapper.util API, org.clapper.util.misc.Logger is now in the
@@ -720,6 +706,7 @@ Version 1.5.4 (20 October, 2004)
   various "import" statement in curn classes.
 
 
+---------------------------------------------------------------------------
 Version 1.5.3 (16 October, 2004)
 
 - curn now sets an appropriate "User-Agent" HTTP header on HTTP requests,
@@ -733,6 +720,7 @@ Version 1.5.3 (16 October, 2004)
   accessed via ResourceBundle objects, allowing for localization.
 
 
+---------------------------------------------------------------------------
 Version 1.5.2 (12 October, 2004)
 
 - Simplified loading of API version, in build.xml. Instead of loading
@@ -741,6 +729,7 @@ Version 1.5.2 (12 October, 2004)
   bundle.
 
 
+---------------------------------------------------------------------------
 Version 1.5.1 (10 October, 2004)
 
 - Fixed bug with PreparseEdit per-feed configuration directive (introduced
@@ -755,6 +744,7 @@ Version 1.5.1 (10 October, 2004)
   or sample config for details.
 
 
+---------------------------------------------------------------------------
 Version 1.5 (07 October, 2004)
 
 - Now requires JDK 1.4 or better. JDK 1.3 is no longer supported. Among
@@ -786,6 +776,7 @@ Version 1.5 (07 October, 2004)
   Jikes warned about.
 
 
+---------------------------------------------------------------------------
 Version 1.4.1 (28 September, 2004):
 
 - Added ForceCharacterEncoding (per-feed) configuration parameter. If
@@ -808,6 +799,7 @@ Version 1.4.1 (28 September, 2004):
   the in-memory Unicode character set). If not set, it defaults to "utf-8".
 
 
+---------------------------------------------------------------------------
 Version 1.4 (22 September, 2004):
 
 - All output handlers have been moved under "org.clapper.output". It
@@ -844,12 +836,14 @@ Version 1.4 (22 September, 2004):
   been removed.
 
 
+---------------------------------------------------------------------------
 Version 1.3.3 (16 September, 2004):
 
 - Fixed slight problem when translating embedded newlines into spaces in
   parsed XML character data.
 
 
+---------------------------------------------------------------------------
 Version 1.3.2 (15 September, 2004):
 
 - Now handles feeds with alternate character sets (e.g., UTF-8) better.
@@ -867,11 +861,13 @@ Version 1.3.2 (15 September, 2004):
   NOTE: Rome requires version 1.0 of JDOM (http://www.jdom.org/)
 
 
+---------------------------------------------------------------------------
 Version 1.3.1 (13 September, 2004):
 
 - HTMLOutputHandler now displays channel link properly.
 
 
+---------------------------------------------------------------------------
 Version 1.3 (09 September, 2004):
 
 - Fixed some caching bugs and problems. First, cache lookups are now
@@ -884,6 +880,7 @@ Version 1.3 (09 September, 2004):
   not.
 
 
+---------------------------------------------------------------------------
 Version 1.2 (28 August, 2004):
 
 - First version of curn posted to the web.
