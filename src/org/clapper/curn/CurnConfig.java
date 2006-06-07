@@ -69,14 +69,10 @@ public class CurnConfig extends Configuration
     public static final String VAR_CACHE_FILE        = "CacheFile";
     public static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
     public static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
-    public static final String VAR_SMTPHOST          = "SMTPHost";
     public static final String VAR_MAIL_SUBJECT      = "Subject";
     public static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
     public static final String VAR_PARSER_CLASS_NAME = "ParserClass";
     public static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
-    public static final String VAR_SMTP_HOST         = "SMTPHost";
-    public static final String VAR_EMAIL_SENDER      = "MailFrom";
-    public static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     public static final String VAR_SHOW_DATES        = "ShowDates";
     public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     public static final String VAR_FEED_URL          = "URL";
@@ -104,8 +100,6 @@ public class CurnConfig extends Configuration
     public static final boolean DEF_SHOW_AUTHORS      = false;
     public static final boolean DEF_GET_GZIPPED_FEEDS = true;
     public static final boolean DEF_SAVE_ONLY         = false;
-    public static final String  DEF_SMTP_HOST         = "localhost";
-    public static final String  DEF_EMAIL_SUBJECT     = "curn output";
     public static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
     public static final int     DEF_MAX_THREADS       = 5;
@@ -150,9 +144,6 @@ public class CurnConfig extends Configuration
     private String parserClassName = DEF_PARSER_CLASS_NAME;
     private List<ConfiguredOutputHandler> outputHandlers
                                  = new ArrayList<ConfiguredOutputHandler>();
-    private String smtpHost = DEF_SMTP_HOST;
-    private String emailSender = null;
-    private String emailSubject = DEF_EMAIL_SUBJECT;
     private boolean showAuthors = false;
     private boolean getGzippedFeeds = true;
     private int maxThreads = DEF_MAX_THREADS;
@@ -505,78 +496,6 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Get the SMTP host to use when sending email.
-     *
-     * @return the SMTP host. Never null.
-     *
-     * @see #setSMTPHost
-     */
-    public String getSMTPHost()
-    {
-        return smtpHost;
-    }
-
-    /**
-     * Set the SMTP host to use when sending email.
-     *
-     * @param host the SMTP host, or null to revert to the default value
-     *
-     * @see #getSMTPHost
-     */
-    public void setSMTPHost (String host)
-    {
-        smtpHost = (host == null) ? DEF_SMTP_HOST : host;
-    }
-
-    /**
-     * Get the email address to use as the sender for email messages.
-     *
-     * @return the email address, or null if not specified
-     *
-     * @see #setEmailSender
-     */
-    public String getEmailSender()
-    {
-        return emailSender;
-    }
-
-    /**
-     * Set the email address to use as the sender for email messages.
-     *
-     * @param address the new address, or null to clear the field
-     *
-     * @see #getEmailSender
-     */
-    public void setEmailSender (String address)
-    {
-        this.emailSender = address;
-    }
-
-    /**
-     * Get the subject to use in email messages, if email is being sent.
-     *
-     * @return the subject. Never null.
-     *
-     * @see #setEmailSubject
-     */
-    public String getEmailSubject()
-    {
-        return emailSubject;
-    }
-
-    /**
-     * Set the subject to use in email messages, if email is being sent.
-     *
-     * @param subject the subject, or null to reset to the default
-     *
-     * @see #getEmailSubject
-     */
-    public void setEmailSubject (String subject)
-    {
-        this.emailSubject = (subject == null) ? DEF_EMAIL_SUBJECT : subject;
-    }
-
-    /**
      * Get the configured RSS feeds. The feeds are returned in the order
      * they were specified in the configuration file.
      *
@@ -799,30 +718,6 @@ public class CurnConfig extends Configuration
                                                       varName,
                                                       DEF_PARSER_CLASS_NAME);
             val = String.valueOf (parserClassName);
-        }
-
-        else if (varName.equals (VAR_SMTP_HOST))
-        {
-            smtpHost = getOptionalStringValue (MAIN_SECTION,
-                                               varName,
-                                               DEF_SMTP_HOST);
-            val = smtpHost;
-        }
-
-        else if (varName.equals (VAR_EMAIL_SENDER))
-        {
-            emailSender = getOptionalStringValue (MAIN_SECTION,
-                                                  varName,
-                                                  null);
-            val = emailSender;
-        }
-
-        else if (varName.equals (VAR_EMAIL_SUBJECT))
-        {
-            emailSubject = getOptionalStringValue (MAIN_SECTION,
-                                                   varName,
-                                                   DEF_EMAIL_SUBJECT);
-            val = emailSubject;
         }
 
         else if (varName.equals (VAR_SHOW_AUTHORS))
