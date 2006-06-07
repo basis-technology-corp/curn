@@ -76,7 +76,8 @@ public class ConfiguredOutputHandler implements Comparable
                                     String sectionName,
                                     String className)
     {
-        log.debug ("section=" + ((sectionName == null) ? "null" : sectionName));
+        log.debug ("section=" + ((sectionName == null) ? "null"
+                                                       : sectionName));
         this.sectionName = sectionName;
         this.className   = className;
         this.name        = name;
