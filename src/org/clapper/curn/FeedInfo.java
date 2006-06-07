@@ -202,34 +202,6 @@ public class FeedInfo
     }
 
     /**
-     * Determine whether this feed is enabled or not. A disabled feed will
-     * not be fetched or displayed. (A feed is enabled by default.)
-     *
-     * @return <tt>true</tt> if the feed is enabled in the configuration,
-     *         <tt>false</tt> otherwise.
-     *
-     * @see #setEnabledFlag
-     */
-    public boolean feedIsEnabled()
-    {
-        return enabled;
-    }
-
-    /**
-     * Set or clear the "enabled" flag. A disabled feed will not be fetched
-     * or displayed. (A feed is enabled by default.)
-     *
-     * @param enabled <tt>true</tt> if the feed is to be enabled and
-     *                <tt>false</tt> if it is to be disabled.
-     *
-     * @see #feedIsEnabled
-     */
-    public void setEnabledFlag (boolean enabled)
-    {
-        this.enabled = enabled;
-    }
-
-    /**
      * Get the forced character set encoding for this feed. If this
      * parameter is set, <i>curn</i> will ignore the character set encoding
      * advertised by the remote server (if any), and use the character set

@@ -396,13 +396,6 @@ public class Curn
 
         for (FeedInfo feedInfo : configuration.getFeeds())
         {
-            if (! feedShouldBeProcessed (feedInfo))
-            {
-                // Log messages already emitted.
-
-                continue;
-            }
-
             downloadThread.processFeed (feedInfo);
 
             // Don't abort if an exception occurred. It might just be a
@@ -469,13 +462,6 @@ public class Curn
 
         for (FeedInfo feedInfo : feeds)
         {
-            if (! feedShouldBeProcessed (feedInfo))
-            {
-                // Log messages already emitted.
-
-                continue;
-            }
-
             feedQueue.add (feedInfo);
             channels.put (feedInfo, null);
         }
@@ -575,33 +561,6 @@ public class Curn
         String parserClassName = configuration.getRSSParserClassName();
         log.info ("Getting parser \"" + parserClassName + "\"");
         return RSSParserFactory.getRSSParser (parserClassName);
-    }
-
-    /**
-     * Determine whether a feed should be processed. If this method
-     * determines that a feed should not be processed, it emits appropriate
-     * log messages.
-     *
-     * @param feedInfo  the feed information
-     *
-     * @return <tt>true</tt> if the feed should be processed,
-     *         <tt>false</tt> if it should be skipped
-     *
-     * @throws CurnException on error
-     */
-    private boolean feedShouldBeProcessed (FeedInfo feedInfo)
-        throws CurnException
-    {
-        boolean process = true;
-
-        if (! feedInfo.feedIsEnabled())
-        {
-            log.info ("Skipping disabled feed: "
-                    + feedInfo.getURL().toString());
-            process = false;
-        }
-
-        return process;
     }
 
     private void displayChannels (Map<FeedInfo,RSSChannel> channels,

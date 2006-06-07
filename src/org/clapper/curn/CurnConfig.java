@@ -78,7 +78,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_EMAIL_SENDER      = "MailFrom";
     public static final String VAR_EMAIL_SUBJECT     = "MailSubject";
     public static final String VAR_SHOW_DATES        = "ShowDates";
-    public static final String VAR_DISABLED          = "Disabled";
     public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     public static final String VAR_FEED_URL          = "URL";
     public static final String VAR_CLASS             = "Class";
@@ -86,6 +85,7 @@ public class CurnConfig extends Configuration
     public static final String VAR_MAX_THREADS       = "MaxThreads";
     public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
     public static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
+    public static final String VAR_DISABLED          = "Disabled";
 
     /**
      * Configuration variable: allow embedded HTML. Not used here. Used by
@@ -924,13 +924,6 @@ public class CurnConfig extends Configuration
                                                      defaultCacheDays);
                 feedInfo.setDaysToCache (maxDays);
                 value = String.valueOf (maxDays);
-            }
-
-            else if (varName.equals (VAR_DISABLED))
-            {
-                flag = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setEnabledFlag (! flag);
-                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_FORCE_ENCODING) ||
