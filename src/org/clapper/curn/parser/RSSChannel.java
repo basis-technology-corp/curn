@@ -51,6 +51,12 @@ import java.util.TreeSet;
 public abstract class RSSChannel extends RSSElement implements Cloneable
 {
     /*----------------------------------------------------------------------*\
+                           Private Instance Data
+    \*----------------------------------------------------------------------*/
+
+    private boolean htmlStripped = false;
+
+    /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
 
@@ -112,53 +118,59 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      * plain text. This method edits the channel data directly; it does not
      * produce a copy.
      */
-    public void stripHTML()
+    public synchronized void stripHTML()
     {
-        Collection<String> authors = getAuthors();
-        if (authors != null)
+        if (! htmlStripped)
         {
-            Collection<String> newAuthors = new ArrayList<String>();
-            for (String author : authors)
-                newAuthors.add (HTMLUtil.textFromHTML (author));
-
-            setAuthors (newAuthors);
-        }
-
-        String title = getTitle();
-        if (title != null)
-            setTitle (HTMLUtil.textFromHTML (title));
-
-        String desc = getDescription();
-        if (desc != null)
-            setDescription (HTMLUtil.textFromHTML (desc));
-
-        String copyright = getCopyright();
-        if (copyright != null)
-            setCopyright (HTMLUtil.textFromHTML (copyright));
-
-        Collection<RSSItem> items = getItems();
-        if ((items != null) && (items.size() > 0))
-        {
-            for (RSSItem item : items)
+            Collection<String> authors = getAuthors();
+            if (authors != null)
             {
-                title = item.getTitle();
-                if (title != null)
-                    item.setTitle (HTMLUtil.textFromHTML (title));
+                Collection<String> newAuthors = new ArrayList<String>();
+                for (String author : authors)
+                    newAuthors.add (HTMLUtil.textFromHTML (author));
 
-                authors = item.getAuthors();
-                if (authors != null)
-                {
-                    Collection<String> newAuthors = new ArrayList<String>();
-                    for (String author : authors)
-                        newAuthors.add (HTMLUtil.textFromHTML (author));
-
-                    setAuthors (newAuthors);
-                }
-
-                String summary = item.getSummary();
-                if (summary != null)
-                    item.setSummary (HTMLUtil.textFromHTML (summary));
+                setAuthors (newAuthors);
             }
+
+            String title = getTitle();
+            if (title != null)
+                setTitle (HTMLUtil.textFromHTML (title));
+
+            String desc = getDescription();
+            if (desc != null)
+                setDescription (HTMLUtil.textFromHTML (desc));
+
+            String copyright = getCopyright();
+            if (copyright != null)
+                setCopyright (HTMLUtil.textFromHTML (copyright));
+
+            Collection<RSSItem> items = getItems();
+            if ((items != null) && (items.size() > 0))
+            {
+                for (RSSItem item : items)
+                {
+                    title = item.getTitle();
+                    if (title != null)
+                        item.setTitle (HTMLUtil.textFromHTML (title));
+
+                    authors = item.getAuthors();
+                    if (authors != null)
+                    {
+                        Collection<String> newAuthors =
+                            new ArrayList<String>();
+                        for (String author : authors)
+                            newAuthors.add (HTMLUtil.textFromHTML (author));
+
+                        setAuthors (newAuthors);
+                    }
+
+                    String summary = item.getSummary();
+                    if (summary != null)
+                        item.setSummary (HTMLUtil.textFromHTML (summary));
+                }
+            }
+
+            htmlStripped = true;
         }
     }
 
