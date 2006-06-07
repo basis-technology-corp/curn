@@ -65,12 +65,15 @@ public interface OutputHandlerConfigItemPlugIn extends PlugIn
      *                     object. The class name is guaranteed to be set,
      *                     but the other fields may not be.
      * 
+     * @return <tt>true</tt> to continue processing the handler,
+     *         <tt>false</tt> to skip it
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
      * @see ConfiguredOutputHandler
      */
-    public void
+    public boolean
     runOutputHandlerConfigItemPlugIn (String                  sectionName,
                                       String                  paramName,
                                       CurnConfig              config,
