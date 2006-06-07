@@ -47,4 +47,14 @@ public class Constants
      * Default resource bundle name for externalized strings
      */
     public static final String BUNDLE_NAME = "org.clapper.curn.Curn";
+
+    /**
+     * Environment variable used to find curn home directory.
+     */
+    public static final String CURN_HOME_ENV_VAR  = "CURN_HOME";
+
+    /**
+     * System property used to find curn home directory.
+     */
+    public static final String CURN_HOME_PROPERTY = "curn.home";
 }
