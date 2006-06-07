@@ -88,7 +88,13 @@ public class CurnConfig extends Configuration
     public static final String VAR_MAX_THREADS       = "MaxThreads";
     public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
     public static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
-    public static final String VAR_ALLOW_EMBEDDED_HTML= "AllowEmbeddedHTML";
+
+    /**
+     * Configuration variable: allow embedded HTML. Not used here. Used by
+     * a plug-in and by output handlers.
+     */
+    public static final String CFG_ALLOW_EMBEDDED_HTML = "AllowEmbeddedHTML";
+
 
     /**
      * Default values
@@ -107,7 +113,6 @@ public class CurnConfig extends Configuration
     public static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
     public static final int     DEF_MAX_THREADS       = 5;
-    public static final boolean DEF_ALLOW_EMBEDDED_HTML= false;
     public static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
 
     /**
@@ -156,7 +161,6 @@ public class CurnConfig extends Configuration
     private boolean getGzippedFeeds = true;
     private int maxThreads = DEF_MAX_THREADS;
     private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
-    private boolean allowEmbeddedHTML = DEF_ALLOW_EMBEDDED_HTML;
     private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
 
     /**
@@ -446,41 +450,6 @@ public class CurnConfig extends Configuration
     public void setRetrieveFeedsWithGzipFlag (boolean val)
     {
         this.getGzippedFeeds = val;
-    }
-
-    /**
-     * Return the value of the global "allow embedded HTML" flag. This flag
-     * controls whether or not embedded HTML markup should be honored or
-     * suppressed by default. It can be overridden on a per-feed basis.
-     * (Even if set, this flag may not be meaningful to all output
-     * handlers.)
-     *
-     * @return <tt>true</tt> if, by default, embedded HTML markup should be
-     *         honored (if possible), <tt>false</tt> if it should
-     *         be stripped.
-     *
-     * @see #setAllowEmbeddedHTMLFlag
-     */
-    public boolean allowEmbeddedHTML()
-    {
-        return allowEmbeddedHTML;
-    }
-
-    /**
-     * Set the global "allow embedded HTML" flag. This flag controls
-     * whether or not embedded HTML markup should be honored or suppressed
-     * by default. It can be overridden on a per-feed basis. (Even if set,
-     * this flag may not be meaningful to all output handlers.)
-     *
-     * @param allow <tt>true</tt> if, by default, embedded HTML markup should
-     *              be honored (if possible), <tt>false</tt> if it should
-     *              be stripped.
-     *
-     * @see #allowEmbeddedHTML()
-     */
-    public void setAllowEmbeddedHTMLFlag (boolean allow)
-    {
-        this.allowEmbeddedHTML = allow;
     }
 
     /**
@@ -911,15 +880,6 @@ public class CurnConfig extends Configuration
             val = String.valueOf (showAuthors);
         }
 
-        else if (varName.equals (VAR_ALLOW_EMBEDDED_HTML))
-        {
-            allowEmbeddedHTML =
-                getOptionalBooleanValue (MAIN_SECTION,
-                                         varName,
-                                         DEF_ALLOW_EMBEDDED_HTML);
-            val = String.valueOf (allowEmbeddedHTML);
-        }
-
         else if (varName.equals (VAR_GET_GZIPPED_FEEDS))
         {
             getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
@@ -1000,7 +960,6 @@ public class CurnConfig extends Configuration
         feedInfo.setSummarizeOnlyFlag (summaryOnly);
         feedInfo.setMaxSummarySize (maxSummarySize);
         feedInfo.setShowAuthorsFlag (showAuthors);
-        feedInfo.setAllowEmbeddedHTMLFlag (allowEmbeddedHTML);
 
         for (String varName : getVariableNames (sectionName))
         {
@@ -1049,13 +1008,6 @@ public class CurnConfig extends Configuration
             {
                 flag = getRequiredBooleanValue (sectionName, varName);
                 feedInfo.setShowAuthorsFlag (flag);
-                value = String.valueOf (flag);
-            }
-
-            else if (varName.equals (VAR_ALLOW_EMBEDDED_HTML))
-            {
-                flag = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setAllowEmbeddedHTMLFlag (flag);
                 value = String.valueOf (flag);
             }
 
