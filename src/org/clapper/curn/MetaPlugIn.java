@@ -84,6 +84,7 @@ public class MetaPlugIn
                PreCacheSavePlugIn,
                PreFeedDownloadPlugIn,
                PreFeedOutputPlugIn,
+               PostOutputPlugIn,
                ShutdownPlugIn,
                StartupPlugIn,
                UnknownSectionConfigItemPlugIn
@@ -132,6 +133,9 @@ public class MetaPlugIn
 
     private Collection<PreFeedOutputPlugIn>
         preFeedOutputPlugIns = new ArrayList<PreFeedOutputPlugIn>();
+
+    private Collection<PostOutputPlugIn>
+        postOutputPlugIns = new ArrayList<PostOutputPlugIn>();
 
     private Collection<ShutdownPlugIn>
         shutdownPlugIns = new ArrayList<ShutdownPlugIn>();
@@ -228,6 +232,9 @@ public class MetaPlugIn
 
             if (plugIn instanceof PreFeedOutputPlugIn)
                 preFeedOutputPlugIns.add ((PreFeedOutputPlugIn) plugIn);
+
+            if (plugIn instanceof PostOutputPlugIn)
+                postOutputPlugIns.add ((PostOutputPlugIn) plugIn);
 
             if (plugIn instanceof ShutdownPlugIn)
                 shutdownPlugIns.add ((ShutdownPlugIn) plugIn);
@@ -347,13 +354,13 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runPostConfigurationPlugIn (CurnConfig config)
+    public synchronized void runPostConfigPlugIn (CurnConfig config)
 	throws CurnException
     {
         for (PostConfigPlugIn plugIn : postConfigPlugIns)
         {
-            logPlugInInvocation ("runPostConfigurationPlugIn", plugIn);
-            plugIn.runPostConfigurationPlugIn (config);
+            logPlugInInvocation ("runPostConfigPlugIn", plugIn);
+            plugIn.runPostConfigPlugIn (config);
         }
     }
 
@@ -463,6 +470,16 @@ public class MetaPlugIn
         }
 
         return keepGoing;
+    }
+
+    public void runPostOutputPlugIn (Collection<OutputHandler> outputHandlers)
+	throws CurnException
+    {
+        for (PostOutputPlugIn plugIn : postOutputPlugIns)
+        {
+            logPlugInInvocation ("runPostOutputPlugIn", plugIn);
+            plugIn.runPostOutputPlugIn (outputHandlers);
+        }
     }
 
     public synchronized void runPreCacheSavePlugIn (FeedCache cache)
