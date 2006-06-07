@@ -47,8 +47,9 @@ public interface PostOutputHandlerFlushPlugIn extends PlugIn
 
     /**
      * Called immediately after an output handler is flushed (i.e., after
-     * its output has been written to a temporary file), but before that
-     * output is displayed, emailed, etc.
+     * it has been called to process all feeds and its output has been
+     * written to a temporary file), but before that output is displayed,
+     * emailed, etc.
      *
      * @param outputHandler the {@link OutputHandler} that is about to be
      *                      called. This object is read-only.

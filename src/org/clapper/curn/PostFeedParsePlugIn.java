@@ -48,12 +48,14 @@ public interface PostFeedParsePlugIn extends PlugIn
 
     /**
      * Called immediately after a feed is parsed, but before it is
-     * otherwise processed. This method can return <tt>false</tt> to signal
-     * <i>curn</i> that the feed should be skipped. For instance, a plug-in
-     * that filters on the parsed feed data could use this method to weed
-     * out non-matching feeds before they are downloaded. Similarly, a
-     * plug-in that edits the parsed data (removing or editing individual
-     * items, for instance) could use method to do so.
+     * otherwise processed. A post-feed parse plug-in has access to the
+     * <i>parsed</i> RSS feed data, via an {@link RSSChannel} object. This
+     * method can return <tt>false</tt> to signal <i>curn</i> that the feed
+     * should be skipped. For instance, a plug-in that filters on the
+     * parsed feed data could use this method to weed out non-matching
+     * feeds before they are downloaded. Similarly, a plug-in that edits
+     * the parsed data (removing or editing individual items, for instance)
+     * could use method to do so.
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.

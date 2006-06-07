@@ -245,7 +245,7 @@ public class RawFeedSaveAsPlugIn
      *
      * @see CurnConfig
      */
-    public void runPostConfigurationPlugIn (CurnConfig config)
+    public void runPostConfigPlugIn (CurnConfig config)
 	throws CurnException
     {
         this.config = config;
