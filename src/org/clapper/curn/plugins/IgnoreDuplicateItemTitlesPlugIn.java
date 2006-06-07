@@ -77,7 +77,7 @@ public class IgnoreDuplicateItemTitlesPlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Feed save data, by feed
+     * Feed "ignore" flags, by feed
      */
     private Map<FeedInfo,Boolean> perFeedIgnoreFlagMap =
         new HashMap<FeedInfo,Boolean>();
