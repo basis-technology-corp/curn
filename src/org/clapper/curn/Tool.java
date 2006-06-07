@@ -551,12 +551,12 @@ public class Tool
 
     private void deprecatedOption (char shortOption, String longOption)
     {
-        System.err.println ("WARNING: Ignoring deprecated "
-                          + UsageInfo.SHORT_OPTION_PREFIX
-                          + shortOption
-                          + " ("
-                          + UsageInfo.LONG_OPTION_PREFIX
-                          + longOption
-                          + ") command-line option.");
+        Util.getErrorOut().println ("WARNING: Ignoring deprecated "
+                                  + UsageInfo.SHORT_OPTION_PREFIX
+                                  + shortOption
+                                  + " ("
+                                  + UsageInfo.LONG_OPTION_PREFIX
+                                  + longOption
+                                  + ") command-line option.");
     }
 }

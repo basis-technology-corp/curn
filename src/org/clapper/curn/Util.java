@@ -43,6 +43,7 @@ import java.io.PrintWriter;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.io.IOExceptionExt;
 import org.clapper.util.io.RollingFileWriter;
+import org.clapper.util.io.WordWrapWriter;
 
 import org.clapper.util.logging.Logger;
 
@@ -75,6 +76,11 @@ public class Util
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
+
+    /**
+     * For error messages
+     */
+    private static WordWrapWriter err = new WordWrapWriter (System.err, 78);
 
     /**
      * For log messages
@@ -326,5 +332,15 @@ public class Util
                                       "Unable to open file \"{0}\" for output",
                                       new Object[] {file.getPath()});
         }
+    }
+
+    /**
+     * Get a <tt>PrintWriter</tt> for writing error messages to the screen.
+     *
+     * @return a suitable <tt>PrintWriter</tt>
+     */
+    public static PrintWriter getErrorOut()
+    {
+        return err;
     }
 }
