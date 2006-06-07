@@ -10,9 +10,24 @@ Version 3.0 (...)
 
 Enhancements:
 
-- Added plug-in capability. See the Users' Guide for details on writing
-  and deploying plug-ins. NOTE: For this capability to work properly, you
-  must invoke curn via the supplied shell script (Unix) or .bat file.
+- Added plug-in capability. Upon startup, curn will look for plug-ins
+  in ${curn.home}/plugins, ${user.home}/curn/plugins and
+  ${user.home}/.curn/plugins. (${user.home} is the Java System "user.home"
+  property. ${curn.home} is the "curn" installation directory.)
+
+  See the Users' Guide for details on writing and deploying plug-ins.
+
+  NOTES: 
+
+  1. For this capability to work properly, you must invoke curn via the
+     supplied curn.sh shell script (Unix) or curn.bat (Windows) script.
+     Those files handle setting ${curn.home} and running curn via a new
+     Bootstrap class that finds all the plug-in jar files and installs an
+     alternate class loader that will load classes from them.
+
+  2. Custom OutputHandler classes should also be placed in one of the
+     plug-in directories, so that curn can find them.
+
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
@@ -50,6 +65,17 @@ Enhancements:
   However, there are some broken HTTP servers (or servers with broken
   configurations) that insist on quoting the field.
 
+- curn's ScriptOutputHandler class now exports curn-related data to the
+  script via a global "curn" object that does not have to be retrieved via
+  bsf.lookupBean(). (i.e., The "curn" object is global to the script.) For
+  backward compatibility with previously written scripts, the data is also
+  available via the old beans, but new scripts should use the new "curn"
+  script global.
+
+- curn's full version string now contains a build ID string. The build ID
+  now appears in the version stamp field in all default
+  FreemarkerOutputHandler templates.
+
 Changes:
 
 - Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
@@ -66,16 +92,26 @@ Changes:
   a "removeItem()" method. This change only affects custom adapters for RSS
   parsers.
 
+- The ScriptOutputHandler no longer unconditionally strips HTML from the
+  parsed RSS feed data before passing it to the output script. Instead, it
+  honors an "AllowEmbeddedHTML" output handler configuration item to permit
+  embedded HTML ("true") or strip it ("false"). The configuration parameter
+  defaults to "false", so existing configuration files with script-based
+  output handlers will continue to behave the same.
+
 Bug Fixes:
 
-- Fixed bug: curn wasn't caching data about the overall feed (as opposed to
-  the individual items in the feed, which were being cache). For
-  download-only configurations, where the feeds are downloaded (and
-  presumably saved), but not cached, this bug caused no cache to be saved,
-  so the feeds were always downloaded on every run.
+- curn wasn't caching data about the overall feed (as opposed to the
+  individual items in the feed, which were being cache). For download-only
+  configurations, where the feeds are downloaded (and presumably saved),
+  but not cached, this bug caused no cache to be saved, so the feeds were
+  always downloaded on every run.
 
-- Fixed bug: The built-in MiniRSSParser wasn't handling relative URLs inside
-  <link> elements (in any of the RSS formats).
+- The built-in MiniRSSParser wasn't handling relative URLs inside <link>
+  elements (in any of the RSS formats).
+
+- The built-in MiniRSSParser wasn't properly handling empty XML elements
+  (e.g., "<author/>", "<dc:creator/>"). Some feeds have do them.
 
 
 Version 2.6.4 (5 February, 2006)
