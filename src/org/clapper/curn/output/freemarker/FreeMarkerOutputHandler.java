@@ -192,6 +192,8 @@ import freemarker.template.TemplateException;
  *  |    |                                      in the output
  *  |    |
  *  |    +-- version                            version of curn
+ *  |    |
+ *  |    +-- buildID                            curn's build ID
  *  |
  *  +-- totalItems                              total items for all channels
  *  |
@@ -282,11 +284,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     /*----------------------------------------------------------------------*\
                              Public Constants
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Configuration variable: allow embedded HTML
-     */
-    public static final String CFG_ALLOW_EMBEDDED_HTML = "AllowEmbeddedHTML";
 
     /**
      * Configuration variable: extra text
@@ -464,10 +461,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
                 // Determine whether we should strip HTML tags.
 
-                this.allowEmbeddedHTML = config.getOptionalBooleanValue
-                                                     (section,
-                                                      CFG_ALLOW_EMBEDDED_HTML,
-                                                      false);
+                this.allowEmbeddedHTML =
+                    config.getOptionalBooleanValue
+                        (section,
+                         CurnConfig.CFG_ALLOW_EMBEDDED_HTML,
+                         false);
                 
                 // Get the title.
 
@@ -529,6 +527,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         map = new SimpleHash();
         freemarkerDataModel.put ("curn", map);
         map.put ("version", Version.getVersionNumber());
+        map.put ("buildID", Version.getBuildID());
         if (super.displayToolInfo())
             map.put ("showToolInfo", true);
         else
@@ -560,10 +559,12 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      * the channel, so that {@link #flush} can pass all the channels to the
      * script.
      *
-     * @param channel  The channel containing the items to emit. The method
-     *                 should emit all the items in the channel; the caller
-     *                 is responsible for clearing out any items that should
-     *                 not be seen.
+     * @param channel  The channel containing the items to emit. <i>curn</i>
+     *                 will pass a copy of the actual {@link RSSChannel}
+     *                 object, so the output handler can edit its contents,
+     *                 if necessary, without affecting other output
+     *                 handlers.
+
      * @param feedInfo Information about the feed, from the configuration
      *
      * @throws CurnException  unable to write output
@@ -574,10 +575,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         // Both the feed AND the handler must enable HTML for it not to
         // be stripped.
 
-        boolean permitEmbeddedHTML = feedInfo.allowEmbeddedHTML() &&
-                                     this.allowEmbeddedHTML;
-        if (! permitEmbeddedHTML)
-            channel = convertChannelText (channel);
+        if (! allowEmbeddedHTML)
+            channel.stripHTML();
 
         // Add the channel information to the data model.
 
@@ -651,7 +650,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         boolean showAuthor = feedInfo.showAuthors();
         String[] desiredItemDescTypes;
 
-        if (permitEmbeddedHTML)
+        if (allowEmbeddedHTML)
             desiredItemDescTypes = new String[] {"text/html", "text/plain"};
         else
             desiredItemDescTypes = new String[] {"text/plain", "text/html"};
@@ -702,8 +701,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             String desc =
                 item.getSummaryToDisplay (feedInfo.summarizeOnly(),
                                           feedInfo.getMaxSummarySize(),
-                                          desiredItemDescTypes,
-                                          (! permitEmbeddedHTML));
+                                          desiredItemDescTypes);
 
             if (desc == null)
                 desc = "";
