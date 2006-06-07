@@ -69,7 +69,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_CACHE_FILE        = "CacheFile";
     public static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
     public static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
-    public static final String VAR_SUMMARY_ONLY      = "SummaryOnly";
     public static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
     public static final String VAR_SMTPHOST          = "SMTPHost";
     public static final String VAR_MAIL_SUBJECT      = "Subject";
@@ -101,7 +100,6 @@ public class CurnConfig extends Configuration
      */
     public static final int     DEF_DAYS_TO_CACHE     = 365;
     public static final boolean DEF_NO_CACHE_UPDATE   = false;
-    public static final boolean DEF_SUMMARY_ONLY      = false;
     public static final int     DEF_MAX_SUMMARY_SIZE  = Integer.MAX_VALUE;
     public static final boolean DEF_SHOW_RSS_VERSION  = false;
     public static final boolean DEF_SHOW_DATES        = false;
@@ -808,14 +806,6 @@ public class CurnConfig extends Configuration
             val = String.valueOf (updateCache);
         }
 
-        else if (varName.equals (VAR_SUMMARY_ONLY))
-        {
-            summaryOnly = getOptionalBooleanValue (MAIN_SECTION,
-                                                   varName,
-                                                   DEF_SUMMARY_ONLY);
-            val = String.valueOf (summaryOnly);
-        }
-
         else if (varName.equals (VAR_MAX_SUMMARY_SIZE))
         {
             maxSummarySize = getOptionalCardinalValue (MAIN_SECTION,
@@ -957,7 +947,6 @@ public class CurnConfig extends Configuration
 
 
         feedInfo.setDaysToCache (defaultCacheDays);
-        feedInfo.setSummarizeOnlyFlag (summaryOnly);
         feedInfo.setMaxSummarySize (maxSummarySize);
         feedInfo.setShowAuthorsFlag (showAuthors);
 
@@ -973,13 +962,6 @@ public class CurnConfig extends Configuration
                                                      defaultCacheDays);
                 feedInfo.setDaysToCache (maxDays);
                 value = String.valueOf (maxDays);
-            }
-
-            else if (varName.equals (VAR_SUMMARY_ONLY))
-            {
-                flag = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setSummarizeOnlyFlag (flag);
-                value = String.valueOf (flag);
             }
 
             else if (varName.equals (VAR_MAX_SUMMARY_SIZE))

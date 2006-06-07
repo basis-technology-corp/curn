@@ -173,30 +173,6 @@ public class FeedInfo
     }
 
     /**
-     * Return the value of "summary only" flag. If this flag is set, then
-     * any description for this feed should be suppressed. If this flag is
-     * not set, then this feed's description (if any) should be displayed.
-     *
-     * @return <tt>true</tt> if "summary only" flag is set, <tt>false</tt>
-     *         otherwise
-     */
-    public boolean summarizeOnly()
-    {
-        return summaryOnly;
-    }
-
-    /**
-     * Set the value of the "summary only" flag.
-     *
-     * @param val <tt>true</tt> to set the "summary only" flag,
-     *            <tt>false</tt> to clear it
-     */
-    public void setSummarizeOnlyFlag (boolean val)
-    {
-        this.summaryOnly = val;
-    }
-
-    /**
      * Return the value of the global "show authors" flag. This flag
      * controls whether to display the authors associated with each item,
      * if available. It can be overridden on a per-feed basis.

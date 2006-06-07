@@ -140,6 +140,10 @@ public abstract class RSSItem
      *
      * @return the content (or the default content), or null if no content
      *         of the desired MIME type is available
+     *
+     * @see #clearContent
+     * @see #getFirstContentOfType
+     * @see #setContent
      */
     public String getContent (String mimeType)
     {
@@ -160,6 +164,10 @@ public abstract class RSSItem
      * @return the first matching content string, or null if none was found.
      *         Returns the default content (if set), if there's no exact
      *         match.
+     *
+     * @see #getContent
+     * @see #clearContent
+     * @see #setContent
      */
     public final String getFirstContentOfType (String[] mimeTypes)
     {
@@ -186,6 +194,10 @@ public abstract class RSSItem
      *
      * @param content    the content string
      * @param mimeType   the MIME type to associate with the content
+     *
+     * @see #getContent
+     * @see #getFirstContentOfType
+     * @see #clearContent
      */
     public void setContent (String content, String mimeType)
     {
@@ -193,12 +205,24 @@ public abstract class RSSItem
     }   
 
     /**
+     * Clear the stored content for all MIME types, without clearing any
+     * other fields. (In particular, the summary is not cleared.)
+     *
+     * @see #getContent
+     * @see #getFirstContentOfType
+     * @see #setContent
+     */
+    public void clearContent()
+    {
+        contentMap.clear();
+    }
+
+    /**
      * Utility method to get the summary to display for an
      * <tt>RSSItem</tt>. Strips HTML by default. (Use the
      * {@link #getSummaryToDisplay(boolean,int,String[],boolean) other version}
      * of this method to control the HTML-stripping behavior.
      *
-     * @param summaryOnly    if only the summary is desired
      * @param maxSummarySize maximum summary size, or {@link #NO_SUMMARY_LIMIT}
      * @param mimeTypes      desired MIME types; used only if no summary is
      *                       available, and the content field should be used
@@ -208,8 +232,7 @@ public abstract class RSSItem
      * @see #getSummary
      * @see #getFirstContentOfType
      */
-    public String getSummaryToDisplay (boolean  summaryOnly,
-                                       int      maxSummarySize,
+    public String getSummaryToDisplay (int      maxSummarySize,
                                        String[] mimeTypes)
     {
         String summary = getSummary();
@@ -217,7 +240,7 @@ public abstract class RSSItem
         if (TextUtil.stringIsEmpty (summary))
             summary = null;
 
-        if ((summary == null) && (! summaryOnly))
+        if (summary == null)
         {
             assert (mimeTypes != null);
             summary = getFirstContentOfType (mimeTypes);

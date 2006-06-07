@@ -699,8 +699,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             itemData.put ("title", itemTitle);
 
             String desc =
-                item.getSummaryToDisplay (feedInfo.summarizeOnly(),
-                                          feedInfo.getMaxSummarySize(),
+                item.getSummaryToDisplay (feedInfo.getMaxSummarySize(),
                                           desiredItemDescTypes);
 
             if (desc == null)
