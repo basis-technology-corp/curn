@@ -56,6 +56,6 @@ ${wrapText (desc, 8)}
 
 ---------------------------------------------------------------------------
 <#if (curn.showToolInfo)>
-curn, ${curn.version} (build ID ${curn.buildID})
+curn, ${curn.version} (build ${curn.buildID})
 Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 </#if>
