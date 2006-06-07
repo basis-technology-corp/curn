@@ -30,6 +30,7 @@ import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
+import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
@@ -73,7 +74,8 @@ import java.util.Map;
  * @version <tt>$Revision$</tt>
  */
 public class AllowEmbeddedHTMLPlugIn
-    implements FeedConfigItemPlugIn,
+    implements MainConfigItemPlugIn,
+               FeedConfigItemPlugIn,
                PostFeedParsePlugIn
 {
     /*----------------------------------------------------------------------*\
