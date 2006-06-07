@@ -305,12 +305,12 @@ public class V1Parser extends ParserCommon
         if (chars.trim().length() == 0)
             chars = null;
 
-        if (elementName.equals ("title"))
-            theChannel.setTitle (chars);
-
-        else if (elementName.equals ("link"))
+        if (chars != null)
         {
-            if (chars != null)
+            if (elementName.equals ("title"))
+                theChannel.setTitle (chars);
+
+            else if (elementName.equals ("link"))
             {
                 // Some sites use relative URLs in the links. Handle
                 // that, too.
@@ -342,16 +342,16 @@ public class V1Parser extends ParserCommon
                              + "\"", ex);
                 }
             }
+
+            else if (elementName.equals ("description"))
+                theChannel.setDescription (chars);
+
+            else if (elementName.equals ("dc:date"))
+                theChannel.setPublicationDate (parseW3CDate (chars));
+
+            else if (elementName.equals ("dc:creator"))
+                theChannel.addAuthor (chars);
         }
-
-        else if (elementName.equals ("description"))
-            theChannel.setDescription (chars);
-
-        else if (elementName.equals ("dc:date"))
-            theChannel.setPublicationDate (parseW3CDate (chars));
-
-        else if (elementName.equals ("dc:creator"))
-            theChannel.addAuthor (chars);
     }
 
     /**
@@ -375,23 +375,23 @@ public class V1Parser extends ParserCommon
         if (chars.trim().length() == 0)
             chars = null;
 
-        if (elementName.equals ("title"))
-            item.setTitle (chars);
-
-        else if (elementName.equals ("link"))
+        if (chars != null)
         {
-            if (chars != null)
+            if (elementName.equals ("title"))
+                item.setTitle (chars);
+
+            else if (elementName.equals ("link"))
                 setItemLink (item, chars);
+
+            else if (elementName.equals ("description"))
+                item.setSummary (chars);
+
+            else if (elementName.equals ("dc:date"))
+                item.setPublicationDate (parseW3CDate (chars));
+
+            else if (elementName.equals ("dc:creator"))
+                item.addAuthor (chars);
         }
-
-        else if (elementName.equals ("description"))
-            item.setSummary (chars);
-
-        else if (elementName.equals ("dc:date"))
-            item.setPublicationDate (parseW3CDate (chars));
-
-        else if (elementName.equals ("dc:creator"))
-            item.addAuthor (chars);
     }
 
     /**

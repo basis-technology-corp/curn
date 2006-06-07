@@ -254,12 +254,12 @@ public class V2Parser extends ParserCommon
         if (chars.trim().length() == 0)
             chars = null;
 
-        if (elementName.equals ("title"))
-            theChannel.setTitle (chars);
-
-        else if (elementName.equals ("link"))
+        if (chars != null)
         {
-            if (chars != null)
+            if (elementName.equals ("title"))
+                theChannel.setTitle (chars);
+
+            else if (elementName.equals ("link"))
             {
                 // Some sites use relative URLs in the links. Handle
                 // that, too.
@@ -291,19 +291,19 @@ public class V2Parser extends ParserCommon
                              + "\"", ex);
                 }
             }
+
+            else if (elementName.equals ("description"))
+                theChannel.setDescription (chars);
+
+            else if (elementName.equals ("pubDate"))
+                theChannel.setPublicationDate (parseRFC822Date (chars));
+
+            else if (elementName.equals ("copyright"))
+                theChannel.setCopyright (chars);
+
+            else if (elementName.equals ("author"))
+                theChannel.addAuthor (chars);
         }
-
-        else if (elementName.equals ("description"))
-            theChannel.setDescription (chars);
-
-        else if (elementName.equals ("pubDate"))
-            theChannel.setPublicationDate (parseRFC822Date (chars));
-
-        else if (elementName.equals ("copyright"))
-            theChannel.setCopyright (chars);
-
-        else if (elementName.equals ("author"))
-            theChannel.addAuthor (chars);
     }
 
     /**
@@ -347,12 +347,12 @@ public class V2Parser extends ParserCommon
         if (chars.trim().length() == 0)
             chars = null;
 
-        if (elementName.equals ("title"))
-            item.setTitle (chars);
-
-        else if (elementName.equals ("link"))
+        if (chars != null)
         {
-            if (chars != null)
+            if (elementName.equals ("title"))
+                item.setTitle (chars);
+
+            else if (elementName.equals ("link"))
             {
                 // Some sites use relative URLs in the links. Handle
                 // that, too.
@@ -384,21 +384,21 @@ public class V2Parser extends ParserCommon
                              + "\"", ex);
                 }
             }
+
+            else if (elementName.equals ("description"))
+                item.setSummary (chars);
+
+            else if (elementName.equals ("pubDate"))
+                item.setPublicationDate (parseRFC822Date (chars));
+
+            else if (elementName.equals ("category"))
+                item.addCategory (chars);
+
+            else if (elementName.equals ("author"))
+                item.addAuthor (chars);
+
+            else if (elementName.equals ("guid"))
+                item.setID (chars);
         }
-
-        else if (elementName.equals ("description"))
-            item.setSummary (chars);
-
-        else if (elementName.equals ("pubDate"))
-            item.setPublicationDate (parseRFC822Date (chars));
-
-        else if (elementName.equals ("category"))
-            item.addCategory (chars);
-
-        else if (elementName.equals ("author"))
-            item.addAuthor (chars);
-
-        else if (elementName.equals ("guid"))
-            item.setID (chars);
     }
 }

@@ -367,25 +367,29 @@ public class AtomParser extends ParserCommon
         if (chars.length() == 0)
             chars = null;
 
-        if (elementName.equals ("title"))
-            theChannel.setTitle (chars);
+        if (chars != null)
+        {
+            if (elementName.equals ("title"))
+                theChannel.setTitle (chars);
 
-        else if (elementName.equals ("issued"))
-            theChannel.setPublicationDate (parseW3CDate (chars));
+            else if (elementName.equals ("issued"))
+                theChannel.setPublicationDate (parseW3CDate (chars));
 
-        else if (elementName.equals ("modified"))
-            theChannel.setPublicationDate (parseW3CDate (chars));
+            else if (elementName.equals ("modified"))
+                theChannel.setPublicationDate (parseW3CDate (chars));
 
-        // The <created> element was dropped in Atom 1.0, but is supported
-        // here for backward compatibility.
-        else if (elementName.equals ("created"))
-            theChannel.setPublicationDate (parseW3CDate (chars));
+            // The <created> element was dropped in Atom 1.0, but is
+            // supported here for backward compatibility.
 
-        else if (elementName.equals ("published"))
-            theChannel.setPublicationDate (parseW3CDate (chars));
+            else if (elementName.equals ("created"))
+                theChannel.setPublicationDate (parseW3CDate (chars));
 
-        else if (elementName.equals ("id"))
-            theChannel.setUniqueID (chars);
+            else if (elementName.equals ("published"))
+                theChannel.setPublicationDate (parseW3CDate (chars));
+
+            else if (elementName.equals ("id"))
+                theChannel.setUniqueID (chars);
+        }
     }
 
     /**
@@ -429,8 +433,11 @@ public class AtomParser extends ParserCommon
         if (chars.length() == 0)
             chars = null;
 
-        if (elementName.equals ("name"))
-            author.setAuthorName (chars);
+        if (chars != null)
+        {
+            if (elementName.equals ("name"))
+                author.setAuthorName (chars);
+        }
     }
 
     /**
@@ -507,25 +514,29 @@ public class AtomParser extends ParserCommon
         if (chars.length() == 0)
             chars = null;
 
-        if (elementName.equals ("title"))
-            item.setTitle (chars);
-
-        else if (elementName.equals ("summary"))
-            item.setSummary (chars);
-
-        // NOTE: The <issued> element is replaced by <published> in Atom
-        // 1.0. <issued> is supported here for backward compatibility.
-
-        else if (elementName.equals ("issued") ||
-                 elementName.equals ("published"))
-            item.setPublicationDate (parseW3CDate (chars));
-
-        else if (elementName.equals ("id"))
-            item.setID (chars);
-
-        else if (elementName.equals ("entry"))
+        if (chars != null)
         {
-            // End of item. Any cleanup goes here.
+            if (elementName.equals ("title"))
+                item.setTitle (chars);
+
+            else if (elementName.equals ("summary"))
+                item.setSummary (chars);
+
+            // NOTE: The <issued> element is replaced by <published> in
+            // Atom 1.0. <issued> is supported here for backward
+            // compatibility.
+
+            else if (elementName.equals ("issued") ||
+                     elementName.equals ("published"))
+                item.setPublicationDate (parseW3CDate (chars));
+
+            else if (elementName.equals ("id"))
+                item.setID (chars);
+
+            else if (elementName.equals ("entry"))
+            {
+                // End of item. Any cleanup goes here.
+            }
         }
     }
 
