@@ -33,8 +33,6 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
