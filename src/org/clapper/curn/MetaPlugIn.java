@@ -275,32 +275,41 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runFeedConfigItemPlugIn (String     sectionName,
-                                                    String     paramName,
-                                                    CurnConfig config,
-                                                    FeedInfo   feedInfo)
+    public synchronized boolean
+    runFeedConfigItemPlugIn (String     sectionName,
+                             String     paramName,
+                             CurnConfig config,
+                             FeedInfo   feedInfo)
 	throws CurnException
     {
+        boolean keepGoing = true;
+
         for (FeedConfigItemPlugIn plugIn : feedConfigItemPlugIns)
         {
             logPlugInInvocation ("runFeedConfigItemPlugIn",
                                  plugIn,
                                  sectionName,
                                  paramName);
-            plugIn.runFeedConfigItemPlugIn (sectionName,
-                                            paramName,
-                                            config,
-                                            feedInfo);
+            keepGoing = plugIn.runFeedConfigItemPlugIn (sectionName,
+                                                        paramName,
+                                                        config,
+                                                        feedInfo);
+            if (! keepGoing)
+                break;
         }
+
+        return keepGoing;
     }
 
-    public synchronized void
+    public synchronized boolean
     runOutputHandlerConfigItemPlugIn (String                  sectionName,
                                     String                  paramName,
                                     CurnConfig              config,
                                     ConfiguredOutputHandler handler)
 	throws CurnException
     {
+        boolean keepGoing = true;
+
         for (OutputHandlerConfigItemPlugIn plugIn :
                  outputHandlerConfigItemPlugIns)
         {
@@ -308,11 +317,15 @@ public class MetaPlugIn
                                  plugIn,
                                  sectionName,
                                  paramName);
-            plugIn.runOutputHandlerConfigItemPlugIn (sectionName,
-                                                     paramName,
-                                                     config,
-                                                     handler);
+            keepGoing = plugIn.runOutputHandlerConfigItemPlugIn (sectionName,
+                                                                 paramName,
+                                                                 config,
+                                                                 handler);
+            if (! keepGoing)
+                break;
         }
+
+        return keepGoing;
     }
 
     public synchronized void
