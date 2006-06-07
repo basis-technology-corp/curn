@@ -82,8 +82,6 @@ public class PlugInManager
                                  Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String CURN_HOME_ENV_VAR  = "CURN_HOME";
-    private static final String CURN_HOME_PROPERTY = "org.clapper.curn.home";
     private static final String BUNDLE_NAME = "org.clapper.curn.PlugInManager";
 
     /*----------------------------------------------------------------------*\
@@ -94,11 +92,6 @@ public class PlugInManager
      * For log messages
      */
     private static Logger log = new Logger (PlugInManager.class);
-
-    /**
-     * List of located plug-in jars, zips, and subdirectories
-     */
-    private static Collection<File> plugInLocations = new ArrayList<File>();
 
     /**
      * File filter to use when looking for jars, zip files, and directories.
@@ -164,7 +157,11 @@ public class PlugInManager
         MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn();
 
         ClassFinder classFinder = new ClassFinder();
-        classFinder.add (plugInLocations);
+
+        // Assumes CLASSPATH has been set appropriately by the Bootstrap
+        // class. It's necessary to do it this way to support the alternate
+        // class loader.
+
         classFinder.addClassPath();
 
         // Configure the ClassFinder's filter for plug-in classes and
@@ -267,7 +264,6 @@ public class PlugInManager
                     log.info ("Loaded output handler class \""
                             + className
                             + "\"");
-log.info ("Output handler class loader=" + cls.getClassLoader().toString());
                     totalOutputHandlersLoaded++;
                 }
 
