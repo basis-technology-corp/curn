@@ -38,12 +38,15 @@ ${wrapText (extraText)}
 ---------------------------------------------------------------------------
 ${wrapText (channel.title, 0)}
 ${channel.url}
-<#if channel.showDate && channel.date?exists>
+<#if channel.date?exists>
 ${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
 </#if>
 
 <#list channel.items as item>
 ${wrapText (item.title, 4)}
+<#if item.author?exists>
+${indentText (item.author, 4)}
+</#if>
 ${indentText (item.url, 4)}
 <#assign desc = stripHTML(item.description)>
 <#if desc != "">

@@ -96,7 +96,7 @@
     <td class="${evenOdd}Channel" align="left" rowspan="${channel.totalItems}">
         <a name="${channel.anchorName}"></a>
         <a href="${channel.url}">${channel.title}</a>&nbsp;&nbsp;<br>
-        <#if channel.showDate && channel.date?exists>${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if>
+        <#if channel.date?exists>${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if>
     </td>
 
     </#if>
@@ -105,8 +105,8 @@
       <table border="0" align="left" valign="top" summary="" cellpadding="0" cellspacing="0">
 
 	<tr><td align="left"><a href="${item.url}">${item.title}</a></td></tr>
-	<tr><td align="left"><#if item.showDate && item.date?exists>${item.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if></td></tr>
-        <#if item.showAuthor>
+	<tr><td align="left"><#if item.date?exists>${item.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if></td></tr>
+        <#if item.author?exists>
 	<tr><td>${item.author}</td></tr>
 	</#if>
 

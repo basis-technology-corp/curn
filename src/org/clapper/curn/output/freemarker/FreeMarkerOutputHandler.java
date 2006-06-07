@@ -232,8 +232,6 @@ import freemarker.template.TemplateException;
  *                 |
  *                 +-- url                      channel's URL
  *                 |
- *                 +-- showDate                 whether or not to show date
- *                 |
  *                 +-- date                     channel's last-modified date
  *                 |                            (might be missing)
  *                 |
@@ -247,14 +245,10 @@ import freemarker.template.TemplateException;
  *                             |
  *                             +-- url          item's unique URL
  *                             |
- *                             +-- showDate     whether to show date
- *                             |
  *                             +-- date         the date
  *                             |                (might be missing)
  *                             |
- *                             +-- showAuthor   whether to show author
- *                             |
- *                             +-- author       the author, or ""
+ *                             +-- author       the author (might be missing)
  *                             |
  *                             +-- description  description/summary
  * </pre>
@@ -612,19 +606,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         channelData.put ("url", channelURL.toString());
 
         Date channelDate = null;
-        boolean showDate;
-        if (config.showDates())
-        {
-            showDate = true;
-            channelData.put ("showDate", showDate);
-            channelDate = channel.getPublicationDate();
-        }
-
-        else
-        {
-            showDate = false;
-            channelData.put ("showDate", showDate);
-        }            
+        channelData.put ("showDate", true);
 
         if (channelDate != null)
         {
@@ -647,7 +629,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         // Now, put in the data for each item in the channel.
 
-        boolean showAuthor = feedInfo.showAuthors();
         String[] desiredItemDescTypes;
 
         if (allowEmbeddedHTML)
@@ -663,11 +644,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
             i++;
             itemData.put ("index", new SimpleNumber (i));
-            itemData.put ("showDate", showDate);
-            Date itemDate = null;
-            if (config.showDates())
-                itemDate = item.getPublicationDate();
-
+            itemData.put ("showDate", true);
+            Date itemDate = item.getPublicationDate();
             if (itemDate != null)
             {
                 itemData.put ("date", new SimpleDate (itemDate,
@@ -679,19 +657,14 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             URL itemURL = link.getURL();
             itemData.put ("url", itemURL.toString());
 
-            itemData.put ("showAuthor", showAuthor);
+            itemData.put ("showAuthor", true);
             String authorString = null;
-            if (feedInfo.showAuthors())
+            Collection<String> authors = item.getAuthors();
+            if ((authors != null) && (authors.size() > 0))
             {
-                Collection<String> authors = item.getAuthors();
-                if ((authors != null) && (authors.size() > 0))
-                    authorString = TextUtil.join (authors, ", ");
-            }
-
-            if (authorString == null)
-                itemData.put ("author", "");
-            else
+                authorString = TextUtil.join (authors, ", ");
                 itemData.put ("author", authorString);
+            }
 
             String itemTitle = item.getTitle();
             if (itemTitle == null)

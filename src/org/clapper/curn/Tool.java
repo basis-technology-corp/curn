@@ -123,17 +123,12 @@ public class Tool
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private String              configPath       = null;
-    private boolean             useCache         = true;
-    private Date                currentTime      = new Date();
-    private boolean             optShowBuildInfo = false;
-    private boolean             optShowVersion   = false;
-    private Boolean             optShowDates     = null;
-    private Boolean             optShowAuthors   = null;
-    private Boolean             optRSSVersion    = null;
-    private Boolean             optUpdateCache   = null;
-    private boolean             useGzip          = true;
-    private int                 maxThreads       = 0;
+    private String  configPath       = null;
+    private boolean useCache         = true;
+    private Date    currentTime      = new Date();
+    private boolean optShowBuildInfo = false;
+    private boolean optShowVersion   = false;
+    private Boolean optUpdateCache   = null;
 
     /**
      * For log messages
@@ -240,11 +235,11 @@ public class Tool
         switch (shortOption)
         {
             case 'a':           // --authors
-                optShowAuthors = Boolean.TRUE;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'A':           // --no-authors
-                optShowAuthors = Boolean.FALSE;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'B':           // --build-info
@@ -256,19 +251,19 @@ public class Tool
                 break;
 
             case 'd':           // --show-dates
-                optShowDates = Boolean.TRUE;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'D':           // --no-dates
-                optShowDates = Boolean.FALSE;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'r':           // --rss-version
-                optRSSVersion = Boolean.TRUE;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'R':           // --no-rss-version
-                optRSSVersion = Boolean.FALSE;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 't':           // --time
@@ -276,34 +271,7 @@ public class Tool
                 break;
 
             case 'T':           // --threads
-                String arg = it.next();
-
-                try
-                {
-                    maxThreads = Integer.parseInt (arg);
-                    if (maxThreads < 1)
-                    {
-                        throw new CommandLineUsageException
-                            (Constants.BUNDLE_NAME, "Tool.negNumericOption",
-                             "Value for \"{0}\" (\"{1}\") option must be "
-                           + "greater than 0",
-                             new Object[] {"-t", "--threads"});
-                    }
-                }
-
-                catch (NumberFormatException ex)
-                {
-                    throw new CommandLineUsageException
-                        (Constants.BUNDLE_NAME, "Tool.badNumericOption",
-                         "Bad numeric value \"{0}\" for \"{1}\" (\"{2}\") "
-                       + "option",
-                         new Object[]
-                         {
-                             arg,
-                             "-T",
-                             "--threads"
-                         });
-                }
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'u':           // --no-update
@@ -315,11 +283,11 @@ public class Tool
                 break;
 
             case 'z':           // --gzip
-                useGzip = true;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             case 'Z':           // --no-gzip
-                useGzip = false;
+                deprecatedOption (shortOption, longOption);
                 break;
 
             default:
@@ -396,9 +364,11 @@ public class Tool
     protected void getCustomUsageInfo (UsageInfo info)
     {
         info.addOption ('a', "show-authors",
-                        "Show the authors for each item, if available.");
+                        "Show the authors for each item, if available. "
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('A', "no-authors",
-                        "Don't the authors for each item, if available.");
+                        "Don't the authors for each item, if available."
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('B', "build-info",
                         "Show full build information, then exit. "
                       + "This option shows a bit more information than the "
@@ -406,26 +376,31 @@ public class Tool
                       + "version option");
         info.addOption ('C', "no-cache", "Don't use a cache file at all.");
         info.addOption ('d', "show-dates",
-                        "Show dates on feeds and feed items, if available.");
+                        "Show dates on feeds and feed items, if available."
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('D', "no-dates",
-                        "Don't show dates on feeds and feed items.");
+                        "Don't show dates on feeds and feed items."
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('r', "rss-version",
-                        "Show the RSS version each site uses.");
+                        "Show the RSS version each site uses."
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('R', "no-rss-version",
-                        "Don't show the RSS version each site uses.");
+                        "Don't show the RSS version each site uses."
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('T', "threads", "<n>",
                         "Set the number of concurrent download threads to "
-                      + "<n>. <n> must be greater than 0.");
+                      + "<n>. <n> must be greater than 0."
+                      + "DEPRECATED. No longer does anything.");
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
         info.addOption ('v', "version",
                         "Show version information, then exit.");
         info.addOption ('z', "gzip",
                         "Ask remote HTTP servers to gzip content before "
-                      + "sending it.");
+                      + "sending it. DEPRECATED. No longer does anything.");
         info.addOption ('Z', "no-gzip",
                         "Don't ask remote HTTP servers to gzip content before "
-                      + "sending it.");
+                      + "sending it. DEPRECATED. No longer does anything.");
 
         StringWriter      sw  = new StringWriter();
         PrintWriter       pw  = new PrintWriter (sw);
@@ -534,22 +509,8 @@ public class Tool
         // Adjust the configuration, if necessary, based on the command-line
         // parameters.
 
-        if (optShowAuthors != null)
-            config.setShowAuthorsFlag (optShowAuthors.booleanValue());
-
-        if (optRSSVersion != null)
-            config.setShowRSSVersionFlag (optRSSVersion.booleanValue());
-
         if (optUpdateCache != null)
             config.setMustUpdateCacheFlag (optUpdateCache.booleanValue());
-
-        if (optShowDates != null)
-            config.setShowDatesFlag (true);
-
-        if (maxThreads > 0)
-            config.setMaxThreads (maxThreads);
-
-        config.setRetrieveFeedsWithGzipFlag (useGzip);
     }
 
     private Date parseDateTime (String s)
@@ -599,5 +560,16 @@ public class Tool
         }
 
         return date;
+    }
+
+    private void deprecatedOption (char shortOption, String longOption)
+    {
+        System.err.println ("WARNING: Ignoring deprecated "
+                          + UsageInfo.SHORT_OPTION_PREFIX
+                          + shortOption
+                          + " ("
+                          + UsageInfo.LONG_OPTION_PREFIX
+                          + longOption
+                          + ") command-line option.");
     }
 }

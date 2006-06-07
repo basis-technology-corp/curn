@@ -67,7 +67,6 @@ public class FeedInfo
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
-    private boolean     showAuthors           = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -169,36 +168,6 @@ public class FeedInfo
     public void setDaysToCache (int cacheDays)
     {
         this.daysToCache = cacheDays;
-    }
-
-    /**
-     * Return the value of the global "show authors" flag. This flag
-     * controls whether to display the authors associated with each item,
-     * if available. It can be overridden on a per-feed basis.
-     *
-     * @return <tt>true</tt> if "show authors" flag is set, <tt>false</tt>
-     *         otherwise
-     *
-     * @see #setShowAuthorsFlag
-     */
-    public boolean showAuthors()
-    {
-        return showAuthors;
-    }
-
-    /**
-     * Set the value of the global "show authors" flag. This flag controls
-     * whether to display the authors associated with each item, if
-     * available. It can be overridden on a per-feed basis.
-     *
-     * @param val <tt>true</tt> to set the "show authors" flag, <tt>false</tt>
-     *            to clear it
-     *
-     * @see #showAuthors
-     */
-    public void setShowAuthorsFlag (boolean val)
-    {
-        this.showAuthors = val;
     }
 
     /**

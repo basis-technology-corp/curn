@@ -560,13 +560,10 @@ for more details.</p>
 </ul>
 
 <p>In addition, <i>curn</i> supports emailing its output. If email
-addresses are specified <a href="#CommandLine">on the command line</a>,
+addresses are specified <a href="#MailOutputTo">in the configuration file</a>,
 then <i>curn</i> creates a MIME multipart/alternative email
 message&nbsp;<a href="#Note1">[1]</a>, using
-the output of each output handler as one of the alternative attachments. If
-no email addresses are specified on the command line, then <i>curn</i>
-retrieves the output from the first configured output handler that actually
-produced output, and displays it on standard output.</p>
+the output of each output handler as one of the alternative attachments.</p>
 
 
 <!-- ********************************************************************** -->
@@ -574,16 +571,15 @@ produced output, and displays it on standard output.</p>
 
 <p><i>curn</i> is invoked from the command line as follows:</p>
 
-<blockquote><pre>java org.clapper.curn.Tool</pre></blockquote>
+<blockquote><pre>curn</pre></blockquote>
 
 <p><a name="curn-script"></a>
 The <i>curn</i> graphical installer automatically creates a Unix shell
 script (called <span class="code">curn</span>) or a Windows command file
 (<span class="code">curn.bat</span>) in the
 <span class="path">bin</span> directory beneath the <i>curn</i> installation
-directory. If you put the <i>curn</i> <span class="path">bin</span> directory
-in your path, you can simply type <span class="code">curn</span> to invoke
-the tool.</p>
+directory. You must put the <i>curn</i> <span class="path">bin</span> directory
+in your path.</p>
 
 <p><i>curn</i>'s command line uses a UNIX-like syntax. If you invoke
 <i>curn</i> without any parameters, you get the following usage display.
@@ -593,24 +589,17 @@ the tool.</p>
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
-Usage: java org.clapper.curn.Tool [options] config [emailAddress ...]
+Usage: curn [options] config
 
 OPTIONS:
 
--A, --no-authors     Don't the authors for each item, if available.
--a, --show-authors   Show the authors for each item, if available.
 -B, --build-info     Show full build information, then exit. This option shows
                      a bit more information than the --version option
 -C, --no-cache       Don't use a cache file at all.
 -D, --no-dates       Don't show dates on feeds and feed items.
--d, --show-dates     Show dates on feeds and feed items, if available.
 --logging            Enable logging via Jakarta Commons Logging
 -Q, --no-quiet       Emit messages about sites with no new items.
 -q, --quiet          Be quiet about sites with no new items.
--R, --no-rss-version Don't show the RSS version each site uses.
--r, --rss-version    Show the RSS version each site uses.
--T, --threads &lt;n&gt;    Set the number of concurrent download threads to &lt;n&gt;. &lt;n&gt;
-                     must be greater than 0.
 -t, --time &lt;time&gt;    For the purposes of cache expiration, pretend the current
                      time is &lt;time&gt;. &lt;time&gt; may be in one of the following
                      formats.
@@ -640,13 +629,9 @@ OPTIONS:
                      21:36
 -u, --no-update      Read the cache, but don't update it.
 -v, --version        Show version information, then exit.
--Z, --no-gzip        Don't ask remote HTTP servers to gzip content before
-                     sending it.
--z, --gzip           Ask remote HTTP servers to gzip content before sending it.
 PARAMETERS:
 
 config               Path to configuration file
-emailAddress ...     One or more email addresses to receive the output
 </pre></blockquote>
     </td>
   </tr>
@@ -671,27 +656,6 @@ Each option and argument is discussed in more detail, below.</p>
   </tr>
 
   <tbody>
-  <tr valign="top">
-    <td align="left" class="code">-A</td>
-    <td align="left" class="code"><a name="opt-show-authors"></a>--show-authors</td>
-    <td>Don't display author data found in the RSS feeds.
-        Also see the <span class="code">-a</span> option.
-        This option overrides any
-        <a href="#Cfg_ShowAuthors" class="code">ShowAuthors</a>
-        setting in the configuration file.
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">-a</td>
-    <td align="left" class="code"><a name="opt-no-authors"></a>--no-authors</td>
-    <td>Display any author data found in the RSS feeds. RSS
-        feeds are not required to contain author data, but some do.
-        This option overrides any
-        <a href="#Cfg_ShowAuthors" class="code">ShowAuthors</a>
-        setting in the configuration file.
-  </tr>
-
   <tr valign="top">
     <td align="left" class="code">-B</td>
     <td align="left" class="code"><a name="opt-build-info"></a>--build-info</td>
@@ -726,31 +690,6 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">-D</td>
-    <td align="left" class="code"><a name="opt-no-dates"></a>--no-dates</td>
-    <td>Some RSS feeds or the individual items within each feed
-        contain dates (usually corresponding to the publication
-        dates for the feed or item). If this option is specified,
-        <i>curn</i> will not display those dates. Also see the
-        <span class="code">-d</span> option.
-        This option overrides any
-        <a href="#Cfg_ShowDates" class="code">ShowDates</a>
-        setting in the configuration file.
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">-d</td>
-    <td align="left" class="code"><a name="opt-show-dates"></a>--show-dates</td>
-    <td>Display any dates founds in the RSS feeds or items.
-        Also see the <span class="code">-D</span> option.
-        This option overrides any
-        <a href="#Cfg_ShowDates" class="code">ShowDates</a>
-        setting in the configuration file.
-    </td>
-  </tr>
-
-  <tr valign="top">
     <td align="left">&nbsp;</td>
     <td><a name="opt-logging" class="code">--logging</a></td>
     <td>Enable logging via the <span class="code">java.util.logging</span>
@@ -758,42 +697,6 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
         via a <span class="code">-Djava.util.logging.config.file</span>
         system property. For instance,
         <blockquote><pre>java -Djava.util.logging.config.file=/tmp/logging.properties org.clapper.curn.Tool --logging ...</pre></blockquote>
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">-R</td>
-    <td align="left" class="code"><a name="opt-no-rss-version"></a>--no-rss-version</td>
-    <td>Do not display the RSS version for each feed.
-        Also see the <span class="code">-r</span> option.
-        This option overrides any <a href="#Cfg_ShowRSSVersion" class="code">ShowRSSVersion</a> setting in the
-        configuration file.
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">-r</td>
-    <td align="left" class="code"><a name="opt-rss-version"></a>--rss-version</td>
-    <td>Display the RSS version for each feed.
-        Also see the <span class="code">-r</span> option.
-        This option overrides any <a href="#Cfg_ShowRSSVersion" class="code">ShowRSSVersion</a> setting in the
-        configuration file.
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">-T &lt;n&gt;</td>
-    <td align="left" class="code"><a name="opt-threads"></a>--threads &lt;n&gt;</td>
-    <td>Set the number of concurrent download threads to <i>n</i>.
-        If <i>n</i> is greater than 1, then <i>curn</i> will spawn
-        <i>n</i> worker threads to handle the downloading and parsing of
-        the RSS feeds concurrently. If <i>n</i> is 1, <i>curn</i> will
-        process the feeds sequentially. If <i>n</i> is greater than 1,
-        but less than the total number of feeds, some of the worker
-        threads will end up processing more than one feed (sequentially).
-        Values less than 1 are illegal.
-        This option overrides any <a href="#Cfg_MaxThreads" class="code">MaxThreads</a> setting in the
-        configuration file.
     </td>
   </tr>
 
@@ -853,38 +756,6 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
     </td>
   </tr>
 
-  <tr valign="top">
-    <td align="left" class="code">-Z</td>
-    <td align="left" class="code"><a name="opt-no-gzip"></a>--no-gzip</td>
-    <td>Do not ask remote HTTP servers to <i>gzip</i> their content
-        before sending it.
-        By default, <i>curn</i> requests that XML feeds from HTTP
-        servers be <i>gzipped</i>, to save network bandwidth; since XML
-        is text, it usually compresses quite nicely.
-        (Note, however, that HTTP servers are not obligated to honor
-        a request to <i>gzip</i> the feed.)
-        This behavior can be disabled with the
-        <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
-        configuration setting or the
-        <span class="code">-Z</span> command-line options.
-        This option overrides any
-        <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
-        configuration setting.
-        Also see the <a href="#opt-gzip" class="code">-z</a> option.
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">-z</td>
-    <td align="left" class="code"><a name="opt-gzip"></a>--gzip</td>
-    <td>Ask remote HTTP servers to <i>gzip</i> their content before
-        sending it.
-        This option overrides any
-        <a href="#Cfg_GetGzippedFeeds" class="code">GetGzippedFeeds</a>
-        configuration setting.
-        Also see the <a href="#opt-no-gzip" class="code">-Z</a>
-    </td>
-  </tr>
   </tbody>
 
 </table>
@@ -911,33 +782,6 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
     <td>The path or URL to the <i>curn</i>
         <a href="#ConfigFile">configuration file</a>. This parameter
         is required.
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code"><a name="Param_EmailAddress"></a>emailAddress</td>
-    <td><p>One or more email addresses to receive the output.
-        This parameter is optional and may be specified multiple times.
-        If any email addresses are present on the command line, then
-        <i>curn</i> constructs a MIME multipart/alternative email
-        message&nbsp;<a href="#Note1">[1]</a>, attaching the output from
-        each configured output handler as a separate
-        multipart/alternative attachment. (<i>curn</i> assumes that
-        each output handler is generating an alternate form of the
-        same information.) Output handlers that don't generate output
-        are skipped. If none of the configured output handlers
-        generate any output, then <i>curn</i> doesn't send an email
-        message.</p>
-
-        <p>If no email addresses are present on the command line, then
-        <i>curn</i> simply takes the output from the first output handler
-        that produces output and displays it on standard output.</p>
-
-        <p>Also see the
-        <a href="#Cfg_SMTPHost" class="code">SMTPHost</a>,
-        <a href="#Cfg_MailFrom" class="code">MailFrom</a>,
-        and <a href="#Cfg_MailSubject" class="code">MailSubject</a>,
-        configuration parameters.
     </td>
   </tr>
   </tbody>
@@ -1384,46 +1228,46 @@ in detail, below.</p>
   <tr valign="top">
     <td align="left" class="code"><a name="Cfg_AllowEmbeddedHTML"></a>AllowEmbeddedHTML&nbsp;</td>
     <td align="left">Boolean</td>
-    <td align="left"><p>Default setting for whether or not to allow
-    embedded HTML in certain RSS feed elements, such as description,
-    author, etc. Some RSS formats permit embedded HTML; setting this
-    parameter to <span class="code">true</span> tells <i>curn</i>
-    <a href="#CfgOutputHandlers">output handlers</a> that they should
-    preserve such embedded HTML markup, if possible. If this parameter
-    is <span class="code">false</span>, any embedded HTML is stripped.</p>
+    <td align="left">Default setting for whether or not to allow
+      embedded HTML in certain RSS feed elements, such as description,
+      author, etc. Some RSS formats permit embedded HTML; setting this
+      parameter to <span class="code">true</span> tells <i>curn</i>
+      <a href="#CfgOutputHandlers">output handlers</a> that they should
+      preserve such embedded HTML markup, if possible. If this parameter
+      is <span class="code">false</span>, any embedded HTML is stripped.
+      <br/><br/>
+      Each output handler determines which RSS fields are allowed to
+      have embedded HTML, assuming the output handler supports this
+      parameter. (Output handlers are not required to support his
+      parameter.) In general, though, if an output handler supports
+      this configuration parameter, the handler should honor it for
+      the following fields:
 
-    <p>Each output handler determines which RSS fields are allowed to
-    have embedded HTML, assuming the output handler supports this
-    parameter. (Output handlers are not required to support his
-    parameter.) In general, though, if an output handler supports
-    this configuration parameter, the handler should honor it for
-    the following fields:
+      <ul>
+	<li> Feed title
+	<li> Item title
+	<li> Item author
+	<li> Item description
+      </ul>
 
-    <ul>
-      <li> Feed title
-      <li> Item title
-      <li> Item author
-      <li> Item description
-    </ul>
+      This global parameter can be <a href="#Feed_AllowEmbeddedHTML">overridden on a per-feed basis.</a>
+      <br/><br/>
+      Notes:
 
-    <p>This global parameter can be <a href="#Feed_AllowEmbeddedHTML">overridden on a per-feed basis.</a></p>
-
-    <p>Notes:</p>
-
-    <ul>
-      <li>This parameter is <i>not</i> examined by the RSS parser.
-          Instead, it is checked by individual output handlers, assuming
-          the output handler supports this capability. Most output
-          handlers do not support this parameter and strip HTML
-          unconditionally. Currently, only the predefined
-          <a href="#HTMLOutputHandler">HTMLOutputHandler</a> and
-          <a href="#FreeMarkerOutputHandler">FreeMarkerOutputHandler</a>
-	  output handlers honor this parameter.
-      <li>Use this parameter sparingly. If supported, the raw HTML is
-          copied <i>directly</i> into the resulting output, without
-          modification. With HTML output, malformed embedded HTML can
-          screw up the resulting HTML document.
-    </ul>
+      <ul>
+	<li>This parameter is <i>not</i> examined by the RSS parser.
+	Instead, it is checked by individual output handlers, assuming
+	the output handler supports this capability. Most output
+	handlers do not support this parameter and strip HTML
+	unconditionally. Currently, only the predefined
+	<a href="#HTMLOutputHandler">HTMLOutputHandler</a> and
+	<a href="#FreeMarkerOutputHandler">FreeMarkerOutputHandler</a>
+	output handlers honor this parameter.
+	<li>Use this parameter sparingly. If supported, the raw HTML is
+	copied <i>directly</i> into the resulting output, without
+	modification. With HTML output, malformed embedded HTML can
+	screw up the resulting HTML document.
+      </ul>
 
     </td>
     <td align="left">No</td>
@@ -1434,23 +1278,23 @@ in detail, below.</p>
   <tr valign="top">
     <td align="left" class="code"><a name="Cfg_CacheFile"></a>CacheFile</td>
     <td align="left">File name or path name</td>
-    <td align="left"><p>The full path to the file in which <i>curn</i>
+    <td align="left">The full path to the file in which <i>curn</i>
       should cache feed item data. <i>curn</i> uses the cache file to
       keep track of which feed items it has already received and
       displayed, and when it received them. Under normal operation,
       <i>curn</i> won't display a feed item it has already displayed
-      and cached.</p>
-
-      <p>The use of a cache can be disabled by omitting this parameter.
+      and cached.
+      <br/><br/>
+      The use of a cache can be disabled by omitting this parameter.
       Use the
       <a href="#Cfg_NoCacheUpdate" class="code">NoCacheUpdate</a>
       parameter, or the
       <a href="#opt-no-update" class="code">--no-update</a>
       command line option, to tell <i>curn</i> to read, but not update,
-      the cache.</p>
-
-      <p>The cache file is an XML file. However, since it is generated
-      automatically, you should not edit it.</p>
+      the cache.
+      <br/><br/>
+      The cache file is an XML file. However, since it is generated
+      automatically, you should not edit it.
     </td>
     <td align="left">No</td>
     <td align="left">None. (If not specified, no cache is used.)</td>
@@ -1517,8 +1361,30 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">true</td>
     <td align="left">
-      <a href="#opt-gzip" class="code">--gzip</a><br/>
-      <a href="#opt-no-gzip" class="code">--no-gzip</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code"><a name="MailOutputTo"></a>MailOutputTo</td>
+    <td align="left">String</td>
+    <td>One or more comma-separated email addresses to receive the output.
+        This parameter is optional. If any email addresses are specified, then
+        <i>curn</i> constructs a MIME multipart/alternative email
+        message&nbsp;<a href="#Note1">[1]</a>, attaching the output from
+        each configured output handler as a separate
+        multipart/alternative attachment. (<i>curn</i> assumes that
+        each output handler is generating an alternate form of the
+        same information.) Output handlers that don't generate output
+        are skipped. If none of the configured output handlers
+        generate any output, then <i>curn</i> doesn't send an email
+        message.
+    </td>
+    <td align="left">No</td>
+    <td align="left">Output is not emailed.</td>
+    <td align="left">
+        <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+        <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
+        <a href="#Cfg_MailSubject" class="code">MailSubject</a>
     </td>
   </tr>
 
@@ -1529,9 +1395,10 @@ in detail, below.</p>
       The email address to use as the sender, when mailing output.
       The address can be a full RFC 2822-compliant address (e.g.,
       "Joe&nbsp;Blow&nbsp;&lt;joe@example.org&gt;") or just a simple address
-      (e.g., "joe@example.org"). This parameter is only
-      used when <a href="#Param_EmailAddress">email addresses</a>
-      are specified on <i>curn</i>'s command line.
+      (e.g., "joe@example.org"). This parameter is only honored when at
+      least one email address is specified via the
+      <a href="#MailOutputTo" class="code">MailOutputTo</a> configuration
+      parameter.
     </td>
     <td align="left">No</td>
     <td align="left">
@@ -1541,7 +1408,7 @@ in detail, below.</p>
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
       <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
-      <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+      <a href="#MailOutputTo" class="code">MailOutputTo</a>
     </td>
   </tr>
 
@@ -1549,16 +1416,18 @@ in detail, below.</p>
     <td align="left" class="code"><a name="Cfg_MailSubject"></a>MailSubject</td>
     <td align="left">String</td>
     <td align="left">
-      The subject line to use when mailing output. This parameter is only
-      used when <a href="#Param_EmailAddress">email addresses</a>
-      are specified on <i>curn</i>'s command line.
+      The subject line to use when mailing output.
+      This parameter is only honored when at
+      least one email address is specified via the
+      <a href="#MailOutputTo" class="code">MailOutputTo</a> configuration
+      parameter.
     </td>
     <td align="left">No</td>
     <td align="left"><span class="code">curn output</span></td>
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
       <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
-      <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+      <a href="#MailOutputTo" class="code">MailOutputTo</a>
     </td>
   </tr>
 
@@ -1595,7 +1464,6 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#opt-threads" class="code">--threads</a>
     </td>
   </tr>
 
@@ -1619,14 +1487,14 @@ in detail, below.</p>
     <td align="left" class="code"><a name="Cfg_ParserClass"></a>ParserClass</td>
     <td align="left">String</td>
     <td align="left">
-      <p>The full name of the underlying RSS parser class to be used.
+      The full name of the underlying RSS parser class to be used.
       This class must implement the
       <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
       interface. It can be a first-class parser of its own, or
       it can be nothing more than an adapter for a third party
-      RSS parser class.</p>
-
-      <p>Three parsers are bundled with <i>curn</i>:</p>
+      RSS parser class.
+      <br/><br/>
+      Three parsers are bundled with <i>curn</i>:
 
       <dl>
         <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
@@ -1660,13 +1528,14 @@ in detail, below.</p>
             work with <i>curn</i>.
             (The Informa adapter is only available if the appropriate
             Informa jar files are in <i>curn</i>'s class path.)
-            <p>WARNING: As of the last time this document was
+	    <br/><br/>
+            WARNING: As of the last time this document was
             updated, the Informa parser, version 0.6, does not
             support Atom 1.0 properly. Specifically, it assumes that
             a <span class="code">&lt;feed&gt;</span> element will
             always have a <span class="code">version</span> attribute.
             That was true for Atom 0.3, but it's not true for Atom
-            1.0.</p>
+            1.0.
 
       </dl>
 
@@ -1712,8 +1581,6 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#opt-no-authors" class="code">--no-authors</a><br/>
-      <a href="#opt-show-authors" class="code">--show-authors</a>
     </td>
   </tr>
 
@@ -1726,12 +1593,12 @@ in detail, below.</p>
       dates for the feed or item). If this option is set to <span class="code">true</span>,
       then <i>curn</i> will display the date for each item that
       provides a date.
+      This global value can be
+      <a href="#Feed_ShowDates">overridden on a per-feed basis</a>.
     </td>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#opt-no-dates" class="code">--no-dates</a><br/>
-      <a href="#opt-show-dates" class="code">--show-dates</a>
     </td>
   </tr>
 
@@ -1742,8 +1609,6 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
     <td align="left">
-      <a href="#opt-no-rss-version" class="code">--no-rss-version</a><br/>
-      <a href="#opt-rss-version" class="code">--rss-version</a>
     </td>
   </tr>
 
@@ -1766,16 +1631,18 @@ in detail, below.</p>
     <td align="left" class="code"><a name="Cfg_SMTPHost"></a>SMTPHost</td>
     <td align="left">String</td>
     <td align="left">
-      The SMTP host to use when mailing output. This parameter is only
-      used when <a href="#Param_EmailAddress">email addresses</a>
-      are specified on <i>curn</i>'s command line.
+      The SMTP host to use when mailing output.
+      This parameter is only honored when at
+      least one email address is specified via the
+      <a href="#MailOutputTo" class="code">MailOutputTo</a> configuration
+      parameter.
     </td>
     <td align="left">No</td>
     <td align="left" class="code">localhost</td>
     <td align="left">
       <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
       <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
-      <a href="#Param_EmailAddress" class="code">emailAddress</a> command line parameter
+      <a href="#MailOutputTo" class="code">MailOutputTo</a>
     </td>
   </tr>
 
@@ -1783,10 +1650,10 @@ in detail, below.</p>
     <td align="left" class="code"><a name="Cfg_SortBy"></a>SortBy</td>
     <td align="left">String</td>
     <td align="left">
-      <p>Default method to use to sort items within each feed. This
+      Default method to use to sort items within each feed. This
       parameter is used when the configuration section for a particular
       site lacks its own <a href="#Feed_SortBy" class="code">SortBy</a>
-      value. Legal values:</p>
+      value. Legal values:
 
       <ul>
         <li><span class="code">time</span>: Sort by timestamp, if
@@ -1810,7 +1677,7 @@ in detail, below.</p>
     <td align="left" class="code"><a name="Cfg_TotalCacheBackups"></a>TotalCacheBackups</td>
     <td align="left">Positive integer</td>
     <td align="left">
-      <p>The total number of cache backup copies to keep. If this parameter
+      The total number of cache backup copies to keep. If this parameter
       is greater than 0, then <i>curn</i> will keep that many numbered backups
       of the cache. If the cache exists when <i>curn</i> attempts to update
       it, <i>curn</i> will copy the existing cache to
@@ -1820,9 +1687,10 @@ in detail, below.</p>
       until the maximum number of cache backup files exists.
       The newest cache is always the one without a numeric extension.
       the oldest file is the one with the largest numeric extension.
-      This parameter is useful if you want to roll back to a previous cache.</p>
-      <p>If this parameter is not specified, or is 0, then no cache backups
-      are made.</p>
+      This parameter is useful if you want to roll back to a previous cache.
+      <br/><br/>
+      If this parameter is not specified, or is 0, then no cache backups
+      are made.
     </td>
     <td align="left">No</td>
     <td align="left">0</td>
@@ -1835,12 +1703,12 @@ in detail, below.</p>
     <td align="left" class="code"><a name="Cfg_UserAgent"></a>UserAgent</td>
     <td align="left">String</td>
     <td align="left">
-      <p>Specifies the default HTTP <span class="code">User-Agent</span> header to use.
+      Specifies the default HTTP <span class="code">User-Agent</span> header to use.
       This configuration parameter permits you to have <i>curn</i>
       masquerade as a known browser, for sites that refuse access to
       robots and spiders and other unknown web clients. This global
       value is used when the section for a particular feed does not
-      supply its own <span class="code">UserAgent</span> value.</p>
+      supply its own <span class="code">UserAgent</span> value.
     </td>
     <td align="left">No</td>
     <td align="left">A string that identifies <i>curn</i>
@@ -2325,6 +2193,21 @@ section names are all valid for RSS feed sections.</p>
     <td align="left">No</td>
     <td align="left">The value of the global
       <a href="#Cfg_ShowAuthors" class="code">ShowAuthors</a> parameter.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code"><a name="Feed_ShowDates"></a>ShowDates</td>
+    <td align="left">Boolean</td>
+    <td align="left">
+      If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
+      to display any dates associated with this feed, if available.
+      This value overrides the global
+      <a href="#Cfg_ShowDates" class="code">ShowDates</a> parameter.
+    </td>
+    <td align="left">No</td>
+    <td align="left">The value of the global
+      <a href="#Cfg_ShowDates" class="code">ShowDates</a> parameter.
     </td>
   </tr>
 
@@ -2838,8 +2721,6 @@ documentation.</p>
  |      |       |
  |      |       +-- url ...................... [String] channel's URL
  |      |       |
- |      |       +-- showDate ................. [boolean] whether or not to show date
- |      |       |
  |      |       +-- date ..................... [Date] channel's last-modified date (might be missing)
  |      |       |
  |      |       +-- (items) .................. sequence of channel items
@@ -2852,11 +2733,7 @@ documentation.</p>
  |      |             |     |
  |      |             |     +-- url .......... [String] item's unique URL
  |      |             |     |
- |      |             |     +-- showDate ..... [boolean] whether to show date
- |      |             |     |
  |      |             |     +-- date ......... [Date] the date (might be missing)
- |      |             |     |
- |      |             |     +-- showAuthor ... [boolean] whether to show author
  |      |             |     |
  |      |             |     +-- author ....... [String] the author, or ""
  |      |             |     |
@@ -2979,7 +2856,7 @@ ${wrapText (extraText)}
 ---------------------------------------------------------------------------
 ${wrapText (channel.title, 0)}
 ${channel.url}
-&lt;#if channel.showDate &amp;&amp; channel.date?exists&gt;
+&lt;#if channel.date?exists&gt;
 ${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
 &lt;/#if&gt;
 
@@ -4248,12 +4125,9 @@ output-related methods that are required by the
             out.println (convert (channel.getTitle()));
             out.println (channel.getLink().toString());
 
-            if (config.showDates())
-            {
-                Date date = channel.getPublicationDate();
-                if (date != null)
-                    out.println (date.toString());
-            }
+            Date date = channel.getPublicationDate();
+            if (date != null)
+                out.println (date.toString());
 
             if (config.showRSSVersion())
                 out.println ("(Format: " + channel.getRSSFormat() + ")");
@@ -4276,42 +4150,33 @@ output-related methods that are required by the
                 s = item.getTitle();
                 out.println ((s == null) ? "(No Title)" : convert (s));
 
-                if (config.showAuthors())
-                {
-                    s = item.getAuthor();
-                    if (s != null)
-                        out.println ("By " + convert (s));
-                }
+                s = item.getAuthor();
+                if (s != null)
+                    out.println ("By " + convert (s));
 
                 out.println (item.getLink().toString());
 
-                if (config.showDates())
-                {
-                    Date date = item.getPublicationDate();
-                    if (date != null)
-                        out.println (date.toString());
-                }
+                Date date = item.getPublicationDate();
+                if (date != null)
+                    out.println (date.toString());
 
-                if (! feedInfo.summarizeOnly())
+                s = item.getSummary();
+                if (TextUtil.stringIsEmpty (s))
                 {
-                    s = item.getSummary();
-                    if (TextUtil.stringIsEmpty (s))
+                    // Hack for feeds that have no summary but have
+                    // content. If the content is small enough, use it
+                    // as the summary.
+
+                    s = item.getFirstContentOfType (new String[]
+                                                    {
+                                                        "text/plain",
+                                                        "text/html"
+                                                    });
+                    if (! TextUtil.stringIsEmpty (s))
                     {
-                        // Hack for feeds that have no summary but have
-                        // content. If the content is small enough, use it
-                        // as the summary.
-
-                        s = item.getFirstContentOfType (new String[]
-                                                        {
-                                                            "text/plain",
-                                                            "text/html"
-                                                        });
-                        if (! TextUtil.stringIsEmpty (s))
-                        {
-                            s = s.trim();
-                            if (s.length() > CONTENT_AS_SUMMARY_MAXSIZE)
-                                s = null;
-                        }
+                        s = s.trim();
+                        if (s.length() > CONTENT_AS_SUMMARY_MAXSIZE)
+                            s = null;
                     }
 
                     else
@@ -4484,7 +4349,7 @@ data as individual beans that must be retrieved, within the script, via calls
 to <span class="code">bsf.lookupBean()</span>. (These separate objects
 are exposed via calls to <span class="code">BSFManager.registerBean()</span>).
 New scripts should use the <span class="code">curn</span> object, rather than
-the BSF beans.<p>
+the BSF beans.</p>
 
 <table summary="" border="outlined striped" align="center" width="90%">
   <tr valign="top" class="col-headers">
@@ -4684,10 +4549,10 @@ def process_channel (out, channel, feed_info, indentation):
     out.println (channel.getTitle())
     out.println (channel.getLinks()[0].toString())
     out.println (str (channel.getItems().size()) + " item(s)")
-    if curn.config.showDates():
-        date = channel.getPublicationDate()
-        if date != None:
-            out.println (str (date))
+
+    date = channel.getPublicationDate()
+    if date != None:
+        out.println (str (date))
 
     if curn.config.showRSSVersion():
         out.println ("(Format: " + channel.getRSSFormat() + ")")
@@ -4702,19 +4567,17 @@ def process_channel (out, channel, feed_info, indentation):
         out.println (item.getTitle())
         out.println (str (item.getLinks()[0]))
 
-        if curn.config.showDates():
-            date = item.getPublicationDate();
-            if date != None:
-                out.println (str (date))
+        date = item.getPublicationDate();
+        if date != None:
+            out.println (str (date))
 
         out.println()
 
-        if not feed_info.summarizeOnly():
-            summary = item.getSummary()
-            if summary != None:
-                indent (out, indentation + 1)
-                out.println (summary)
-                indent (out, indentation)
+        summary = item.getSummary()
+        if summary != None:
+            indent (out, indentation + 1)
+            out.println (summary)
+            indent (out, indentation)
 
 def indent (out, indentation):
     """

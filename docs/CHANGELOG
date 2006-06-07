@@ -8,7 +8,9 @@ Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 
 Version 3.0 (...)
 
-Enhancements:
+			       ------------
+			       Enhancements
+			       ------------
 
 - Added plug-in capability. Upon startup, curn will look for plug-ins
   in ${curn.home}/plugins, ${user.home}/curn/plugins and
@@ -27,7 +29,6 @@ Enhancements:
 
   2. Custom OutputHandler classes should also be placed in one of the
      plug-in directories, so that curn can find them.
-
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
@@ -48,6 +49,10 @@ Enhancements:
   feed, provided each instance has its own unique suffix. "EditFeedURL" can
   be used to edit the feed's URL, as opposed to the URLs of the individual
   items within a feed.
+
+- The "ShowDates" global configuration value (in the [curn]) section can
+  now be overridden on a per-feed basis, by a feed-specific "ShowDates"
+  configuration parameter.
 
 - curn now handles web servers that specify a feed's character set in an
   HTTP header that looks like this:
@@ -76,7 +81,38 @@ Enhancements:
   now appears in the version stamp field in all default
   FreemarkerOutputHandler templates.
 
-Changes:
+				  -------
+				  Changes
+				  -------
+
+- curn no longer accepts email addresses on the command line. Instead,
+  email addresses must be specified in the configuration file, using a new
+  "MailOutputTo" configuration option in the main [curn] configuration
+  section. This change was necessary to permit moving email handling into a
+  plug-in. It's also more consistent, since the other email-related
+  parameters (subject, SMTP host, sender) are specified in the
+  configuration file.
+
+- The following curn command line options are now deprecated. These command
+  line options used to override the corresponding configuration items, but
+  they no longer do that. They can still be specified on the command line,
+  but their usage will generate warnings, and they will be ignored.
+
+       SHORT OPTION   LONG OPTION        CORRESPONDING CONFIG ITEM
+       ------------------------------------------------------------
+       -a             --show-authors     ShowAuthors: true
+       -A             --no-authors       ShowAuthors: false
+       -d             --show-dates       ShowDates: true
+       -D             --no-dates         ShowDates: false
+       -r             --rss-version      ShowRSSVersion: true
+       -R             --no-rss-version   ShowRSSVersion: false
+       -T n           --threads n        MaxThreads: n
+       -z             --gzip             GetGzippedFeeds: true
+       -Z             --no-gzip          GetGzippedFeeds: false
+       ------------------------------------------------------------
+
+- curn no longer dumps the output of the first handler to standard output
+  when not emailing output.
 
 - Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
 
@@ -99,7 +135,21 @@ Changes:
   defaults to "false", so existing configuration files with script-based
   output handlers will continue to behave the same.
 
-Bug Fixes:
+- In the FreemarkerOutputHandler's template data model, the "showAuthor"
+  and "showDate" items are deprecated, and are always set to "true". New
+  ShowAuthorsPlugIn and ShowDatesPlugIn plug-in classes handle the
+  "ShowAuthors" and "ShowDates" configuration items, respectively; those
+  plug-ins remove the corresponding data from the parsed feeds if their
+  respective flags are false, so the Freemarker "show" flags are no longer
+  necessary (though you *should* check for empty "author" or "date" fields
+  in your template).
+
+- The CurnConfig class no longer supports the showDates() and showAuthors()
+  methods.
+
+				 ---------
+				 Bug Fixes
+				 ---------
 
 - curn wasn't caching data about the overall feed (as opposed to the
   individual items in the feed, which were being cache). For download-only

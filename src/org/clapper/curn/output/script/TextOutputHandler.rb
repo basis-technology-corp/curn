@@ -144,11 +144,9 @@ class TextOutputHandler
         out.println(channel.getTitle())
         out.println(urlString)
         out.println(channel.getItems().size().to_s() + " item(s)")
-        if(config.showDates())
-            date = channel.getPublicationDate()
-            if date
-                out.println(date.toString())
-            end
+        date = channel.getPublicationDate()
+        if date
+            out.println(date.toString())
         end
 
         indentation = indentation + 1
@@ -160,24 +158,25 @@ class TextOutputHandler
 
             out.newline()
             out.println(item.getTitle())
+            author = item.getAuthor()
+            if author
+                out.println(author)
+            end
+
             out.println(item.getLinks().iterator().next().toString())
 
-            if config.showDates()
-                date = item.getPublicationDate()
-                if date
-                    out.println(date.toString())
-                end
+            date = item.getPublicationDate()
+            if date
+                out.println(date.toString())
             end
 
             out.newline()
 
-            if not feed_info.summarizeOnly()
-                summary = item.getSummary()
-                if summary
-                    indent(out, indentation + 1)
-                    out.println(summary)
-                    indent(out, indentation)
-                end
+            summary = item.getSummary()
+            if summary
+                indent(out, indentation + 1)
+                out.println(summary)
+                indent(out, indentation)
             end
         end
     end

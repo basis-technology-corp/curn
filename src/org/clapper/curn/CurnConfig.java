@@ -73,8 +73,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
     public static final String VAR_PARSER_CLASS_NAME = "ParserClass";
     public static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
-    public static final String VAR_SHOW_DATES        = "ShowDates";
-    public static final String VAR_SHOW_AUTHORS      = "ShowAuthors";
     public static final String VAR_FEED_URL          = "URL";
     public static final String VAR_CLASS             = "Class";
     public static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
@@ -96,8 +94,6 @@ public class CurnConfig extends Configuration
     public static final int     DEF_DAYS_TO_CACHE     = 365;
     public static final boolean DEF_NO_CACHE_UPDATE   = false;
     public static final boolean DEF_SHOW_RSS_VERSION  = false;
-    public static final boolean DEF_SHOW_DATES        = false;
-    public static final boolean DEF_SHOW_AUTHORS      = false;
     public static final boolean DEF_GET_GZIPPED_FEEDS = true;
     public static final boolean DEF_SAVE_ONLY         = false;
     public static final String  DEF_PARSER_CLASS_NAME =
@@ -138,13 +134,11 @@ public class CurnConfig extends Configuration
     private boolean updateCache = true;
     private boolean summaryOnly = false;
     private boolean showRSSFormat = false;
-    private boolean showDates = false;
     private Collection<FeedInfo> feeds = new ArrayList<FeedInfo>();
     private Map<String, FeedInfo> feedMap = new HashMap<String, FeedInfo>();
     private String parserClassName = DEF_PARSER_CLASS_NAME;
     private List<ConfiguredOutputHandler> outputHandlers
                                  = new ArrayList<ConfiguredOutputHandler>();
-    private boolean showAuthors = false;
     private boolean getGzippedFeeds = true;
     private int maxThreads = DEF_MAX_THREADS;
     private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
@@ -413,64 +407,6 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Return the value of the global "show authors" flag. This flag
-     * controls whether to display the authors associated with each item,
-     * if available. It can be overridden on a per-feed basis.
-     *
-     * @return <tt>true</tt> if "show authors" flag is set, <tt>false</tt>
-     *         otherwise
-     *
-     * @see #setShowAuthorsFlag
-     */
-    public boolean showAuthors()
-    {
-        return showAuthors;
-    }
-
-    /**
-     * Set the value of the global "show authors" flag. This flag controls
-     * whether to display the authors associated with each item, if
-     * available. It can be overridden on a per-feed basis.
-     *
-     * @param val <tt>true</tt> to set the "show authors" flag, <tt>false</tt>
-     *            to clear it
-     *
-     * @see #showAuthors
-     */
-    public void setShowAuthorsFlag (boolean val)
-    {
-        this.showAuthors = val;
-    }
-
-    /**
-     * Return the value of the "show dates" flag. This flag controls whether
-     * to display the dates associated with each feed and item, if available.
-     *
-     * @return <tt>true</tt> if "show dates" flag is set, <tt>false</tt>
-     *         otherwise
-     *
-     * @see #setShowDatesFlag
-     */
-    public boolean showDates()
-    {
-        return showDates;
-    }
-
-    /**
-     * Set the value of the "show dates" flag. This flag controls whether
-     * to display the dates associated with each feed and item, if available.
-     *
-     * @param val <tt>true</tt> to set the "show dates" flag, <tt>false</tt>
-     *            to clear it
-     *
-     * @see #showDates
-     */
-    public void setShowDatesFlag (boolean val)
-    {
-        this.showDates = val;
-    }
-
-    /**
      * Return the value of "show RSS version" flag.
      *
      * @return <tt>true</tt> if flag is set, <tt>false</tt> if it isn't
@@ -704,28 +640,12 @@ public class CurnConfig extends Configuration
             val = String.valueOf (showRSSFormat);
         }
 
-        else if (varName.equals (VAR_SHOW_DATES))
-        {
-            showDates = getOptionalBooleanValue (MAIN_SECTION,
-                                                 varName,
-                                                 DEF_SHOW_DATES);
-            val = String.valueOf (showDates);
-        }
-
         else if (varName.equals (VAR_PARSER_CLASS_NAME))
         {
             parserClassName = getOptionalStringValue (MAIN_SECTION,
                                                       varName,
                                                       DEF_PARSER_CLASS_NAME);
             val = String.valueOf (parserClassName);
-        }
-
-        else if (varName.equals (VAR_SHOW_AUTHORS))
-        {
-            showAuthors = getOptionalBooleanValue (MAIN_SECTION,
-                                                   varName,
-                                                   DEF_SHOW_AUTHORS);
-            val = String.valueOf (showAuthors);
         }
 
         else if (varName.equals (VAR_GET_GZIPPED_FEEDS))
@@ -806,7 +726,6 @@ public class CurnConfig extends Configuration
 
 
         feedInfo.setDaysToCache (defaultCacheDays);
-        feedInfo.setShowAuthorsFlag (showAuthors);
 
         for (String varName : getVariableNames (sectionName))
         {
@@ -827,13 +746,6 @@ public class CurnConfig extends Configuration
             {
                 value = getConfigurationValue (sectionName, varName);
                 feedInfo.setForcedCharacterEncoding (value);
-            }
-
-            else if (varName.equals (VAR_SHOW_AUTHORS))
-            {
-                flag = getRequiredBooleanValue (sectionName, varName);
-                feedInfo.setShowAuthorsFlag (flag);
-                value = String.valueOf (flag);
             }
 
             else

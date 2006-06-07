@@ -135,12 +135,9 @@ class GroovyTextOutputHandler
         out.println(channel.getTitle())
         out.println(urlString)
         out.println(channel.getItems().size().toString() + " item(s)")
-        if (curn.config.showDates())
-        {
-            def date = channel.getPublicationDate()
-            if (date != null)
-                out.println(date.toString())
-        }
+        def date = channel.getPublicationDate()
+        if (date != null)
+            out.println(date.toString())
 
         indentation = indentation + 1
         indent(out, indentation)
@@ -150,26 +147,24 @@ class GroovyTextOutputHandler
 
             out.println()
             out.println(item.getTitle())
+            def author = item.getAuthor();
+            if (author != null)
+                out.println (author);
+
             out.println(item.getLinks().iterator().next().toString())
 
-            if (curn.config.showDates())
-            {
-                def date = item.getPublicationDate()
-                if (date != null)
-                    out.println(date.toString())
-            }
+            date = item.getPublicationDate()
+            if (date != null)
+                out.println(date.toString())
 
             out.println()
 
-            if (! feed_info.summarizeOnly())
+            def summary = item.getSummary()
+            if (summary != null)
             {
-                def summary = item.getSummary()
-                if (summary != null)
-                {
-                    indent(out, indentation + 1)
-                    out.println(summary)
-                    indent(out, indentation)
-                }
+                indent(out, indentation + 1)
+                out.println(summary)
+                indent(out, indentation)
             }
         }
     }

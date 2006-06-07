@@ -117,10 +117,10 @@ def process_channel (out, channel, feed_info, indentation):
     out.println (channel.getTitle())
     out.println (channel.getLinks()[0].toString())
     out.println (str (channel.getItems().size()) + " item(s)")
-    if curn.config.showDates():
-        date = channel.getPublicationDate()
-        if date != None:
-            out.println (str (date))
+
+    date = channel.getPublicationDate()
+    if date != None:
+        out.println (str (date))
 
     if curn.config.showRSSVersion():
         out.println ("(Format: " + channel.getRSSFormat() + ")")
@@ -133,21 +133,23 @@ def process_channel (out, channel, feed_info, indentation):
 
         out.println()
         out.println (item.getTitle())
+        author = item.getAuthor()
+        if author != None:
+            out.println (author)
+
         out.println (str (item.getLinks()[0]))
 
-        if curn.config.showDates():
-            date = item.getPublicationDate();
-            if date != None:
-                out.println (str (date))
+        date = item.getPublicationDate();
+        if date != None:
+            out.println (str (date))
 
         out.println()
 
-        if not feed_info.summarizeOnly():
-            summary = item.getSummary()
-            if summary != None:
-                indent (out, indentation + 1)
-                out.println (summary)
-                indent (out, indentation)
+        summary = item.getSummary()
+        if summary != None:
+            indent (out, indentation + 1)
+            out.println (summary)
+            indent (out, indentation)
 
 def indent (out, indentation):
     """

@@ -138,12 +138,10 @@ public function TextOutputHandler()
         out.println(channel.getTitle());
         out.println(urlString);
         out.println(channel.getItems().size().toString() + " item(s)");
-        if (config.showDates())
-        {
-            var date = channel.getPublicationDate();
-            if (date != null)
-                out.println(date.toString());
-        }
+
+        var date = channel.getPublicationDate();
+        if (date != null)
+            out.println(date.toString());
 
         indentation = indentation + 1;
         indent(out, indentation);
@@ -155,26 +153,24 @@ public function TextOutputHandler()
 
             out.println();
             out.println(item.getTitle());
+            var author = item.getAuthor();
+            if (author != null)
+                out.println(author);
+
             out.println(item.getLinks().iterator().next().toString());
 
-            if (config.showDates())
-            {
-                var date = item.getPublicationDate();
-                if (date != null)
-                    out.println(date.toString());
-            }
+            var date = item.getPublicationDate();
+            if (date != null)
+                out.println(date.toString());
 
             out.println();
 
-            if (! feed_info.summarizeOnly())
+            var summary = item.getSummary();
+            if (summary != null)
             {
-                var summary = item.getSummary();
-                if (summary != null)
-                {
-                    indent(out, indentation + 1);
-                    out.println(summary);
-                    indent(out, indentation);
-                }
+                indent(out, indentation + 1);
+                out.println(summary);
+                indent(out, indentation);
             }
         }
     }
