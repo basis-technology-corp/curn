@@ -223,17 +223,15 @@ public abstract class RSSItem
      * {@link #getSummaryToDisplay(boolean,int,String[],boolean) other version}
      * of this method to control the HTML-stripping behavior.
      *
-     * @param maxSummarySize maximum summary size, or {@link #NO_SUMMARY_LIMIT}
-     * @param mimeTypes      desired MIME types; used only if no summary is
-     *                       available, and the content field should be used
+     * @param mimeTypes  desired MIME types; used only if no summary is
+     *                   available, and the content field should be used
      *
      * @return the summary string to use, or null if unavailable
      *
      * @see #getSummary
      * @see #getFirstContentOfType
      */
-    public String getSummaryToDisplay (int      maxSummarySize,
-                                       String[] mimeTypes)
+    public String getSummaryToDisplay (String[] mimeTypes)
     {
         String summary = getSummary();
 
@@ -247,9 +245,6 @@ public abstract class RSSItem
             if (TextUtil.stringIsEmpty (summary))
                 summary = null;
         }
-
-        if (summary != null)
-            summary = truncateSummary (summary, maxSummarySize);
 
         return summary;
     }
@@ -484,59 +479,4 @@ public abstract class RSSItem
      * @param id the ID field, or null
      */
     public abstract void setID (String id);
-
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Truncate an RSS item's summary to a specified size. Truncates on
-     * word boundary, if possible.
-     *
-     * @param summary  the summary to truncate
-     * @param maxSize  the maximum size
-     *
-     * @return the truncated summary
-     */
-    private String truncateSummary (String summary, int maxSize)
-    {
-        summary = summary.trim();
-
-        if (summary.length() > maxSize)
-        {
-            // Allow for ellipsis
-
-            if (maxSize < 4)
-                maxSize = 4;
-
-            maxSize -= 4;
-
-            int last = maxSize;
-            char[] ch = summary.toCharArray();
-            int i = last;
-
-            // If we're in the middle of a word, find the first hunk of
-            // white space.
-
-            while ((! Character.isWhitespace (ch[i])) && (i-- >= 0))
-                continue;
-
-            // Next, get rid of trailing white space.
-
-            while ((Character.isWhitespace (ch[i])) && (i-- >= 0))
-                continue;
-
-            // Handle underflow.
-
-            if (i >= 0)
-                last = i;
-
-            StringBuffer buf = new StringBuffer (summary.substring (0,
-                                                                    last + 1));
-            buf.append (" ...");
-            summary = buf.toString();
-        }
-
-        return summary;
-    }
 }

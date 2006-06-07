@@ -67,7 +67,6 @@ public class FeedInfo
     private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
-    private int         maxSummarySize        = Integer.MAX_VALUE;
     private boolean     showAuthors           = false;
 
     /*----------------------------------------------------------------------*\
@@ -228,32 +227,6 @@ public class FeedInfo
     public void setEnabledFlag (boolean enabled)
     {
         this.enabled = enabled;
-    }
-
-    /**
-     * Get the maximum summary size.
-     *
-     * @return the maximum summary size, in characters, or 0 for no limit.
-     *
-     * @see #setMaxSummarySize
-     */
-    public int getMaxSummarySize()
-    {
-        return maxSummarySize;
-    }
-
-    /**
-     * Set the maximum summary size.
-     *
-     * @param newSize the new maximum summary size, in characters, or 0 for
-     *                no limit. Value must be non-negative.
-     *
-     * @see #getMaxSummarySize
-     */
-    public void setMaxSummarySize (int newSize)
-    {
-        assert (newSize >= 0);
-        this.maxSummarySize = newSize;
     }
 
     /**

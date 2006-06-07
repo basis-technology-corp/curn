@@ -69,7 +69,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_CACHE_FILE        = "CacheFile";
     public static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
     public static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
-    public static final String VAR_MAX_SUMMARY_SIZE  = "MaxSummarySize";
     public static final String VAR_SMTPHOST          = "SMTPHost";
     public static final String VAR_MAIL_SUBJECT      = "Subject";
     public static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
@@ -100,7 +99,6 @@ public class CurnConfig extends Configuration
      */
     public static final int     DEF_DAYS_TO_CACHE     = 365;
     public static final boolean DEF_NO_CACHE_UPDATE   = false;
-    public static final int     DEF_MAX_SUMMARY_SIZE  = Integer.MAX_VALUE;
     public static final boolean DEF_SHOW_RSS_VERSION  = false;
     public static final boolean DEF_SHOW_DATES        = false;
     public static final boolean DEF_SHOW_AUTHORS      = false;
@@ -158,7 +156,6 @@ public class CurnConfig extends Configuration
     private boolean showAuthors = false;
     private boolean getGzippedFeeds = true;
     private int maxThreads = DEF_MAX_THREADS;
-    private int maxSummarySize = DEF_MAX_SUMMARY_SIZE;
     private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
 
     /**
@@ -380,32 +377,6 @@ public class CurnConfig extends Configuration
         }
 
         this.maxThreads = newValue;
-    }
-
-    /**
-     * Get the maximum summary size.
-     *
-     * @return the maximum summary size, in characters, or 0 for no limit.
-     *
-     * @see #setMaxSummarySize
-     */
-    public int getMaxSummarySize()
-    {
-        return maxSummarySize;
-    }
-
-    /**
-     * Set the maximum summary size.
-     *
-     * @param newSize the new maximum summary size, in characters, or 0 for
-     *                no limit. Value must be non-negative.
-     *
-     * @see #getMaxSummarySize
-     */
-    public void setMaxSummarySize (int newSize)
-    {
-        assert (newSize >= 0);
-        this.maxSummarySize = newSize;
     }
 
     /**
@@ -806,14 +777,6 @@ public class CurnConfig extends Configuration
             val = String.valueOf (updateCache);
         }
 
-        else if (varName.equals (VAR_MAX_SUMMARY_SIZE))
-        {
-            maxSummarySize = getOptionalCardinalValue (MAIN_SECTION,
-                                                       varName,
-                                                       DEF_MAX_SUMMARY_SIZE);
-            val = String.valueOf (maxSummarySize);
-        }
-
         else if (varName.equals (VAR_SHOW_RSS_VERSION))
         {
             showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
@@ -947,7 +910,6 @@ public class CurnConfig extends Configuration
 
 
         feedInfo.setDaysToCache (defaultCacheDays);
-        feedInfo.setMaxSummarySize (maxSummarySize);
         feedInfo.setShowAuthorsFlag (showAuthors);
 
         for (String varName : getVariableNames (sectionName))
@@ -962,14 +924,6 @@ public class CurnConfig extends Configuration
                                                      defaultCacheDays);
                 feedInfo.setDaysToCache (maxDays);
                 value = String.valueOf (maxDays);
-            }
-
-            else if (varName.equals (VAR_MAX_SUMMARY_SIZE))
-            {
-                int maxSummarySize = getRequiredCardinalValue (sectionName,
-                                                               varName);
-                feedInfo.setMaxSummarySize (maxSummarySize);
-                value = String.valueOf (maxSummarySize);
             }
 
             else if (varName.equals (VAR_DISABLED))
