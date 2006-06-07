@@ -32,19 +32,10 @@ import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
-import org.clapper.curn.PreFeedDownloadPlugIn;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.net.URLConnection;
-
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * The <tt>DisableFeedPlugIn</tt> handles disabling a feed. It intercepts
@@ -61,29 +52,15 @@ import java.util.HashMap;
  * @version <tt>$Revision$</tt>
  */
 public class DisableFeedPlugIn
-    implements FeedConfigItemPlugIn,
-               PreFeedDownloadPlugIn
+    implements FeedConfigItemPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VAR_DISABLED = "Disabled";
-
     /*----------------------------------------------------------------------*\
                               Private Classes
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Feed "ignore" flags, by feed
-     */
-    private Map<FeedInfo,Boolean> perFeedDisabledFlagMap =
-        new HashMap<FeedInfo,Boolean>();
-
-    /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
 
     /**
      * For log messages
@@ -112,7 +89,7 @@ public class DisableFeedPlugIn
      */
     public String getName()
     {
-        return "Save As";
+        return "Disable Feed";
     }
 
     /*----------------------------------------------------------------------*\
@@ -137,29 +114,36 @@ public class DisableFeedPlugIn
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
      * 
+     * @return <tt>true</tt> to continue processing the feed,
+     *         <tt>false</tt> to skip it
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public void runFeedConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config,
-                                         FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn (String     sectionName,
+                                            String     paramName,
+                                            CurnConfig config,
+                                            FeedInfo   feedInfo)
 	throws CurnException
     {
+        boolean keepGoing = true;
+
         try
         {
-            if (paramName.equals (VAR_DISABLED))
+            if (paramName.equals (CurnConfig.VAR_DISABLED))
             {
-                boolean flag = config.getRequiredBooleanValue (sectionName,
-                                                               paramName);
-                perFeedDisabledFlagMap.put (feedInfo, flag);
+                boolean disable = config.getRequiredBooleanValue (sectionName,
+                                                                  paramName);
                 log.debug ("[" + sectionName + "]: "
                          + paramName
                          + "="
-                         + flag);
+                         + disable);
+
+                if (disable)
+                    keepGoing = false;
             }
         }
 
@@ -167,54 +151,7 @@ public class DisableFeedPlugIn
         {
             throw new CurnException (ex);
         }
-    }
 
-
-    /**
-     * <p>Called just before a feed is downloaded. This method can return
-     * <tt>false</tt> to signal <i>curn</i> that the feed should be
-     * skipped. The plug-in method can also set values on the
-     * <tt>URLConnection</tt> used to download the plug-in, via
-     * <tt>URL.setRequestProperty()</tt>. (Note that <i>all</i> URLs, even
-     * <tt>file:</tt> URLs, are passed into this method. Setting a request
-     * property on the <tt>URLConnection</tt> object for a <tt>file:</tt>
-     * URL will have no effect--though it isn't specifically harmful.)</p>
-     *
-     * <p>Possible uses for a pre-feed download plug-in include:</p>
-     *
-     * <ul>
-     *   <li>filtering on feed URL to prevent downloading non-matching feeds
-     *   <li>changing the default User-Agent value
-     *   <li>setting a non-standard HTTP header field
-     * </ul>
-     *
-     * @param feedInfo  the {@link FeedInfo} object for the feed to be
-     *                  downloaded
-     * @param urlConn   the <tt>java.net.URLConnection</tt> object that will
-     *                  be used to download the feed's XML.
-     *
-     * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed
-     *
-     * @throws CurnException on error
-     *
-     * @see FeedInfo
-     */
-    public boolean runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
-                                             URLConnection urlConn)
-	throws CurnException
-    {
-        Boolean disabled = perFeedDisabledFlagMap.get (feedInfo);
-        boolean processFeed = true;
-
-        if ((disabled != null) && (disabled))
-        {
-            log.debug ("Feed "
-                     + feedInfo.getURL().toString()
-                     + " is marked disabled. Skipping it.");
-            processFeed = false;
-        }
-
-        return processFeed;
+        return keepGoing;
     }
 }

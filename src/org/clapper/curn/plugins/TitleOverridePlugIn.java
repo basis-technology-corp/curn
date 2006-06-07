@@ -137,16 +137,19 @@ public class TitleOverridePlugIn
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
      * 
+     * @return <tt>true</tt> to continue processing the feed,
+     *         <tt>false</tt> to skip it
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public void runFeedConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config,
-                                         FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn (String     sectionName,
+                                            String     paramName,
+                                            CurnConfig config,
+                                            FeedInfo   feedInfo)
 	throws CurnException
     {
         try
@@ -161,6 +164,8 @@ public class TitleOverridePlugIn
                          + "="
                          + title);
             }
+
+            return true;
         }
 
         catch (ConfigurationException ex)
