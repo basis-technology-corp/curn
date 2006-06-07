@@ -124,7 +124,7 @@
 <#if (curn.showToolInfo)>
 <table border="0" summary="curn configuration information">
   <tr valign="top">
-    <td class="smaller"><a href="http://www.clapper.org/software/java/curn/"><i>curn</i></a>, version ${curn.version}</td>
+    <td class="smaller"><a href="http://www.clapper.org/software/java/curn/"><i>curn</i></a>, version ${curn.version} (build ID ${curn.buildID})</td>
   </tr>
   <tr valign="top">
     <td class="smaller">Document generated on ${dateGenerated?string("dd MMMM, yyyy 'at' HH:mm:ss zzz")}</td>
