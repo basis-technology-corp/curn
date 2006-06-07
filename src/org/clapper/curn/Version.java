@@ -250,7 +250,7 @@ public final class Version
 
         showVersion (out);
         out.println ();
-        out.println ("Build ID:       " + buildInfo.getBuildID());
+        out.println ("Build:          " + buildInfo.getBuildID());
         out.println ("Build date:     " + buildInfo.getBuildDate());
         out.println ("Built by:       " + buildInfo.getBuildUserID());
         out.println ("Built on:       " + buildInfo.getBuildOperatingSystem());
