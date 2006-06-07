@@ -514,7 +514,8 @@ you can take to be more bandwidth-friendly.)</p>
 
 <p><i>curn</i>
 can be extended to use any RSS parser; its built-in RSS parser, the
-<a href="../../javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
+http://wwwtest/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/package-frame.html
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
 class, can handle files in
 <a target="_top" href="http://www.atomenabled.org/developers/">Atom</a>
 format (0.3) and RSS formats
@@ -1620,7 +1621,7 @@ in detail, below.</p>
     <td align="left">
       <p>The full name of the underlying RSS parser class to be used.
       This class must implement the
-      <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
       interface. It can be a first-class parser of its own, or
       it can be nothing more than an adapter for a third party
       RSS parser class.</p>
@@ -1628,7 +1629,7 @@ in detail, below.</p>
       <p>Three parsers are bundled with <i>curn</i>:</p>
 
       <dl>
-        <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
+        <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
 
         <dd>A minimal SAX-based RSS parser that handles files in
             <a href="http://www.atomenabled.org/developers/">Atom</a>
@@ -1642,7 +1643,7 @@ in detail, below.</p>
             RSS parser (though it's perfectly suited for use in
             <i>curn</i>).
 
-        <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
+        <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
 
         <dd>An adapter class that makes the
             <a href="https://rome.dev.java.net/">Rome RSS parser</a>
@@ -1652,7 +1653,7 @@ in detail, below.</p>
             that Rome requires version 1.0 of the
             <a href="http://www.jdom.org/">JDOM</a> library.)
 
-        <dt><a href="../../javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
+        <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
 
         <dd>An adapter class that makes the
             <a href="http://informa.sourceforge.net/">Informa RSS parser</a>
@@ -1670,7 +1671,7 @@ in detail, below.</p>
       </dl>
 
       <p>Any class that implements
-      <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
       may be used as a value for <span class="code">ParserClass</span>.
     </td>
     <td align="left">No</td>
@@ -2478,7 +2479,7 @@ variables common to all output handlers are described below.</p>
     <td>String</td>
     <td align="left">Identifies Java class that implements the output
     handler. (The class must implement the
-    <a href="../../javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
     interface. See
     <a href="#NewOutputHandler">Writing Your Own Output Handler</a>
     for details.)
@@ -2795,6 +2796,8 @@ documentation.</p>
  |    |                                        in the output
  |    |
  |    +-- version ............................ [String] version of curn
+ |    |
+ |    +-- buildID ............................ [String] curn's build ID
  |
  +-- totalItems .............................. [int] total items for all channels
  |
@@ -3795,17 +3798,17 @@ that implement some interfaces and extend some classes provided with the
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
     <td align="left">Interface</td>
     <td align="left">
       Defines a simplified view of an RSS parser. Classes implementing
       this interface must provide a default public constructor and
-      a <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
+      a <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
     <td align="left">Abstract class</td>
     <td align="left">
       Defines a simplified view of an RSS channel (a.k.a., a parsed
@@ -3816,7 +3819,7 @@ that implement some interfaces and extend some classes provided with the
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
     <td align="left">Abstract class</td>
     <td align="left">
       Defines a simplified view of an RSS item (a.k.a., one of the items
@@ -3834,7 +3837,7 @@ that implement some interfaces and extend some classes provided with the
 implement the above interfaces or extend the above classes, and map the
 necessary calls onto methods in the real underlying parser. For a sample
 integration, see the classes in the <i>curn</i> source code package
-<a href="../../javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
 <a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
 
 <h3><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h3>
@@ -3861,7 +3864,7 @@ writing a FreeMarker template will be simpler and faster.</p>
 
 <ul>
   <li>First, write a Java class the implements the
-      <a href="../../javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
       interface.
   <li>Compile the class and place the compiled class somewhere in your
       CLASSPATH.
@@ -3872,7 +3875,7 @@ writing a FreeMarker template will be simpler and faster.</p>
 <p>To illustrate the concept, let's look at an output handler that simply
 writes each channel and its items as plain text. (As it turns out,
 this example is a stripped down version of the existing
-<a href="../../javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a> class. The real source code has more
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a> class. The real source code has more
 comments and documentation and also implements a common base class.)</p>
 
 <p>First, let's look at the top of the class and the required
@@ -3882,7 +3885,7 @@ comments and documentation and also implements a common base class.)</p>
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
-import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.ConfigureOutputHandler;
 import org.clapper.curn.OutputHandler;
@@ -3918,7 +3921,7 @@ public class MyOutputHandler
                     + "---------------------------------------";
 
     private WordWrapWriter  out         = null;
-    private ConfigFile      config      = null;
+    private CurnConfig      config      = null;
     private String          message     = null;
     private Collection      channels    = new ArrayList();
     private int             totalItems  = 0;
@@ -3943,7 +3946,7 @@ public class MyOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void init (ConfigFile              config,
+    public void init (CurnConfig              config,
                       ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
@@ -4039,7 +4042,7 @@ initialization required by the output handler class.</p>
 <p><b>Note</b>: The sample <span class="code">init()</span> method, above,
 does a little more work than it needs to do. As it turns out, the
 <i>curn</i> API provides a useful abstract base class called
-<a href="../../javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.output.FileHandler</a> that
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.output.FileHandler</a> that
 implements the <span class="code">OutputHandler</span> interface.
 <span class="code">FileOutputHandler</span> provides an
 <span class="code">init()</span> method that:
@@ -4073,7 +4076,7 @@ Changes from the original, above, are marked in bold.</p>
   <tr valign="top">
     <td align="left">
 <blockquote><pre>
-import org.clapper.curn.ConfigFile;
+import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.ConfigureOutputHandler;
 import org.clapper.curn.OutputHandler;
@@ -4111,7 +4114,7 @@ public class MyOutputHandler <b>extends FileOutputHandler</b>
                     + "---------------------------------------";
 
     private WordWrapWriter  out         = null;
-    private ConfigFile      config      = null;
+    private CurnConfig      config      = null;
     private String          message     = null;
     private Collection      channels    = new ArrayList();
     private int             totalItems  = 0;
@@ -4137,7 +4140,7 @@ public class MyOutputHandler <b>extends FileOutputHandler</b>
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (ConfigFile              config,
+    public void initOutputHandler (CurnConfig              config,
                                    ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException</b>
@@ -4197,7 +4200,7 @@ output-related methods that are required by the
   <li><span class="code">displayChannel()</span>: Displays the output for
       a parsed channel. This method takes the parsed
       <span class="code">RSSChannel</span> object and a special
-      <a href="../../javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
+      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
       object that contains the configuration information about the feed
       (i.e., its URL, its title, etc.).
   <li><span class="code">flush()</span>: Flushes the output and closes the
@@ -4401,7 +4404,7 @@ to point to your script.</p>
 <h5><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h5>
 
 <p>The
-<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
 uses the Apache Jakarta
 <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a>
 to call scripts. It currently supports all the script language engines that
@@ -4417,7 +4420,7 @@ BSF jar file and the jar files for the scripting languages you want to use.</p>
 <p>If you want to use a BSF scripting language engine that isn't one of the
 above, simply write a Java class that extends the
 <span class="code">ScriptOutputHandler</span> class and overrides its
-<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#registerAdditionalScriptingEngines()" class="code">registerAdditionalScriptingEngines()</a>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#registerAdditionalScriptingEngines()" class="code">registerAdditionalScriptingEngines()</a>
 method. In that method, call
 <span class="code">BSFManager.registerScriptingEngine()</span> for each
 additional language you want to support. For example, a scripting
@@ -4461,29 +4464,45 @@ public class JStoogeScriptOutputHandler extends ScriptOutputHandler
 
 <p>The <span class="code">ScriptOutputHandler</span> class's
 
-<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#displayChannel(org.clapper.curn.parser.RSSChannel,%20org.clapper.curn.FeedInfo)" class="code">displayChannel()</a>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#displayChannel(org.clapper.curn.parser.RSSChannel,%20org.clapper.curn.FeedInfo)" class="code">displayChannel()</a>
 method doesn't actually generated any output. Instead, it buffers the
 channels so that the
-<a href="../../javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#flush()" class="code">flush()</a>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#flush()" class="code">flush()</a>
 method can invoke the script. That way, the overhead of invoking the
-script occurs only once. Via BSF, <span class="code">ScriptOutputHandler</span>
-makes the following objects available to the script.</p>
+script occurs only once.</p>
+
+<p>The <span class="code">ScriptOutputHandler</span> object exposes a
+special <span class="code">curn</span> object to the invoked script; that
+object contains the following fields and methods, all of which are
+available to the script. The <span class="code">curn</span> object is
+exposed via <span class="code">BSFManager.declareBean()</span>, which
+means it is a global variable that is automatically accessible to the
+script, without the need for the script to call any methods to find it.
+For backward compatibility with previous versions of <i>curn</i>, the
+<span class="code">ScriptOutputHandler</span> object also exposes the same
+data as individual beans that must be retrieved, within the script, via calls
+to <span class="code">bsf.lookupBean()</span>. (These separate objects
+are exposed via calls to <span class="code">BSFManager.registerBean()</span>).
+New scripts should use the <span class="code">curn</span> object, rather than
+the BSF beans.<p>
 
 <table summary="" border="outlined striped" align="center" width="90%">
   <tr valign="top" class="col-headers">
-    <th align="left">Bound name</th>
+    <th align="left"><span class="code">curn</span> field or method name</th>
+    <th align="left">Corresponding "registered" BSF bean (for backward compatibility)</th>
     <th align="left">Java type</th>
     <th align="left">Explanation</th>
   </tr>
 
   <tr valign="top">
-    <td>channels</td>
+    <td class="code">curn.channels</td>
+    <td class="code">channels</td>
     <td class="code">java.util.Collection</td>
     <td>An <span class="code">Collection</span> of special internal
         objects that wrap both
-        <a href="../../javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">RSSChannel</a>
+        <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">RSSChannel</a>
         and
-        <a href="../../javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">FeedInfo</a>
+        <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">FeedInfo</a>
         objects. The wrapper objects provide two methods:
 
         <ul>
@@ -4497,33 +4516,47 @@ makes the following objects available to the script.</p>
   </tr>
 
   <tr valign="top">
-    <td>outputPath</td>
-    <td><span class="code">java.lang.String</span></td>
+    <td class="code">curn.outputPath</td>
+    <td class="code">outputPath</td>
+    <td class="code">java.lang.String</td>
     <td>The path to the output file. The script should write its
         output to that file. Overwriting the file is fine. If the
         script generates no output, then it can ignore the file.</td>
   </tr>
 
   <tr valign="top">
-    <td>config</td>
-    <td><a href="../../javadocs/curn/api/org/clapper/curn/ConfigFile.html" class="code">ConfigFile</a></td>
-    <td>The <span class="code">org.clapper.curn.ConfigFile</span> object
+    <td class="code">curn.config</td>
+    <td class="code">config</td>
+    <td><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/CurnConfig.html" class="code">CurnConfig</a></td>
+    <td>The <span class="code">org.clapper.curn.CurnConfig</span> object
         that represents the parsed configuration data. Useful in
         conjunction with the "configSection" object, to parse
         additional parameters from the configuration.</td>
   </tr>
 
   <tr valign="top">
-    <td>configSection</td>
-    <td><span class="code">java.lang.String</span></td>
+    <td class="code">curn.configSection</td>
+    <td class="code">configSection</td>
+    <td class="code">java.lang.String</td>
     <td>The name of the configuration file section in which the output
         handler was defined. Useful if the script wants to access
         additional script-specific configuration data.</td>
   </tr>
 
   <tr valign="top">
-    <td>mimeType</td>
-    <td><span class="code">java.lang.PrintWriter</span></td>
+    <td class="code">curn.setMIMEType()</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>The script should call this method and pass it the MIME type that
+        corresponds to the generated output. If the script generates no
+        output, then it can ignore this method.</td>
+
+  </tr>
+
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td class="code">mimeType</td>
+    <td class="code">java.lang.PrintWriter</td>
     <td>A <span class="code">PrintWriter</span> object to which the
         script should print the MIME type that corresponds to the
         generated output. If the script generates no output, then it can
@@ -4531,24 +4564,34 @@ makes the following objects available to the script.</p>
   </tr>
 
   <tr valign="top">
-    <td>logger</td>
+    <td class="code">curn.logger</td>
+    <td class="code">logger</td>
     <td class="code">org.clapper.util.misc.Logger</td>
     <td>A <span class="code">Logger</span> object, useful for logging
         messages to the <i>curn</i> log file.</td>
   </tr>
 
   <tr valign="top">
-    <td>version</td>
-    <td><span class="code">java.lang.String</span></td>
+    <td>&nbsp;</td>
+    <td class="code">version</td>
+    <td class="code">java.lang.String</td>
     <td>Full <i>curn</i> version string, in case the script wants to
         include it in the generated output</td>
+  </tr>
+
+  <tr valign="top">
+    <td class="code">curn.getVersion()</td>
+    <td>&nbsp;</td>
+    <td class="code">java.lang.String</td>
+    <td>Method that returns the full <i>curn</i> version string, in case
+        the script wants to include it in the generated output</td>
   </tr>
 </table>
 
 <p>Here's a sample <a href="http://www.jython.org/">Jython</a> script
 that shows how to put it all together. This script reimplements most of the
 functionality of the
-<a href="../../javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a>
 Java class that comes with <i>curn</i>. (Note that the script uses a
 <span class="code">org.clapper.util.io.WordWrapWriter</span> object for
 its output. While the word-wrapping functionality could have been implemented
@@ -4566,157 +4609,131 @@ of the same functionality, in the <i>curn</i> source bundle, in directory
     <td>
 <blockquote><pre>
 import sys
+from org.clapper.curn import CurnException
 from org.clapper.util.io import WordWrapWriter
 
-class TextOutputHandler:
+HORIZONTAL_RULE = "---------------------------------------" \
+                + "---------------------------------------"
 
-    HORIZONTAL_RULE = "---------------------------------------" \
-                    + "---------------------------------------"
 
-    def __init__ (self):
-        """
-        Initialize a new TextOutputHandler object.
-        """
-        self.__channels    = bsf.lookupBean ("channels")
-        self.__outputPath  = bsf.lookupBean ("outputPath")
-        self.__mimeTypeOut = bsf.lookupBean ("mimeType")
-        self.__config      = bsf.lookupBean ("config")
-        self.__sectionName = bsf.lookupBean ("configSection")
-        self.__logger      = bsf.lookupBean ("logger");
-        self.__version     = bsf.lookupBean ("version")
-        self.__message     = None
+def process_channels():
+    """
+    Process the channels passed in through the Bean Scripting Framework.
+    """
 
-    def processChannels (self):
-        """
-        Process the channels passed in through the Bean Scripting Framework.
-        """
+    # If we didn't care about wrapping the output, we'd just use:
+    #
+    #     out = open (self.outputPath, "w")
+    #
+    # But it'd be nice to wrap long summaries on word boundaries at
+    # the end of an 80-character line. For that reason, we use the
+    # Java org.clapper.util.io.WordWrapWriter class.
 
-        # If we didn't care about wrapping the output, we'd just use:
-        #
-        #     out = open (self.__outputPath, "w")
-        #
-        # But it'd be nice to wrap long summaries on word boundaries at
-        # the end of an 80-character line. For that reason, we use the
-        # Java org.clapper.util.io.WordWrapWriter class.
+    out = WordWrapWriter (open (curn.outputPath, "w"))
+    out.setPrefix ("")
 
-        out = WordWrapWriter (open (self.__outputPath, "w"))
-        out.setPrefix ("")
+    msg = curn.config.getOptionalStringValue (curn.configSection,
+                                              "Message",
+                                              None)
 
-        msg = self.__config.getOptionalStringValue (self.__sectionName, "Message", None)
+    totalNew = 0
 
-        totalNew = 0
+    # First, count the total number of new items
 
-        # First, count the total number of new items
+    for channel_wrapper in curn.channels:
+        channel = channel_wrapper.getChannel()
+        totalNew = totalNew + channel.getItems().size()
 
-        iterator = self.__channels.iterator()
-        while iterator.hasNext():
-            channel_wrapper = iterator.next()
-            channel = channel_wrapper.getChannel()
-            totalNew = totalNew + channel.getItems().size()
+    if totalNew > 0:
+        # If the config file specifies a message for this handler,
+        # display it.
 
-        if totalNew > 0:
-            # If the config file specifies a message for this handler,
-            # display it.
-
-            if msg != None:
-                out.println (msg)
-                out.println ()
-
-            # Now, process the items
-
-            indentation = 0
-            iterator = self.__channels.iterator()
-            while iterator.hasNext():
-                channel_wrapper = iterator.next()
-                channel = channel_wrapper.getChannel()
-                feed_info = channel_wrapper.getFeedInfo()
-                self.__process_channel (out, channel, feed_info, indentation)
-
-            self.__mimeTypeOut.print ("text/plain")
-
-            # Output a footer
-
-            self.__indent (out, indentation)
+        if msg != None:
+            out.println (msg)
             out.println ()
-            out.println (TextOutputHandler.HORIZONTAL_RULE)
-            out.println (self.__version)
-            out.flush()
 
-    def __process_channel (self, out, channel, feed_info, indentation):
-        """
-        Process all items within a channel.
-        """
-        self.__logger.debug ("Processing channel \"" +
-                             str (channel.getLink()) + "\"")
+        # Now, process the items
 
-        # Print a channel header
+        indentation = 0
+        for channel_wrapper in curn.channels:
+            channel = channel_wrapper.getChannel()
+            channel = channel_wrapper.getChannel()
+            feed_info = channel_wrapper.getFeedInfo()
+            process_channel (out, channel, feed_info, indentation)
 
-        config = self.__config
+        curn.setMIMEType ("text/plain")
 
-        self.__indent (out, indentation)
-        out.println (TextOutputHandler.HORIZONTAL_RULE)
-        out.println (channel.getTitle())
-        out.println (channel.getLink().toString())
-        out.println (str (channel.getItems().size()) + " item(s)")
-        if config.showDates():
-            date = channel.getPublicationDate()
+        # Output a footer
+
+        indent (out, indentation)
+        out.println ()
+        out.println (HORIZONTAL_RULE)
+        out.println (curn.getVersion())
+        out.flush()
+
+def process_channel (out, channel, feed_info, indentation):
+    """
+    Process all items within a channel.
+    """
+    curn.logger.debug ("Processing channel \"" + str (channel.getTitle()) + "\"")
+
+    # Print a channel header
+
+    indent (out, indentation)
+    out.println (HORIZONTAL_RULE)
+    out.println (channel.getTitle())
+    out.println (channel.getLinks()[0].toString())
+    out.println (str (channel.getItems().size()) + " item(s)")
+    if curn.config.showDates():
+        date = channel.getPublicationDate()
+        if date != None:
+            out.println (str (date))
+
+    if curn.config.showRSSVersion():
+        out.println ("(Format: " + channel.getRSSFormat() + ")")
+
+    indentation = indentation + 1
+    indent (out, indentation)
+    for item in channel.getItems():
+
+        # These are RSSItem objects
+
+        out.println()
+        out.println (item.getTitle())
+        out.println (str (item.getLinks()[0]))
+
+        if curn.config.showDates():
+            date = item.getPublicationDate();
             if date != None:
                 out.println (str (date))
 
-        if config.showRSSVersion():
-            out.println ("(Format: " + channel.getRSSFormat() + ")")
+        out.println()
 
-        indentation = indentation + 1
-        self.__indent (out, indentation)
-        iterator = channel.getItems().iterator()
-        while iterator.hasNext():
-            # These are RSSItem objects
-            item = iterator.next()
+        if not feed_info.summarizeOnly():
+            summary = item.getSummary()
+            if summary != None:
+                indent (out, indentation + 1)
+                out.println (summary)
+                indent (out, indentation)
 
-            out.println()
-            out.println (item.getTitle())
-            out.println (str (item.getLink()))
+def indent (out, indentation):
+    """
+    Apply a level of indentation to a WordWrapWriter, by changing
+    the WordWrapWriter's prefix string.
 
-            if config.showDates():
-                date = item.getPublicationDate();
-                if date != None:
-                    out.println (str (date))
+    out         - the org.clapper.util.io.WordWrapWriter
+    indentation - the numeric indentation level
+    """
 
-            out.println()
+    prefix = ""
+    for i in range (indentation):
+        prefix = prefix + "    "
 
-            if not feed_info.summarizeOnly():
-                summary = item.getSummary()
-                if summary != None:
-                    self.__indent (out, indentation + 1)
-                    out.println (summary)
-                    self.__indent (out, indentation)
-
-    def __indent (self, out, indentation):
-        """
-        Apply a level of indentation to a WordWrapWriter, by changing
-        the WordWrapWriter's prefix string.
-
-        out         - the org.clapper.util.io.WordWrapWriter
-        indentation - the numeric indentation level
-        """
-
-        prefix = ""
-        for i in range (indentation):
-            prefix = prefix + "    "
-
-        out.setPrefix (prefix)
+    out.setPrefix (prefix)
 
 # ---------------------------------------------------------------------------
 
-def main():
-    """
-    Main program entry point. This is what ScriptOutputHandler actually
-    ends up invoking.
-    """
-    handler = TextOutputHandler()
-    handler.processChannels()
-
-main()
+process_channels()
 </pre></blockquote>
     </td>
   </tr>
