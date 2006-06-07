@@ -363,6 +363,8 @@ public class Tool
      */
     protected void getCustomUsageInfo (UsageInfo info)
     {
+        info.setCommandName ("curn");
+
         // Note: A null explanation denotes a "hidden" option not shown in
         // the usage output. Here, those options are deprecated, but
         // retained for backward compatibility.
