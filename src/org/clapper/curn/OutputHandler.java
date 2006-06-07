@@ -102,7 +102,10 @@ public interface OutputHandler
      * is defined for the underlying class. Output should be written to the
      * <tt>PrintWriter</tt> that was passed to the {@link #init init()} method.
      *
-     * @param channel  The parsed channel data
+     * @param channel  The parsed channel data. <i>curn</i> will pass a
+     *                 copy of the actual {@link RSSChannel} object, so the
+     *                 output handler can edit its contents, if necessary,
+     *                 without affecting other output handlers.
      * @param feedInfo The feed.
      *
      * @throws CurnException  unable to write output
