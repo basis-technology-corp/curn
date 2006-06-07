@@ -28,9 +28,13 @@ h1
     font-family: serif;
 }
 
-h1.title
+p.title
 {
     text-align: center;
+    font-family: serif;
+    font-weight: bold;
+    font-style: roman;
+    font-size: 20pt;
 }
 
 p.author
@@ -38,10 +42,18 @@ p.author
     text-align: center;
 }
 
-h2
+h1
 {
     color: #990000;
     font-family: sans-serif;
+    font-size: 18pt;
+}
+
+h2
+{
+    color: #000000;
+    font-family: sans-serif;
+    font-size: 16pt;
 }
 
 h3
@@ -379,7 +391,7 @@ function init()
 
 <body onload="init()">
 
-<h1 class="title"><i>curn</i>: Customizable Utilitarian RSS Notifier<br/>User's Guide</h1>
+<p class="title"><i>curn</i>: Customizable Utilitarian RSS Notifier<br/>User's Guide</p>
 <p class="author">Brian M. Clapper<br/>
 <i>bmc&nbsp;@&nbsp;clapper&nbsp;.&nbsp;org</i><br/>
 <span class="code">$Id$</span>
@@ -387,7 +399,7 @@ function init()
 <hr/>
 
 <!-- ********************************************************************** -->
-<h2><a name="TOC"></a>Table of Contents</h2>
+<h1><a name="TOC"></a>Table of Contents</h1>
 
 <ul class="toc">
   <li><a href="#Introduction">Introduction</a></li>
@@ -457,6 +469,18 @@ function init()
   <li><a href="#ExtendingCurn">Extending <i>curn</i></a>
       <ul class="toc">
         <li><a href="#UnsupportedParser">Using an Unsupported RSS Parser</a></li>
+	<li><a href="#Plug-ins">Plug-ins</a>
+	    <ul class="toc">
+	      <li><a href="#PluginOverview">Overview of Plug-In Support</a>
+	      <li><a href="#PluginInstallation">Installing Plug-ins</a>
+	      <li><a href="#PluginOutputHandlers">Output Handlers are also Plug-ins</a>
+	      <li><a href="#PluginWriting">Writing <i>curn</i> Plug-ins</a>
+	      <ul class="toc">
+		<li><a href="#PluginPhases"><i>curn</i> Plug-in Phases</a>
+		<li><a href="#PluginAPI">The <i>curn</i> Plug-in API</a>
+	      </ul>
+	    </ul>
+
         <li><a href="#NewOutputHandler">Writing Your Own Output Handler</a>
             <ul class="toc">
               <li><a href="#NewJavaOutputHandler">Writing a Java Output Handler</a></li>
@@ -487,7 +511,7 @@ function init()
 </ul>
 
 <!-- ********************************************************************** -->
-<h2><a name="Introduction"></a>Introduction</h2>
+<h1><a name="Introduction"></a>Introduction</h1>
 
 <p><i>curn</i> is an RSS reader. It scans a configured set of URLs, each
 one representing an RSS feed, and summarizes the results. By default,
@@ -567,7 +591,7 @@ the output of each output handler as one of the alternative attachments.</p>
 
 
 <!-- ********************************************************************** -->
-<h2><a name="CommandLine"><i>curn</i> Command Line Syntax</a></h2>
+<h1><a name="CommandLine"><i>curn</i> Command Line Syntax</a></h1>
 
 <p><i>curn</i> is invoked from the command line as follows:</p>
 
@@ -642,7 +666,7 @@ config               Path to configuration file
 <a href="#ConfigFile"><i>curn</i> configuration file</a>.
 Each option and argument is discussed in more detail, below.</p>
 
-<h3><a name="CommandLineOptions"></a>Command Line Options</h3>
+<h2><a name="CommandLineOptions"></a>Command Line Options</h2>
 
 <table summary="" class="outlined striped" align="center" width="90%">
   <tr valign="top" class="title">
@@ -761,7 +785,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 </table>
 <br clear="all"/>
 
-<h3><a name="CommandLineParameters"></a>Command Line Parameters</h3>
+<h2><a name="CommandLineParameters"></a>Command Line Parameters</h2>
 
 <p>A list of <i>curn</i>'s positional parameters follows.</p>
 
@@ -789,7 +813,7 @@ Ant version:    Apache Ant version 1.6.1 compiled on February 12 2004</pre>
 <br clear="all"/>
 
 <!-- ********************************************************************** -->
-<h2><a name="ConfigFile">The <i>curn</i> Configuration File</a></h2>
+<h1><a name="ConfigFile">The <i>curn</i> Configuration File</a></h1>
 
 <p><i>curn's</i> configuration file controls all aspects of <i>curn</i>'s
 behavior. The configuration file contains parameters that control <i>curn</i>'s
@@ -800,7 +824,7 @@ describes each <i>curn</i> configuration item in detail.</p>
 <p>You can view a sample <i>curn</i> configuration file by following
 <a href="sample.cfg">this link</a>.</p>
 
-<h3><a name="ConfigFileSyntax"></a>Configuration File Syntax</h3>
+<h2><a name="ConfigFileSyntax"></a>Configuration File Syntax</h2>
 
 <p><i>curn</i>'s configuration file is a simple text file. It resembles
 a standard Java properties file, but it is broken into individual sections,
@@ -828,7 +852,7 @@ ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
 </table>
 <br clear="all"/>
 
-<h4><a name="CfgSectionNameSyntax"></a>Section Name Syntax</h4>
+<h3><a name="CfgSectionNameSyntax"></a>Section Name Syntax</h3>
 
 <p>There can be any amount of whitespace before and after the brackets in a
 section name; the whitespace is ignored. That is.
@@ -837,7 +861,7 @@ section name; the whitespace is ignored. That is.
 "<span class="code">[   curn   ]</span>" all specify a section named
 "curn".</p>
 
-<h4><a name="CfgVariableNameSyntax"></a>Variable Name Syntax</h4>
+<h3><a name="CfgVariableNameSyntax"></a>Variable Name Syntax</h3>
 
 <p>Each section contains zero or more variable settings. Similar to a Java
 properties file, the variables are specified as name/value pairs, separated
@@ -849,7 +873,7 @@ whitespace in the value is skipped. The way to include leading whitespace
 in a value is escape the whitespace characters with backslashes. (See
 below).</p>
 
-<h4><a name="CfgContinuationLines"></a></h4>
+<h3><a name="CfgContinuationLines"></a></h3>
 
 <p>Variable definitions may span multiple lines; each line to be continued
 must end with a backslash ("\") character, which escapes the meaning of the
@@ -884,7 +908,7 @@ lines, comment lines (see below) and include directives (see below)
 cannot span multiple lines.</p>
 
 
-<h4><a name="CfgExpansions"></a>Expansions of Variable Values</h4>
+<h3><a name="CfgExpansions"></a>Expansions of Variable Values</h3>
 
 <p>The configuration parser preprocesses each variable's value, replacing
 embedded metacharacter sequences and substituting variable references. You
@@ -893,7 +917,7 @@ to recognize metacharacter and variable sequences; you can also use single
 quotes. See <a href="#CfgRawValues">Suppressing Metacharacter Expansion and
 Variable Substitution</a>, below, for more details.</p>
 
-<h5><a name="CfgMetacharacters"></a>Metacharacter Expansion</h5>
+<h4><a name="CfgMetacharacters"></a>Metacharacter Expansion</h4>
 
 <p>Within a variable's value, Java-style ASCII escape sequences
 <span class="code">\t</span>, <span class="code">\n</span>,
@@ -904,7 +928,7 @@ Variable Substitution</a>, below, for more details.</p>
 single characters. Note that metacharacter expansion is performed
 <i>before</i> variable substitution.</p>
 
-<h5><a name="CfgVariableSubst"></a>Variable Substitution</h5>
+<h4><a name="CfgVariableSubst"></a>Variable Substitution</h4>
 
 <p>A variable value can interpolate the values of other variables, using a
 variable substitution syntax. The general form of a variable reference is
@@ -1094,7 +1118,7 @@ CacheFile = <b>${myCurnDir}</b>/cache</pre>
 </table>
 <br clear="all"/>
 
-<h5><a name="CfgRawValues"></a>Suppressing Metacharacter Expansion and Variable Substitution</h5>
+<h4><a name="CfgRawValues"></a>Suppressing Metacharacter Expansion and Variable Substitution</h4>
 
 <p>To prevent the parser from interpreting metacharacter sequences,
 variable substitutions and other special characters, enclose part or
@@ -1113,7 +1137,7 @@ reference, you could use:</p>
 
 <p>To include a literal single quote, you must escape it with a backslash.</p>
 
-<h4><a name="CfgIncludes"></a>Includes</h4>
+<h3><a name="CfgIncludes"></a>Includes</h3>
 
 <p>A special <i>include</i> directive permits inline inclusion of another
 configuration file. The include directive takes two forms:
@@ -1141,7 +1165,7 @@ valid section.</p>
 <p>Attempting to include a file from itself, either directly or indirectly,
 will cause the parser to throw an exception.</p>
 
-<h4><a name="CfgComments"></a>Comments and Blank Lines</h4>
+<h3><a name="CfgComments"></a>Comments and Blank Lines</h3>
 
 <p>A comment line is a one whose first non-whitespace character is a "#" or
 a "!". This comment syntax is identical to the one supported by a Java
@@ -1181,7 +1205,7 @@ CacheFile: test.cache
 </table>
 <br clear="all"/>
 
-<h3><a name="CurnConfigFile">Overview of <i>curn's</i> Configuration File</a></h3>
+<h2><a name="CurnConfigFile">Overview of <i>curn's</i> Configuration File</a></h2>
 
 <p><i>curn</i>'s configuration file has three kinds of sections:</p>
 
@@ -1208,7 +1232,7 @@ sections.</p>
 value) can also take a value of "0" (false), "1" (true), "no" (false) or
 "yes" (true).</p>
 
-<h3><a name="CfgCurnSection">The <span class="code">[curn]</span> Section</a></h3>
+<h2><a name="CfgCurnSection">The <span class="code">[curn]</span> Section</a></h2>
 
 <p>This section contains variable global parameters. Each is described
 in detail, below.</p>
@@ -1230,40 +1254,21 @@ in detail, below.</p>
     <td align="left">Boolean</td>
     <td align="left">Default setting for whether or not to allow
       embedded HTML in certain RSS feed elements, such as description,
-      author, etc. Some RSS formats permit embedded HTML; setting this
-      parameter to <span class="code">true</span> tells <i>curn</i>
-      <a href="#CfgOutputHandlers">output handlers</a> that they should
-      preserve such embedded HTML markup, if possible. If this parameter
-      is <span class="code">false</span>, any embedded HTML is stripped.
+      author, etc. Some RSS formats permit embedded HTML. Setting this
+      parameter to <span class="code">true</span> preserves any embedded
+      HTML markup within a feed; setting this parameter to
+      <span class="code">false</span> causes embedded HTML to be stripped.
       <br/><br/>
-      Each output handler determines which RSS fields are allowed to
-      have embedded HTML, assuming the output handler supports this
-      parameter. (Output handlers are not required to support his
-      parameter.) In general, though, if an output handler supports
-      this configuration parameter, the handler should honor it for
-      the following fields:
-
-      <ul>
-	<li> Feed title
-	<li> Item title
-	<li> Item author
-	<li> Item description
-      </ul>
+      Note that certain output handlers will strip HTML regardless of this
+      setting. An output handler that produces text, for instance, is not
+      required to support embedded HTML.
 
       This global parameter can be <a href="#Feed_AllowEmbeddedHTML">overridden on a per-feed basis.</a>
       <br/><br/>
       Notes:
 
       <ul>
-	<li>This parameter is <i>not</i> examined by the RSS parser.
-	Instead, it is checked by individual output handlers, assuming
-	the output handler supports this capability. Most output
-	handlers do not support this parameter and strip HTML
-	unconditionally. Currently, only the predefined
-	<a href="#HTMLOutputHandler">HTMLOutputHandler</a> and
-	<a href="#FreeMarkerOutputHandler">FreeMarkerOutputHandler</a>
-	output handlers honor this parameter.
-	<li>Use this parameter sparingly. If supported, the raw HTML is
+	<li>Use this parameter with care. If supported, the raw HTML is
 	copied <i>directly</i> into the resulting output, without
 	modification. With HTML output, malformed embedded HTML can
 	screw up the resulting HTML document.
@@ -1346,7 +1351,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_GetGzippedFeeds"></a>GetGzippedFeeds</td>
+    <td align="left" class="code"><a name="Cfg_GzipDownload"></a>GzipDownload</td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
@@ -1356,7 +1361,12 @@ in detail, below.</p>
       retrieving gzipped data, rather than the uncompressed HTML, can
       save a significant amount of time and network bandwidth. (Note,
       however, that HTTP servers are not obligated to honor a request
-      to <i>gzip</i> the feed.)
+      to <i>gzip</i> the feed.) This parameter can be
+      <a href="#Feed_GzipDownload">overridden on a per-feed basis</a>.
+      This global value sets the default value.
+      <br/><br/>
+      For backward compatibility, this parameter can also be specified
+      as <span class="code">GetGzippedFeeds</span>.
     </td>
     <td align="left">No</td>
     <td align="left" class="code">true</td>
@@ -1723,7 +1733,7 @@ in detail, below.</p>
 <br clear="all"/>
 
 <!-- ********************************************************************** -->
-<h3><a name="CfgRSSFeeds"></a>Configuring the RSS Feeds</h3>
+<h2><a name="CfgRSSFeeds"></a>Configuring the RSS Feeds</h2>
 
 <p>The <i>curn</i> configuration file also contains a list of RSS feeds to
 be polled. Each feed must be specified in its own section in the
@@ -1756,45 +1766,30 @@ section names are all valid for RSS feed sections.</p>
   <tr valign="top">
     <td align="left" class="code"><a name="Feed_AllowEmbeddedHTML"></a>AllowEmbeddedHTML</td>
     <td align="left">Boolean</td>
-    <td align="left"><p>Whether or not to allow
+    <td align="left">Whether or not to allow
     embedded HTML in certain RSS feed elements, such as description,
     author, etc, for this feed. Some RSS formats permit embedded HTML; setting this
     parameter to <span class="code">true</span> tells <i>curn</i>
     <a href="#CfgOutputHandlers">output handlers</a> that they should
     preserve such embedded HTML markup, if possible. If this parameter
-    is <span class="code">false</span>, any embedded HTML is stripped.</p>
-
-    <p>Each output handler determines which RSS fields are allowed to
-    have embedded HTML, assuming the output handler supports this
-    parameter. (Output handlers are not required to support his
-    parameter.) In general, though, if an output handler supports
-    this configuration parameter, the handler should honor it for
-    the following fields:
-
-    <ul>
-      <li> Feed title
-      <li> Item title
-      <li> Item author
-      <li> Item description
-    </ul>
+    is <span class="code">false</span>, any embedded HTML is stripped.
+      <br/><br/>
+      Note that certain output handlers will strip HTML regardless of this
+      setting. An output handler that produces text, for instance, is not
+      required to support embedded HTML.
 
     <p>Notes:</p>
 
     <ul>
-      <li>This parameter is <i>not</i> examined by the RSS parser.
-          Instead, it is checked by individual output handlers, assuming
-          the output handler supports this capability. Most output
-          handlers do not support this parameter and strip HTML
-          unconditionally. Currently, only the predefined
-          <a href="#HTMLOutputHandler">HTMLOutputHandler</a> and
-          <a href="#FreeMarkerOutputHandler">FreeMarkerOutputHandler</a>
-	  output handlers honor this parameter.
-      <li>Use this parameter sparingly. If supported, the raw HTML is
+      <li>Use this parameter with care. If supported, the raw HTML is
           copied <i>directly</i> into the resulting output, without
           modification. With HTML output, malformed embedded HTML can
           screw up the resulting HTML document.
     </ul>
 
+    This parameter overrides the
+    <a href="#Cfg_AllowEmbeddedHTML" class="code">AllowEmbeddedHTML</a>
+    setting in the main configuration section.
     </td>
     <td align="left">No</td>
     <td align="left"><span class="code">false</span></td>
@@ -1963,6 +1958,26 @@ section names are all valid for RSS feed sections.</p>
         <li>For all other URL types, the Java VM's default encoding is
             used.
       </ul>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code"><a name="Feed_GzipDownload"></a>GzipDownload</td>
+    <td align="left">Boolean</td>
+    <td align="left">
+      If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
+      "<span class="code">Accept-Encoding:&nbsp;gzip</span>"
+      HTTP header when retrieving this RSS feed from an HTTP server.
+      Since RSS feeds are XML, they typically compress well;
+      retrieving gzipped data, rather than the uncompressed HTML, can
+      save a significant amount of time and network bandwidth. (Note,
+      however, that HTTP servers are not obligated to honor a request
+      to <i>gzip</i> the feed.) This parameter overrides the global
+      <a href="#Cfg_GzipDownload" class="code">GzipDownload</a>.
+    </td>
+    <td align="left">No</td>
+    <td align="left" class="code">true</td>
+    <td align="left">
     </td>
   </tr>
 
@@ -2298,9 +2313,9 @@ section names are all valid for RSS feed sections.</p>
 <br clear="all"/>
 
 <!-- ********************************************************************** -->
-<h3><a name="CfgOutputHandlers"></a>Configuring Output Handlers</h3>
+<h2><a name="CfgOutputHandlers"></a>Configuring Output Handlers</h2>
 
-<h4><a name="CfgOutputHandlerSections"></a>Output Handler Sections</h4>
+<h3><a name="CfgOutputHandlerSections"></a>Output Handler Sections</h3>
 
 <p>As <i>curn</i> processes each RSS feed, it parses the XML and loads the
 new items into internal data structures. When it has finished processing
@@ -2390,11 +2405,11 @@ variables common to all output handlers are described below.</p>
 <a href="#CfgOutputHandlerExamples">examples</a> following the next
 section.</p>
 
-<h4><a name="CfgPredefinedOutputHandlers"></a>Predefined Output Handlers</h4>
+<h3><a name="CfgPredefinedOutputHandlers"></a>Predefined Output Handlers</h3>
 
 <p><i>curn</i> comes bundled with the following built-in output handlers.</p>
 
-<h5><a name="FreeMarkerOutputHandler" class="code">FreeMarkerOutputHandler</a></h5>
+<h4><a name="FreeMarkerOutputHandler" class="code">FreeMarkerOutputHandler</a></h4>
 
 <dl class="dlSummary">
   <dt>Class
@@ -2405,7 +2420,7 @@ section.</p>
       template engine and a configured template to generate output.
 </dl>
 
-<h6>Using the FreeMarker output handler</h6>
+<h5>Using the FreeMarker output handler</h5>
 
 <p>The <span class="code">FreeMarkerOutputHandler</span>, introduced in
 <i>curn</i> version 2.6, is both simple and flexible. It uses the
@@ -2631,7 +2646,7 @@ TemplateFile: url "${program:cwd.url}/curn/bin/html.ftl"</pre></blockquote>
 </table>
 <br clear="all"/>
 
-<a name="WriteFreeMarkerTemplate"></a><h6>Writing your own FreeMarker template</h6>
+<a name="WriteFreeMarkerTemplate"></a><h5>Writing your own FreeMarker template</h5>
 
 <p>Because FreeMarker relies on external templates to create the final
 document, and because <i>curn</i> makes it easy to use custom-crafted
@@ -2881,7 +2896,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     </td>
   </tr>
 </table>
-<h5><a name="HTMLOutputHandler" class="code">HTMLOutputHandler</a></h5>
+<h4><a name="HTMLOutputHandler" class="code">HTMLOutputHandler</a></h4>
 
 <dl class="dlSummary">
   <dt>Class
@@ -2994,7 +3009,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 </table>
 <br clear="all"/>
 
-<h5><a name="TextOutputHandler" class="code">TextOutputHandler</a></h5>
+<h4><a name="TextOutputHandler" class="code">TextOutputHandler</a></h4>
 
 <dl class="dlSummary">
   <dt>Class
@@ -3062,7 +3077,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 </table>
 <br clear="all"/>
 
-<h5><a name="SimpleSummaryOutputHandler" class="code">SimpleSummaryOutputHandler</a></h5>
+<h4><a name="SimpleSummaryOutputHandler" class="code">SimpleSummaryOutputHandler</a></h4>
 
 <dl class="dlSummary">
   <dt>Class
@@ -3147,7 +3162,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 </table>
 <br clear="all"/>
 
-<h5><a name="ScriptOutputHandler" class="code">ScriptOutputHandler</a></h5>
+<h4><a name="ScriptOutputHandler" class="code">ScriptOutputHandler</a></h4>
 
 <dl class="dlSummary">
   <dt>Class
@@ -3328,7 +3343,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 </table>
 <br clear="all"/>
 
-<h4><a name="CfgOutputHandlerExamples"></a>Examples</h4>
+<h3><a name="CfgOutputHandlerExamples"></a>Examples</h3>
 
 <p><a name="CfgOutputHandlerExample1"><span class="exampleHeader">Example 1</span></a>:
 The output handler sections from a <i>curn</i> configuration file that
@@ -3423,7 +3438,7 @@ SaveAs: ${vars:feedDir}/CNN_TOP_STORIES.xml
 </table>
 
 <!-- ********************************************************************** -->
-<h2><a name="SchedulingCurn">Having <i>curn</i> Run on a Schedule</a></h2>
+<h1><a name="SchedulingCurn">Having <i>curn</i> Run on a Schedule</a></h1>
 
 <p>You can run <i>curn</i> manually, at the command line, whenever you feel
 like checking your news feeds. However, this is less than useful. The best
@@ -3431,7 +3446,7 @@ way to run <i>curn</i> to have your computer's background scheduler process
 (e.g., <i>cron</i>(8) on UNIX-like systems, or the Windows Scheduler on
 Windows) run <i>curn</i> for you automatically, every so often.</p>
 
-<h3><a name="UsingCron">Running <i>curn</i> from <i>cron</i>(8) on UNIX-like Systems</a></h3>
+<h2><a name="UsingCron">Running <i>curn</i> from <i>cron</i>(8) on UNIX-like Systems</a></h2>
 
 <p>I typically run <i>curn</i> three times a day, via <i>cron</i>, on
 weekdays and once on weekends, and I have it mail me the output. I use my
@@ -3483,7 +3498,7 @@ couple of reasons:</p>
 <p>You can find a sample shell script <a href="curn_sh.txt">here</a>. It's a
 trivial matter to customize it for your environment.</p>
 
-<h3><a name="UsingWindowsScheduler">Running <i>curn</i> via the Windows Scheduler</a></h3>
+<h2><a name="UsingWindowsScheduler">Running <i>curn</i> via the Windows Scheduler</a></h2>
 
 <p>Currently, this task is left as an exercise to the reader. (I don't use
 Windows often enough to play with the scheduler, so I haven't gotten around
@@ -3493,7 +3508,7 @@ this section. Unless, of course, someone else wants to supply the relevant
 details...)
 
 <!-- ********************************************************************** -->
-<h2><a name="Bandwidth"></a>Being "Bandwidth Friendly"</h2>
+<h1><a name="Bandwidth"></a>Being "Bandwidth Friendly"</h1>
 
 <p>When pulling down RSS documents from remote HTTP servers, <i>curn</i>
 does its best to minimize the amount of bandwidth it consumes. By default,
@@ -3516,7 +3531,7 @@ configuration parameters and command-line parameters).</p>
 <p>But there are other things you can do to be polite to remote HTTP
 servers.</p>
 
-<h5><a name="NotTooOften">Don't Run <i>curn</i> Too Often</a></h5>
+<h4><a name="NotTooOften">Don't Run <i>curn</i> Too Often</a></h4>
 
 <p>I run <i>curn</i> three times a day. In practice, that's more than
 sufficient to keep up with the daily news feeds I want to read. Your needs
@@ -3524,7 +3539,7 @@ may vary, but if you're using <i>curn</i> to poll remote RSS feeds every
 five minutes, you probably fall into the "impolite RSS feed user"
 category.</p>
 
-<h5><a name="ConsolidateCommonFeeds"></a>Consolidate Common Feeds</h5>
+<h4><a name="ConsolidateCommonFeeds"></a>Consolidate Common Feeds</h4>
 
 <p>Suppose you have a number of users, all of whom run <i>curn</i> several
 times a day. Further suppose that there's significant commonality in the
@@ -3568,7 +3583,7 @@ curnDir: /usr/local/etc/curn
 CacheFile: ${var:curnDir}/common.cache
 MaxThreads: 15
 ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
-GetGzippedFeeds: true
+GzipDownload: true
 
 #####################################
 # No output handlers are configured #
@@ -3613,7 +3628,7 @@ RSS readers they're using to those internal web pages, instead of the external
 ones.</p>
 
 <!-- ********************************************************************** -->
-<h2><a name="ExtendingCurn">Extending <i>curn</i></a></h2>
+<h1><a name="ExtendingCurn">Extending <i>curn</i></a></h1>
 
 <p>This section is intended for Java programmers who want to extend
 <i>curn</i>'s capabilities by writing additional output handlers, integrating
@@ -3652,7 +3667,7 @@ classes in its configuration file, you can easily extend <i>curn's</i>
 capabilities by writing your output handler or integrating a different
 RSS parser.</p>
 
-<h3><a name="UnsupportedParser"></a>Using an Unsupported RSS Parser</h3>
+<h2><a name="UnsupportedParser"></a>Using an Unsupported RSS Parser</h2>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
 instead of
@@ -3717,7 +3732,22 @@ integration, see the classes in the <i>curn</i> source code package
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
 <a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
 
-<h3><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h3>
+<h2><a name="Plug-ins"></a>Plug-ins</h2>
+
+<h3><a name="PluginOverview"></a>Overview of Plug-In Support</h3>
+
+<h3><a name="PluginInstallation"></a>Installing Plug-ins</h3>
+
+<h3><a name="PluginOutputHandlers"></a>Output Handlers are also Plug-ins</h3>
+
+<h3><a name="PluginWriting"></a>Writing <i>curn</i> Plug-ins</h3>
+
+<h4><a href="#PluginPhases"></a><i>curn</i> Plug-in Phases</h4>
+
+<h4><a href="#PluginAPI"></a><i>curn</i> Plug-in API</h4>
+
+
+<h2><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h2>
 
 <p>There are two ways to write your own output handler. You can write a
 Java class that implements the output handler, or you can write a script
@@ -3735,7 +3765,7 @@ file format (as opposed to writing an output handler to send data over
 a network connection or to a database), then there's a good chance that
 writing a FreeMarker template will be simpler and faster.</p>
 
-<h4><a name="NewJavaOutputHandler"></a>Writing a Java Output Handler</h4>
+<h3><a name="NewJavaOutputHandler"></a>Writing a Java Output Handler</h3>
 
 <p>Writing a new output handler is reasonably straightforward:</p>
 
@@ -4258,7 +4288,7 @@ all kinds of output, including (for instance):</p>
   <li>etc.
 </ul>
 
-<h4><a name="NewScriptOutputHandler"></a>Writing a Script Output Handler</h4>
+<h3><a name="NewScriptOutputHandler"></a>Writing a Script Output Handler</h3>
 
 <p>Writing a script output handler is even simpler, in a way, than writing
 a Java output handler. You simply write a script in a supported language,
@@ -4266,7 +4296,7 @@ then configure an instance of the
 <a href="#CfgScriptOutputHandler" class="code">ScriptOutputHandler</a> class
 to point to your script.</p>
 
-<h5><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h5>
+<h4><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h4>
 
 <p>The
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
@@ -4280,7 +4310,7 @@ for the list of languages supported by default.</p>
 <p>At runtime, <i>curn</i>'s CLASSPATH must include the
 BSF jar file and the jar files for the scripting languages you want to use.</p>
 
-<h5><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h5>
+<h4><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h4>
 
 <p>If you want to use a BSF scripting language engine that isn't one of the
 above, simply write a Java class that extends the
@@ -4325,7 +4355,7 @@ public class JStoogeScriptOutputHandler extends ScriptOutputHandler
   </tr>
 </table>
 
-<h5><a name="WritingScriptOutputHandler"></a>Writing a Script Output Handler</h5>
+<h4><a name="WritingScriptOutputHandler"></a>Writing a Script Output Handler</h4>
 
 <p>The <span class="code">ScriptOutputHandler</span> class's
 
@@ -4602,7 +4632,7 @@ process_channels()
   </tr>
 </table>
 
-<h5><a name="ConfigScriptOutputHandler"></a>Configuring the Script Output Handler</h5>
+<h4><a name="ConfigScriptOutputHandler"></a>Configuring the Script Output Handler</h4>
 
 <p>The <a href="#CfgScriptOutputHandler">configuration section for the
 <span class="code">ScriptOutputHandler</span> class</a> provides a detailed
@@ -4628,12 +4658,12 @@ Message: Copy saved in file ${system:user.home}/curn/rss-py.txt
 
 <!-- ********************************************************************** -->
 
-<h2><a name="Troubleshooting"></a>Troubleshooting</h2>
+<h1><a name="Troubleshooting"></a>Troubleshooting</h1>
 
 <p>In the event of problems, your first step should be to enable logging.
 The next section discusses <i>curn</i>'s logging infrastructure.</p>
 
-<h3><a name="Logging"></a>Logging</h3>
+<h2><a name="Logging"></a>Logging</h2>
 
 <p><i>curn</i> issues log messages via the
 <a href="http://jakarta.apache.org/commons/logging/index.html">Jakarta Commons Logging API</a> (JCL),
@@ -4665,7 +4695,7 @@ present.</p>
 two sections show how you might enable logging for the two more popular
 logging frameworks, <span class="code">java.util.logging</span> and Log4J.</p>
 
-<h4><a name="java.util.logging"></a>java.util.logging</h4>
+<h3><a name="java.util.logging"></a>java.util.logging</h3>
 
 <p>This section assumes that you're using a properties file to configure
 the logging framework; if you're using a custom logging configuration class,
@@ -4762,7 +4792,7 @@ similar to the default Log4J text formatter.</p>
 <p>Obviously, you can use any formatter you wish, including the
 <span class="code">java.util.logging.XMLFormatter</span> class.</p>
 
-<h4><a name="Log4J"></a>Log4J</h4>
+<h3><a name="Log4J"></a>Log4J</h3>
 
 <p>This section assumes that you're using a properties file to configure
 the logging framework; if you're using an XML configuration file, you'll have
@@ -4888,7 +4918,7 @@ similar to the default Log4J text formatter.</p>
 
 
 <!-- ********************************************************************** -->
-<h2><a name="AppendixA"></a>Appendix A: Similar Products and Tools</h2>
+<h1><a name="AppendixA"></a>Appendix A: Similar Products and Tools</h1>
 
 <p>Adam Sampson's <a href="http://offog.org/code/rawdog.html"><i>rawdog</i></a>
 (RSS Aggregator Without Delusions Of Grandeur) is similar in spirit,
@@ -4896,7 +4926,7 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
 <i>rawdog</i> is intended to be run from a scheduler such as <i>cron</i>.</p>
 
 <!-- ********************************************************************** -->
-<h2><a name="EndNotes"></a>End Notes</h2>
+<h1><a name="EndNotes"></a>End Notes</h1>
 
 <p class="endnote"><a name="Note1"></a>[1] Normally, adding attachments to
 an email message results in a "multipart/mixed" message. According to
