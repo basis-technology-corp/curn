@@ -55,13 +55,6 @@ import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 
-import org.clapper.util.mail.EmailMessage;
-import org.clapper.util.mail.EmailTransport;
-import org.clapper.util.mail.SMTPEmailTransport;
-import org.clapper.util.mail.EmailAddress;
-import org.clapper.util.mail.EmailException;
-import org.clapper.util.misc.MIMETypeUtil;
-
 /**
  * <p><i>curn</i>: Customizable Utilitarian RSS Notifier.</p>
  *
@@ -105,7 +98,7 @@ public class Curn
     private Date currentTime = new Date();
     private MetaPlugIn metaPlugIn = null;
 
-    private Collection<ConfiguredOutputHandler> outputHandlers =
+    private Collection<ConfiguredOutputHandler> configuredOutputHandlers =
         new ArrayList<ConfiguredOutputHandler>();
 
     /**
@@ -137,16 +130,11 @@ public class Curn
      * Run <i>curn</i> against a configuration file.
      *     
      * @param configPath      path to the configuration data
-     * @param emailAddresses  a collection of (string) email addresses to
-     *                        receive the output, or null (or empty collection)
-     *                        for none.
      * @param useCache        whether or not to use the cache
      *
      * @throws CurnException on error
      */
-    public void run (String             configPath,
-                     Collection<String> emailAddresses,
-                     boolean            useCache)
+    public void run (String configPath, boolean useCache)
         throws CurnException
     {
         metaPlugIn.runStartupPlugIn();
@@ -154,7 +142,7 @@ public class Curn
         try
         {
             this.config = loadConfig (configPath);
-            processRSSFeeds (emailAddresses, useCache);
+            processRSSFeeds (useCache);
         }
 
         catch (ConfigurationException ex)
@@ -194,18 +182,14 @@ public class Curn
      * Read the RSS feeds specified in a parsed configuration, writing them
      * to the output handler(s) specified in the configuration.
      *
-     * @param emailAddresses  a collection of (string) email addresses to
-     *                        receive the output, or null (or empty collection)
-     *                        for none.
-     * @param useCache        whether or not to use the cache
+     * @param useCache whether or not to use the cache
      *
      * @throws IOException             unable to open or read a required file
      * @throws ConfigurationException  error in configuration file
      * @throws RSSParserException      error parsing XML feed(s)
      * @throws CurnException           any other error
      */
-    private void processRSSFeeds (Collection<String> emailAddresses,
-                                  boolean            useCache)
+    private void processRSSFeeds (boolean useCache)
         throws ConfigurationException,
                RSSParserException,
                CurnException
@@ -254,17 +238,7 @@ public class Curn
                  + channels.size());
 
         if (channels.size() > 0)
-        {
-            // Note: If we're not emailing the output, then dump the output
-            // from the first handler to the screen.
-
-            displayChannels (channels, emailAddresses.size() == 0);
-        }
-
-        // If there are email addresses, then mail the output.
-
-        if ((emailAddresses != null) && (emailAddresses.size() > 0))
-            emailOutput (outputHandlers, emailAddresses);
+            outputChannels (channels);
 
         log.debug ("cacheFile="
                  + ((cacheFile == null) ? "null" : cacheFile.getPath())
@@ -285,7 +259,7 @@ public class Curn
         try
         {
             config = new CurnConfig (configPath);
-            MetaPlugIn.getMetaPlugIn().runPostConfigurationPlugIn (config);
+            MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn (config);
             return config;
         }
 
@@ -341,7 +315,7 @@ public class Curn
 
                 // Save it.
 
-                outputHandlers.add (cfgHandler);
+                configuredOutputHandlers.add (cfgHandler);
             }
         }
     }
@@ -563,17 +537,18 @@ public class Curn
         return RSSParserFactory.getRSSParser (parserClassName);
     }
 
-    private void displayChannels (Map<FeedInfo,RSSChannel> channels,
-                                  boolean                  showFirstOutput)
+    private void outputChannels (Map<FeedInfo,RSSChannel> channels)
         throws CurnException,
                ConfigurationException
     {
-        ConfiguredOutputHandler firstOutput = null;
-        OutputHandler           handler;
+        ConfiguredOutputHandler   firstOutput = null;
+        OutputHandler             handler;
+        Collection<OutputHandler> outputHandlers =
+            new ArrayList<OutputHandler>(); 
 
         // Dump the output to each output handler
 
-        for (ConfiguredOutputHandler cfgHandler : outputHandlers)
+        for (ConfiguredOutputHandler cfgHandler : configuredOutputHandlers)
         {
             log.info ("Preparing to call output handler \""
                     + cfgHandler.getName()
@@ -581,6 +556,7 @@ public class Curn
                     + cfgHandler.getClassName());
 
             handler = cfgHandler.getOutputHandler();
+            outputHandlers.add (handler);
 
             for (FeedInfo fi : channels.keySet())
             {
@@ -596,210 +572,13 @@ public class Curn
 
             handler.flush();
             ReadOnlyOutputHandler ro = new ReadOnlyOutputHandler (handler);
-            if (metaPlugIn.runPostOutputHandlerFlushPlugIn (ro))
-            {
-                // Okay to consider this one.
-
-                if ((firstOutput == null) && (handler.hasGeneratedOutput()))
-                    firstOutput = cfgHandler;
-            }
-
-            else
-            {
+            if (! metaPlugIn.runPostOutputHandlerFlushPlugIn (ro))
                 cfgHandler.disable();
-            }
         }
 
-
-        if (showFirstOutput)
-        {
-            if (firstOutput == null)
-                log.info ("None of the output handlers produced output.");
-
-            else
-            {
-                handler = firstOutput.getOutputHandler();
-                log.info ("Dumping output of first output handler "
-                        + firstOutput.getName()
-                        + "\", of type "
-                        + firstOutput.getClassName());
-                          
-                File output = handler.getGeneratedOutput();
-
-                try
-                {
-                    FileUtil.copyStream (new FileInputStream (output),
-                                         System.out);
-                    System.out.flush();
-                }
-
-                catch (IOException ex)
-                {
-                    throw new CurnException (Constants.BUNDLE_NAME,
-                                             "Curn.outputCopyFailed",
-                                             "Failed to copy output from "
-                                           + "handler \"{0}\" to standard "
-                                           + "output.",
-                                             new Object[]
-                                             {
-                                                 firstOutput.getClassName()
-                                             },
-                                             ex);
-
-                }
-            }
-        }
-    }
-
-    private void
-    emailOutput (Collection<ConfiguredOutputHandler> outputHandlers,
-                 Collection<String>                  emailAddresses)
-        throws CurnException
-    {
-        try
-        {
-            log.debug ("There are email addresses.");
-
-            OutputHandler            firstHandlerWithOutput = null;
-            OutputHandler            handler;
-            ConfiguredOutputHandler  handlerWrapper;
-            int                      totalAttachments = 0;
-
-            // First, figure out whether we have any attachments or not.
-
-            for (ConfiguredOutputHandler cfgHandler : outputHandlers)
-            {
-                handler = cfgHandler.getOutputHandler();
-
-                if (handler.hasGeneratedOutput())
-                {
-                    totalAttachments++;
-                    if (firstHandlerWithOutput == null)
-                    {
-                        log.debug ("First handler with output="
-                                 + cfgHandler.getName());
-                        firstHandlerWithOutput = handler;
-                    }
-                }
-            }
-
-            if (totalAttachments == 0)
-            {
-                // None of the handlers produced any output.
-
-                System.err.println ("Warning: None of the output handlers "
-                                  + "produced any emailable output.");
-            }
-
-            else
-            {
-                // Create an SMTP transport and a new email message.
-
-                String smtpHost = config.getSMTPHost();
-                String sender = config.getEmailSender();
-                EmailTransport transport = new SMTPEmailTransport (smtpHost);
-                EmailMessage message = new EmailMessage();
-
-                log.debug ("SMTP host = " + smtpHost);
-
-                // Fill 'er up.
-
-                for (String emailAddress : emailAddresses)
-                {
-                    try
-                    {
-                        message.addTo (new EmailAddress (emailAddress));
-                    }
-
-                    catch (EmailException ex)
-                    {
-                        throw new CurnException ("\""
-                                               + emailAddress
-                                               + "\" is invalid",
-                                                 ex);
-                    }
-                }
-
-                message.addHeader ("X-Mailer", Version.getFullVersion());
-                message.setSubject (config.getEmailSubject());
-
-                if (sender != null)
-                    message.setSender (sender);
-
-                if (log.isDebugEnabled())
-                    log.debug ("Email sender = " + message.getSender());
-
-                // Add the output. If there's only one attachment, and its
-                // output is text, then there's no need for attachments.
-                // Just set it as the text part, and set the appropriate
-                // Content-type: header. Otherwise, make a
-                // multipart-alternative message with separate attachments
-                // for each output.
-
-                DecimalFormat fmt  = new DecimalFormat ("##000");
-                StringBuffer  name = new StringBuffer();
-                String        ext;
-                String        contentType;
-                File          file;
-
-                if (totalAttachments == 1)
-                {
-                    handler = firstHandlerWithOutput;
-                    contentType = handler.getContentType();
-                    ext = MIMETypeUtil.fileExtensionForMIMEType (contentType);
-                    file = handler.getGeneratedOutput();
-                    message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
-
-                    name.append (fmt.format (1));
-                    name.append ('.');
-                    name.append (ext);
-
-                    if (contentType.startsWith ("text/"))
-                        message.setText (file, name.toString(), contentType);
-                    else
-                        message.addAttachment (file,
-                                               name.toString(),
-                                               contentType);
-                }
-
-                else
-                {
-                    message.setMultipartSubtype
-                                          (EmailMessage.MULTIPART_ALTERNATIVE);
-
-                    int i = 1;
-                    for (ConfiguredOutputHandler cfgHandler : outputHandlers)
-                    {
-                        handler = cfgHandler.getOutputHandler();
-
-                        contentType = handler.getContentType();
-                        ext = MIMETypeUtil.fileExtensionForMIMEType
-                                                                (contentType);
-                        file = handler.getGeneratedOutput();
-                        if (file != null)
-                        {
-                            name.setLength (0);
-                            name.append (fmt.format (i));
-                            name.append ('.');
-                            name.append (ext);
-                            i++;
-                            message.addAttachment (file,
-                                                   name.toString(),
-                                                   contentType);
-                        }
-                    }
-                }
-
-                log.debug ("Sending message.");
-                transport.send (message);
-                message.clear();
-            }
-        }
-
-        catch (EmailException ex)
-        {
-            throw new CurnException (ex);
-        }
+        metaPlugIn.runPostOutputPlugIn (outputHandlers);
+        outputHandlers.clear();
+        outputHandlers = null;
     }
 
     /**
