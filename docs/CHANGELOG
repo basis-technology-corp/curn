@@ -85,6 +85,14 @@ Version 3.0 (...)
 				  Changes
 				  -------
 
+- The global "GetGzippedFeeds" configuration parameter has been renamed to
+  "GzipDownload". The old name is still accepted for now, but is
+  deprecated, will generate a warning message, and may be removed in the
+  future.
+
+- The global "GzipDownload" parameter may now be overridden on a per-feed
+  basis.
+
 - curn no longer accepts email addresses on the command line. Instead,
   email addresses must be specified in the configuration file, using a new
   "MailOutputTo" configuration option in the main [curn] configuration
