@@ -219,9 +219,7 @@ public abstract class RSSItem
 
     /**
      * Utility method to get the summary to display for an
-     * <tt>RSSItem</tt>. Strips HTML by default. (Use the
-     * {@link #getSummaryToDisplay(boolean,int,String[],boolean) other version}
-     * of this method to control the HTML-stripping behavior.
+     * <tt>RSSItem</tt>.
      *
      * @param mimeTypes  desired MIME types; used only if no summary is
      *                   available, and the content field should be used
