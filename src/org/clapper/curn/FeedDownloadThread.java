@@ -408,11 +408,6 @@ class FeedDownloadThread extends Thread
 
             setIfModifiedSinceHeader (urlConn, feedInfo, cache);
 
-            // If the config allows us to transfer gzipped content, then
-            // set that header, too.
-
-            setGzipHeader (urlConn, configuration);
-
             // If the feed has actually changed, process it.
 
             if (! feedHasChanged (urlConn, feedInfo, cache))
@@ -674,25 +669,6 @@ class FeedDownloadThread extends Thread
         }
 
         return is;
-    }
-
-    /**
-     * Conditionally set the header that requests a compressed (gzipped)
-     * feed. Must be called on a <tt>URLConnection</tt> before the
-     * <tt>InputStream</tt> is retrieved.
-     *
-     * @param conn          the <tt>URLConnection</tt> on which to set the
-     *                      header
-     * @param configuration the parsed configuration, which indicates whether
-     *                      or not to request gzipping of downloaded data
-     */
-    private void setGzipHeader (URLConnection conn, CurnConfig configuration)
-    {
-        if (configuration.retrieveFeedsWithGzip())
-        {
-            log.debug ("Setting header \"Accept-Encoding\" to \"gzip\"");
-            conn.setRequestProperty ("Accept-Encoding", "gzip");
-        }
     }
 
     /**

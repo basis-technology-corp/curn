@@ -75,7 +75,6 @@ public class CurnConfig extends Configuration
     public static final String VAR_SHOW_RSS_VERSION  = "ShowRSSVersion";
     public static final String VAR_FEED_URL          = "URL";
     public static final String VAR_CLASS             = "Class";
-    public static final String VAR_GET_GZIPPED_FEEDS = "GetGzippedFeeds";
     public static final String VAR_MAX_THREADS       = "MaxThreads";
     public static final String VAR_FORCE_ENCODING    = "ForceEncoding";
     public static final String VAR_FORCE_CHAR_ENCODING = "ForceCharacterEncoding";
@@ -94,7 +93,6 @@ public class CurnConfig extends Configuration
     public static final int     DEF_DAYS_TO_CACHE     = 365;
     public static final boolean DEF_NO_CACHE_UPDATE   = false;
     public static final boolean DEF_SHOW_RSS_VERSION  = false;
-    public static final boolean DEF_GET_GZIPPED_FEEDS = true;
     public static final boolean DEF_SAVE_ONLY         = false;
     public static final String  DEF_PARSER_CLASS_NAME =
                              "org.clapper.curn.parser.minirss.MiniRSSParser";
@@ -139,7 +137,6 @@ public class CurnConfig extends Configuration
     private String parserClassName = DEF_PARSER_CLASS_NAME;
     private List<ConfiguredOutputHandler> outputHandlers
                                  = new ArrayList<ConfiguredOutputHandler>();
-    private boolean getGzippedFeeds = true;
     private int maxThreads = DEF_MAX_THREADS;
     private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
 
@@ -376,34 +373,6 @@ public class CurnConfig extends Configuration
     public void setMustUpdateCacheFlag (boolean val)
     {
         updateCache = val;
-    }
-
-    /**
-     * Determine whether to retrieve RSS feeds via Gzip. Only applicable
-     * when connecting to HTTP servers.
-     *
-     * @return <tt>true</tt> if Gzip is to be used, <tt>false</tt>
-     *         otherwise
-     *
-     * @see #setRetrieveFeedsWithGzipFlag
-     */
-    public boolean retrieveFeedsWithGzip()
-    {
-        return getGzippedFeeds;
-    }
-
-    /**
-     * Set the flag that controls whether to retrieve RSS feeds via Gzip.
-     * Only applicable when connecting to HTTP servers.
-     *
-     * @param val <tt>true</tt> if Gzip is to be used, <tt>false</tt>
-     *            otherwise
-     *
-     * @see #retrieveFeedsWithGzip
-     */
-    public void setRetrieveFeedsWithGzipFlag (boolean val)
-    {
-        this.getGzippedFeeds = val;
     }
 
     /**
@@ -646,14 +615,6 @@ public class CurnConfig extends Configuration
                                                       varName,
                                                       DEF_PARSER_CLASS_NAME);
             val = String.valueOf (parserClassName);
-        }
-
-        else if (varName.equals (VAR_GET_GZIPPED_FEEDS))
-        {
-            getGzippedFeeds = getOptionalBooleanValue (MAIN_SECTION,
-                                                       varName,
-                                                       DEF_GET_GZIPPED_FEEDS);
-            val = String.valueOf (getGzippedFeeds);
         }
 
         else if (varName.equals (VAR_MAX_THREADS))
