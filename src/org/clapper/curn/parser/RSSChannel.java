@@ -26,6 +26,8 @@
 
 package org.clapper.curn.parser;
 
+import org.clapper.util.text.HTMLUtil;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -102,6 +104,62 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
         newChannel.setItems (itemCopies);
 
         return newChannel;
+    }
+
+    /**
+     * Strip all HTML and weird plain text from the channel and its items.
+     * Intended primarily for output handlers and plug-ins that produce
+     * plain text. This method edits the channel data directly; it does not
+     * produce a copy.
+     */
+    public void stripHTML()
+    {
+        Collection<String> authors = getAuthors();
+        if (authors != null)
+        {
+            Collection<String> newAuthors = new ArrayList<String>();
+            for (String author : authors)
+                newAuthors.add (HTMLUtil.textFromHTML (author));
+
+            setAuthors (newAuthors);
+        }
+
+        String title = getTitle();
+        if (title != null)
+            setTitle (HTMLUtil.textFromHTML (title));
+
+        String desc = getDescription();
+        if (desc != null)
+            setDescription (HTMLUtil.textFromHTML (desc));
+
+        String copyright = getCopyright();
+        if (copyright != null)
+            setCopyright (HTMLUtil.textFromHTML (copyright));
+
+        Collection<RSSItem> items = getItems();
+        if ((items != null) && (items.size() > 0))
+        {
+            for (RSSItem item : items)
+            {
+                title = item.getTitle();
+                if (title != null)
+                    item.setTitle (HTMLUtil.textFromHTML (title));
+
+                authors = item.getAuthors();
+                if (authors != null)
+                {
+                    Collection<String> newAuthors = new ArrayList<String>();
+                    for (String author : authors)
+                        newAuthors.add (HTMLUtil.textFromHTML (author));
+
+                    setAuthors (newAuthors);
+                }
+
+                String summary = item.getSummary();
+                if (summary != null)
+                    item.setSummary (HTMLUtil.textFromHTML (summary));
+            }
+        }
     }
 
     /**
