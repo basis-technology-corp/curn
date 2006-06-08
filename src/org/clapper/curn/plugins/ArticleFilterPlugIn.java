@@ -59,14 +59,14 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * The <tt>ItemFilterPlugIn</tt> provides per-feed filtering capabilities.
- * It can be used to filter out items that match one or more regular
+ * The <tt>ArticleFilterPlugIn</tt> provides per-feed filtering capabilities.
+ * It can be used to filter out items (articles) that match one or more regular
  * expressions. The match logic:
  *
  * <ul>
  *   <li>ignores any embedded newlines
- *   <li>(temporarily) strips all HTML from the item text before matching
- *   <li>searches the item's content, summary and title
+ *   <li>(temporarily) strips all HTML from the article text before matching
+ *   <li>searches the article's content, summary and title
  * </ul>
  *
  * <p>The filtering syntax is (shamelessly) adapted from the
@@ -75,7 +75,7 @@ import java.util.regex.PatternSyntaxException;
  * <a href="http://offog.org/files/rawdog-plugins/article-filter.py" target="_top"><i>article-filter</i></a>
  * plug-in. (<i>rawdog</i> is similar to <i>curn</i>: It's
  * a command line-driven RSS reader, written in Python.) A feed filter is
- * configured by adding one or more <tt>ItemFilter</tt> properties to the
+ * configured by adding one or more <tt>ArticleFilter</tt> properties to the
  * feed's configuration section. The property's value consists of one or
  * more filter command sequences, separated by ";" characters. (The ";" must
  * be surrounded by white space; see below.) Each filter command sequence
@@ -91,7 +91,7 @@ import java.util.regex.PatternSyntaxException;
  *   <li> title: search the title field
  *   <li> summary: search the summary, or description, field
  *   <li> text: search the full content, if available
- *   <li> category: search the item category (or categories)
+ *   <li> category: search the article's category (or categories)
  *   <li> any: search all fields
  * </ul>
  *
@@ -131,9 +131,9 @@ import java.util.regex.PatternSyntaxException;
  * whether a given entry is suppressed or not. Regular expressions are
  * matched in a case-blind fashion.</p>
  *
- * <p>You can use multiple <tt>ItemFilter</tt> parameters per feed (as long
- * as they have unique suffixes. All filters are applied to each item to
- * determine whether the item should be filtered out or not.</p>
+ * <p>You can use multiple <tt>ArticleFilter</tt> parameters per feed (as long
+ * as they have unique suffixes. All filters are applied to each article to
+ * determine whether the article should be filtered out or not.</p>
  *
  * <h3>Examples</h3>
  *
@@ -144,7 +144,7 @@ import java.util.regex.PatternSyntaxException;
  *
  * <blockquote>
  * <pre>
- * ItemFilter: hide any 'mash[- \t]?up'
+ * ArticleFilter: hide any 'mash[- \t]?up'
  * </pre>
  * </blockquote>
  *
@@ -154,7 +154,7 @@ import java.util.regex.PatternSyntaxException;
  * 
  * <blockquote>
  * <pre>
- * ItemFilter: hide author '^joe *blow$' ; show author '^joe *blow$' title rant
+ * ArticleFilter: hide author '^joe *blow$' ; show author '^joe *blow$' title rant
  * </pre>
  * </blockquote>
  *
@@ -162,13 +162,13 @@ import java.util.regex.PatternSyntaxException;
  *
  * <blockquote>
  * <pre>
- * ItemFilter: hide ; show author '^moe *howard$'
+ * ArticleFilter: hide ; show author '^moe *howard$'
  * </pre>
  * </blockquote>
  *
  * @version <tt>$Revision$</tt>
  */
-public class ItemFilterPlugIn
+public class ArticleFilterPlugIn
     implements FeedConfigItemPlugIn,
                PostFeedParsePlugIn
 {
@@ -176,7 +176,7 @@ public class ItemFilterPlugIn
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VAR_ITEM_FILTER   = "ItemFilter";
+    private static final String VAR_ITEM_FILTER   = "ArticleFilter";
     private static final char   COMMAND_DELIM     = ';';
     private static final String STR_COMMAND_DELIM = "" + COMMAND_DELIM;
 
@@ -322,7 +322,7 @@ public class ItemFilterPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ItemFilterPlugIn.class);
+    private static Logger log = new Logger (ArticleFilterPlugIn.class);
 
     /**
      * Per-feed match rules
@@ -337,7 +337,7 @@ public class ItemFilterPlugIn
     /**
      * Default constructor (required).
      */
-    public ItemFilterPlugIn()
+    public ArticleFilterPlugIn()
     {
     }
 
@@ -352,7 +352,7 @@ public class ItemFilterPlugIn
      */
     public String getName()
     {
-        return "Item Filter";
+        return "Article Filter";
     }
 
     /*----------------------------------------------------------------------*\
@@ -489,7 +489,7 @@ public class ItemFilterPlugIn
                 {
                     throw new CurnException
                         (Constants.BUNDLE_NAME,
-                         "ItemFilterPlugIn.badFilterCommand",
+                         "ArticleFilterPlugIn.badFilterCommand",
                          "Configuration section \"{0}\": Value for parameter "
                        + "\"{1}\" has a bad command field of \"{2}\".",
                          new Object[] {sectionName, paramName, sCommand});
@@ -533,7 +533,7 @@ public class ItemFilterPlugIn
                         {
                             throw new CurnException
                                 (Constants.BUNDLE_NAME,
-                                 "ItemFilterPlugIn.badRSSField",
+                                 "ArticleFilterPlugIn.badRSSField",
                                  "Configuration section \"{0}\": Value for "
                                + "parameter \"{1}\" has a bad RSS field of "
                                + "\"{2}\".",
@@ -574,7 +574,7 @@ public class ItemFilterPlugIn
         {
             throw new CurnException
                 (Constants.BUNDLE_NAME,
-                 "ItemFilterPlugIn.wrongNumberOfFields",
+                 "ArticleFilterPlugIn.wrongNumberOfFields",
                  "Configuration section \"{0}\": Value for parameter "
                + "\"{1}\" is missing at least one field.",
                  new Object[] {sectionName, paramName});
@@ -701,7 +701,7 @@ public class ItemFilterPlugIn
                     {
                         throw new CurnException
                             (Constants.BUNDLE_NAME,
-                             "ItemFilterPlugIn.unmatchedQuote",
+                             "ArticleFilterPlugIn.unmatchedQuote",
                              "Unmatched single quote at column {0} in \"{1}\"",
                              new Object[] {col, rawValue});
                     }
@@ -760,7 +760,7 @@ public class ItemFilterPlugIn
         catch (PatternSyntaxException ex)
         {
             throw new CurnException
-                (Constants.BUNDLE_NAME, "ItemFilterPlugIn.badRegex",
+                (Constants.BUNDLE_NAME, "ArticleFilterPlugIn.badRegex",
                  "\"{0}\" is an invalid regular expression",
                  new Object[] {strRegex},
                  ex);
