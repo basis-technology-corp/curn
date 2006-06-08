@@ -1796,6 +1796,119 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
+    <td align="left" class="code"><a name="Feed_ArticleFilter"></a>ArticleFilter</td>
+    <td align="left">Strings</td>
+    <td align="left">Specifies a set of filters to discard feed item (article)
+      content, based on regular expressions.
+      <br/><br/>
+      The filtering syntax is (shamelessly) adapted from the
+      <a href="http://offog.org/code/rawdog.html" target="_top"><i>rawdog</i></a>
+      RSS reader's
+      <a href="http://offog.org/files/rawdog-plugins/article-filter.py" target="_top"><i>article-filter</i></a>
+      plug-in.A feed filter is configured by adding an
+      <tt>ArticleFilter</tt> property to the feed's configuration section.
+      The property's value consists of one or more filter command
+      sequences, separated by ";" characters. (The ";" must be surrounded
+      by white space; see below.) Each filter command sequence is of this
+      form:
+
+      <blockquote>show|hide [<i>field</i> '<i>regexp</i>' [<i>field</i>
+      '<i>regexp</i>' ...]]</blockquote>
+
+      <i>field</i> can be one of:
+
+      <ul>
+	<li> author: search the author field
+	<li> title: search the title field
+	<li> summary: search the summary, or description, field
+	<li> text: search the full content, if available
+	<li> category: search the article's category (or categories)
+	<li> any: search all fields
+      </ul>
+
+      Each regular expression <i>must</i> be enclosed in single quotes.
+      For example:
+
+      <blockquote><pre>
+hide author 'Raymond Luxury-yacht' ; show author 'Arthur +.Two-sheds. +Jackson'
+      </pre></blockquote>
+
+      If the command is "hide", then the entry will be hidden if the
+      specified field matches the regular expression. If the command is
+      "show", then the entry will be shown if the field matches the regular
+      expression. If there are no fields or regular expressions, then the
+      command is a wildcard match. That is:
+
+      <blockquote><pre>hide</pre></blockquote>
+
+      is equivalent to:
+
+      <blockquote><pre>hide any '.*'</pre></blockquote>
+
+      and:
+
+      <blockquote><pre>show</pre></blockquote>
+
+      is equivalent to:
+
+      <blockquote><pre>show any '.*'</pre></blockquote>
+
+      Wildcard matches are useful in situations where you want to
+      hide or show "everything but ...". See the examples, below, for
+      details.
+      <br/><br/>
+      All filtering commands are processed, and the end result is what defines
+      whether a given entry is suppressed or not. Regular expressions are
+      matched in a case-blind fashion. The match logic also:
+
+      <ul>
+	<li>ignores any embedded newlines in article contents
+	<li>(temporarily) strips all HTML from the article text before matching
+      </ul>
+
+      You can use multiple <tt>ArticleFilter</tt> parameters per feed (as long
+      as they have unique suffixes. All filters are applied to each article to
+      determine whether the article should be filtered out or not.
+      <br/><br/>
+
+      <b>Examples</b>
+      <br/><br/>
+
+      Some examples will help clarify the syntax.
+      <br/><br/>
+
+      For example, the following set of commands hide all articles with the
+      phrase "mash-up" (because mash-ups bore me):
+
+      <blockquote>
+<pre>
+ArticleFilter: hide any 'mash[- \t]?up'
+</pre>
+      </blockquote>
+
+      The following, more complicated, entry hides everything by author
+      "Joe Blow", unless the title has the word "rant" in it ('cause his rants
+      are hilarious):
+
+      <blockquote>
+<pre>
+ArticleFilter: hide author '^joe *blow$' ; show author '^joe *blow$' title rant
+</pre>
+      </blockquote>
+
+      Finally, this example hides everything except articles by Moe Howard:
+
+      <blockquote>
+<pre>
+ArticleFilter: hide ; show author '^moe *howard$'
+</pre>
+      </blockquote>
+    </td>
+    <td align="left">No</td>
+    <td align="left"><span class="code">Articles are not filtered</span></td>
+  </tr>
+
+  <tr valign="top">
 
     <td align="left" class="code"><a name="Feed_DaysToCache"></a>DaysToCache</td>
     <td align="left">Positive integer</td>
