@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The <tt>IgnoreDuplicateItemTitlesPlugIn</tt> handles removing duplicate
+ * The <tt>IgnoreDuplicateArticlesPlugIn</tt> handles removing duplicate
  * items from downloaded feeds, where "duplicate" means "has the same
  * title". It intercepts the following per-feed configuration parameters:
  *
@@ -61,7 +61,7 @@ import java.util.Map;
  *
  * @version <tt>$Revision$</tt>
  */
-public class IgnoreDuplicateItemTitlesPlugIn
+public class IgnoreDuplicateArticlesPlugIn
     implements FeedConfigItemPlugIn,
                PostFeedParsePlugIn
 {
@@ -91,7 +91,7 @@ public class IgnoreDuplicateItemTitlesPlugIn
      * For log messages
      */
     private static Logger log =
-        new Logger (IgnoreDuplicateItemTitlesPlugIn.class);
+        new Logger (IgnoreDuplicateArticlesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -100,7 +100,7 @@ public class IgnoreDuplicateItemTitlesPlugIn
     /**
      * Default constructor (required).
      */
-    public IgnoreDuplicateItemTitlesPlugIn()
+    public IgnoreDuplicateArticlesPlugIn()
     {
     }
 
@@ -115,7 +115,7 @@ public class IgnoreDuplicateItemTitlesPlugIn
      */
     public String getName()
     {
-        return "Ignore Duplicate Item Titles";
+        return "Ignore Duplicate Articles";
     }
 
     /*----------------------------------------------------------------------*\
