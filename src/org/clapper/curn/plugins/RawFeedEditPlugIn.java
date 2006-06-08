@@ -36,11 +36,7 @@ import org.clapper.curn.PostFeedDownloadPlugIn;
 import org.clapper.curn.Util;
 
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
-
-import org.clapper.util.regex.RegexUtil;
-import org.clapper.util.regex.RegexException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -76,6 +72,7 @@ import java.util.Map;
  * @version <tt>$Revision$</tt>
  */
 public class RawFeedEditPlugIn
+    extends AbstractXMLEditPlugIn
     implements FeedConfigItemPlugIn,
                PostFeedDownloadPlugIn
 {
@@ -83,7 +80,7 @@ public class RawFeedEditPlugIn
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    public static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
+    private static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -120,11 +117,6 @@ public class RawFeedEditPlugIn
      * For log messages
      */
     private static Logger log = new Logger (RawFeedEditPlugIn.class);
-
-    /**
-     * Regular expression helper
-     */
-    private RegexUtil regexUtil = new RegexUtil();
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -241,9 +233,18 @@ public class RawFeedEditPlugIn
         FeedEditInfo editInfo  = perFeedEditInfoMap.get (feedInfo);
 
         if ((editInfo != null) && (editInfo.editCommands.size() > 0))
-            doEdit (feedInfo, feedDataFile, encoding);
+            editXML (feedInfo, feedDataFile, encoding, editInfo.editCommands);
 
         return true;
+    }
+
+    /*----------------------------------------------------------------------*\
+                             Protected Methods
+    \*----------------------------------------------------------------------*/
+
+    protected Logger getLogger()
+    {
+        return log;
     }
 
     /*----------------------------------------------------------------------*\
@@ -260,106 +261,5 @@ public class RawFeedEditPlugIn
         }
 
         return editInfo;
-    }
-
-    private void doEdit (FeedInfo feedInfo, File feedDataFile, String encoding)
-        throws CurnException
-    {
-        String         feedURL = feedInfo.getURL().toString();
-        BufferedReader in = null;
-        PrintWriter    out = null;
-
-        try
-        {
-            File tempOutputFile = Util.createTempXMLFile();
-
-            if (encoding != null)
-            {
-                in = new BufferedReader
-                         (new InputStreamReader
-                             (new FileInputStream (feedDataFile), encoding));
-                out = new PrintWriter
-                          (new OutputStreamWriter
-                              (new FileOutputStream (tempOutputFile),
-                               encoding));
-            }
-
-            else
-            {
-                in  = new BufferedReader (new FileReader (feedDataFile));
-                out = new PrintWriter (new FileWriter (tempOutputFile));
-            }
-
-            String       line;
-            int          lineNumber = 0;
-            FeedEditInfo editInfo = perFeedEditInfoMap.get (feedInfo);
-
-            while ((line = in.readLine()) != null)
-            {
-                lineNumber++;
-                for (String editCommand : editInfo.editCommands)
-                {
-                    if (log.isDebugEnabled() && (lineNumber == 1))
-                    {
-                        log.debug ("Applying edit command \""
-                                 + editCommand
-                                 + "\" to downloaded XML for feed \""
-                                 + feedURL
-                                 + ", line "
-                                 + lineNumber);
-                    }
-
-                    line = regexUtil.substitute (editCommand, line);
-                }
-
-                out.println (line);
-            }
-
-            in.close();
-            in = null;
-
-            out.flush();
-            out.close();
-            out = null;
-
-            log.debug ("Copying temporary (edited) file \""
-                     + tempOutputFile.getPath()
-                     + "\" back over top of file \""
-                     + feedDataFile.getPath()
-                     + "\".");
-            FileUtil.copyTextFile (tempOutputFile,
-                                   encoding,
-                                   feedDataFile,
-                                   encoding);
-
-            tempOutputFile.delete();
-        }
-
-        catch (IOException ex)
-        {
-            throw new CurnException (ex);
-        }
-
-        catch (RegexException ex)
-        {
-            throw new CurnException (ex);
-        }
-
-        finally
-        {
-            try
-            {
-                if (in != null)
-                    in.close();
-
-                if(out != null)
-                    out.close();
-            }
-
-            catch (IOException ex)
-            {
-                log.error ("I/O error", ex);
-            }
-        }
     }
 }
