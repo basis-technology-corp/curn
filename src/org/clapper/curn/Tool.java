@@ -38,8 +38,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.clapper.curn.parser.RSSChannel;
 
@@ -127,6 +129,7 @@ public class Tool
     private boolean useCache         = true;
     private Date    currentTime      = new Date();
     private boolean optShowBuildInfo = false;
+    private boolean optShowPlugIns   = false;
     private boolean optShowVersion   = false;
     private Boolean optUpdateCache   = null;
 
@@ -258,6 +261,10 @@ public class Tool
                 deprecatedOption (shortOption, longOption);
                 break;
 
+            case 'p':           // --plug-ins
+                optShowPlugIns = true;
+                break;
+
             case 'r':           // --rss-version
                 deprecatedOption (shortOption, longOption);
                 break;
@@ -330,7 +337,7 @@ public class Tool
         // If we're showing build information or the version, forget about
         // the remainder of the command line.
 
-        if (! (optShowBuildInfo || optShowVersion))
+        if (! (optShowBuildInfo || optShowVersion || optShowPlugIns))
             configPath = it.next();
     }
 
@@ -375,17 +382,30 @@ public class Tool
                         "Show full build information, then exit. "
                       + "This option shows a bit more information than the "
                       + UsageInfo.LONG_OPTION_PREFIX
-                      + "version option");
+                      + "version option. This option can be combined with the "
+                      + UsageInfo.LONG_OPTION_PREFIX
+                      + "plug-ins option to show the loaded plug-ins.");
         info.addOption ('C', "no-cache", "Don't use a cache file at all.");
         info.addOption ('d', "show-dates", null);
         info.addOption ('D', "no-dates", null);
+        info.addOption ('p', "plug-ins",
+                        "Show the list of located plug-ins and output "
+                      + "handlers, then exit. This option can be combined "
+                      + "with either "
+                      + UsageInfo.LONG_OPTION_PREFIX
+                      + "build-info or "
+                      + UsageInfo.LONG_OPTION_PREFIX
+                      + "version to show version information, as well.");
         info.addOption ('r', "rss-version", null);
         info.addOption ('R', "no-rss-version", null);
         info.addOption ('T', "threads", "<n>", null);
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
         info.addOption ('v', "version",
-                        "Show version information, then exit.");
+                        "Show version information, then exit. "
+                      + "This option can be combined with the "
+                      + UsageInfo.LONG_OPTION_PREFIX
+                      + "plug-ins option to show the loaded plug-ins.");
         info.addOption ('z', "gzip", null);
         info.addOption ('Z', "no-gzip", null);
 
@@ -449,13 +469,27 @@ public class Tool
     {
         try
         {
+            boolean abort = false;
+
             if (optShowBuildInfo)
+            {
+                abort = true;
                 Version.showBuildInfo();
+            }
 
             else if (optShowVersion)
+            {
+                abort = true;
                 Version.showVersion();
+            }
 
-            else
+            if (optShowPlugIns)
+            {
+                showPlugIns();
+                abort = true;
+            }
+
+            if (! abort)
             {
                 // Allocate Curn object, which loads plug-ins.
 
@@ -547,6 +581,37 @@ public class Tool
         }
 
         return date;
+    }
+
+    private void showPlugIns()
+        throws CurnException
+    {
+        Map<String,Class> plugIns = new TreeMap<String,Class>();
+        Map<String,Class> outputHandlers = new TreeMap<String,Class>();
+
+        PlugInManager.listPlugIns (plugIns, outputHandlers);
+
+        System.out.println();
+        System.out.println ("Plug-ins:");
+        System.out.println();
+        for (String name : plugIns.keySet())
+        {
+            System.out.println (name
+                              + " ("
+                              + plugIns.get (name).getName()
+                              + ")");
+        }
+
+        System.out.println();
+        System.out.println ("Output Handler Plug-ins:");
+        System.out.println();
+        for (String name : outputHandlers.keySet())
+        {
+            System.out.println (name
+                              + " ("
+                              + outputHandlers.get (name).getName()
+                              + ")");
+        }
     }
 
     private void deprecatedOption (char shortOption, String longOption)
