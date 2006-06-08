@@ -66,9 +66,9 @@ import java.util.Map;
  * <table border="1">
  *   <tr valign="top">
  *     <td><tt>PreparseEdit<i>suffix</i></tt></td>
- *     <td>Specifies a regular expression to be applied to the XML. Multiple
- *         expressions may be specified per feed. See the User's Guide for
- *         details.
+ *     <td>Specifies a regular expression substitution to be applied to the
+ *     XML. Multiple expressions may be specified per feed. See the User's
+ *     Guide for details.
  *     </td>
  *   </tr>
  * </table>
