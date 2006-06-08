@@ -169,7 +169,7 @@ public abstract class RSSItem
      * @see #clearContent
      * @see #setContent
      */
-    public final String getFirstContentOfType (String[] mimeTypes)
+    public final String getFirstContentOfType (String ... mimeTypes)
     {
         String result = null;
 
@@ -229,7 +229,7 @@ public abstract class RSSItem
      * @see #getSummary
      * @see #getFirstContentOfType
      */
-    public String getSummaryToDisplay (String[] mimeTypes)
+    public String getSummaryToDisplay (String ... mimeTypes)
     {
         String summary = getSummary();
 
