@@ -32,14 +32,6 @@ Version 3.0 (...)
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
-- The org.clapper.curn.output.TextOutputHandler,
-  org.clapper.curn.output.SimpleSummaryOutputHandler, and
-  org.clapper.curn.output.html.HTMLOutputHandler classes are gone. They'd
-  been deprecated as of version 2.6 and reimplemented in terms of the
-  FreeMarkerOutputHandler. Use the FreeMarkerOutputHandler, instead.
-
-- Enhanced error reporting (exception handling) in some areas.
-
 - The "EditItemURL" feed configuration parameter may now be specified multiple
   times within a feed, provided each instance has its own unique suffix (e.g.,
   "EditItemURL1", "EditItemURL2", "EditItemURLFoo", etc.)
@@ -54,21 +46,9 @@ Version 3.0 (...)
   now be overridden on a per-feed basis, by a feed-specific "ShowDates"
   configuration parameter.
 
-- curn now handles web servers that specify a feed's character set in an
-  HTTP header that looks like this:
-
-	Content-Type: text/xml; charset="utf-8"
-
-  According to the HTTP/1.1 specification
-  (http://www.w3.org/Protocols/rfc2616/rfc2616.html), the "charset"
-  field isn't supposed to be quoted. That is, a legal Content-Type header
-  with a "charset" field should look like this:
-
-	Content-Type: text/xml; charset=utf-8
-	Content-Type: text/xml; charset=ISO-8859-1
-
-  However, there are some broken HTTP servers (or servers with broken
-  configurations) that insist on quoting the field.
+- Added a new per-feed configuration item, ArticleFilter, that permits
+  filtering out feed items based on their content. See the User's Guide
+  for details. (This capability is handled by a stock curn plug-in.)
 
 - curn's ScriptOutputHandler class now exports curn-related data to the
   script via a global "curn" object that does not have to be retrieved via
@@ -81,9 +61,17 @@ Version 3.0 (...)
   now appears in the version stamp field in all default
   FreemarkerOutputHandler templates.
 
+- Enhanced error reporting (exception handling) in some areas.
+
 				  -------
 				  Changes
 				  -------
+
+- The org.clapper.curn.output.TextOutputHandler,
+  org.clapper.curn.output.SimpleSummaryOutputHandler, and
+  org.clapper.curn.output.html.HTMLOutputHandler classes are gone. They'd
+  been deprecated as of version 2.6 and reimplemented in terms of the
+  FreeMarkerOutputHandler. Use the FreeMarkerOutputHandler, instead.
 
 - The global "GetGzippedFeeds" configuration parameter has been renamed to
   "GzipDownload". The old name is still accepted for now, but is
@@ -170,6 +158,22 @@ Version 3.0 (...)
 
 - The built-in MiniRSSParser wasn't properly handling empty XML elements
   (e.g., "<author/>", "<dc:creator/>"). Some feeds have do them.
+
+- curn now handles web servers that specify a feed's character set in an
+  HTTP header that looks like this:
+
+	Content-Type: text/xml; charset="utf-8"
+
+  According to the HTTP/1.1 specification
+  (http://www.w3.org/Protocols/rfc2616/rfc2616.html), the "charset"
+  field isn't supposed to be quoted. That is, a legal Content-Type header
+  with a "charset" field should look like this:
+
+	Content-Type: text/xml; charset=utf-8
+	Content-Type: text/xml; charset=ISO-8859-1
+
+  However, there are some broken HTTP servers (or servers with broken
+  configurations) that insist on quoting the field.
 
 
 ---------------------------------------------------------------------------
