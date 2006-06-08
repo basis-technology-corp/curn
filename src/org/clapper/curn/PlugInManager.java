@@ -41,6 +41,7 @@ import org.clapper.util.io.FileFilterMatchType;
 import org.clapper.util.classutil.ClassFinder;
 import org.clapper.util.classutil.ClassFilter;
 import org.clapper.util.classutil.ClassInfo;
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.classutil.ClassModifiersClassFilter;
 import org.clapper.util.classutil.AndClassFilter;
 import org.clapper.util.classutil.OrClassFilter;
@@ -58,7 +59,8 @@ import java.io.FileFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -92,6 +94,22 @@ public class PlugInManager
      * For log messages
      */
     private static Logger log = new Logger (PlugInManager.class);
+
+    /**
+     * The located PlugIns
+     */
+    private static Collection<PlugIn> plugIns = new ArrayList<PlugIn>();
+
+    /**
+     * The located OutputHandler classes
+     */
+    private static Collection<Class> outputHandlerClasses =
+        new ArrayList<Class>();
+
+    /**
+     * Whether or not plug-ins are loaded
+     */
+    private static boolean plugInsLoaded = false;
 
     /**
      * File filter to use when looking for jars, zip files, and directories.
@@ -147,6 +165,32 @@ public class PlugInManager
     \*----------------------------------------------------------------------*/
 
     /**
+     * Get the list of loaded plug-ins and output handlers. The plug-ins,
+     * which are already instantiated, are storing in the supplied
+     * <tt>Map</tt>. The map is indexed by plug-in displayable name; each
+     * value is the corresponding <tt>PlugIn</tt> class. The plug-in
+     * <tt>OutputHandler</tt> classes are not loaded, so they're stored
+     * in a <tt>Map</tt> that's indexed by short class name.
+     *
+     * @param plugInMap        the map for plug-ins
+     * @param outputHandlerMap the map for output handlers
+     *
+     * @throws CurnException on error
+     */
+    static void listPlugIns (Map<String,Class> plugInMap,
+                             Map<String,Class> outputHandlerMap)
+        throws CurnException
+    {
+        loadPlugIns();
+
+        for (PlugIn plugIn : plugIns)
+            plugInMap.put (plugIn.getName(), plugIn.getClass());
+
+        for (Class cls : outputHandlerClasses)
+            outputHandlerMap.put (ClassUtil.getShortClassName (cls), cls);
+    }
+
+    /**
      * Load the plug-ins and create the {@link MetaPlugIn} singleton.
      *
      * @throws CurnException on error
@@ -154,79 +198,84 @@ public class PlugInManager
     static void loadPlugIns()
         throws CurnException
     {
-        MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn();
+        if (! plugInsLoaded)
+        {
+            MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn();
 
-        ClassFinder classFinder = new ClassFinder();
+            ClassFinder classFinder = new ClassFinder();
 
-        // Assumes CLASSPATH has been set appropriately by the Bootstrap
-        // class. It's necessary to do it this way to support the alternate
-        // class loader.
+            // Assumes CLASSPATH has been set appropriately by the
+            // Bootstrap class. It's necessary to do it this way to support
+            // the alternate class loader.
 
-        classFinder.addClassPath();
+            classFinder.addClassPath();
 
-        // Configure the ClassFinder's filter for plug-in classes and
-        // output handler classes. Note that the criteria for both are
-        // slightly different, but we search for them at the same time
-        // for performance reasons.
+            // Configure the ClassFinder's filter for plug-in classes and
+            // output handler classes. Note that the criteria for both are
+            // slightly different, but we search for them at the same time
+            // for performance reasons.
 
-        ClassFilter classFilter =
-            new OrClassFilter
-            (
-                // Plug-ins
-
-                new AndClassFilter
+            ClassFilter classFilter =
+                new OrClassFilter
                 (
-                    // Must implement org.clapper.curn.PlugIn
+                    // Plug-ins
 
-                    new SubclassClassFilter (PlugIn.class),
+                    new AndClassFilter
+                    (
+                        // Must implement org.clapper.curn.PlugIn
 
-                    // Must be concrete
+                        new SubclassClassFilter (PlugIn.class),
 
-                    new NotClassFilter (new AbstractClassFilter()),
+                        // Must be concrete
 
-                    // Must be public
+                        new NotClassFilter (new AbstractClassFilter()),
 
-                    new ClassModifiersClassFilter (Modifier.PUBLIC),
+                        // Must be public
 
-                    // Weed out certain things
+                        new ClassModifiersClassFilter (Modifier.PUBLIC),
 
-                    new NotClassFilter (new RegexClassFilter ("^java\\.")),
-                    new NotClassFilter (new RegexClassFilter ("^javax\\."))
-                ),
+                        // Weed out certain things
 
-                // Output handlers
+                        new NotClassFilter (new RegexClassFilter ("^java\\.")),
+                        new NotClassFilter (new RegexClassFilter ("^javax\\."))
+                    ),
 
-                new AndClassFilter
-                (
-                    // Must implement org.clapper.curn.OutputHandler
+                    // Output handlers
 
-                    new SubclassClassFilter (OutputHandler.class),
+                    new AndClassFilter
+                    (
+                        // Must implement org.clapper.curn.OutputHandler
 
-                    // Must be concrete
+                        new SubclassClassFilter (OutputHandler.class),
 
-                    new NotClassFilter (new AbstractClassFilter()),
+                        // Must be concrete
 
-                    // Must be public
+                        new NotClassFilter (new AbstractClassFilter()),
 
-                    new ClassModifiersClassFilter (Modifier.PUBLIC),
+                        // Must be public
 
-                    // Make sure not to include any of the packaged curn
-                    // output handlers.
+                        new ClassModifiersClassFilter (Modifier.PUBLIC),
 
-                    new NotClassFilter
-                        (new RegexClassFilter ("^org\\.clapper\\.curn"))
-                )
-            );
+                        // Make sure not to include any of the packaged curn
+                        // output handlers.
 
-        Collection<ClassInfo> classes = new ArrayList<ClassInfo>();
-        classFinder.findClasses (classes, classFilter);
+                        new NotClassFilter
+                            (new RegexClassFilter ("^org\\.clapper\\.curn"))
+                    )
+                );
 
-        // Load any found plug-ins.
+            Collection<ClassInfo> classes = new ArrayList<ClassInfo>();
+            classFinder.findClasses (classes, classFilter);
 
-        if (classes.size() == 0)
-            log.info ("No plug-ins found.");
-        else
-            loadPlugInClasses (classes);
+            // Load any found plug-ins.
+
+            if (classes.size() == 0)
+                log.info ("No plug-ins found.");
+            else
+                loadPlugInClasses (classes);
+
+            plugInsLoaded = true;
+        }
     }
 
     /*----------------------------------------------------------------------*\
@@ -264,6 +313,7 @@ public class PlugInManager
                     log.info ("Loaded output handler class \""
                             + className
                             + "\"");
+                    outputHandlerClasses.add (cls);
                     totalOutputHandlersLoaded++;
                 }
 
@@ -277,6 +327,7 @@ public class PlugInManager
                             + plugIn.getName()
                             + "\" plug-in");
                     metaPlugIn.addPlugIn (plugIn);
+                    plugIns.add (plugIn);
                     totalPlugInsLoaded++;
                 }
             }
