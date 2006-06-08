@@ -40,6 +40,7 @@ import org.clapper.curn.Version;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
+import java.net.URL;
 import java.net.URLConnection;
 
 import java.util.Map;
@@ -174,12 +175,9 @@ public class GzipDownloadPlugIn
 
             else if (paramName.equals (VAR_OLD_GET_GZIPPED_FEEDS))
             {
-                String msg = "Warning: Configuration file uses deprecated \""
-                           + paramName
-                           + "\" parameter, instead of new \""
-                           + VAR_GZIP_DOWNLOAD
-                           + "\" parameter.";
-
+                String msg = getDeprecatedParamMessage (config,
+                                                        paramName,
+                                                        VAR_GZIP_DOWNLOAD);
                 Util.getErrorOut().println (msg);
                 log.warn (msg);
 
@@ -242,12 +240,9 @@ public class GzipDownloadPlugIn
 
             else if (paramName.equals (VAR_OLD_GET_GZIPPED_FEEDS))
             {
-                String msg = "Warning: Configuration file uses deprecated \""
-                           + paramName
-                           + "\" parameter, instead of new \""
-                           + VAR_GZIP_DOWNLOAD
-                           + "\" parameter.";
-
+                String msg = getDeprecatedParamMessage (config,
+                                                        paramName,
+                                                        VAR_GZIP_DOWNLOAD);
                 Util.getErrorOut().println (msg);
                 log.warn (msg);
 
@@ -320,5 +315,34 @@ public class GzipDownloadPlugIn
         }
 
         return true;
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    private String getDeprecatedParamMessage (CurnConfig config,
+                                              String     badParam,
+                                              String     goodParam)
+    {
+        StringBuilder buf = new StringBuilder();
+
+        buf.append ("Warning: Configuration file ");
+
+        URL configURL = config.getConfigurationFileURL();
+        if (configURL != null)
+        {
+            buf.append ('"');
+            buf.append (configURL.toString());
+            buf.append ('"');
+        }
+
+        buf.append ("uses deprecated \"");
+        buf.append (badParam);
+        buf.append ("\" parameter, instead of new \"");
+        buf.append (goodParam);
+        buf.append ("\" parameter.");
+
+        return buf.toString();
     }
 }
