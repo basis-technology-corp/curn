@@ -337,7 +337,7 @@ public class GzipDownloadPlugIn
             buf.append ('"');
         }
 
-        buf.append ("uses deprecated \"");
+        buf.append (" uses deprecated \"");
         buf.append (badParam);
         buf.append ("\" parameter, instead of new \"");
         buf.append (goodParam);
