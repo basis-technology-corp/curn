@@ -61,13 +61,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * The <tt>ArticleFilterPlugIn</tt> provides per-feed filtering capabilities.
  * It can be used to filter out items (articles) that match one or more regular
- * expressions. The match logic:
- *
- * <ul>
- *   <li>ignores any embedded newlines
- *   <li>(temporarily) strips all HTML from the article text before matching
- *   <li>searches the article's content, summary and title
- * </ul>
+ * expressions. 
  *
  * <p>The filtering syntax is (shamelessly) adapted from the
  * <a href="http://offog.org/code/rawdog.html" target="_top"><i>rawdog</i></a>
@@ -75,7 +69,7 @@ import java.util.regex.PatternSyntaxException;
  * <a href="http://offog.org/files/rawdog-plugins/article-filter.py" target="_top"><i>article-filter</i></a>
  * plug-in. (<i>rawdog</i> is similar to <i>curn</i>: It's
  * a command line-driven RSS reader, written in Python.) A feed filter is
- * configured by adding one or more <tt>ArticleFilter</tt> properties to the
+ * configured by adding an <tt>ArticleFilter</tt> property to the
  * feed's configuration section. The property's value consists of one or
  * more filter command sequences, separated by ";" characters. (The ";" must
  * be surrounded by white space; see below.) Each filter command sequence
@@ -129,7 +123,12 @@ import java.util.regex.PatternSyntaxException;
  *
  * <p>All filtering commands are processed, and the end result is what defines
  * whether a given entry is suppressed or not. Regular expressions are
- * matched in a case-blind fashion.</p>
+ * matched in a case-blind fashion. The match logic also
+ *
+ * <ul>
+ *   <li>ignores any embedded newlines in article contents
+ *   <li>(temporarily) strips all HTML from the article text before matching
+ * </ul>
  *
  * <p>You can use multiple <tt>ArticleFilter</tt> parameters per feed (as long
  * as they have unique suffixes. All filters are applied to each article to
