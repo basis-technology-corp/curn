@@ -626,8 +626,8 @@ OPTIONS:
 -p, --plug-ins    Show the list of located plug-ins and output handlers, then
                   exit. This option can be combined with either --build-info
                   or --version to show version information, as well.
--t, --time <time> For the purposes of cache expiration, pretend the current
-                  time is <time>. <time> may be in one of the following
+-t, --time &lt;time&gt; For the purposes of cache expiration, pretend the current
+                  time is &lt;time&gt;. &lt;time&gt; may be in one of the following
                   formats.
                   2006/06/08 02:59:36 PM
                   2006/06/08 02:59:36
@@ -702,7 +702,7 @@ Built by:       bmc on sunball.inside.clapper.org
 Built on:       Linux 2.6.16-1.2122_FC5smp (i386)
 Build Java VM:  Java HotSpot(TM) Client VM 1.5.0_07-b03 (Sun Microsystems Inc.)
 Build compiler: javac
-Ant version:    Apache Ant version 1.6.5 compiled on June 2 2005
+Ant version:    Apache Ant version 1.6.5 compiled on June 2 2005</pre>
 </blockquote>
         <p>For a simple one-line version display, use the
         <a href="#opt-version" class="code">--version</a> option.</p>
@@ -1243,7 +1243,7 @@ value) can also take a value of "0" (false), "1" (true), "no" (false) or
 <p>This section contains variable global parameters. Each is described
 in detail, below.</p>
 
-<table summary="" class="outlined striped" align="center" width="100%">
+<table summary="" class="outlined striped" align="center" width="90%">
 
   <tr valign="bottom" class="col-headers">
     <th align="left">Variable</th>
@@ -1334,6 +1334,31 @@ in detail, below.</p>
       <a href="#Cfg_CacheFile" class="code">CacheFile</a><br/>
       <a href="#Cfg_TotalCacheBackups" class="code">TotalCacheBackups</a><br/>
     </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code"><a name="Cfg_CommonXMLFixups"></a>CommonXMLFixups&nbsp;</td>
+    <td align="left">Boolean</td>
+    <td align="left">Enables or disables the Common XML Fixups plug-in,
+      which attempts to fix common syntax problems in downloaded XML feeds.
+      There is some XML badness that is surprisingly common across feeds,
+      including (but not limited to):
+
+      <ul>
+	<li>Using a "naked" ampersand (&amp;) without escaping it.
+	<li>Use of nonexistent entities (e.g., &amp;ouml;, &amp;nbsp;)
+	<li>Improperly formatted entity escapes
+      </ul>
+
+      This plug-in attempts to fix those problems.
+      <br/><br/>
+      This global parameter can be <a href="#Feed_CommonXMLFixups">overridden on a per-feed basis.</a>
+      This global setting defines the default value for all feeds that
+      don't explicitly set it themselves.
+    </td>
+    <td align="left">No</td>
+    <td align="left"><span class="code">false</span></td>
+    <td>The per-feed <a href="#Feed_CommonXMLFixups" class="code">CommonXMLFixups</a> setting</td>
   </tr>
 
   <tr valign="top">
@@ -1560,7 +1585,7 @@ in detail, below.</p>
       may be used as a value for <span class="code">ParserClass</span>.
     </td>
     <td align="left">No</td>
-    <td align="left" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</td>
+    <td align="left" class="code"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a></td>
     <td align="left">&nbsp;</td>
   </tr>
 
@@ -1836,7 +1861,8 @@ section names are all valid for RSS feed sections.</p>
       For example:
 
       <blockquote><pre>
-hide author 'Raymond Luxury-yacht' ; show author 'Arthur +.Two-sheds. +Jackson'
+hide author 'Raymond Luxury-yacht' ; \
+show author 'Arthur +.Two-sheds. +Jackson'
       </pre></blockquote>
 
       If the command is "hide", then the entry will be hidden if the
@@ -1898,7 +1924,8 @@ ArticleFilter: hide any 'mash[- \t]?up'
 
       <blockquote>
 <pre>
-ArticleFilter: hide author '^joe *blow$' ; show author '^joe *blow$' title rant
+ArticleFilter: hide author '^joe *blow$' ; \
+               show author '^joe *blow$' title rant
 </pre>
       </blockquote>
 
@@ -1912,6 +1939,35 @@ ArticleFilter: hide ; show author '^moe *howard$'
     </td>
     <td align="left">No</td>
     <td align="left"><span class="code">Articles are not filtered</span></td>
+  </tr>
+
+  <tr valign="top">
+
+    <td align="left" class="code"><a name="Feed_CommonXMLFixups"></a>CommonXMLFixups</td>
+    <td align="left">Boolean</td>
+    <td align="left">
+      Enables or disables the Common XML Fixups plug-in, which attempts
+      to fix common syntax problems in downloaded XML feeds. There is some
+      XML badness that is surprisingly common across feeds, including
+      (but not limited to):
+
+      <ul>
+	<li>Using a "naked" ampersand (&amp;) without escaping it.
+	<li>Use of nonexistent entities (e.g., &amp;ouml;, &amp;nbsp;)
+	<li>Improperly formatted entity escapes
+      </ul>
+
+      This plug-in attempts to fix those problems.
+      <br/><br/>
+      This per-feed setting overrides the
+      <a href="#Cfg_CommonXMLFixups">global default value</a>.
+    </td>
+    <td align="left">No</td>
+    <td align="left">
+      The value of the global
+      <a href="#Cfg_CommonXMLFixups" class="code">CommonXMLFixups</a>
+      parameter in the <span class="code">[curn]</span> section, or
+      <tt>false</tt>, if that value is not set.</td>
   </tr>
 
   <tr valign="top">
@@ -2152,20 +2208,47 @@ ArticleFilter: hide ; show author '^moe *howard$'
 
         <p>This capability is rarely needed, but it's sometimes
         useful for sites that serve unparseable, but easily
-        fixed, XML. For instance, one news site I read has an
+        fixed, XML. (Though the
+        <a href="#Feed_CommonXMLFixups" class="code">CommonXMLFixups</a>
+        capability covers a lot of these errors with less configuration.)</p>
+
+        <p>For instance, one news site I read has an
         RSS channel whose title always contains an unescaped
         "&amp;". The XML parser will not parse that feed; however,
         a simple preparse edit command of:</p>
 
         <blockquote><pre>'s/&nbsp;&amp;&nbsp;/&nbsp;\&amp;amp;&nbsp;/g'</pre></blockquote>
 
-        <p>fixes the problem.</p>
+        <p>fixes the problem. (Again, this is one of the common XML
+         syntax errors that
+        <a href="#Feed_CommonXMLFixups" class="code">CommonXMLFixups</a>
+        will correct.)</p>
+
+        <p>Another use for <span class="code">PreparseEdit</span> is
+        fixing incorrectly formatted links in the RSS feed. Consider
+        the following <span class="code">&lt;link&gt;</span> element,
+        for fictitious site <span class="url">news.example.com</span>:</p>
+
+        <blockquote><pre>&lt;link&gt;http://news.example.com&amp;article=12573&lt;/link&gt;</pre></blockquote>
+
+        <p>This is a pertectly parseable URL, but it happens to be wrong.
+        It's missing a "/" between ".com" and "&amp;". It really ought to
+        be:
+
+        <blockquote><pre>&lt;link&gt;http://news.example.com/&amp;article=12573&lt;/link&gt;</pre></blockquote>
+
+        <p>A quick
+        <span class="code">PreparseEdit</span> rule can fix it, though:</p>
+        <blockquote><pre>PreparseEdit: 's|(news.example.com)([^/]+)|$1/$2|</pre></blockquote>
+
+        <p>Note the use of a different delimiter in the edit command
+        ("|", instead of "/"). Any non-alphabetic character will work.</p>
 
         <p>Multiple instances of this parameter are permitted, as
         long as each instance's name begins with the string
         "PreparseEdit" and contains a unique suffix.</p>
 
-        <p>The substitution syntax supports perl's $1, $2, etc.,
+        <p>The substitution syntax supports perl-style $1, $2, etc.,
         grouping syntax. However, because the "$" character also
         introduces a configuration file variable reference, you must
         escape the "$" to use it in a regular expression. For
@@ -3337,7 +3420,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     without any real language to back them up any more (such as
     the Bean Markup Language).</p>
 
-    <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="100%">
+    <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="90%">
       <tr valign="top">
         <th>Value&nbsp;&nbsp;&nbsp;&nbsp;</th>
         <th>Corresponding Language</th>
