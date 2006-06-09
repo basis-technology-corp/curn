@@ -28,6 +28,7 @@ package org.clapper.curn.parser;
 
 import org.clapper.util.misc.MIMETypeUtil;
 import org.clapper.util.io.FileUtil;
+import org.clapper.util.logging.Logger;
 
 import java.net.URL;
 
@@ -99,6 +100,7 @@ public final class ParserUtil
     \*----------------------------------------------------------------------*/
 
     private static Pattern w3cTZPattern = null;
+    private static final Logger log = new Logger (ParserUtil.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -422,6 +424,16 @@ public final class ParserUtil
             catch (NumberFormatException ex)
             {
                 result = null;
+            }
+
+            catch (Exception ex)
+            {
+                log.error ("Unexpected exception while parsing date \""
+                         + sDate
+                         + "\" using format \""
+                         + formats[i].toString()
+                         + "\"",
+                           ex);
             }
 
             if (result != null)
