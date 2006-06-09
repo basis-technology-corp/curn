@@ -478,6 +478,7 @@ function init()
 	      <li><a href="#PlugInWriting">Writing <i>curn</i> Plug-ins</a>
 	      <ul class="toc">
 		<li><a href="#PlugInAPI">The <i>curn</i> Plug-in API</a>
+		<li><a href="#ExamplePlugIn">A Simple Example Plug-in</a>
 	      </ul>
 	    </ul>
 
@@ -3951,7 +3952,7 @@ will search for and load plug-ins before it begins doing its real work.
 <i>user_home</i> is the home directory of the user who's running
 <i>curn</i>.)</p>
 
-<p><a name="PlugInSearch></a><i>curn</i> searches all jar files, zip files,
+<p><a name="PlugInSearch"></a><i>curn</i> searches all jar files, zip files,
 and subdirectories in each of those directories, looking for any
 non-abstract, public class that implements one or more of the <i>curn</i>
 Java plug-in interfaces. <i>curn</i> then attempts to load and instantiate
@@ -4022,7 +4023,7 @@ stock plug-ins are in the
 
   <tr valign="top">
     <td align="left">Email Output</td>
-    <td align="left" class="code">EmailOutputPlugIn</td>
+    <td align="left" class="code"><a name="EmailOutputPlugIn"></a>EmailOutputPlugIn</td>
     <td align="left">Email any output created by the output handlers to
     one or more recipients.</td>
     <td align="left">
@@ -4310,7 +4311,7 @@ order.</p>
         <span class="code">URL.setRequestProperty()</span>. (Note that <i>all</i> URLs, even
         <span class="code">file:</span> URLs, are passed into this method. Setting a request
         property on the <span class="code">URLConnection</span> object for a <span class="code">file:</span>
-        URL will have no effect&#8212;though it isn't specifically harmful.)</p>
+        URL will have no effect&#8212;though it isn't specifically harmful.)
 
         <p>Possible uses for a pre-feed download plug-in include:</p>
 
@@ -4383,7 +4384,9 @@ order.</p>
     <td>Called after <i>curn</i> has flush <i>all</i> output handlers. A
         post-output plug-in is a useful place to consolidate the output from
         all output handlers. For instance, such a plug-in might pack all the
-        output into a zip file, or email it.</td>
+        output into a zip file, or email it. (The
+        <a href="#EmailOutputPlugIn" class="code">EmailOutputPlugIn</a>
+        works exactly this way.)
       </td>
   </tr>
 
@@ -4407,6 +4410,159 @@ order.</p>
 with <i>curn</i>. Merely implementing the appropriate interfaces is sufficient,
 as long as <i>curn</i> can <a href="#PlugInSearch">find the plug-in class</a>
 at run-time.</p>
+
+<h4><a name="ExamplePlugIn"></a>A Simple Example Plug-in</h4>
+
+<p>Of course, there's nothing quite like an example to clarify things. So,
+here's a simple plug-in that:</p>
+
+<ul>
+  <li>defines a <span class="code">ZipOutputTo</span> configuration
+      parameter, in the <span class="code">[curn]</span> section, that
+      specifies the path to a zip file
+  <li>takes all output files written by the output handlers and zips
+      them up into the specified zip file
+</ul>
+
+<p>It uses a convenience class,
+<a href="http://wwwtest/software/java/util/javadocs/util/api/org/clapper/util/io/Zipper.html" class="code">org.clapper.util.io.Zipper</a>,
+to simplify the chore of writing the zip file. Here's the source (with
+comments stripped out). You can also
+<a href="ZipOutputPlugIn.java">download the source</a>.</p>
+
+<table summary="" class="bordered uncolored" align="center">
+  <tr>
+    <td>
+<blockquote><pre>
+import org.clapper.curn.Curn;
+import org.clapper.curn.CurnConfig;
+import org.clapper.curn.CurnException;
+import org.clapper.curn.MainConfigItemPlugIn;
+import org.clapper.curn.OutputHandler;
+import org.clapper.curn.PostOutputPlugIn;
+
+import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.logging.Logger;
+
+import org.clapper.util.io.Zipper;
+import org.clapper.util.text.TextUtil;
+
+import java.io.File;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class ZipOutputPlugIn
+    implements MainConfigItemPlugIn,
+               PostOutputPlugIn
+{
+    private static final String VAR_ZIP_FILE = "ZipOutputTo";
+
+    private File zipFile = null;
+    private static Logger log = new Logger (ZipOutputPlugIn.class);
+
+    public ZipOutputPlugIn()
+    {
+    }
+
+    public String getName()
+    {
+        return "Zip Output";
+    }
+
+    public void runMainConfigItemPlugIn (String     sectionName,
+                                         String     paramName,
+                                         CurnConfig config)
+	throws CurnException
+    {
+        try
+        {
+            if (paramName.equals (VAR_ZIP_FILE))
+            {
+                String zipFilePath = config.getConfigurationValue (sectionName,
+                                                                   paramName);
+                this.zipFile = new File (zipFilePath);
+            }
+        }
+
+        catch (ConfigurationException ex)
+        {
+            throw new CurnException (ex);
+        }
+    }
+
+    public void runPostOutputPlugIn (Collection&lt;OutputHandler&gt; outputHandlers)
+	throws CurnException
+    {
+        if (zipFile != null)
+        {
+            log.debug ("Zipping output to \"" + zipFile.getPath() + "\"");
+            zipOutput (outputHandlers);
+        }
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    private void zipOutput (Collection&lt;OutputHandler&gt; outputHandlers)
+        throws CurnException
+    {
+        try
+        {
+            boolean haveFiles = false;
+
+            // First, figure out whether we have any output or not.
+
+            for (OutputHandler handler : outputHandlers)
+            {
+                if (handler.hasGeneratedOutput())
+                {
+                    haveFiles = true;
+                    break;
+                }
+            }
+
+            if (! haveFiles)
+            {
+                // None of the handlers produced any output.
+
+                log.error ("Warning: None of the output handlers "
+                         + "produced any zippable output.");
+            }
+
+            else
+            {
+                // Create the zip file.
+
+                Zipper zipper = new Zipper (zipFile, /* flatten */ true);
+
+                for (OutputHandler handler : outputHandlers)
+                {
+                    File file = handler.getGeneratedOutput();
+                    if (file != null)
+                    {
+                        log.debug ("Zipping \"" + file.getPath() + "\"");
+                        zipper.put (file);
+                    }
+                }
+
+                zipper.close();
+            }
+        }
+
+        catch (IOException ex)
+        {
+            throw new CurnException (ex);
+        }
+    }
+}
+
+</pre></blockquote>
+    </td>
+  </tr>
+</table>
 
 
 <h2><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h2>
