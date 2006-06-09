@@ -1,4 +1,4 @@
-// $Id: TextOutputHandler.rb 5041 2005-04-09 14:20:14Z bmc $
+// $Id$
 // ---------------------------------------------------------------------------
 //
 // ObjectScript (http://objectscript.sourceforge.net) script output handler
