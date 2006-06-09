@@ -471,13 +471,13 @@ function init()
         <li><a href="#UnsupportedParser">Using an Unsupported RSS Parser</a></li>
 	<li><a href="#Plug-ins">Plug-ins</a>
 	    <ul class="toc">
-	      <li><a href="#PluginOverview">Overview of Plug-In Support</a>
-	      <li><a href="#PluginInstallation">Installing Plug-ins</a>
-	      <li><a href="#PluginOutputHandlers">Output Handlers are also Plug-ins</a>
-	      <li><a href="#PluginWriting">Writing <i>curn</i> Plug-ins</a>
+	      <li><a href="#PlugInOverview">Overview of Plug-In Support</a>
+	      <li><a href="#StockPlugIns">Stock Plug-ins</a>
+	      <li><a href="#PlugInInstallation">Installing New Plug-ins</a>
+	      <li><a href="#PlugInOutputHandlers">Output Handlers are also Plug-ins</a>
+	      <li><a href="#PlugInWriting">Writing <i>curn</i> Plug-ins</a>
 	      <ul class="toc">
-		<li><a href="#PluginPhases"><i>curn</i> Plug-in Phases</a>
-		<li><a href="#PluginAPI">The <i>curn</i> Plug-in API</a>
+		<li><a href="#PlugInAPI">The <i>curn</i> Plug-in API</a>
 	      </ul>
 	    </ul>
 
@@ -1995,7 +1995,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">Disabled</td>
+    <td align="left" class="code"><a name="Feed_Disabled">Disabled</a></td>
     <td align="left">Boolean</td>
     <td align="left">If <span class="code">true</span>, then the feed is skipped.
     If <span class="code">false</span>, the feed is processed. This variable
@@ -2007,12 +2007,15 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_EditItemURL"></a>EditItemURL</td>
+    <td align="left" class="code"><a name="Feed_EditFeedURL"></a>EditFeedURL<br/>
+      <a name="Feed_EditItemURL"></a>EditItemURL</td>
     <td align="left">String</td>
     <td align="left">
-        <p>Apply the specified regular expression edit to each of the
-        site's RSS item URLs. The value for this option consists of
-        a Perl 5-style substitution applied to the URL. For example:</p>
+        Apply the specified regular expression edit to the site's
+        feed URL (<span class="code">EditFeedURL</span>) or to each of the
+        site's RSS item URLs (<span class="code">EditItemURL</span>).
+        The value for this option consists of
+        a Perl 5-style substitution applied to the URL. For example:
 
         <p>Remove all the parameters from the URL:</p>
 
@@ -2157,13 +2160,14 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">IgnoreDuplicateTitles</td>
+    <td align="left" class="code"><a name="Feed_IgnoreDuplicateTitles">IgnoreDuplicateTitles</a></td>
     <td align="left">Boolean</td>
-    <td align="left"><p>If <span class="code">true</span>, <i>curn</i> will ignore any item
+    <td align="left">
+      If <span class="code">true</span>, <i>curn</i> will ignore any item
       whose title matches the title of another item in the feed. It
       only compares titles within the feed itself; it does not
       compare against titles of cached items.) Titles are compared
-      without regard to upper or lower case.</p>
+      without regard to upper or lower case.
 
       <p>This feature (hack, really) is useful for sites
       whose feeds often contain duplicate items (with the same titles)
@@ -2193,18 +2197,19 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_PreparseEdit">PreparseEdit<i>suffix</i></a></td>
+    <td align="left" class="code"><a name="Feed_PreparseEdit"></a>PreparseEdit<i>suffix</i></td>
     <td align="left">String</td>
     <td align="left">
-        <p>A parameter in a Feed section that starts with
+        A parameter in a Feed section that starts with
         <span class="code">PreparseEdit</span> (e.g.,
         <span class="code">PreparseEdit1</span>,
         <span class="code">PreparseEditFoo</span>, etc.)
         defines a substitution to be applied to the downloaded XML
         file before it is parsed. As with the
-        <a href="#Feed_EditItemURL" class="code">EditItemURL</a>
-        option, the value for this option this option consists of a
-        Perl 5-style substitution.</p>
+        <a href="#Feed_EditItemURL" class="code">EditItemURL</a> and
+        <a href="#Feed_EditFeedURL" class="code">EditFeedURL</a>
+        options, the value for this option this option consists of a
+        Perl 5-style substitution.
 
         <p>This capability is rarely needed, but it's sometimes
         useful for sites that serve unparseable, but easily
@@ -2318,7 +2323,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">PruneURLs</td>
+    <td align="left" class="code"><a name="Feed_PruneURLs">PruneURLs</a></td>
     <td align="left">Boolean</td>
     <td align="left">Specifies a string to be used as the site's
       title, instead of the title supplied in the RSS XML. Useful
@@ -2331,27 +2336,15 @@ ArticleFilter: hide ; show author '^moe *howard$'
   <tr valign="top">
     <td align="left" class="code"><a name="Feed_SaveAs"></a>SaveAs</td>
     <td align="left">File name or path name</td>
-    <td align="left"><p>If set, this parameter specifies the path to
+    <td align="left">If set, this parameter specifies the path to
       a file where <i>curn</i> should save the raw XML contents of
       the feed, whenever it downloads the feed. This can be useful
       if you have a master version of <i>curn</i> that downloads
       a bunch of feeds, with multiple slave versions of <i>curn</i>
       that then run against the downloaded files. (See
       <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
-      detailed discussion of this tactic.)</p>
-
-      <p><b>Warning</b>: If the remote feed uses character set other
-      than the default character set for the local system, there's
-      the possibility of information loss. <i>curn</i> currently
-      has no way to save the original feed's character set, so it
-      tries to convert the feed to the local character set before
-      saving it. For instance, if you're running <i>curn</i> on
-      a UNIX-like system where the default character set is
-      "ISO 8859.1", and the remote feed uses "UTF-8", <i>curn</i>
-      will convert the UTF-8 characters to ISO 8859.1 characters
-      as it writes the XML to the <span class="code">SaveAs</span> file.
-      This problem will be addressed in a future release of
-      <i>curn</i>.</p></td>
+      detailed discussion of this tactic.)
+    </td>
     <td align="left">No</td>
     <td align="left">None</td>
   </tr>
@@ -2378,11 +2371,11 @@ ArticleFilter: hide ; show author '^moe *howard$'
   <tr valign="top">
     <td align="left" class="code"><a name="Feed_SaveOnly"></a>SaveOnly</td>
     <td align="left">Boolean</td>
-    <td align="left"><p>If set, and if
+    <td align="left">If set, and if
      <a href="#Feed_SaveAs" class="code">SaveAs</a> is also set,
       then the feed will be downloaded and saved, but not parsed and
       not included in the generated output. This parameter can be
-      useful when <a href="#Bandwidth">Being Bandwidth Friendly</a>.</p>
+      useful when <a href="#Bandwidth">Being Bandwidth Friendly</a>.
     <td align="left">No</td>
     <td align="left" class="code">false</td>
   </tr>
@@ -2432,10 +2425,10 @@ ArticleFilter: hide ; show author '^moe *howard$'
     <td align="left" class="code"><a name="Feed_SortBy"></a>SortBy</td>
     <td align="left">String</td>
     <td align="left">
-      <p>How to sort items in this feed. This value locally overrides the
+      How to sort items in this feed. This value locally overrides the
       global <a href="#Cfg_SortBy" class="code">SortBy</a> parameter
       in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
-      Legal values:</p>
+      Legal values:
 
       <ul>
         <li><span class="code">time</span>: Sort by timestamp, if
@@ -2472,7 +2465,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">TitleOverride</td>
+    <td align="left" class="code"><a name="Feed_TitleOverride">TitleOverride</a></td>
     <td align="left">String</td>
     <td align="left">Specifies a string to be used as the site's
       title, instead of the title supplied in the RSS XML. Useful
@@ -2495,7 +2488,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
     <td align="left" class="code"><a name="Feed_UserAgent"></a>UserAgent</td>
     <td align="left">String</td>
     <td align="left">
-      <p>Specifies the HTTP <span class="code">User-Agent</span> header to use when
+      Specifies the HTTP <span class="code">User-Agent</span> header to use when
       retrieving this feed. This local value overrides the global
       <a href="#Cfg_UserAgent" class="code">UserAgent</a> parameter
       in the <a href="#CfgCurnSection" class="code">[curn]</a> section.
@@ -2589,7 +2582,7 @@ variables common to all output handlers are described below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">Disabled</td>
+    <td align="left" class="code"><a name="OutputHandler_Disabled">Disabled</a></td>
     <td>Boolean</td>
     <td align="left">If <span class="code">true</span>, the output handler is skipped.
     If <span class="code">false</span>, the output handler is processed. This variable
@@ -3936,17 +3929,484 @@ integration, see the classes in the <i>curn</i> source code package
 
 <h2><a name="Plug-ins"></a>Plug-ins</h2>
 
-<h3><a name="PluginOverview"></a>Overview of Plug-In Support</h3>
+<p>As of version 3.0, <i>curn</i> supports plug-ins. <i>curn</i> plug-ins
+can intercept various phases of <i>curn</i> processing and can enhance or
+modify <i>curn</i>'s behavior. This section discusses
+<i>curn</i>'s plug-in support.</p>
 
-<h3><a name="PluginInstallation"></a>Installing Plug-ins</h3>
+<h3><a name="PlugInOverview"></a>Overview of Plug-In Support</h3>
 
-<h3><a name="PluginOutputHandlers"></a>Output Handlers are also Plug-ins</h3>
+<p>If invoked properly (e.g., via the <i>curn</i> shell script or the
+<i>curn.bat</i> DOS script created by the <i>curn</i> installer), <i>curn</i>
+will search for and load plug-ins before it begins doing its real work.
+<i>curn</i> looks for plug-ins in the following directories:</p>
 
-<h3><a name="PluginWriting"></a>Writing <i>curn</i> Plug-ins</h3>
+<ul>
+  <li><span class="path"><i>curn_home</i>/plugins</span>
+  <li><span class="path"><i>user_home</i>/curn/plugins</span>
+  <li><span class="path"><i>user_home</i>/.curn/plugins</span>
+</ul>
 
-<h4><a href="#PluginPhases"></a><i>curn</i> Plug-in Phases</h4>
+<p>(<i>curn_home</i> is the <i>curn</i> installation directory.
+<i>user_home</i> is the home directory of the user who's running
+<i>curn</i>.)</p>
 
-<h4><a href="#PluginAPI"></a><i>curn</i> Plug-in API</h4>
+<p><a name="PlugInSearch></a><i>curn</i> searches all jar files, zip files,
+and subdirectories in each of those directories, looking for any
+non-abstract, public class that implements one or more of the <i>curn</i>
+Java plug-in interfaces. <i>curn</i> then attempts to load and instantiate
+each plug-in. Once a plug-in has been instantiated, its capabilities are
+available. Most plug-ins are dormant; that is, they don't do anything
+unless activated by a plug-in-specific configuration entry.</p>
+
+<h3><a name="StockPlugIns"></a>Stock Plug-ins</h3>
+
+<p><i>curn</i> ships with a set of stock plug-ins.
+Some of those plug-ins implement capabilities that were formerly in the
+<i>curn</i> core code; others provide new functionality. These plug-ins
+are automatically available (provided you don't delete the
+<span class="path">curn-plugins.jar</span> file that's shipped with
+<i>curn</i>). The following table summarizes the stock plug-ins. All
+stock plug-ins are in the
+<span class="code">org.clapper.curn.plugins</span> package.</p>
+
+<table summary="" class="outlined striped" width="90%" align="center">
+
+  <tr valign="bottom" class="col-headers">
+    <th align="left">Plug-in Name</th>
+    <th align="left">Class name</th>
+    <th align="left">Explanation</th>
+    <th align="left">Plug-in Configuration Parameters</th>
+  </tr>
+
+  <tbody>
+  <tr valign="top">
+    <td align="left">Allow Embedded HTML</td>
+    <td align="left" class="code">AllowEmbeddedHTMLPlugIn</td>
+    <td align="left">Enables or disables embedded HTML in a feed's output.</td>
+    <td align="left">
+      <a href="#Feed_AllowEmbeddedHTML" class="code">AllowEmbeddedHTML</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Article Filter</td>
+    <td align="left" class="code">ArticleFilterPlugIn</td>
+    <td align="left">Filter items (articles) from a feed, based on regular
+    expressions.</td>
+    <td align="left"><a href="#Feed_ArticleFilter" class="code">ArticleFilter</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Common XML Fixups</td>
+    <td align="left" class="code">CommonXMLFixupsPlugIn</td>
+    <td align="left">Fix some common syntax errors in downloaded XML.</td>
+    <td align="left">
+      <a href="#Feed_CommonXMLFixups" class="code">CommonXMLFixups</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Disable Feed</td>
+    <td align="left" class="code">DisableFeedPlugIn</td>
+    <td align="left">Disable a feed, without having to comment it out or remove it from the configuration.</td>
+    <td align="left"><a href="#Feed_Disabled" class="code">Disabled</a> (feed)</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Disable Output Handler</td>
+    <td align="left" class="code">DisableOutputHandlerPlugIn</td>
+    <td align="left">Disable an output handler, without having to comment it out or remove it from the configuration.</td>
+    <td align="left"><a href="#OutputHandler_Disabled" class="code">Disabled</a> (output handler)</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Email Output</td>
+    <td align="left" class="code">EmailOutputPlugIn</td>
+    <td align="left">Email any output created by the output handlers to
+    one or more recipients.</td>
+    <td align="left">
+      <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+      <a href="#MailOutputTo" class="code">MailOutputTo</a><br/>
+      <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
+      <a href="#Cfg_MailSubject" class="code">MailSubject</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Feed Max Summary Size</td>
+    <td align="left" class="code">FeedMaxSummarySizePlugIn</td>
+    <td align="left">Truncate a feed's summary to a maximum number of characters.</td>
+    <td align="left"><a href="#Feed_MaxSummarySize" class="code">MaxSummarySize</a>
+</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Feed Summary Only</td>
+    <td align="left" class="code">FeedSummaryOnlyPlugIn</td>
+    <td align="left">Optionally strips the full content for a
+      feed, leaving only the summary.</td>
+    <td align="left"><a href="#Feed_SummaryOnly" class="code">SummaryOnly</a>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Gzip Download</td>
+    <td align="left" class="code">GzipDownloadPlugIn</td>
+    <td align="left">Optionally requests that web sites gzip (compress)
+    the XML content before sending it to <i>curn</i>, to save network
+    bandwidth.</td>
+    <td align="left"><a href="#Feed_GzipDownload" class="code">GzipDownload</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Ignore Duplicate Articles</td>
+    <td align="left" class="code">IgnoreDuplicateArticlesPlugIn</td>
+    <td align="left">Suppress duplicate articles in a feed, based on a
+    comparison of the article titles.</td>
+    <td align="left"><a href="#Feed_IgnoreDuplicateTitles" class="code">IgnoreDuplicateTitles</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Override Feed Title</td>
+    <td align="left" class="code">TitleOverridePlugIn</td>
+    <td align="left">Overrides the title of a feed.</td>
+    <td align="left"><a href="#Feed_TitleOverride" class="code">TitleOverride</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Parsed Feed URL Edit</td>
+    <td align="left" class="code">ParsedFeedURLEditPlugIn</td>
+    <td align="left">Edit the parsed feed data, changing the feed URL
+    and/or the individual item (article) URLs.</td>
+    <td align="left">
+      <a href="#Feed_EditFeedURL" class="code">EditFeedURL</a><br/>
+      <a href="#Feed_EditItemURL" class="code">EditItemURL</a><br/>
+      <a href="#Feed_PruneURLs" class="code">PruneURLs</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Raw Feed Edit</td>
+    <td align="left" class="code">RawFeedEditPlugIn</td>
+    <td align="left">Apply regular expression edits to a feed's XML
+    before it's parsed.</td>
+    <td align="left"><a href="#Feed_PreparseEdit" class="code">PreparseEdit</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Save As</td>
+    <td align="left" class="code"><a name="RawFeedSaveAsPlugIn"></a>RawFeedSaveAsPlugIn</td>
+    <td align="left">Save a feed's XML to a file.</td>
+    <td align="left">
+      <a href="#Feed_SaveAs" class="code">SaveAs</a><br/>
+      <a href="#Feed_SaveAsEncoding" class="code">SaveAsEncoding</a><br/>
+      <a href="#Feed_SaveOnly" class="code">SaveOnly</a><br/>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Show Authors</td>
+    <td align="left" class="code">ShowAuthorsPlugIn</td>
+    <td align="left">Enable or disable the display of the author(s) of
+      a feed and a feed's articles.</td>
+    <td align="left"><a href="#Feed_ShowAuthors" class="code">ShowAuthors</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Show Dates</td>
+    <td align="left" class="code">ShowDatesPlugIn</td>
+    <td align="left">Enable or disable the display of the dates for
+      a feed and a feed's articles.</td>
+    <td align="left"><a href="#Feed_ShowDates" class="code">ShowDates</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Sort Articles</td>
+    <td align="left" class="code">SortArticlesPlugIn</td>
+    <td align="left">Control how a feed article's are sorted.</td>
+    <td align="left"><a href="#Feed_SortBy" class="code">SortBy</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">User Agent</td>
+    <td align="left" class="code">UserAgentPlugIn</td>
+    <td align="left">Specify the HTTP user-agent to send when downloading
+    a feed.</td>
+    <td align="left"><a href="#Feed_UserAgent" class="code">UserAgent</a></td>
+  </tr>
+  </tbody>
+</table>
+
+<h3><a name="PlugInInstallation"></a>Installing Plug-ins</h3>
+
+<p>Installing a custom plug-in (i.e., not one of <i>curn</i>'s
+<a href="#StockPlugIns">stock plug-ins</a>) is simple: Copy the plug-in's
+jar or zip file to one of the directories listed in the
+<a href="#PlugInOverview">Overview of Plug-In Support</a> section.</p>
+
+<h3><a name="PlugInOutputHandlers"></a>Output Handlers are also Plug-ins</h3>
+
+<p>Custom output handlers are also treated more or less like plug-ins. As
+<i>curn</i> is <a href="#PlugInSearch">searching for plug-ins</a>, it also
+attempts to locate new, non-stock
+<a href="#NewOutputHandler">output handler</a> classes. In fact, as of
+version 3.0, third-party and custom Java output handlers <i>must</i>
+be placed in one of the plug-in directories; because <i>curn</i>'s plug-in
+architecture uses a different Java
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/ClassLoader.html">class loader</a>,
+you can no longer just put your custom output handler's jar file in
+<i>curn</i>'s
+CLASSPATH. <i>curn</i> will not honor the CLASSPATH setting. If you copy
+your output handler's jar file to one of <i>curn</i>'s plug-in directories,
+however, it will find your output handler and make it available at run-time.</p>
+
+<h3><a name="PlugInWriting"></a>Writing <i>curn</i> Plug-ins</h3>
+
+<h4><a href="#PlugInAPI"></a><i>curn</i> Plug-in API</h4>
+
+<p><i>curn</i> automatically invokes plug-ins at various phases of
+its execution. A plug-in that is registered for a particular phase
+will be called during that phase of processing. A given plug-in class
+can be associated with multiple phases of execution. In fact, most
+<i>are</i>, if only to permit them to intercept their plug-in-specific
+configuration parameters.</p>
+
+<p>Each plug-in phase is represented by its own Java interface, and
+each interface has exactly one method. (Each plug-in interface, in turn,
+extends the <i>curn</i> parent
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html" class="code">PlugIn</a> interface, which defines some
+additional methods that all plug-ins must provide.)</p>
+
+<p>A plug-in that intercepts multiple <i>curn</i> processing phases must
+implement the interfaces for each of the phases. Here are the plug-in
+phases, with their associated interfaces and methods, in execution
+order.</p>
+
+<table summary="" class="outlined striped" width="90%" align="center">
+
+  <tr valign="bottom" class="col-headers">
+    <th align="left">Plug-in interface</th>
+    <th align="left">Plug-in method</th>
+    <th align="left">Description</th>
+  </tr>
+
+  <tbody>
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/StartupPlugIn.html" class="code">StartupPlugIn</a></td>
+    <td align="left"><span class="code">runStartupPlugIn()</span></td>
+    <td>Called immediately after <i>curn</i> has started, but before it has
+        loaded its configuration file or its cache. Intercepting this phase
+        is useful if a plug-in needs to perform initialization.</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/MainConfigItemPlugIn.html" class="code">MainConfigItemPlugIn</a></td>
+    <td align="left"><span class="code">runMainConfigItemPlugIn()</span></td>
+    <td>Called immediately after <i>curn</i> has read and processed a
+        configuration item in the main <span class="code">[curn]</span> configuration
+        section. All configuration items are passed, one by one, to each
+        loaded plug-in. If a plug-in class is not interested in a
+        particular configuration item, its
+        <span class="code">runMainConfigItemPlugIn()</span> method should simply return
+        without doing anything. Note that some configuration items may
+        simply be variable assignment; there's no real way to distinguish a
+        variable assignment from a blessed configuration item.
+        <br/><br/>
+        A plug-in that wants to provide a configuration item in the main
+        <span class="code">[curn]</span> configuration section must implement
+        this interface.
+    </td>
+
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedConfigItemPlugIn.html" class="code">FeedConfigItemPlugIn</a></td>
+    <td align="left"><span class="code">runFeedConfigItemPlugIn()</span></td>
+    <td>Called immediately after <i>curn</i> has read and processed a
+        configuration item in a "Feed" configuration section. All
+        configuration items are passed, one by one, to each loaded plug-in.
+        If a plug-in class is not interested in a particular configuration
+        item, its <span class="code">runFeedConfigItemPlugIn()</span> method should simply
+        return without doing anything. Note that some configuration items
+        may simply be variable assignment; there's no real way to
+        distinguish a variable assignment from a blessed configuration
+        item.
+        <br/><br/>
+        A plug-in that wants to provide a per-feed configuration item
+        must implement this interface.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandlerConfigItemPlugIn.html" class="code">OutputHandlerConfigItemPlugIn</a></td>
+    <td align="left"><span class="code">runOutputHandlerConfigItemPlugIn()</span></td>
+    <td>Called immediately after <i>curn</i> has read and processed a
+        configuration item in an "OutputHandler" configuration section. All
+        configuration items are passed, one by one, to each loaded plug-in.
+        If a plug-in class is not interested in a particular configuration
+        item, its <span class="code">runOutputHandlerConfigItemPlugIn()</span> method should
+        simply return without doing anything. Note that some configuration
+        items may simply be variable assignment; there's no real way to
+        distinguish a variable assignment from a blessed configuration
+        item.
+        <br/><br/>
+        A plug-in that wants to provide a per-output handler configuration item
+        must implement this interface.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/UnknownSectionConfigItemPlugIn.html" class="code">UnknownSectionConfigItemPlugIn</a></td>
+    <td align="left"><span class="code">runUnknownSectionConfigItemPlugIn()</span></td>
+    <td>Called immediately after <i>curn</i> has read and processed a
+        configuration item in an unknown configuration section. All
+        configuration items are passed, one by one, to each loaded plug-in.
+        If a plug-in class is not interested in a particular configuration
+        item, its <span class="code">runUnknownSectionConfigItemPlugIn()</span> method should
+        simply return without doing anything. Note that some configuration
+        items may simply be variable assignment; there's no real way to
+        distinguish a variable assignment from a blessed configuration
+        item.
+        <br/><br/>
+        A plug-in that requires its own configuration file section
+        must implement this interface.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostConfigPlugIn.html" class="code">PostConfigPlugIn</a></td>
+    <td align="left"><span class="code">runPostConfigPlugIn()</span></td>
+    <td>Called after the entire configuration has been read and parsed, but
+        before any feeds are processed. Intercepting this event is useful
+        for plug-ins that want to adjust the configuration. For instance:
+        <ul>
+	  <li>The <i>curn</i> command-line wrapper intercepts this plug-in
+	      phase so it can adjust the configuration to account for
+	      command line options.
+	  <li>The <a href="#RawFeedSaveAsPlugIn" class="code">RawFeedSaveAsPlugIn</a>
+	      intercepts this plug-in phase so that it can validate
+	      its configuration parameters against each other.
+	</ul>
+     </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/CacheLoadedPlugIn.html" class="code">CacheLoadedPlugIn</a></td>
+    <td align="left"><span class="code">runCacheLoadedPlugIn()</span></td>
+    <td>Called after the <i>curn</i> cache has been read (and after any
+        expired entries have been purged), but before any feeds are processed.
+      </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedDownloadPlugIn.html" class="code">PreFeedDownloadPlugIn</a></td>
+    <td align="left"><span class="code">runPreFeedDownloadPlugIn()</span></td>
+    <td>Called just before a feed is downloaded. This method can return
+        <span class="code">false</span> to signal <i>curn</i> that the feed should be
+        skipped. The plug-in method can also set values on the
+        <span class="code">URLConnection</span> used to download the plug-in, via
+        <span class="code">URL.setRequestProperty()</span>. (Note that <i>all</i> URLs, even
+        <span class="code">file:</span> URLs, are passed into this method. Setting a request
+        property on the <span class="code">URLConnection</span> object for a <span class="code">file:</span>
+        URL will have no effect&#8212;though it isn't specifically harmful.)</p>
+
+        <p>Possible uses for a pre-feed download plug-in include:</p>
+
+        <ul>
+          <li>filtering on feed URL to prevent downloading non-matching feeds
+          <li>changing the default User-Agent value
+          <li>setting a non-standard HTTP header field
+        </ul>
+      </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedDownloadPlugIn.html" class="code">PostFeedDownloadPlugIn</a></td>
+    <td align="left"><span class="code">runPostFeedDownloadPlugIn()</span></td>
+    <td> Called immediately after a feed is downloaded. This method can
+        return <span class="code">false</span> to signal <i>curn</i> that the feed should be
+        skipped. For instance, a plug-in that filters on the unparsed XML
+        feed content could use this method to weed out non-matching feeds
+        before they are downloaded.
+      </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedParsePlugIn.html" class="code">PostFeedParsePlugIn</a></td>
+    <td align="left"><span class="code">runPostFeedParsePlugIn()</span></td>
+    <td>Called immediately after a feed is parsed, but before it is
+        otherwise processed. A post-feed parse plug-in has access to the
+        <i>parsed</i> RSS feed data, via an <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
+        method can return <span class="code">false</span> to signal <i>curn</i> that the
+        feed should be skipped. For instance, a plug-in that filters on the
+        parsed feed data could use this method to weed out non-matching
+        feeds before they are downloaded. Similarly, a plug-in that edits
+        the parsed data (removing or editing individual items, for
+        instance) could use method to do so.</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedOutputPlugIn.html" class="code">PreFeedOutputPlugIn</a></td>
+    <td align="left"><span class="code">runPreFeedOutputPlugIn()</span></td>
+    <td>Called immediately before a parsed feed is passed to an output
+        handler. A pre-feed output plug-in cannot affect the feed's
+        processing. (The time to stop the processing of a feed is in one of
+        the other, preceding phases.) This method will be called multiple
+        times for each feed if there are multiple output handlers.</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedOutputPlugIn.html" class="code">PostFeedOutputPlugIn</a></td>
+    <td align="left"><span class="code">runPostFeedOutputPlugIn()</span></td>
+    <td>Called immediately after a parsed feed is passed to an output
+        handler. A post-feed output plug-in cannot affect the feed's
+        processing. (The time to stop the processing of a feed is in one of
+        the other, preceding phases.) This method will be called multiple
+        times for each feed if there are multiple output handlers.</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostOutputHandlerFlushPlugIn.html" class="code">PostOutputHandlerFlushPlugIn</a></td>
+    <td align="left"><span class="code">runPostOutputHandlerFlushPlugIn()</span></td>
+    <td>Called immediately after an output handler is flushed (i.e., after
+        it has been called to process all feeds and its output has been
+        written to a temporary file), but before that output is
+        displayed, emailed, etc.
+      </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostOutputPlugIn.html" class="code">PostOutputPlugIn</a></td>
+    <td align="left"><span class="code">runPostOutputPlugIn()</span></td>
+    <td>Called after <i>curn</i> has flush <i>all</i> output handlers. A
+        post-output plug-in is a useful place to consolidate the output from
+        all output handlers. For instance, such a plug-in might pack all the
+        output into a zip file, or email it.</td>
+      </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreCacheSavePlugIn.html" class="code">PreCacheSavePlugIn</a></td>
+    <td align="left"><span class="code">runPreCacheSavePlugIn()</span></td>
+    <td>Called right before the <i>curn</i> cache is to be saved. A plug-in
+        might choose to edit the cache at this point.</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/ShutdownPlugIn.html" class="code">ShutdownPlugIn</a></td>
+    <td align="left"><span class="code">runShutdownPlugIn()</span></td>
+    <td> Called just before <i>curn</i> gets ready to exit. This method
+         allows plug-ins to perform any clean-up they require.</td>
+  </tr>
+  </tbody>
+</table>
+
+<p>A plug-in class doesn't have to do anything special to register itself
+with <i>curn</i>. Merely implementing the appropriate interfaces is sufficient,
+as long as <i>curn</i> can <a href="#PlugInSearch">find the plug-in class</a>
+at run-time.</p>
 
 
 <h2><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h2>
