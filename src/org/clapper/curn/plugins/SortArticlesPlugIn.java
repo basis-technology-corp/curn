@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * The <tt>SortItemsPlugIn</tt> handles per-feed SortBy settings.
+ * The <tt>SortArticlesPlugIn</tt> handles per-feed SortBy settings.
  * It looks for a default (main-configuration section) "SortBy" parameter,
  * and permits a per-feed "SortBy" parameter to override the default.
  *
@@ -71,7 +71,7 @@ import java.util.HashMap;
  *
  * @version <tt>$Revision$</tt>
  */
-public class SortItemsPlugIn
+public class SortArticlesPlugIn
     implements MainConfigItemPlugIn,
                FeedConfigItemPlugIn,
                PostFeedParsePlugIn
@@ -182,7 +182,7 @@ public class SortItemsPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (SortItemsPlugIn.class);
+    private static Logger log = new Logger (SortArticlesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -191,7 +191,7 @@ public class SortItemsPlugIn
     /**
      * Default constructor (required).
      */
-    public SortItemsPlugIn()
+    public SortArticlesPlugIn()
     {
     }
 
