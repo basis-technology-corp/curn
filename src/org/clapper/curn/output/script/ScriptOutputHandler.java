@@ -477,6 +477,10 @@ public class ScriptOutputHandler extends FileOutputHandler
                                             "org.codehaus.groovy.bsf.GroovyEngine", 
                                             new String[] {"groovy", "gy"});
 
+        BSFManager.registerScriptingEngine ("beanshell",
+                                            "bsh.util.BeanShellBSFEngine",
+                                            new String[] {"bsh"});
+
         // Set up a logger for the script. The logger name can't have dots
         // in it, because the underlying logging API strips them out,
         // thinking they're class/package delimiters. That means we have to
