@@ -143,7 +143,7 @@ public class EmailOutputPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -155,10 +155,6 @@ public class EmailOutputPlugIn
     {
         return "Email Output";
     }
-
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
 
     /**
      * Called immediately after <i>curn</i> has read and processed a
