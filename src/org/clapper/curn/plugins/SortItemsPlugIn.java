@@ -206,7 +206,7 @@ public class SortItemsPlugIn
      */
     public String getName()
     {
-        return "Sort By";
+        return "Sort Articles";
     }
 
     /*----------------------------------------------------------------------*\
