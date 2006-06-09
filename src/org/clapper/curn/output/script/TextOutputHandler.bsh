@@ -1,0 +1,194 @@
+/*
+  $Id$
+  ---------------------------------------------------------------------------
+
+  ObjectScript (http://objectscript.sourceforge.net) script output handler
+  for curn.
+
+  This software is released under a Berkeley-style license:
+
+  Copyright(c) 2006 Brian M. Clapper. All rights reserved.
+
+  Redistribution and use in source and binary forms are permitted provided
+  that:(1) source distributions retain this entire copyright notice and
+  comment; and(2) modifications made to the software are prominently
+  mentioned, and a copy of the original software(or a pointer to its
+  location) are included. The name of the author may not be used to endorse
+  or promote products derived from this software without specific prior
+  written permission.
+
+  THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+  Effectively, this means you can do what you want with the software except
+  remove this notice or take advantage of the author's name. If you modify
+  the software and redistribute your modified version, you must indicate that
+  your version is a modification of the original, and you must provide either
+  a pointer to or a copy of the original.
+*/
+
+import org.clapper.util.io.WordWrapWriter;
+
+HORIZONTAL_RULE = "------------------------------------------------------------------------------";
+
+channels    = curn.channels;
+outputPath  = curn.outputPath;
+config      = curn.config;
+sectionName = curn.configSection;
+logger      = curn.logger;
+version     = curn.getVersion();
+out         = null;
+
+processChannels()
+{
+    try
+    {
+	logger.debug ("Total channels=" + channels.size());
+	logger.debug ("Opening " + outputPath);
+	handleChannels();
+    }
+
+    finally
+    {
+	logger.debug ("Flushing output.");
+	out.flush();
+	out.close();
+    }
+}
+
+handleChannels()
+{
+    // Process the channels passed in through the Bean Scripting Framework.
+    //
+    // If we didn't care about wrapping the output, we'd just use:
+    //
+    //     out = open(outputPath, "w")
+    //
+    // But it'd be nice to wrap long summaries on word boundaries at
+    // the end of an 80-character line. For that reason, we use the
+    // Java org.clapper.util.io.WordWrapWriter class.
+
+    out.setPrefix ("");
+    msg = config.getOptionalStringValue (sectionName, "Message", null);
+    totalNew = 0;
+
+    // First, count the total number of new items
+
+    for (channel_wrapper : channels)
+    {
+	channel = channel_wrapper.getChannel();
+	totalNew = totalNew + channel.getItems().size();
+    }
+
+    logger.debug ("totalNew=" + totalNew);
+    if (totalNew > 0)
+    {
+	// If the config file specifies a message for this handler, display
+	// it.
+
+	if (msg != null)
+        {
+	    out.println(msg);
+	    out.println();
+	}
+
+	// Now, process the items
+
+	indentation = 0;
+	for (channel_wrapper : channels)
+        {
+	    channel = channel_wrapper.getChannel();
+	    feed_info = channel_wrapper.getFeedInfo();
+	    process_channel (out, channel, feed_info, indentation);
+	}
+
+	curn.setMIMEType("text/plain");
+
+	// Output a footer
+
+	indent(out, indentation);
+	out.println();
+	out.println(HORIZONTAL_RULE);
+	out.println(version);
+	out.flush();
+    }
+}
+
+process_channel (out, channel, feed_info, indentation)
+{
+    // Process all items within a channel.
+
+    urlString = channel.getLinks().iterator().next();
+    logger.debug("Processing channel \"" + urlString + "\"");
+
+    // Print a channel header
+
+    // indent(out, indentation);
+
+    out.println(HORIZONTAL_RULE);
+    out.println(channel.getTitle());
+    out.println(urlString);
+    out.println(channel.getItems().size().toString() + " item(s)");
+
+    date = channel.getPublicationDate();
+    if (date != null)
+	out.println(date.toString());
+
+    indentation = indentation + 1;
+    indent(out, indentation);
+    for (item : channel.getItems())
+    {
+	out.println();
+	out.println(item.getTitle());
+	author = item.getAuthor();
+	if (author != null)
+	    out.println(author);
+
+	out.println(item.getLinks().iterator().next().toString());
+
+	date = item.getPublicationDate();
+	if (date != null)
+	    out.println(date.toString());
+
+	out.println();
+
+	summary = item.getSummary();
+	if (summary != null)
+        {
+	    indent(out, indentation + 1);
+	    out.println(summary);
+	    indent(out, indentation);
+	}
+    }
+}
+
+indent(out, indentation)
+{
+    // Apply a level of indentation to a WordWrapWriter, by changing
+    // the WordWrapWriter's prefix string.
+    //
+    // out         - the org.clapper.util.io.WordWrapWriter
+    // indentation - the numeric indentation level
+    //
+
+    prefix = "";
+    for (i = 0; i < indentation; i++)
+	prefix = prefix + "    ";
+
+    out.setPrefix(prefix);
+}
+
+// ---------------------------------------------------------------------------
+
+try
+{
+    out = new WordWrapWriter (new java.io.PrintWriter (outputPath));
+    processChannels();
+}
+catch (java.lang.Exception ex)
+{
+    logger.debug(ex);
+}
+
+
