@@ -28,7 +28,8 @@ Version 3.0 (...)
      alternate class loader that will load classes from them.
 
   2. Custom OutputHandler classes should also be placed in one of the
-     plug-in directories, so that curn can find them.
+     plug-in directories, so that curn can find them. Simply adding them to
+     the CLASSPATH won't work any more.
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
@@ -46,9 +47,14 @@ Version 3.0 (...)
   now be overridden on a per-feed basis, by a feed-specific "ShowDates"
   configuration parameter.
 
-- Added a new per-feed configuration item, ArticleFilter, that permits
+- Added a new per-feed configuration item, "ArticleFilter", that permits
   filtering out feed items based on their content. See the User's Guide
   for details. (This capability is handled by a stock curn plug-in.)
+
+- Added a new configuration item, "CommonXMLFixups". If enabled for a feed
+  (or globally, for all feeds), curn will edit downloaded XML, before
+  parsing it, to attempt to fix some of the more common XML syntax
+  problems.
 
 - curn's ScriptOutputHandler class now exports curn-related data to the
   script via a global "curn" object that does not have to be retrieved via
