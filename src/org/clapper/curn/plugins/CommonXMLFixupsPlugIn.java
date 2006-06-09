@@ -57,14 +57,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>The <tt>CommonXMLFixupsPlugIn</tt> attempts to fix some common erros
+ * <p>The <tt>CommonXMLFixupsPlugIn</tt> attempts to fix some common errors
  * in the downloaded, pre-parsed XML in any feed for which it is enabled.
  * There is some XML badness that is surprisingly common across feeds,
  * including (but not limited to):</p>
  *
  * <ul>
  *   <li>Using a "naked" ampersand (&amp;) without escaping it.
- *   <li>Use of nonexistent entities (e.g., &amp;ouml;)
+ *   <li>Use of nonexistent entities (e.g., &amp;ouml;, &amp;nbsp;)
+ *   <li>Improperly formatted entity escapes
  * </ul>
  *
  * <p>This plug-in attempts to fix those problems.</p>
