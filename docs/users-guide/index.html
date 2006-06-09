@@ -4587,6 +4587,29 @@ public class ZipOutputPlugIn
   </tr>
 </table>
 
+<p>To activate this plug-in, simply ensure that
+<a href="#PlugInSearch">it is available to <i>curn</i> at startup</a>, and
+add this configuration directive to the <span class="code">[curn]</span>
+section of the configuration file:</span>
+
+<table summary="" class="bordered uncolored" align="center">
+  <tr valign="top">
+    <td align="left">
+<blockquote><pre>
+# Unix
+ZipOutputTo: /tmp/curn.zip
+
+# Windows
+#ZipOutputTo: c:\\temp\\curn.zip
+</pre></blockquote>
+    </td>
+  </tr>
+</table>
+<br clear="all"/>
+
+<p>For more examples, please see the source code for the
+<a href="#StockPlugIns">stock plug-ins</a> delivered with <i>curn</i>.</p>
+
 
 <h2><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h2>
 
