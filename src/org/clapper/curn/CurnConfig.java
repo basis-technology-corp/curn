@@ -468,6 +468,46 @@ public class CurnConfig extends Configuration
         return (FeedInfo) feedMap.get (urlString);
     }
 
+    /**
+     * Utility method that retrieves a "deprecated parameter" warning.
+     *
+     * @param badParam   the deprecated parameter
+     * @param goodParam  the parameter that should be used, or null for none
+     *
+     * @return the message
+     */
+    public String getDeprecatedParamMessage (String badParam,
+                                             String goodParam)
+    {
+        StringBuilder buf = new StringBuilder();
+
+        buf.append ("Warning: Configuration file ");
+
+        URL configURL = getConfigurationFileURL();
+        if (configURL != null)
+        {
+            buf.append ('"');
+            buf.append (configURL.toString());
+            buf.append ('"');
+        }
+
+        buf.append (" uses deprecated \"");
+        buf.append (badParam);
+        buf.append ("\" parameter");
+
+        if (goodParam == null)
+            buf.append (".");
+
+        else
+        {
+            buf.append (", instead of new \"");
+            buf.append (goodParam);
+            buf.append ("\" parameter.");
+        }
+
+        return buf.toString();
+    }
+
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
