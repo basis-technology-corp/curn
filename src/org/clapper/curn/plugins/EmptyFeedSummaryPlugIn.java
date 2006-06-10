@@ -163,7 +163,7 @@ public class EmptyFeedSummaryPlugIn
      */
     public String getName()
     {
-        return "Empty Summary";
+        return "Empty Feed Summary";
     }
 
     /**
