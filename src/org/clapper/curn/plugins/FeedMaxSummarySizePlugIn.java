@@ -176,6 +176,8 @@ public class FeedMaxSummarySizePlugIn
             {
                 maxSummarySizeDefault =
                     config.getRequiredCardinalValue (sectionName, paramName);
+                if (maxSummarySizeDefault == 0)
+                    maxSummarySizeDefault = NO_MAX;
             }
         }
 
@@ -224,6 +226,9 @@ public class FeedMaxSummarySizePlugIn
             {
                 int max = config.getRequiredCardinalValue (sectionName,
                                                            paramName);
+                if (max == 0)
+                    max = NO_MAX;
+
                 perFeedMaxSummarySize.put (feedInfo, max);
                 log.debug ("[" + sectionName + "]: "
                          + paramName
