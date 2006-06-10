@@ -117,7 +117,10 @@ public class CommonXMLFixupsPlugIn
      */
     private static final String[] EDITS = new String[]
     {
+        // Various forms of unescaped ampersands.
+
         "s/ & / \\&amp; /g",
+        "s/&$/\\&amp;/g",
         "s/&ouml;/\\&#246;/g",
         "s/ &amp;amp; / \\&amp; /g",
  
