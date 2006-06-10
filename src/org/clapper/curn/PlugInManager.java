@@ -59,8 +59,10 @@ import java.io.FileFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -87,6 +89,26 @@ public class PlugInManager
     private static final String BUNDLE_NAME = "org.clapper.curn.PlugInManager";
 
     /*----------------------------------------------------------------------*\
+                               Inner Classes
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Plug-in comparator.
+     */
+    private static class PlugInComparator implements Comparator<PlugIn>
+    {
+        public int compare (PlugIn pl1, PlugIn pl2)
+        {
+            return pl1.getSortKey().compareToIgnoreCase (pl2.getSortKey());
+        }
+
+        public boolean equals (Object o)
+        {
+            return (o instanceof PlugInComparator);
+        }                
+    }
+
+    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
@@ -98,7 +120,8 @@ public class PlugInManager
     /**
      * The located PlugIns
      */
-    private static Collection<PlugIn> plugIns = new ArrayList<PlugIn>();
+    private static Collection<PlugIn> plugIns =
+        new TreeSet<PlugIn> (new PlugInComparator());
 
     /**
      * The located OutputHandler classes

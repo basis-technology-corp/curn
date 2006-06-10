@@ -35,6 +35,7 @@ import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedDownloadPlugIn;
 import org.clapper.curn.Util;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
@@ -130,7 +131,7 @@ public class RawFeedEditPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -143,9 +144,15 @@ public class RawFeedEditPlugIn
         return "Raw Feed Edit";
     }
 
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
+    }
 
     /**
      * Called immediately after <i>curn</i> has read and processed a

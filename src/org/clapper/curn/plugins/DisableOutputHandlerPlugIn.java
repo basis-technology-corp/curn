@@ -34,6 +34,7 @@ import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandlerConfigItemPlugIn;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
@@ -80,7 +81,7 @@ public class DisableOutputHandlerPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -93,9 +94,15 @@ public class DisableOutputHandlerPlugIn
         return "Disable Output Handler";
     }
 
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
+    }
 
     /**
      * Called immediately after <i>curn</i> has read and processed a

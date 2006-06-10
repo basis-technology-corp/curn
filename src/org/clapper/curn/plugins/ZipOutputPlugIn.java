@@ -33,6 +33,7 @@ import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.PostOutputPlugIn;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
@@ -107,6 +108,16 @@ public class ZipOutputPlugIn
     public String getName()
     {
         return "Zip Output";
+    }
+
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /**

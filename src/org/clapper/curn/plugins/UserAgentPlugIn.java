@@ -36,6 +36,7 @@ import org.clapper.curn.PostConfigPlugIn;
 import org.clapper.curn.PreFeedDownloadPlugIn;
 import org.clapper.curn.Version;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
@@ -119,7 +120,7 @@ public class UserAgentPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -132,9 +133,15 @@ public class UserAgentPlugIn
         return "User Agent";
     }
 
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
+    }
 
     /**
      * Called immediately after <i>curn</i> has read and processed a

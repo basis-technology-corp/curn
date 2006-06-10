@@ -35,6 +35,7 @@ import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
@@ -121,7 +122,7 @@ public class AllowEmbeddedHTMLPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -134,9 +135,15 @@ public class AllowEmbeddedHTMLPlugIn
         return "Allow Embedded HTML";
     }
 
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
+    }
 
     /**
      * Called immediately after <i>curn</i> has read and processed a

@@ -45,6 +45,7 @@ import java.util.TreeMap;
 
 import org.clapper.curn.parser.RSSChannel;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.cmdline.CommandLineUtility;
 import org.clapper.util.cmdline.CommandLineException;
 import org.clapper.util.cmdline.CommandLineUsageException;
@@ -189,6 +190,11 @@ public class Tool
     public String getName()
     {
         return "curn command-line interface";
+    }
+
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (this.getClass());
     }
 
     public void runPostConfigPlugIn (CurnConfig config)

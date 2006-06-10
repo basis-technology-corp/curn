@@ -36,6 +36,7 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
@@ -102,7 +103,7 @@ public class TitleOverridePlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -115,9 +116,15 @@ public class TitleOverridePlugIn
         return "Override Feed Title";
     }
 
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
+    }
 
     /**
      * Called immediately after <i>curn</i> has read and processed a

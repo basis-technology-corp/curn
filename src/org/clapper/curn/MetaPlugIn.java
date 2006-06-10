@@ -257,6 +257,11 @@ public class MetaPlugIn
         return getClass().getName();
     }
 
+    public String getSortKey()
+    {
+        return getName();
+    }
+
     public synchronized void runStartupPlugIn()
         throws CurnException
     {

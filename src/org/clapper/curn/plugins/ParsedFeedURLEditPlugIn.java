@@ -39,10 +39,9 @@ import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
-
 import org.clapper.util.logging.Logger;
-
 import org.clapper.util.regex.RegexUtil;
 import org.clapper.util.regex.RegexException;
 
@@ -154,7 +153,7 @@ public class ParsedFeedURLEditPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -164,7 +163,17 @@ public class ParsedFeedURLEditPlugIn
      */
     public String getName()
     {
-        return "Parsed Feed URL Edit";
+        return "Edit Parsed Feed URL";
+    }
+
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /*----------------------------------------------------------------------*\

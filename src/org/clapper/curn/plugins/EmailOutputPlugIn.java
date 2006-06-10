@@ -35,17 +35,15 @@ import org.clapper.curn.OutputHandler;
 import org.clapper.curn.PostOutputPlugIn;
 import org.clapper.curn.Version;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
-
 import org.clapper.util.mail.EmailMessage;
 import org.clapper.util.mail.EmailTransport;
 import org.clapper.util.mail.SMTPEmailTransport;
 import org.clapper.util.mail.EmailAddress;
 import org.clapper.util.mail.EmailException;
-
 import org.clapper.util.misc.MIMETypeUtil;
-
 import org.clapper.util.text.TextUtil;
 
 import java.io.File;
@@ -154,6 +152,16 @@ public class EmailOutputPlugIn
     public String getName()
     {
         return "Email Output";
+    }
+
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /**

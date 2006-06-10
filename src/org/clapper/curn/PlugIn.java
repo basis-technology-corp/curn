@@ -250,4 +250,11 @@ public interface PlugIn
      * @return the name
      */
     public String getName();
+
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey();
 }

@@ -37,6 +37,7 @@ import org.clapper.curn.PreFeedDownloadPlugIn;
 import org.clapper.curn.Util;
 import org.clapper.curn.Version;
 
+import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
@@ -124,7 +125,7 @@ public class GzipDownloadPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                              Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -137,9 +138,15 @@ public class GzipDownloadPlugIn
         return "Gzip Download";
     }
 
-    /*----------------------------------------------------------------------*\
-               Public Methods Required by *PlugIn Interfaces
-    \*----------------------------------------------------------------------*/
+    /**
+     * Get the sort key for this plug-in.
+     *
+     * @return the sort key string.
+     */
+    public String getSortKey()
+    {
+        return ClassUtil.getShortClassName (getClass().getName());
+    }
 
     /**
      * Called immediately after <i>curn</i> has read and processed a
@@ -175,9 +182,9 @@ public class GzipDownloadPlugIn
 
             else if (paramName.equals (VAR_OLD_GET_GZIPPED_FEEDS))
             {
-                String msg = getDeprecatedParamMessage (config,
-                                                        paramName,
-                                                        VAR_GZIP_DOWNLOAD);
+                String msg =
+                    config.getDeprecatedParamMessage (paramName,
+                                                      VAR_GZIP_DOWNLOAD);
                 Util.getErrorOut().println (msg);
                 log.warn (msg);
 
@@ -240,9 +247,9 @@ public class GzipDownloadPlugIn
 
             else if (paramName.equals (VAR_OLD_GET_GZIPPED_FEEDS))
             {
-                String msg = getDeprecatedParamMessage (config,
-                                                        paramName,
-                                                        VAR_GZIP_DOWNLOAD);
+                String msg =
+                    config.getDeprecatedParamMessage (paramName,
+                                                      VAR_GZIP_DOWNLOAD);
                 Util.getErrorOut().println (msg);
                 log.warn (msg);
 
@@ -320,29 +327,4 @@ public class GzipDownloadPlugIn
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
-
-    private String getDeprecatedParamMessage (CurnConfig config,
-                                              String     badParam,
-                                              String     goodParam)
-    {
-        StringBuilder buf = new StringBuilder();
-
-        buf.append ("Warning: Configuration file ");
-
-        URL configURL = config.getConfigurationFileURL();
-        if (configURL != null)
-        {
-            buf.append ('"');
-            buf.append (configURL.toString());
-            buf.append ('"');
-        }
-
-        buf.append (" uses deprecated \"");
-        buf.append (badParam);
-        buf.append ("\" parameter, instead of new \"");
-        buf.append (goodParam);
-        buf.append ("\" parameter.");
-
-        return buf.toString();
-    }
 }
