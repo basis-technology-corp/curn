@@ -283,6 +283,11 @@ th
     font-weight: bold;
 }
 
+.plug-in-flag
+{
+    font-style: italic
+}
+
 -->
 </style>
 <script language="JavaScript" type="text/javascript">
@@ -1241,8 +1246,10 @@ value) can also take a value of "0" (false), "1" (true), "no" (false) or
 
 <h2><a name="CfgCurnSection">The <span class="code">[curn]</span> Section</a></h2>
 
-<p>This section contains variable global parameters. Each is described
-in detail, below.</p>
+<p>This section contains variable global parameters. Each is described in
+detail, below. (Parameters marked with
+<span class="plug-in-flag">plug-in</span> are handled by one of <i>curn</i>'s
+<a href="#StockPlugIns">stock plug-ins</a>, rather than by the core code.)</p>
 
 <table summary="" class="outlined striped" align="center" width="90%">
 
@@ -1257,7 +1264,7 @@ in detail, below.</p>
 
   <tbody>
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_AllowEmbeddedHTML"></a>AllowEmbeddedHTML&nbsp;</td>
+    <td align="left"><a name="Cfg_AllowEmbeddedHTML"></a><span class="code">AllowEmbeddedHTML</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">Default setting for whether or not to allow
       embedded HTML in certain RSS feed elements, such as description,
@@ -1288,7 +1295,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_CacheFile"></a>CacheFile</td>
+    <td align="left><a name="Cfg_CacheFile"></a><span class="code">CacheFile</span></td>
     <td align="left">File name or path name</td>
     <td align="left">The full path to the file in which <i>curn</i>
       should cache feed item data. <i>curn</i> uses the cache file to
@@ -1319,7 +1326,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_CacheBackup"></a>CacheBackup</td>
+    <td align="left><a name="Cfg_CacheBackup"></a><span class="code">CacheBackup</span></td>
     <td align="left"><p>File name or path name.</p>
     </td>
     <td align="left">The full path to a cache backup file. If this
@@ -1338,7 +1345,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_CommonXMLFixups"></a>CommonXMLFixups&nbsp;</td>
+    <td align="left><a name="Cfg_CommonXMLFixups"></a><span class="code">CommonXMLFixups&nbsp;</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">Enables or disables the Common XML Fixups plug-in,
       which attempts to fix common syntax problems in downloaded XML feeds.
@@ -1363,7 +1370,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_DaysToCache"></a>DaysToCache</td>
+    <td align="left><a name="Cfg_DaysToCache"></a><span class="code">DaysToCache</span></td>
     <td align="left">Positive integer</td>
     <td align="left">
       Default maximum number of days to cache an already-read item.
@@ -1383,7 +1390,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_GzipDownload"></a>GzipDownload</td>
+    <td align="left><a name="Cfg_GzipDownload"></a><span class="code">GzipDownload</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
@@ -1407,7 +1414,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="MailOutputTo"></a>MailOutputTo</td>
+    <td align="left><a name="MailOutputTo"></a><span class="code">MailOutputTo</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td>One or more comma-separated email addresses to receive the output.
         This parameter is optional. If any email addresses are specified, then
@@ -1431,7 +1438,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MailFrom"></a>MailFrom</td>
+    <td align="left><a name="Cfg_MailFrom"></a><span class="code">MailFrom</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       The email address to use as the sender, when mailing output.
@@ -1455,7 +1462,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MailSubject"></a>MailSubject</td>
+    <td align="left><a name="Cfg_MailSubject"></a><span class="code">MailSubject</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       The subject line to use when mailing output.
@@ -1474,11 +1481,10 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MaxSummarySize"></a>MaxSummarySize</td>
+    <td align="left><a name="Cfg_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Positive integer</td>
     <td align="left">
-      If you're displaying the summary (see the
-      <a href="#Cfg_SummaryOnly" class="code">SummaryOnly</a> parameter),
+      If an article has a summary,
       you can optionally set a maximum size for the summary. If a summary
       exceeds the maximum size, <i>curn</i> will truncate it and add
       a trailing ellipsis ("...") to indicate the truncation. A value of
@@ -1488,11 +1494,11 @@ in detail, below.</p>
     </td>
     <td align="left">No</td>
     <td align="left">0 (i.e., no limit on summary size)</td>
-    <td align="left">&nbsp;</td>
+    <td align="left"><a href="#Cfg_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a></td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_MaxThreads"></a>MaxThreads</td>
+    <td align="left><a name="Cfg_MaxThreads"></a><span class="code">MaxThreads</span></td>
     <td align="left">Positive integer</td>
     <td align="left">Defines the number of concurrent download threads.
         If this value is greater than 1, then <i>curn</i> will spawn
@@ -1612,7 +1618,31 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ShowAuthors"></a>ShowAuthors</td>
+    <td align="left><a name="Cfg_ReplaceEmptySummaryWith"></a><span class="code">ReplaceEmptySummaryWith</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left">String</td>
+    <td align="left">
+      Tells <i>curn</i> what to do when the summary for a feed
+      article is missing. Legal values:
+
+      <ul>
+	<li><i>nothing</i>: Leave the summary blank. This is the default.
+	<li><i>content</i>: Replace the summary with the article's content,
+            if there is any content.
+	<li><i>title</i>: Replace the summary with the article's title.
+      </ul>
+
+      <a href="#Feed_ReplaceEmptySummaryWith">overridden on a per-feed basis</a>.
+      This global value sets the default value.
+    </td>
+    <td align="left">No</td>
+    <td align="left" class="code">nothing</td>
+    <td align="left">
+      Per-feed <a href="#Feed_SortBy" class="code">SortBy</a> parameter
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left><a name="Cfg_ShowAuthors"></a><span class="code">ShowAuthors</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
@@ -1627,7 +1657,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ShowDates"></a>ShowDates</td>
+    <td align="left><a name="Cfg_ShowDates"></a><span class="code">ShowDates</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds or the individual items within each feed
@@ -1655,7 +1685,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_SummaryOnly"></a>SummaryOnly</td>
+    <td align="left><a name="Cfg_SummaryOnly"></a><span class="code">SummaryOnly</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds provide a description for each item, in addition
@@ -1663,14 +1693,18 @@ in detail, below.</p>
       to <span class="code">true</span> suppresses display of the description. This parameter
       can be <a href="#Feed_SummaryOnly">overridden on a per-feed basis</a>.
       This global value sets the default value.
+      <br/><br/>
+      <b>WARNING:</b> This parameter is deprecated. Use the
+      <a href="#Feed_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a>
+      parameter, instead.
     </td>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
-    <td align="left">&nbsp;</td>
+    <td align="left"><a href="#Cfg_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a></td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_SMTPHost"></a>SMTPHost</td>
+    <td align="left><a name="Cfg_SMTPHost"></a><span class="code">SMTPHost</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       The SMTP host to use when mailing output.
@@ -1682,14 +1716,12 @@ in detail, below.</p>
     <td align="left">No</td>
     <td align="left" class="code">localhost</td>
     <td align="left">
-      <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
-      <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
-      <a href="#MailOutputTo" class="code">MailOutputTo</a>
+      per-feed <a href="#Feed_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a> parameter
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_SortBy"></a>SortBy</td>
+    <td align="left><a name="Cfg_SortBy"></a><span class="code">SortBy</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       Default method to use to sort items within each feed. This
@@ -1742,7 +1774,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_UserAgent"></a>UserAgent</td>
+    <td align="left><a name="Cfg_UserAgent"></a><span class="code">UserAgent</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       Specifies the default HTTP <span class="code">User-Agent</span> header to use.
@@ -1761,7 +1793,7 @@ in detail, below.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Cfg_ZipOutputTo"></a>ZipOutputTo</td>
+    <td align="left><a name="Cfg_ZipOutputTo"></a><span class="code">ZipOutputTo</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       Path to a zip file to receive all output generated by output handlers.
@@ -1794,7 +1826,10 @@ section names are all valid for RSS feed sections.</p>
   <li><span class="code">Feed.NYTimes.Top</span>
 </ul>
 
-<p>Each feed section supports the following parameters.</p>
+<p>Each feed section supports the following parameters. (Parameters marked
+with <span class="plug-in-flag">plug-in</span> are handled by one of
+<i>curn</i>'s <a href="#StockPlugIns">stock plug-ins</a>, rather than by
+the core code.)</p>
 
 <table summary="" class="outlined striped" align="center" width="90%">
 
@@ -1808,7 +1843,7 @@ section names are all valid for RSS feed sections.</p>
 
   <tbody>
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_AllowEmbeddedHTML"></a>AllowEmbeddedHTML</td>
+    <td align="left><a name="Feed_AllowEmbeddedHTML"></a><span class="code">AllowEmbeddedHTML</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">Whether or not to allow
     embedded HTML in certain RSS feed elements, such as description,
@@ -1840,7 +1875,7 @@ section names are all valid for RSS feed sections.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_ArticleFilter"></a>ArticleFilter</td>
+    <td align="left><a name="Feed_ArticleFilter"></a><span class="code">ArticleFilter</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Strings</td>
     <td align="left">Specifies a set of filters to discard feed item (article)
       content, based on regular expressions.
@@ -1951,12 +1986,12 @@ ArticleFilter: hide ; show author '^moe *howard$'
       </blockquote>
     </td>
     <td align="left">No</td>
-    <td align="left"><span class="code">Articles are not filtered</span></td>
+    <td align="left">Articles are not filtered</td>
   </tr>
 
   <tr valign="top">
 
-    <td align="left" class="code"><a name="Feed_CommonXMLFixups"></a>CommonXMLFixups</td>
+    <td align="left><a name="Feed_CommonXMLFixups"></a><span class="code">CommonXMLFixups</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">
       Enables or disables the Common XML Fixups plug-in, which attempts
@@ -2153,7 +2188,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_GzipDownload"></a>GzipDownload</td>
+    <td align="left><a name="Feed_GzipDownload"></a><span class="code">GzipDownload</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
@@ -2168,8 +2203,6 @@ ArticleFilter: hide ; show author '^moe *howard$'
     </td>
     <td align="left">No</td>
     <td align="left" class="code">true</td>
-    <td align="left">
-    </td>
   </tr>
 
   <tr valign="top">
@@ -2193,11 +2226,10 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_MaxSummarySize"></a>MaxSummarySize</td>
+    <td align="left><a name="Feed_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Positive integer</td>
     <td align="left">
-      If you're displaying the summary for the feed (see the
-      <a href="#Feed_SummaryOnly" class="code">SummaryOnly</a> parameter),
+      If an article has a summary,
       you can optionally set a maximum size for the summary. If a summary
       exceeds the maximum size, <i>curn</i> will truncate it and add a
       trailing ellipsis ("...") to indicate the truncation. A value of 0
@@ -2347,7 +2379,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SaveAs"></a>SaveAs</td>
+    <td align="left><a name="Feed_SaveAs"></a><span class="code">SaveAs</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">File name or path name</td>
     <td align="left">If set, this parameter specifies the path to
       a file where <i>curn</i> should save the raw XML contents of
@@ -2363,7 +2395,28 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SaveAsEncoding"></a>SaveAsEncoding</td>
+    <td align="left><a name="Feed_ReplaceEmptySummaryWith"></a><span class="code">ReplaceEmptySummaryWith</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left">String</td>
+    <td align="left">
+      Tells <i>curn</i> what to do when the summary for a feed
+      article is missing. Legal values:
+
+      <ul>
+	<li><i>nothing</i>: Leave the summary blank. This is the default.
+	<li><i>content</i>: Replace the summary with the article's content,
+            if there is any content.
+	<li><i>title</i>: Replace the summary with the article's title.
+      </ul>
+
+      This per-feed setting overrides the
+      <a href="#Cfg_ReplaceEmptySummaryWith">global setting</a>.
+    </td>
+    <td align="left">No</td>
+    <td align="left" class="code">nothing</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left><a name="Feed_SaveAsEncoding"></a><span class="code">SaveAsEncoding</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">If set, and if
       <a href="#Feed_SaveAs" class="code">SaveAs</a> parameter is also
@@ -2382,7 +2435,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SaveOnly"></a>SaveOnly</td>
+    <td align="left><a name="Feed_SaveOnly"></a><span class="code">SaveOnly</span><br/><span class="plug-in-flag">plug-in</span></td>
     <td align="left">Boolean</td>
     <td align="left">If set, and if
      <a href="#Feed_SaveAs" class="code">SaveAs</a> is also set,
@@ -2470,6 +2523,10 @@ ArticleFilter: hide ; show author '^moe *howard$'
       to <span class="code">true</span> suppresses display of the description. This parameter
       overrides the global
       <a href="#Cfg_SummaryOnly" class="code">SummaryOnly</a> parameter.
+      <br/><br/>
+      <b>WARNING:</b> This parameter is deprecated. Use the
+      <a href="#Feed_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a>
+      parameter, instead.
     </td>
     <td align="left">No</td>
     <td align="left">The value of the global
@@ -3972,6 +4029,13 @@ each plug-in. Once a plug-in has been instantiated, its capabilities are
 available. Most plug-ins are dormant; that is, they don't do anything
 unless activated by a plug-in-specific configuration entry.</p>
 
+<p>After <i>curn</i> loads all the plug-ins it can find, it sorts them
+by "sort key" (a special field that each plug-in is required to provide),
+case-blind comparison. All plug-ins within a given execution phase are,
+therefore, invoked in alphabetical order by sort key. This bit of processing
+trivia is useful if you need to ensure that one plug-in fires before another
+plug-in.</p>
+
 <h3><a name="StockPlugIns"></a>Stock Plug-ins</h3>
 
 <p><i>curn</i> ships with a set of stock plug-ins.
@@ -4034,6 +4098,17 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
+    <td align="left">Edit Parsed Feed URL</td>
+    <td align="left" class="code">ParsedFeedURLEditPlugIn</td>
+    <td align="left">Edit the parsed feed data, changing the feed URL
+    and/or the individual item (article) URLs.</td>
+    <td align="left">
+      <a href="#Feed_EditFeedURL" class="code">EditFeedURL</a><br/>
+      <a href="#Feed_EditItemURL" class="code">EditItemURL</a><br/>
+      <a href="#Feed_PruneURLs" class="code">PruneURLs</a></td>
+  </tr>
+
+  <tr valign="top">
     <td align="left">Email Output</td>
     <td align="left" class="code"><a name="EmailOutputPlugIn"></a>EmailOutputPlugIn</td>
     <td align="left">Email any output created by the output handlers to
@@ -4043,6 +4118,15 @@ stock plug-ins are in the
       <a href="#MailOutputTo" class="code">MailOutputTo</a><br/>
       <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
       <a href="#Cfg_MailSubject" class="code">MailSubject</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left">Empty Article Summary</td>
+    <td align="left" class="code">Empty Article Summary PlugIn</td>
+    <td align="left">How to handle an empty summary in an article.</td>
+    <td align="left">
+      <a href="#Feed_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a>
     </td>
   </tr>
 
@@ -4084,17 +4168,6 @@ stock plug-ins are in the
     <td align="left" class="code">TitleOverridePlugIn</td>
     <td align="left">Overrides the title of a feed.</td>
     <td align="left"><a href="#Feed_TitleOverride" class="code">TitleOverride</a></td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left">Parsed Feed URL Edit</td>
-    <td align="left" class="code">ParsedFeedURLEditPlugIn</td>
-    <td align="left">Edit the parsed feed data, changing the feed URL
-    and/or the individual item (article) URLs.</td>
-    <td align="left">
-      <a href="#Feed_EditFeedURL" class="code">EditFeedURL</a><br/>
-      <a href="#Feed_EditItemURL" class="code">EditItemURL</a><br/>
-      <a href="#Feed_PruneURLs" class="code">PruneURLs</a></td>
   </tr>
 
   <tr valign="top">
