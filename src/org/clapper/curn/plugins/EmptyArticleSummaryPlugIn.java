@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The <tt>EmptyFeedSummaryPlugIn</tt> provides a way to handle an empty
+ * The <tt>EmptyArticleSummaryPlugIn</tt> provides a way to handle an empty
  * summary. It intercepts the following configuration parameters:
  *
  * <table border="1">
@@ -89,7 +89,7 @@ import java.util.Map;
  *
  * @version <tt>$Revision$</tt>
  */
-public class EmptyFeedSummaryPlugIn
+public class EmptyArticleSummaryPlugIn
     implements MainConfigItemPlugIn,
                FeedConfigItemPlugIn,
                PostFeedParsePlugIn
@@ -139,7 +139,7 @@ public class EmptyFeedSummaryPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (EmptyFeedSummaryPlugIn.class);
+    private static Logger log = new Logger (EmptyArticleSummaryPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -148,7 +148,7 @@ public class EmptyFeedSummaryPlugIn
     /**
      * Default constructor (required).
      */
-    public EmptyFeedSummaryPlugIn()
+    public EmptyArticleSummaryPlugIn()
     {
     }
 
@@ -163,7 +163,7 @@ public class EmptyFeedSummaryPlugIn
      */
     public String getName()
     {
-        return "Empty Feed Summary";
+        return "Empty Article Summary";
     }
 
     /**
