@@ -631,11 +631,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
         String[] desiredItemDescTypes;
 
-        if (allowEmbeddedHTML)
-            desiredItemDescTypes = new String[] {"text/html", "text/plain"};
-        else
-            desiredItemDescTypes = new String[] {"text/plain", "text/html"};
-
         int i = 0;
         for (RSSItem item : items)
         {
@@ -671,8 +666,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                 itemTitle = "(No Title)";
             itemData.put ("title", itemTitle);
 
-            String desc =
-                item.getSummaryToDisplay (desiredItemDescTypes);
+            String desc = item.getSummary();
 
             if (desc == null)
                 desc = "";
