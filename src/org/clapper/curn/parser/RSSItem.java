@@ -332,7 +332,6 @@ public abstract class RSSItem
      * @return the summary, or null if not available
      *
      * @see #setSummary
-     * @see #getSummaryToDisplay
      */
     public abstract String getSummary();
 
