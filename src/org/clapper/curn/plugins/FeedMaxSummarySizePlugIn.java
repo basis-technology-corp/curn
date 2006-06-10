@@ -72,7 +72,8 @@ import java.util.Map;
  * @version <tt>$Revision$</tt>
  */
 public class FeedMaxSummarySizePlugIn
-    implements FeedConfigItemPlugIn,
+    implements MainFeedConfigItemPlugIn,
+               FeedConfigItemPlugIn,
                PostFeedParsePlugIn
 {
     /*----------------------------------------------------------------------*\
