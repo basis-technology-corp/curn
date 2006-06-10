@@ -218,36 +218,6 @@ public abstract class RSSItem
     }
 
     /**
-     * Utility method to get the summary to display for an
-     * <tt>RSSItem</tt>.
-     *
-     * @param mimeTypes  desired MIME types; used only if no summary is
-     *                   available, and the content field should be used
-     *
-     * @return the summary string to use, or null if unavailable
-     *
-     * @see #getSummary
-     * @see #getFirstContentOfType
-     */
-    public String getSummaryToDisplay (String ... mimeTypes)
-    {
-        String summary = getSummary();
-
-        if (TextUtil.stringIsEmpty (summary))
-            summary = null;
-
-        if (summary == null)
-        {
-            assert (mimeTypes != null);
-            summary = getFirstContentOfType (mimeTypes);
-            if (TextUtil.stringIsEmpty (summary))
-                summary = null;
-        }
-
-        return summary;
-    }
-
-    /**
      * Compare two items for order. The channels are ordered first by
      * publication date (if any), then by title, then by unique ID,
      * then by hash code (if all else is equal).
