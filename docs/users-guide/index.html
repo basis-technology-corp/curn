@@ -66,6 +66,7 @@ h4
 {
     color: #000000;
     font-family: sans-serif;
+    font-size: 12pt;
 }
 
 h5
@@ -74,6 +75,7 @@ h5
     font-family: serif;
     text-decoration: underline;
     margin-top: 3em;
+    font-size: 12pt;
 }
 
 h6
@@ -85,12 +87,12 @@ h6
 
 .code
 {
-    font-family: Courier New, Courier, monospace;
+    font-family: monospace, Courier New, Courier;
 }
 
 .path
 {
-    font-family: Courier New, Courier, monospace;
+    font-family: monospace, Courier New, Courier;
 }
 
 .exampleHeader
@@ -155,7 +157,7 @@ ul.nobullet li
 
 pre
 {
-    font-family: Courier New, Courier, monospace;
+    font-family: monospace, Courier New, Courier;
     padding-top: 0;
     padding-bottom: 0;
     margin-top: 0;
@@ -2716,7 +2718,7 @@ built-in templates that produce the appropriate kind of output.</p>
     <td align="left" class="code">AllowEmbeddedHTML</td>
     <td align="left">Boolean</td>
     <td align="left">Whether or not the specified
-    <a href="#FreeMarker_TemplateFile">template</a> supports
+    <a href="#Freemarker_TemplateFile">template</a> supports
     embedded HTML. If embedded HTML is found within an RSS item, it will
     be included in the generated output <b>only</b> if (a) this parameter
     is <span class="code">true</span>, and (b) the
@@ -4309,7 +4311,7 @@ order.</p>
         <span class="code">runMainConfigItemPlugIn()</span> method should simply return
         without doing anything. Note that some configuration items may
         simply be variable assignment; there's no real way to distinguish a
-        variable assignment from a blessed configuration item.
+        variable assignment from a true configuration item.
         <br/><br/>
         A plug-in that wants to provide a configuration item in the main
         <span class="code">[curn]</span> configuration section must implement
@@ -4328,7 +4330,7 @@ order.</p>
         item, its <span class="code">runFeedConfigItemPlugIn()</span> method should simply
         return without doing anything. Note that some configuration items
         may simply be variable assignment; there's no real way to
-        distinguish a variable assignment from a blessed configuration
+        distinguish a variable assignment from a true configuration
         item.
         <br/><br/>
         A plug-in that wants to provide a per-feed configuration item
@@ -4346,7 +4348,7 @@ order.</p>
         item, its <span class="code">runOutputHandlerConfigItemPlugIn()</span> method should
         simply return without doing anything. Note that some configuration
         items may simply be variable assignment; there's no real way to
-        distinguish a variable assignment from a blessed configuration
+        distinguish a variable assignment from a true configuration
         item.
         <br/><br/>
         A plug-in that wants to provide a per-output handler configuration item
@@ -4364,7 +4366,7 @@ order.</p>
         item, its <span class="code">runUnknownSectionConfigItemPlugIn()</span> method should
         simply return without doing anything. Note that some configuration
         items may simply be variable assignment; there's no real way to
-        distinguish a variable assignment from a blessed configuration
+        distinguish a variable assignment from a true configuration
         item.
         <br/><br/>
         A plug-in that requires its own configuration file section
