@@ -98,9 +98,8 @@ class IndentTextMethod implements TemplateMethodModel
 
         catch (NumberFormatException ex)
         {
-            throw new TemplateModelException ("Bad indentation value \""
-                                            + sIndent
-                                            + "\"");
+            throw new TemplateModelException ("Bad indentation value \"" +
+                                              sIndent + "\"");
         }
 
         while (indentation-- > 0)

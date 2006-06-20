@@ -92,8 +92,8 @@ public class ReadOnlyOutputHandler implements OutputHandler
     {
         throw new CurnException (Constants.BUNDLE_NAME,
                                  "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler "
-                               + "method {0}()",
+                                 "Illegal call to read-only OutputHandler " +
+                                 "method {0}()",
                                  new Object[] {"setName"});
     }
 
@@ -123,8 +123,8 @@ public class ReadOnlyOutputHandler implements OutputHandler
     {
         throw new CurnException (Constants.BUNDLE_NAME,
                                  "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler "
-                               + "method {0}()",
+                                 "Illegal call to read-only OutputHandler " +
+                                 "method {0}()",
                                  new Object[] {"init"});
     }
 
@@ -145,8 +145,8 @@ public class ReadOnlyOutputHandler implements OutputHandler
     {
         throw new CurnException (Constants.BUNDLE_NAME,
                                  "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler "
-                               + "method {0}()",
+                                 "Illegal call to read-only OutputHandler " +
+                                 "method {0}()",
                                  new Object[] {"displayChannel"});
     }
 
@@ -165,8 +165,8 @@ public class ReadOnlyOutputHandler implements OutputHandler
     {
         throw new CurnException (Constants.BUNDLE_NAME,
                                  "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler "
-                               + "method {0}()",
+                                 "Illegal call to read-only OutputHandler " +
+                                 "method {0}()",
                                  new Object[] {"flush"});
     }
 

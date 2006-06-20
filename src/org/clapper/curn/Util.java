@@ -306,9 +306,8 @@ public class Util
 
             else
             {
-                log.debug ("Opening non-rolling output file \""
-                         + file.getPath()
-                         + "\"");
+                log.debug ("Opening non-rolling output file \"" +
+                           file.getPath() + "\"");
                 if (encoding != null)
                 {
                     w = new PrintWriter

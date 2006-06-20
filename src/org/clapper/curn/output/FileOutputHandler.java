@@ -188,10 +188,7 @@ public abstract class FileOutputHandler implements OutputHandler
         sectionName = cfgHandler.getSectionName();
         this.name   = sectionName;
 
-        log = new Logger (getClass().getName()
-                        + "["
-                        + name
-                        + "]");
+        log = new Logger (getClass().getName() + "[" + name + "]");
         try
         {
             if (sectionName != null)
@@ -249,9 +246,8 @@ public abstract class FileOutputHandler implements OutputHandler
             }
         }
 
-        log.debug ("Calling "
-                 + this.getClass().getName()
-                 + ".initOutputHandler()");
+        log.debug ("Calling " + this.getClass().getName() +
+                   ".initOutputHandler()");
 
         initOutputHandler (config, cfgHandler);
     }

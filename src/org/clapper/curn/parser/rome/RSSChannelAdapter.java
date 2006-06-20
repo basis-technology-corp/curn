@@ -248,10 +248,8 @@ public class RSSChannelAdapter extends RSSChannel
 
         catch (MalformedURLException ex)
         {
-            log.error ("Bad channel URL \""
-                     + syndFeed.getLink()
-                     + "\" from underlying parser: "
-                     + ex.toString());
+            log.error ("Bad channel URL \"" + syndFeed.getLink() +
+                       "\" from underlying parser: " + ex.toString());
         }
 
         return results;

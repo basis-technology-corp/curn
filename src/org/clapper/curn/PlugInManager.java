@@ -333,9 +333,8 @@ public class PlugInManager
                     // It's an output handler. We're done, since the class
                     // is now loaded.
 
-                    log.info ("Loaded output handler class \""
-                            + className
-                            + "\"");
+                    log.info ("Loaded output handler class \"" + className +
+                              "\"");
                     outputHandlerClasses.add (cls);
                     totalOutputHandlersLoaded++;
                 }
@@ -346,9 +345,7 @@ public class PlugInManager
                     // default constructor and add it to the meta-plug-in
 
                     PlugIn plugIn = (PlugIn) cls.newInstance();
-                    log.info ("Loaded \""
-                            + plugIn.getName()
-                            + "\" plug-in");
+                    log.info ("Loaded \"" + plugIn.getName() + "\" plug-in");
                     metaPlugIn.addPlugIn (plugIn);
                     plugIns.add (plugIn);
                     totalPlugInsLoaded++;
@@ -357,52 +354,43 @@ public class PlugInManager
 
             catch (ClassNotFoundException ex)
             {
-                log.error ("Can't load "
-                         + classInfo.getClassLocation().getPath()
-                         + "("
-                         + className
-                         + "): "
-                         + ex.toString());
+                log.error ("Can't load " +
+                           classInfo.getClassLocation().getPath() +
+                           "(" + className + "): " +
+                           ex.toString());
             }
 
             catch (ClassCastException ex)
             {
-                log.error ("Can't load plug-in \""
-                         + classInfo.getClassLocation().getPath()
-                         + "("
-                         + className
-                         + "): "
-                         + ex.toString());
+                log.error ("Can't load plug-in \"" +
+                           classInfo.getClassLocation().getPath() +
+                           "(" + className + "): " +
+                           ex.toString());
             }
 
             catch (IllegalAccessException ex)
             {
                 // Not a big deal. Might be one of ours (e.g., MetaPlugIn).
 
-                log.info ("Plug-in "
-                         + classInfo.getClassLocation().getPath()
-                         + "("
-                         + className
-                         + ") has no accessible default constructor.");
+                log.info ("Plug-in " +
+                          classInfo.getClassLocation().getPath() +
+                          "(" + className +
+                          ") has no accessible default constructor.");
             }
 
             catch (InstantiationException ex)
             {
-                log.error ("Can't instantiate plug-in \""
-                         + classInfo.getClassLocation().getPath()
-                         + "("
-                         + className
-                         + "): "
-                         + ex.toString());
+                log.error ("Can't instantiate plug-in \"" +
+                           classInfo.getClassLocation().getPath() +
+                           "(" + className + "): " +
+                           ex.toString());
             }
 
             catch (ExceptionInInitializerError ex)
             {
-                log.error ("Default constructor for plug-in \""
-                         + classInfo.getClassLocation().getPath()
-                         + "("
-                         + className
-                         + ") threw an exception.",
+                log.error ("Default constructor for plug-in \"" +
+                           classInfo.getClassLocation().getPath() +
+                           "(" + className + ") threw an exception.",
                            ex.getException());
             }
         }
@@ -410,19 +398,19 @@ public class PlugInManager
         if (log.isInfoEnabled())
         {
             int totalClasses = classes.size();
-            log.info ("Loaded "
-                    + totalPlugInsLoaded
-                    + " plug-in"
-                    + ((totalPlugInsLoaded == 1) ? "" : "s")
-                    + " and "
-                    + totalOutputHandlersLoaded
-                    + " output handler"
-                    + ((totalOutputHandlersLoaded == 1) ? "" : "s")
-                    + " of "
-                    + totalClasses
-                    + " plug-in class"
-                    + ((totalClasses == 1) ? "" : "es")
-                    + " found.");
+            log.info ("Loaded " +
+                      totalPlugInsLoaded +
+                      " plug-in" +
+                      ((totalPlugInsLoaded == 1) ? "" : "s") +
+                      " and " +
+                      totalOutputHandlersLoaded +
+                      " output handler" +
+                      ((totalOutputHandlersLoaded == 1) ? "" : "s") +
+                      " of " +
+                      totalClasses +
+                      " plug-in class" +
+                      ((totalClasses == 1) ? "" : "es") +
+                      " found.");
         }
     }
 }

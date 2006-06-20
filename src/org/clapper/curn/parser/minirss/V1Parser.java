@@ -173,11 +173,11 @@ public class V1Parser extends ParserCommon
 
         if (! entryElementName.equals (elementName))
         {
-            throw new SAXException ("Element \""
-                                  + elementName
-                                  + "\" doesn't match element on stack (\""
-                                  + entry.getElementName()
-                                  + "\")");
+            throw new SAXException ("Element \"" +
+                                    elementName +
+                                    "\" doesn't match element on stack (\"" +
+                                    entry.getElementName() +
+                                    "\")");
         }
 
         Object container = entry.getContainer();
@@ -335,11 +335,11 @@ public class V1Parser extends ParserCommon
                     // Swallow the exception. No sense aborting the whole
                     // feed for a bad <link> element.
 
-                    log.error ("Feed \""
-                             + url.toString()
-                             + "\": Bad <link> element \""
-                             + chars
-                             + "\"", ex);
+                    log.error ("Feed \"" +
+                               url.toString() +
+                               "\": Bad <link> element \"" +
+                               chars +
+                               "\"", ex);
                 }
             }
 
@@ -424,10 +424,10 @@ public class V1Parser extends ParserCommon
             int iColon = sUrl.indexOf (":");
             if (iColon < 0)
             {
-                throw new SAXException ("Can't save item link \""
-                                      + sUrl
-                                      + "\": "
-                                      + ex.toString());
+                throw new SAXException ("Can't save item link \"" +
+                                        sUrl +
+                                        "\": " +
+                                        ex.toString());
             }
 
             boolean ok = false;

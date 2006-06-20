@@ -230,10 +230,8 @@ public class FeedMaxSummarySizePlugIn
                     max = NO_MAX;
 
                 perFeedMaxSummarySize.put (feedInfo, max);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + max);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           max);
             }
 
             return true;
@@ -281,11 +279,10 @@ public class FeedMaxSummarySizePlugIn
 
         if (max != NO_MAX)
         {
-            log.debug ("Truncating all item summaries to "
-                     + max
-                     + " characters for feed \""
-                     + feedInfo.getURL().toString()
-                     + "\"");
+            log.debug ("Truncating all item summaries to " + max +
+                       " characters for feed \"" +
+                       feedInfo.getURL().toString() +
+                       "\"");
             for (RSSItem item : channel.getItems())
             {
                 String summary = item.getSummary();

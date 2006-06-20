@@ -239,10 +239,8 @@ public class GzipDownloadPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedGzipFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           flag);
             }
 
             else if (paramName.equals (VAR_OLD_GET_GZIPPED_FEEDS))
@@ -256,10 +254,8 @@ public class GzipDownloadPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedGzipFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           flag);
             }
 
             return true;
@@ -313,10 +309,8 @@ public class GzipDownloadPlugIn
 
         if (gzip)
         {
-            log.debug ("Setting header \"Accept-Encoding\" to \"gzip\" "
-                     + "for feed \""
-                     + feedInfo.getURL()
-                     + "\"");
+            log.debug ("Setting header \"Accept-Encoding\" to \"gzip\" " +
+                       "for feed \"" + feedInfo.getURL() + "\"");
 
             urlConn.setRequestProperty ("Accept-Encoding", "gzip");
         }

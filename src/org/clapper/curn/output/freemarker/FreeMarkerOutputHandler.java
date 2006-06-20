@@ -722,8 +722,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             throw new CurnException
                           (Constants.BUNDLE_NAME,
                            "FreeMarkerOutputHandler.cantProcessTemplate",
-                           "Error while processing FreeMarker template "
-                         + "\"{0}\"",
+                           "Error while processing FreeMarker template " +
+                           "\"{0}\"",
                            new Object[] {templateLocation.getLocation()});
         }
 
@@ -732,8 +732,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             throw new CurnException
                           (Constants.BUNDLE_NAME,
                            "FreeMarkerOutputHandler.cantProcessTemplate",
-                           "Error while processing FreeMarker template "
-                         + "\"{0}\"",
+                           "Error while processing FreeMarker template " +
+                           "\"{0}\"",
                            new Object[] {templateLocation.getLocation()});
         }
 
@@ -810,11 +810,12 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             {
                 throw new ConfigurationException
                     (section,
-                     "\"TemplateFile\" value \""
-                   + config.getConfigurationValue (section, CFG_TEMPLATE_FILE)
-                   + "\" (\""
-                   + config.getRawValue (section, CFG_TEMPLATE_FILE)
-                   + "\") must have two fields.");
+                     "\"TemplateFile\" value \"" +
+                     config.getConfigurationValue (section,
+                                                   CFG_TEMPLATE_FILE) +
+                     "\" (\"" +
+                     config.getRawValue (section, CFG_TEMPLATE_FILE) +
+                     "\") must have two fields.");
             }
         }
 
@@ -843,10 +844,9 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             else
             {
                 throw new ConfigurationException (section,
-                                                  "Unknown built-in template "
-                                                + "file \""
-                                                + templateTokens[1]
-                                                + "\"");
+                                                  "Unknown built-in " +
+                                                  "template file \"" +
+                                                  templateTokens[1] + "\"");
             }
         }
 
@@ -875,11 +875,9 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         {
             throw new ConfigurationException
                 (section,
-                 "\"TemplateFile\" value \""
-               + config.getRawValue (section, CFG_TEMPLATE_FILE)
-               + "\" has unknown type \""
-               + templateType
-               + "\".");
+                 "\"TemplateFile\" value \"" +
+                 config.getRawValue (section, CFG_TEMPLATE_FILE) +
+                 "\" has unknown type \"" + templateType + "\".");
         }
     }
 }

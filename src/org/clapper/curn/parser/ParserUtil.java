@@ -428,11 +428,9 @@ public final class ParserUtil
 
             catch (Exception ex)
             {
-                log.error ("Unexpected exception while parsing date \""
-                         + sDate
-                         + "\" using format \""
-                         + formats[i].toString()
-                         + "\"",
+                log.error ("Unexpected exception while parsing date \"" +
+                           sDate + "\" using format \"" +
+                           formats[i].toString() + "\"",
                            ex);
             }
 

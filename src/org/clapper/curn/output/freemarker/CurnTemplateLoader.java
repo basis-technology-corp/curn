@@ -101,9 +101,8 @@ public class CurnTemplateLoader implements TemplateLoader
 
         catch (CurnException ex)
         {
-            log.error ("Failed to decode template location name \""
-                     + name
-                     + "\"",
+            log.error ("Failed to decode template location name \"" +
+                       name + "\"",
                        ex);
             throw new IOException (ex.toString());
         }
@@ -243,8 +242,8 @@ public class CurnTemplateLoader implements TemplateLoader
 
         if (url == null)
         {
-            throw new IOException ("Unable to locate template file: "
-                                 + tl.toString());
+            throw new IOException ("Unable to locate template file: " +
+                                   tl.toString());
         }
 
         log.debug ("Opening template " + url.toString());

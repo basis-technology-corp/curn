@@ -101,10 +101,9 @@ class WrapTextMethod implements TemplateMethodModel
 
                 catch (NumberFormatException ex)
                 {
-                    throw new TemplateModelException ("Bad line length value "
-                                                    + "\""
-                                                    + sLineLen
-                                                    + "\"");
+                    throw new TemplateModelException ("Bad line length " +
+                                                      "value \"" + sLineLen +
+                                                      "\"");
                 }
                 // Fall through intentional
 
@@ -117,10 +116,9 @@ class WrapTextMethod implements TemplateMethodModel
 
                 catch (NumberFormatException ex)
                 {
-                    throw new TemplateModelException ("Bad indentation value "
-                                                    + "\""
-                                                    + sIndent
-                                                    + "\"");
+                    throw new TemplateModelException ("Bad indentation " +
+                                                      "value \"" + sIndent +
+                                                      "\"");
                 }
                 // Fall through intentional
 

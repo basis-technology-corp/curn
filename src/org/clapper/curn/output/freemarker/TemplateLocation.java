@@ -86,9 +86,9 @@ public class TemplateLocation implements Comparable<TemplateLocation>
         {
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "TemplateLocation.tooManyTokensInName",
-                                     "Cannot decode TemplateLocation from "
-                                   + "string \"{0}\":  String should have 2 "
-                                   + "fields, but it has {1}.",
+                                     "Cannot decode TemplateLocation from " +
+                                     "string \"{0}\":  String should have 2 " +
+                                     "fields, but it has {1}.",
                                      new Object[]
                                      {
                                          name,

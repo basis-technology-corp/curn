@@ -444,18 +444,18 @@ public class ScriptOutputHandler extends FileOutputHandler
         {
             scriptPath = null;
             throw new ConfigurationException (section,
-                                              "Script file \""
-                                            + scriptFile.getPath()
-                                            + "\" does not exist.");
+                                              "Script file \"" +
+                                              scriptFile.getPath() +
+                                              "\" does not exist.");
         }
 
         if (! scriptFile.isFile())
         {
             scriptPath = null;
             throw new ConfigurationException (section,
-                                              "Script file \""
-                                            + scriptFile.getPath()
-                                            + "\" is not a regular file.");
+                                              "Script file \"" +
+                                              scriptFile.getPath() +
+                                              "\" is not a regular file.");
         }
 
         // Call the registerAdditionalScriptingEngines() method, which
@@ -598,8 +598,8 @@ public class ScriptOutputHandler extends FileOutputHandler
                        realException);
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "ScriptOutputHandler.bsfError",
-                                     "Error interacting with Bean Scripting "
-                                   + "Framework: {0}",
+                                     "Error interacting with Bean Scripting " +
+                                     "Framework: {0}",
                                      new Object[] {ex.getMessage()},
                                      realException);
         }
@@ -666,8 +666,8 @@ public class ScriptOutputHandler extends FileOutputHandler
         {
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "ScriptOutputHandler.cantLoadScript",
-                                     "Failed to load script \"{0}\" into "
-                                   + "memory.",
+                                     "Failed to load script \"{0}\" into " +
+                                     "memory.",
                                      new Object[] {scriptFile.getPath()},
                                      ex);
         }

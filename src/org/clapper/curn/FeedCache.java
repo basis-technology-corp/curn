@@ -189,9 +189,7 @@ public class FeedCache implements Serializable
             {
                 throw new CurnException (Constants.BUNDLE_NAME,
                                          "FeedCache.badCacheFile",
-                                         "Unable to load cache file \"{0}\" "
-                                       + "as either a file of serialized Java "
-                                       + "objects or an XML file. Punting.",
+                                         "Unable to load cache file \"{0}\"",
                                          new Object[] {cacheFile.getPath()});
             }
 
@@ -222,10 +220,8 @@ public class FeedCache implements Serializable
 
             try
             {
-                log.debug ("Saving cache to \""
-                         + cacheFile.getPath()
-                         + "\". Total backups="
-                         + totalCacheBackups);
+                log.debug ("Saving cache to \"" + cacheFile.getPath() +
+                           "\". Total backups=" + totalCacheBackups);
 
                 // Create the DOM.
 
@@ -394,13 +390,11 @@ public class FeedCache implements Serializable
                                                    pubDate,
                                                    System.currentTimeMillis());
 
-        log.debug ("Adding cache entry for URL \""
-                  + entry.getEntryURL().toExternalForm()
-                  + "\". ID=\""
-                  + uniqueID
-                  + "\", channel URL: \""
-                  + entry.getChannelURL().toExternalForm()
-                  + "\"");
+        log.debug ("Adding cache entry for URL \"" +
+                   entry.getEntryURL().toExternalForm() +
+                   "\". ID=\"" + uniqueID + "\", channel URL: \"" +
+                   entry.getChannelURL().toExternalForm() +
+                   "\"");
         cacheByID.put (uniqueID, entry);
         cacheByURL.put (urlKey, entry);
         modified = true;
@@ -460,9 +454,7 @@ public class FeedCache implements Serializable
                 throw new CurnException (ex);
             }
 
-            log.info ("Attempting to parse \""
-                    + cacheFilePath
-                    + "\" as XML.");
+            log.info ("Attempting to parse \"" + cacheFilePath + "\" as XML.");
 
             dom = docBuilder.parse (new InputSource
                                        (new FileReader (cacheFile)));
@@ -479,9 +471,9 @@ public class FeedCache implements Serializable
             {
                 throw new CurnException (Constants.BUNDLE_NAME,
                                          "FeedCache.nonCacheXML",
-                                         "File \"{0}\" is not a curn XML "
-                                       + "cache file. The root XML element is "
-                                       + "<{1}>, not the expected <{2}>.",
+                                         "File \"{0}\" is not a curn XML " +
+                                         "cache file. The root XML element " +
+                                         "is <{1}>, not the expected <{2}>.",
                                          new Object[]
                                          {
                                              cacheFilePath,
@@ -508,11 +500,9 @@ public class FeedCache implements Serializable
                 String nodeName = childNode.getNodeName();
                 if (! nodeName.equals (XML_ENTRY_ELEMENT_TAG))
                 {
-                    log.warn ("Skipping unexpected XML element <"
-                            + nodeName
-                            + "> in curn XML cache file \""
-                            + cacheFilePath
-                            + "\".");
+                    log.warn ("Skipping unexpected XML element <" +
+                              nodeName + "> in curn XML cache file \"" +
+                              cacheFilePath + "\".");
                     continue;
                 }
 
@@ -526,8 +516,8 @@ public class FeedCache implements Serializable
         {
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "FeedCache.xmlParseFailure",
-                                     "Unable to parse cache file \"{0}\" "
-                                   + "as an XML file.",
+                                     "Unable to parse cache file \"{0}\" " +
+                                     "as an XML file.",
                                      new Object[] {cacheFilePath},
                                      ex);
         }
@@ -536,8 +526,8 @@ public class FeedCache implements Serializable
         {
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "FeedCache.xmlParseFailure",
-                                     "Unable to parse cache file \"{0}\" "
-                                   + "as an XML file.",
+                                     "Unable to parse cache file \"{0}\" " +
+                                     "as an XML file.",
                                      new Object[] {cacheFilePath},
                                      ex);
         }
@@ -595,13 +585,10 @@ public class FeedCache implements Serializable
 
         catch (NumberFormatException ex)
         {
-            log.error ("Bad timestamp value of \""
-                     + sTimestamp
-                     + "\" for <"
-                     + XML_ENTRY_ELEMENT_TAG
-                     + "> with unique ID \""
-                     + entryID
-                     + "\". Skipping entry.");
+            log.error ("Bad timestamp value of \"" + sTimestamp +
+                       "\" for <" + XML_ENTRY_ELEMENT_TAG +
+                       "> with unique ID \"" + entryID +
+                       "\". Skipping entry.");
             return null;
         }
 
@@ -618,13 +605,10 @@ public class FeedCache implements Serializable
 
             catch (NumberFormatException ex)
             {
-                log.error ("Bad publication date value of \""
-                         + sPubDate
-                         + "\" for <"
-                         + XML_ENTRY_ELEMENT_TAG
-                         + "> with unique ID \""
-                         + entryID
-                         + "\". Ignoring publication date.");
+                log.error ("Bad publication date value of \"" + sPubDate +
+                           "\" for <" + XML_ENTRY_ELEMENT_TAG +
+                           "> with unique ID \"" + entryID +
+                           "\". Ignoring publication date.");
             }
         }
 
@@ -638,13 +622,9 @@ public class FeedCache implements Serializable
 
         catch (MalformedURLException ex)
         {
-            log.error ("Bad channel URL \""
-                     + sChannelURL
-                     + "\" for <"
-                     + XML_ENTRY_ELEMENT_TAG
-                     + "> with unique ID \""
-                     + entryID
-                     + "\". Skipping entry.");
+            log.error ("Bad channel URL \"" + sChannelURL + "\" for <" +
+                       XML_ENTRY_ELEMENT_TAG + "> with unique ID \"" +
+                       entryID + "\". Skipping entry.");
             return null;
         }
 
@@ -656,13 +636,9 @@ public class FeedCache implements Serializable
 
         catch (MalformedURLException ex)
         {
-            log.error ("Bad entry URL \""
-                     + sEntryURL
-                     + "\" for <"
-                     + XML_ENTRY_ELEMENT_TAG
-                     + "> with unique ID \""
-                     + entryID
-                     + "\". Skipping entry.");
+            log.error ("Bad entry URL \"" + sEntryURL + "\" for <" +
+                       XML_ENTRY_ELEMENT_TAG + "> with unique ID \"" +
+                       entryID + "\". Skipping entry.");
             return null;
         }
 
@@ -679,8 +655,8 @@ public class FeedCache implements Serializable
     private void pruneCache()
     {
         log.debug ("PRUNING CACHE");
-        log.debug ("Cache's notion of current time: "
-                 + new Date (currentTime));
+        log.debug ("Cache's notion of current time: " +
+                   new Date (currentTime));
 
         for (Iterator itKeys = cacheByID.keySet().iterator();
              itKeys.hasNext(); )
@@ -700,12 +676,10 @@ public class FeedCache implements Serializable
                 // Cached URL no longer corresponds to a configured site
                 // URL. Kill it.
 
-                log.debug ("Cached item \""
-                         + itemKey
-                         + "\", with base URL \""
-                         + channelURL.toString()
-                         + "\" no longer corresponds to a configured feed. "
-                         + "Tossing it.");
+                log.debug ("Cached item \"" + itemKey +
+                           "\", with base URL \"" + channelURL.toString() +
+                           "\" no longer corresponds to a configured feed. " +
+                           "Tossing it.");
                 itKeys.remove();
                 removed = true;
             }
@@ -718,31 +692,26 @@ public class FeedCache implements Serializable
 
                 if (log.isDebugEnabled())
                 {
-                    log.debug ("    Cache time: "
-                             + feedInfo.getDaysToCache()
-                             + " days ("
-                             + maxCacheMS
-                             + " ms)");
-                    log.debug ("    Expires: "
-                             + new Date (expires).toString());
+                    log.debug ("    Cache time: " + feedInfo.getDaysToCache() +
+                               " days (" + maxCacheMS + " ms)");
+                    log.debug ("    Expires: " +
+                               new Date (expires).toString());
                 }
 
                 if (timestamp > currentTime)
                 {
-                    log.debug ("Cache time for item \""
-                             + itemKey
-                             + "\" is in the future, relative to cache's "
-                             + "notion of current time. Setting its "
-                             + "timestamp to the current time.");
+                    log.debug ("Cache time for item \"" + itemKey +
+                               "\" is in the future, relative to cache's " +
+                               "notion of current time. Setting its " +
+                               "timestamp to the current time.");
                     entry.setTimestamp (currentTime);
                     this.modified = true;
                 }
 
                 else if (expires < currentTime)
                 {
-                    log.debug ("Cache time for item \""
-                             + itemKey
-                             + "\" has expired. Deleting cache entry.");
+                    log.debug ("Cache time for item \"" + itemKey +
+                               "\" has expired. Deleting cache entry.");
                     itKeys.remove();
                     this.modified = true;
                     removed = true;
@@ -754,9 +723,8 @@ public class FeedCache implements Serializable
                 // Add to URL cache.
 
                 String urlKey = Util.urlToLookupKey (entry.getEntryURL());
-                log.debug ("Loading URL \""
-                         + urlKey
-                         + "\" into in-memory lookup cache.");
+                log.debug ("Loading URL \"" + urlKey +
+                           "\" into in-memory lookup cache.");
                 cacheByURL.put (urlKey, entry);
             }
         }
@@ -795,10 +763,10 @@ public class FeedCache implements Serializable
 
         log.debug (indent + "Cached item \"" + itemKey.toString() + "\"");
         log.debug (indent + "    Item URL: " + entry.getEntryURL().toString());
-        log.debug (indent + "    Channel URL: "
-                 + entry.getChannelURL().toString());
-        log.debug (indent + "    Cached on: "
-                 + new Date (timestamp).toString());
+        log.debug (indent + "    Channel URL: " +
+                   entry.getChannelURL().toString());
+        log.debug (indent + "    Cached on: " +
+                   new Date (timestamp).toString());
     }
 
     /**
@@ -860,12 +828,8 @@ public class FeedCache implements Serializable
             if (entryID == null)
                 entryID = "?";
 
-            log.error ("<"
-                     + XML_ENTRY_ELEMENT_TAG
-                     + "> is missing required "
-                     + "\""
-                     + name
-                     + "\" XML attribute.");
+            log.error ("<" + XML_ENTRY_ELEMENT_TAG + "> is missing required " +
+                       "\"" + name + "\" XML attribute.");
         }
 
         return value;

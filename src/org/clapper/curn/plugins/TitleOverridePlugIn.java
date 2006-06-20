@@ -166,10 +166,8 @@ public class TitleOverridePlugIn
                 String title = config.getConfigurationValue (sectionName,
                                                              paramName);
                 perFeedTitleMap.put (feedInfo, title);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + title);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           title);
             }
 
             return true;
@@ -212,11 +210,11 @@ public class TitleOverridePlugIn
         String title = perFeedTitleMap.get (feedInfo);
         if (title != null)
         {
-            log.debug ("Overriding title for feed \""
-                     + feedInfo.getURL().toString()
-                     + "\" to \""
-                     + title
-                     + "\"");
+            log.debug ("Overriding title for feed \"" +
+                       feedInfo.getURL().toString() +
+                       "\" to \"" +
+                       title +
+                       "\"");
             channel.setTitle (title);
         }
 

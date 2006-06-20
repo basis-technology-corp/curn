@@ -217,8 +217,8 @@ public class ZipOutputPlugIn
             {
                 // None of the handlers produced any output.
 
-                log.error ("Warning: None of the output handlers "
-                         + "produced any zippable output.");
+                log.error ("Warning: None of the output handlers " +
+                           "produced any zippable output.");
             }
 
             else

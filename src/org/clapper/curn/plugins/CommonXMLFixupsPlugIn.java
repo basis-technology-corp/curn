@@ -123,6 +123,7 @@ public class CommonXMLFixupsPlugIn
         "s/&$/\\&amp;/g",
         "s/&ouml;/\\&#246;/g",
         "s/ &amp;amp; / \\&amp; /g",
+        "s/&([^;]+)(\\s)/\\&amp;$1$2/g",
  
         // Remove "&nbsp;" and "nbsp;". The first is legal HTML, but not
         // legal XML. The second is illegal.
@@ -272,10 +273,8 @@ public class CommonXMLFixupsPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedEnabledFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           flag);
             }
 
             return true;

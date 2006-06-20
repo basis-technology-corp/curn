@@ -221,10 +221,8 @@ public class ParsedFeedURLEditPlugIn
                 String value = config.getConfigurationValue (sectionName,
                                                              paramName);
                 editInfo.itemURLEditEditCmds.add (value);
-                log.debug ("["
-                         + sectionName
-                         + "]: added item regexp "
-                         + value);
+                log.debug ("[" + sectionName + "]: added item regexp " +
+                           value);
             }
 
             else if (paramName.startsWith (VAR_EDIT_FEED_URL))
@@ -233,10 +231,8 @@ public class ParsedFeedURLEditPlugIn
                 String value = config.getConfigurationValue (sectionName,
                                                              paramName);
                 editInfo.channelURLEditEditCmds.add (value);
-                log.debug ("["
-                         + sectionName
-                         + "]: added feed regexp "
-                         + value);
+                log.debug ("[" + sectionName + "]: added feed regexp " +
+                           value);
             }
 
             else if (paramName.equals (VAR_PRUNE_URLS))
@@ -244,10 +240,8 @@ public class ParsedFeedURLEditPlugIn
                 FeedEditInfo editInfo = getOrMakeFeedEditInfo (feedInfo);
                 editInfo.pruneURLs =
                     config.getRequiredBooleanValue (sectionName, paramName);
-                log.debug ("["
-                         + sectionName
-                         + "]: set PruneURLs="
-                         + editInfo.pruneURLs);
+                log.debug ("[" + sectionName + "]: set PruneURLs=" +
+                           editInfo.pruneURLs);
             }
 
             return true;
@@ -317,11 +311,11 @@ public class ParsedFeedURLEditPlugIn
 
                 catch (MalformedURLException ex)
                 {
-                    throw new CurnException ("After editing feed URL \""
-                                           + channelURL
-                                           + "\", result \""
-                                           + strChannelURL
-                                           + "\" is an illegal URL.");
+                    throw new CurnException ("After editing feed URL \"" +
+                                             channelURL +
+                                             "\", result \"" +
+                                             strChannelURL +
+                                             "\" is an illegal URL.");
                 }
             }
 
@@ -353,11 +347,11 @@ public class ParsedFeedURLEditPlugIn
 
                     catch (MalformedURLException ex)
                     {
-                        throw new CurnException ("After editing item URL \""
-                                               + itemURL
-                                               + "\", result \""
-                                               + strItemURL
-                                               + "\" is an illegal URL",
+                        throw new CurnException ("After editing item URL \"" +
+                                                 itemURL +
+                                                 "\", result \"" +
+                                                 strItemURL +
+                                                 "\" is an illegal URL",
                                                  ex);
                     }
                 }
@@ -420,11 +414,11 @@ public class ParsedFeedURLEditPlugIn
 
         catch (RegexException ex)
         {
-            throw new CurnException ("Failed to edit URL \""
-                                   + urlString
-                                   + "\" with \""
-                                   + editCmd
-                                   + "\"",
+            throw new CurnException ("Failed to edit URL \"" +
+                                     urlString +
+                                     "\" with \"" +
+                                     editCmd +
+                                     "\"",
                                      ex);
         }
     }

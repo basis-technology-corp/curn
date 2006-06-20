@@ -347,10 +347,10 @@ public class CurnConfig extends Configuration
         {
             throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.badPositiveInteger",
-                                              "The \"{0}\" configuration "
-                                            + "parameter cannot be set to "
-                                            + "{1}. It must have a positive "
-                                            + "integer value.",
+                                              "The \"{0}\" configuration " +
+                                              "parameter cannot be set to " +
+                                              "{1}. It must have a positive " +
+                                              "integer value.",
                                               new Object[]
                                               {
                                                   VAR_MAX_THREADS,
@@ -555,9 +555,9 @@ public class CurnConfig extends Configuration
         {
             throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.missingReqSection",
-                                              "The configuration file is "
-                                            + "missing the required \"{0}\" "
-                                            + "section.",
+                                              "The configuration file is " +
+                                              "missing the required \"{0}\" " +
+                                              "section.",
                                               new Object[] {MAIN_SECTION});
         }
 
@@ -570,17 +570,15 @@ public class CurnConfig extends Configuration
 
             catch (NoSuchVariableException ex)
             {
-                throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                                  "CurnConfig.missingReqVar",
-                                                  "The configuration file is "
-                                                + "missing required variable "
-                                                + "\"{0}\" in section "
-                                                + "\"{1}\".",
-                                                  new Object[]
-                                                  {
-                                                      ex.getVariableName(),
-                                                      ex.getSectionName()
-                                                  });
+                throw new ConfigurationException
+                    (Constants.BUNDLE_NAME, "CurnConfig.missingReqVar",
+                     "The configuration file is missing required variable " +
+                     "\"{0}\" in section\"{1}\".",
+                     new Object[]
+                     {
+                         ex.getVariableName(),
+                         ex.getSectionName()
+                     });
             }
         }
     }
@@ -715,9 +713,9 @@ public class CurnConfig extends Configuration
         {
             throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.badFeedURL",
-                                              "Configuration file section "
-                                            + "\"{0}\" specifies a bad RSS "
-                                            + "feed URL \"{1}\"",
+                                              "Configuration file section " +
+                                              "\"{0}\" specifies a bad RSS " +
+                                              "feed URL \"{1}\"",
                                               new Object[]
                                               {
                                                   sectionName,
@@ -762,9 +760,8 @@ public class CurnConfig extends Configuration
                                                                feedInfo);
                 if (! keepFeed)
                 {
-                    log.debug ("A plug-in said to skip feed ["
-                             + sectionName
-                             + "\"");
+                    log.debug ("A plug-in said to skip feed [" +
+                               sectionName + "\"");
                 }
             }
 
@@ -776,9 +773,9 @@ public class CurnConfig extends Configuration
         {
             throw new ConfigurationException (Constants.BUNDLE_NAME,
                                               "CurnConfig.missingReqVar",
-                                              "The configuration file is "
-                                            + "missing required variable "
-                                            + "\"{0}\" in section \"{1}\"",
+                                              "The configuration file is " +
+                                              "missing required variable " +
+                                              "\"{0}\" in section \"{1}\"",
                                               new Object[]
                                               {
                                                   VAR_FEED_URL,
@@ -841,19 +838,18 @@ public class CurnConfig extends Configuration
                                                               handlerWrapper);
                 if (! keep)
                 {
-                    log.debug ("A plug-in has disabled output handler ["
-                             + sectionName
-                             + "]");
+                    log.debug ("A plug-in has disabled output handler [" +
+                               sectionName + "]");
                     break;
                 }
             }
 
             if (keep)
             {
-                log.debug ("Saving output handler \""
-                     + handlerWrapper.getName()
-                     + "\" of type "
-                     + handlerWrapper.getClassName());
+                log.debug ("Saving output handler \"" +
+                           handlerWrapper.getName() +
+                           "\" of type " +
+                           handlerWrapper.getClassName());
                 outputHandlers.add (handlerWrapper);
             }
         }
@@ -921,9 +917,9 @@ public class CurnConfig extends Configuration
                     throw new ConfigurationException
                                          (Constants.BUNDLE_NAME,
                                           "CurnConfig.badNumericValue",
-                                          "Bad numeric value \"{0}\" for "
-                                        + "variable \"{1}\" in section "
-                                        + "\"{2}\"",
+                                          "Bad numeric value \"{0}\" for " +
+                                          "variable \"{1}\" in section " +
+                                          "\"{2}\"",
                                           new Object[]
                                           {
                                               value,
@@ -937,9 +933,9 @@ public class CurnConfig extends Configuration
                     throw new ConfigurationException
                                       (Constants.BUNDLE_NAME,
                                        "CurnConfig.negativeCardinalValue",
-                                       "Unexpected negative numeric value "
-                                     + "{0} for variable \"{1}\" in section "
-                                     + "\"{2}\"",
+                                       "Unexpected negative numeric value " +
+                                       "{0} for variable \"{1}\" in section " +
+                                       "\"{2}\"",
                                        new Object[]
                                        {
                                            value,

@@ -203,8 +203,8 @@ public class EmailOutputPlugIn
                     throw new CurnException
                         (Constants.BUNDLE_NAME,
                          "EmailOutputPlugIn.senderAlreadyDefined",
-                         "Section [{0}], configuration item \"{1}\": Email "
-                       + "sender has already been defined.",
+                         "Section [{0}], configuration item \"{1}\": Email " +
+                         "sender has already been defined.",
                          new Object[] {sectionName, paramName});
                 }
 
@@ -221,8 +221,8 @@ public class EmailOutputPlugIn
                     throw new CurnException
                         (Constants.BUNDLE_NAME,
                          "EmailOutputPlugIn.badEmailAddress",
-                         "Section [{0}], configuration item \"{1}\": "
-                       + "\"{2}\" is an invalid email address",
+                         "Section [{0}], configuration item \"{1}\": " +
+                         "\"{2}\" is an invalid email address",
                          new Object[] {sectionName, paramName, sender},
                          ex);
                 }
@@ -245,8 +245,8 @@ public class EmailOutputPlugIn
                     throw new CurnException
                         (Constants.BUNDLE_NAME,
                          "EmailOutputPlugIn.missingEmailAddresses",
-                         "Missing email address(es) in {0} section "
-                       + "configuration item \"{1}\"",
+                         "Missing email address(es) in {0} section " +
+                         "configuration item \"{1}\"",
                          new Object[] {sectionName, paramName});
                 }
 
@@ -267,8 +267,8 @@ public class EmailOutputPlugIn
                         throw new CurnException
                             (Constants.BUNDLE_NAME,
                              "EmailOutputPlugIn.badEmailAddress",
-                             "Section [{0}], configuration item \"{1}\": "
-                           + "\"{2}\" is an invalid email address",
+                             "Section [{0}], configuration item \"{1}\": " +
+                             "\"{2}\" is an invalid email address",
                              new Object[] {sectionName, paramName, addr},
                              ex);
                     }
@@ -335,8 +335,8 @@ public class EmailOutputPlugIn
             {
                 // None of the handlers produced any output.
 
-                log.error ("Warning: None of the output handlers "
-                         + "produced any emailable output.");
+                log.error ("Warning: None of the output handlers " +
+                           "produced any emailable output.");
             }
 
             else

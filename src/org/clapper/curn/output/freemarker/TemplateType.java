@@ -66,8 +66,8 @@ public enum TemplateType
 
         throw new CurnException (Constants.BUNDLE_NAME,
                                  "TemplateType.badString",
-                                 "Cannot decode TemplateType from string "
-                               + "\"{0}\"",
+                                 "Cannot decode TemplateType from string " +
+                                 "\"{0}\"",
                                  new Object[] {s});
     }
 };

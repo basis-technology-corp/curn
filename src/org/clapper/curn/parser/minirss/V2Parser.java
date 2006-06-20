@@ -161,11 +161,11 @@ public class V2Parser extends ParserCommon
 
         if (! entryElementName.equals (elementName))
         {
-            throw new SAXException ("Element \""
-                                  + elementName
-                                  + "\" doesn't match element on stack (\""
-                                  + entry.getElementName()
-                                  + "\")");
+            throw new SAXException ("Element \"" +
+                                    elementName +
+                                    "\" doesn't match element on stack (\"" +
+                                    entry.getElementName() +
+                                    "\")");
         }
 
         Object container = entry.getContainer();
@@ -284,11 +284,11 @@ public class V2Parser extends ParserCommon
                     // Swallow the exception. No sense aborting the whole
                     // feed for a bad <link> element.
 
-                    log.error ("Feed \""
-                             + url.toString()
-                             + "\": Bad <link> element \""
-                             + chars
-                             + "\"", ex);
+                    log.error ("Feed \"" +
+                               url.toString() +
+                               "\": Bad <link> element \"" +
+                               chars +
+                               "\"", ex);
                 }
             }
 
@@ -377,11 +377,11 @@ public class V2Parser extends ParserCommon
                     // Swallow the exception. No sense aborting the whole
                     // feed for a bad <link> element.
 
-                    log.error ("Feed \""
-                             + url.toString()
-                             + "\": Bad <link> element \""
-                             + chars
-                             + "\"", ex);
+                    log.error ("Feed \"" +
+                               url.toString() +
+                               "\": Bad <link> element \"" +
+                               chars +
+                               "\"", ex);
                 }
             }
 

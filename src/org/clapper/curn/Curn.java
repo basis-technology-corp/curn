@@ -234,16 +234,15 @@ public class Curn
                                                     cache,
                                                     config);
 
-        log.debug ("After downloading, total (parsed) channels = "
-                 + channels.size());
+        log.debug ("After downloading, total (parsed) channels = " +
+                   channels.size());
 
         if (channels.size() > 0)
             outputChannels (channels);
 
-        log.debug ("cacheFile="
-                 + ((cacheFile == null) ? "null" : cacheFile.getPath())
-                 + ", mustUpdateCache="
-                 + config.mustUpdateCache());
+        log.debug ("cacheFile=" +
+                   ((cacheFile == null) ? "null" : cacheFile.getPath()) +
+                   ", mustUpdateCache=" + config.mustUpdateCache());
 
         if ((cache != null) && config.mustUpdateCache())
         {
@@ -276,8 +275,8 @@ public class Curn
         {
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "Curn.cantReadConfig",
-                                     "I/O error reading configuration file "
-                                   + "\"{0}\"",
+                                     "I/O error reading configuration file " +
+                                     "\"{0}\"",
                                      new Object[] {configPath},
                                      ex);
         }
@@ -300,16 +299,16 @@ public class Curn
 
                 String className = cfgHandler.getClassName();
 
-                log.debug ("Instantiating output handler \""
-                         + cfgHandler.getName()
-                         + "\", of type "
-                         + className);
+                log.debug ("Instantiating output handler \"" +
+                           cfgHandler.getName() +
+                           "\", of type " +
+                           className);
                 OutputHandler handler = cfgHandler.getOutputHandler();
 
-                log.debug ("Initializing output handler \""
-                         + cfgHandler.getName()
-                         + "\", of type "
-                         + className);
+                log.debug ("Initializing output handler \"" +
+                           cfgHandler.getName() +
+                           "\", of type " +
+                           className);
 
                 handler.init (config, cfgHandler);
 
@@ -422,9 +421,8 @@ public class Curn
         if (maxThreads > totalFeeds)
             maxThreads = totalFeeds;
 
-        log.info ("Doing multithreaded download of feeds, using "
-                + maxThreads
-                + " threads.");
+        log.info ("Doing multithreaded download of feeds, using " +
+                  maxThreads + " threads.");
 
         // Fill the feed queue and make it a synchronized list. Also, prime
         // the "channels" LinkedHashMap with the feeds. This ensures that
@@ -480,11 +478,11 @@ public class Curn
             threads.add (thread);
         }
 
-        log.debug ("Main thread priority is "
-                 + Thread.currentThread().getPriority());
+        log.debug ("Main thread priority is " +
+                   Thread.currentThread().getPriority());
 
-        log.debug ("All feeds have been parceled out to threads. Waiting for "
-                 + "threads to complete.");
+        log.debug ("All feeds have been parceled out to threads. Waiting " +
+                   "for threads to complete.");
 
         for (FeedDownloadThread thread : threads)
         {
@@ -550,10 +548,10 @@ public class Curn
 
         for (ConfiguredOutputHandler cfgHandler : configuredOutputHandlers)
         {
-            log.info ("Preparing to call output handler \""
-                    + cfgHandler.getName()
-                    + "\", of type "
-                    + cfgHandler.getClassName());
+            log.info ("Preparing to call output handler \"" +
+                      cfgHandler.getName() +
+                      "\", of type " +
+                      cfgHandler.getClassName());
 
             handler = cfgHandler.getOutputHandler();
             outputHandlers.add (handler);

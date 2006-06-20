@@ -220,10 +220,8 @@ public class ShowDatesPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedShowDatesFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           flag);
             }
 
             return true;
@@ -269,16 +267,14 @@ public class ShowDatesPlugIn
         if (showBoxed != null)
             show = showBoxed;
 
-        log.debug ("Post-parse, "
-                 + feedInfo.getURL()
-                 + ": showDates="
-                 + show);
+        log.debug ("Post-parse, " + feedInfo.getURL() + ": showDates=" +
+                   show);
 
         if (! show)
         {
-            log.debug ("Removing date fields from feed \""
-                     + feedInfo.getURL().toString()
-                     + "\"");
+            log.debug ("Removing date fields from feed \"" +
+                       feedInfo.getURL().toString() +
+                       "\"");
 
             channel.setPublicationDate (null);
             for (RSSItem item : channel.getItems())

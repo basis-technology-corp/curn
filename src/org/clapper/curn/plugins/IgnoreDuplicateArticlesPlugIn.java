@@ -169,10 +169,8 @@ public class IgnoreDuplicateArticlesPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedIgnoreFlagMap.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName +
+                           "=" + flag);
             }
 
             return true;
@@ -246,17 +244,17 @@ public class IgnoreDuplicateArticlesPlugIn
                     if (firstTitle == null)
                         firstTitle = strFirstOneURL;
 
-                    log.debug ("Feed "
-                             + feedURL
-                             + ": Ignoring item with URL \""
-                             + strItemURL
-                             + "\" and title \""
-                             + title
-                             + "\": It matches already seen item with URL \""
-                             + strFirstOneURL
-                             + "\" and title \""
-                             + firstTitle
-                             + "\"");
+                    log.debug ("Feed " +
+                               feedURL +
+                               ": Ignoring item with URL \"" +
+                               strItemURL +
+                               "\" and title \"" +
+                               title +
+                               "\": It matches already seen item with URL \"" +
+                               strFirstOneURL +
+                               "\" and title \"" +
+                               firstTitle +
+                               "\"");
 
                     // Since getItems() returns a copy of the list of
                     // items, this call will not cause a

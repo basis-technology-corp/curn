@@ -144,10 +144,8 @@ public class DisableFeedPlugIn
             {
                 boolean disable = config.getRequiredBooleanValue (sectionName,
                                                                   paramName);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + disable);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           disable);
 
                 if (disable)
                     keepGoing = false;

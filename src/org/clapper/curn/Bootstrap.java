@@ -188,10 +188,10 @@ public class Bootstrap
 
     private static void usage()
     {
-        System.out.println ("Usage: java "
-                          + Bootstrap.class
-                          + " [jar|zip|directory] ... -- "
-                          + "programClassName [args]");
+        System.out.println ("Usage: java " +
+                            Bootstrap.class +
+                            " [jar|zip|directory] ... -- " +
+                            "programClassName [args]");
     }
 
     private static ClassLoader createClassLoader (ArrayList<File> searchItems)

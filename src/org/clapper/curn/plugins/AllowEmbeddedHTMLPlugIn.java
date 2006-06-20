@@ -224,10 +224,8 @@ public class AllowEmbeddedHTMLPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedHTMLFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           flag);
             }
 
             return true;
@@ -275,9 +273,9 @@ public class AllowEmbeddedHTMLPlugIn
 
         if (! allow)
         {
-            log.debug ("Stripping all HTML from RSS data for feed \""
-                     + feedInfo.getURL().toString()
-                     + "\"");
+            log.debug ("Stripping all HTML from RSS data for feed \"" +
+                       feedInfo.getURL().toString() +
+                       "\"");
             channel.stripHTML();
         }
 

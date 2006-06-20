@@ -186,10 +186,8 @@ public class RSSItemAdapter extends RSSItem
 
         catch (MalformedURLException ex)
         {
-            log.error ("Bad channel URL \""
-                     + entry.getLink()
-                     + "\" from underlying parser: "
-                     + ex.toString());
+            log.error ("Bad channel URL \"" + entry.getLink() +
+                       "\" from underlying parser: " + ex.toString());
         }
 
         return results;

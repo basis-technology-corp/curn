@@ -343,9 +343,8 @@ class FeedDownloadThread extends Thread
 
             if (! metaPlugIn.runPreFeedDownloadPlugIn (feedInfo, conn))
             {
-                log.debug ("Feed "
-                         + feedInfo.getURL().toString()
-                         + ": A plug-in disabled the feed.");
+                log.debug ("Feed " + feedInfo.getURL().toString() +
+                           ": A plug-in disabled the feed.");
             }
 
             else
@@ -417,8 +416,8 @@ class FeedDownloadThread extends Thread
 
             else
             {
-                log.debug ("Feed may have changed. "
-                         + "Downloading and processing it.");
+                log.debug ("Feed may have changed. " +
+                           "Downloading and processing it.");
 
                 // Download the feed to a file. We'll parse the file.
 
@@ -426,9 +425,8 @@ class FeedDownloadThread extends Thread
 
                 if (tempFile.bytesDownloaded == 0)
                 {
-                    log.debug ("Feed \""
-                             + feedInfo.getURL()
-                             + "\" returned no data.");
+                    log.debug ("Feed \"" + feedInfo.getURL() +
+                               "\" returned no data.");
                 }
 
                 else
@@ -444,9 +442,9 @@ class FeedDownloadThread extends Thread
 
                     else
                     {
-                        log.debug ("Using RSS parser "
-                                   + parser.getClass().getName()
-                                   + " to parse the feed.");
+                        log.debug ("Using RSS parser " +
+                                   parser.getClass().getName() +
+                                   " to parse the feed.");
 
                         InputStream is = new FileInputStream (tempFile.file);
                         channel = parser.parseRSSFeed (feedInfo.getURL(),
@@ -481,10 +479,9 @@ class FeedDownloadThread extends Thread
             throw new FeedException (feedInfo, ex);
         }
 
-        log.debug ("downloadAndProcessFeed(): Feed="
-                 + feedInfo.getURL()
-                 + ", returning "
-                 + ((channel == null) ? "null" : channel.toString()));
+        log.debug ("downloadAndProcessFeed(): Feed=" +
+                   feedInfo.getURL() + ", returning " +
+                   ((channel == null) ? "null" : channel.toString()));
         return channel;
     }
 
@@ -507,10 +504,8 @@ class FeedDownloadThread extends Thread
         int totalBytes = 0;
         File tempFile = Util.createTempXMLFile();
 
-        log.debug ("Downloading \""
-                 + feedURLString
-                 + "\" to file \""
-                 + tempFile.getPath());
+        log.debug ("Downloading \"" + feedURLString + "\" to file \"" +
+                   tempFile.getPath());
 
         InputStream urlStream = getURLInputStream (conn);
         Reader      reader;
@@ -528,11 +523,11 @@ class FeedDownloadThread extends Thread
             if (contentTypeHeader != null)
             {
                 encoding = contentTypeCharSet (contentTypeHeader);
-                log.debug ("HTTP server says encoding for \""
-                         + feedURLString
-                         + "\" is \""
-                         + ((encoding == null) ? "<null>" : encoding)
-                         + "\"");
+                log.debug ("HTTP server says encoding for \"" +
+                           feedURLString +
+                           "\" is \"" +
+                           ((encoding == null) ? "<null>" : encoding) +
+                           "\"");
             }
         }
 
@@ -542,11 +537,8 @@ class FeedDownloadThread extends Thread
             // unless explicitly specified.
 
             encoding = Constants.DEFAULT_SAVE_AS_ENCODING;
-            log.debug ("Default encoding for \""
-                     + feedURLString
-                     + "\" is \""
-                     + encoding
-                     + "\"");
+            log.debug ("Default encoding for \"" + feedURLString +
+                       "\" is \"" + encoding + "\"");
         }
 
         // Set the forced encoding, if specified. Note: This is done after
@@ -557,11 +549,9 @@ class FeedDownloadThread extends Thread
         String forcedEncoding = feedInfo.getForcedCharacterEncoding();
         if (forcedEncoding != null)
         {
-            log.debug ("URL \""
-                     + feedURLString
-                     + "\": Forcing encoding to be \""
-                     + forcedEncoding
-                     + "\"");
+            log.debug ("URL \"" + feedURLString +
+                       "\": Forcing encoding to be \"" + forcedEncoding +
+                       "\"");
             encoding = forcedEncoding;
         }
 
@@ -575,7 +565,7 @@ class FeedDownloadThread extends Thread
             /*
             // Cheat by writing an encoding line to the temp file.
             writer.write ("<?xml version=\"1.0\" encoding=\""
-                        + encoding
+            encoding
                         + "\"> ");
             */
         }
@@ -585,11 +575,9 @@ class FeedDownloadThread extends Thread
             InputStreamReader isr = new InputStreamReader (urlStream);
             reader = isr;
             writer = new FileWriter (tempFile);
-            log.debug ("No encoding for \""
-                     + feedURLString
-                     + "\". Using VM default of \""
-                     + isr.getEncoding()
-                     + "\"");
+            log.debug ("No encoding for \"" + feedURLString +
+                       "\". Using VM default of \"" + isr.getEncoding() +
+                       "\"");
         }
         
         totalBytes = FileUtil.copyReader (reader, writer);
@@ -655,15 +643,11 @@ class FeedDownloadThread extends Thread
         {
             String urlString = conn.getURL().toString();
 
-            log.debug ("URL \""
-                     + urlString
-                     + "\" -> Content-Encoding: "
-                     + ce);
+            log.debug ("URL \"" + urlString + "\" -> Content-Encoding: " + ce);
             if (ce.indexOf ("gzip") != -1)
             {
-                log.debug ("URL \""
-                         + urlString
-                         + "\" is compressed. Using GZIPInputStream.");
+                log.debug ("URL \"" + urlString +
+                           "\" is compressed. Using GZIPInputStream.");
                 is = new GZIPInputStream (is);
             }
         }
@@ -702,14 +686,14 @@ class FeedDownloadThread extends Thread
                 {
                     if (log.isDebugEnabled())
                     {
-                        log.debug ("Setting If-Modified-Since header for "
-                                 + "feed \""
-                                 + feedURL.toString()
-                                 + "\" to: "
-                                 + String.valueOf (lastSeen)
-                                 + " ("
-                                 + new Date (lastSeen).toString()
-                                 + ")");
+                        log.debug ("Setting If-Modified-Since header for " +
+                                   "feed \"" +
+                                   feedURL.toString() +
+                                   "\" to: " +
+                                   String.valueOf (lastSeen) +
+                                   " (" +
+                                   new Date (lastSeen).toString() +
+                                   ")");
                     }
 
                     conn.setIfModifiedSince (lastSeen);
@@ -750,40 +734,36 @@ class FeedDownloadThread extends Thread
 
         if (lastSeen == 0)
         {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" has no recorded last-seen time.");
+            log.debug ("Feed \"" + feedURL.toString() +
+                       "\" has no recorded last-seen time.");
             hasChanged = true;
         }
 
         else if ((lastModified = conn.getLastModified()) == 0)
         {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" provides no last-modified time.");
+            log.debug ("Feed \"" + feedURL.toString() +
+                       "\" provides no last-modified time.");
             hasChanged = true;
         }
 
         else if (lastSeen >= lastModified)
         {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" has Last-Modified time of "
-                     + new Date (lastModified).toString()
-                     + ", which is not newer than last-seen time of "
-                     + new Date (lastSeen).toString()
-                     + ". Feed has no new data.");
+            log.debug ("Feed \"" + feedURL.toString() +
+                       "\" has Last-Modified time of " +
+                       new Date (lastModified).toString() +
+                       ", which is not newer than last-seen time of " +
+                       new Date (lastSeen).toString() +
+                       ". Feed has no new data.");
         }
 
         else
         {
-            log.debug ("Feed \""
-                     + feedURL.toString()
-                     + "\" has Last-Modified time of "
-                     + new Date (lastModified).toString()
-                     + ", which is newer than last-seen time of "
-                     + new Date (lastSeen).toString()
-                     + ". Feed might have new data.");
+            log.debug ("Feed \"" + feedURL.toString() +
+                       "\" has Last-Modified time of " +
+                       new Date (lastModified).toString() +
+                       ", which is newer than last-seen time of " +
+                       new Date (lastSeen).toString() +
+                       ". Feed might have new data.");
             hasChanged = true;
         }
 
@@ -817,11 +797,8 @@ class FeedDownloadThread extends Thread
 
         // First, weed out the ones we don't care about.
 
-        log.info ("Channel \""
-                + channelName
-                + "\": "
-                + String.valueOf (items.size())
-                + " total items");
+        log.info ("Channel \"" + channelName + "\": " +
+                  String.valueOf (items.size()) + " total items");
         for (Iterator<RSSItem> it = items.iterator(); it.hasNext(); )
         {
             RSSItem item     = it.next();
@@ -912,34 +889,26 @@ class FeedDownloadThread extends Thread
 
         if (itemID != null)
         {
-            log.debug ("Item URL \""
-                     + itemURLString
-                     + "\" has unique ID \""
-                     + itemID
-                     + "\". Using ONLY the ID to test the cache.");
+            log.debug ("Item URL \"" + itemURLString + "\" has unique ID \"" +
+                       itemID + "\". Using ONLY the ID to test the cache.");
             if (cache.containsID (itemID))
             {
-                log.debug ("Skipping cached ID \""
-                         + itemID
-                         + "\" (item URL \""
-                         + itemURLString
-                         + "\")");
+                log.debug ("Skipping cached ID \"" + itemID +
+                           "\" (item URL \"" + itemURLString + "\")");
                 isNew = false;
             }
         }
 
         else
         {
-            log.debug ("Item URL \""
-                     + itemURLString
-                     + "\" has no unique ID. Checking cache for URL.");
+            log.debug ("Item URL \"" + itemURLString +
+                       "\" has no unique ID. Checking cache for URL.");
 
             FeedCacheEntry cacheEntry = cache.getItemByURL (itemURL);
             if (cacheEntry == null)
             {
-                log.debug ("URL \""
-                         + itemURLString
-                         + "\" is not in the cache. It's new.");
+                log.debug ("URL \"" + itemURLString +
+                           "\" is not in the cache. It's new.");
             }
 
             else
@@ -949,36 +918,35 @@ class FeedDownloadThread extends Thread
 
                 if ((cachePubDate == null) || (itemPubDate == null))
                 {
-                    log.debug ("Missing publication date in item and/or cache "
-                             + "for URL \""
-                             + itemURLString
-                             + "\". Assuming URL is old, since it is in the "
-                             + "cache. Skipping it.");
+                    log.debug ("Missing publication date in item and/or " +
+                               "cache for URL \"" +
+                               itemURLString +
+                               "\". Assuming URL is old, since it is in the " +
+                               "cache. Skipping it.");
                     isNew = false;
                 }
 
                 else
                 {
-                    log.debug ("URL \""
-                             + itemURLString
-                             + "\": Cached publication date is "
-                             + cachePubDate.toString()
-                             + "\", item publication date is "
-                             + itemPubDate);
+                    log.debug ("URL \"" +
+                               itemURLString +
+                               "\": Cached publication date is " +
+                               cachePubDate.toString() +
+                               "\", item publication date is " +
+                               itemPubDate);
                     if (itemPubDate.after (cachePubDate))
                     {
-                        log.debug ("URL \""
-                                 + itemURLString
-                                 + "\" is newer than cached publication date. "
-                                 + "Keeping it.");
+                        log.debug ("URL \"" + itemURLString +
+                                   "\" is newer than cached publication " +
+                                   "date. Keeping it.");
                     }
 
                     else
                     {
-                        log.debug ("URL \""
-                                   + itemURLString
-                                 + "\" is not newer than cached publication "
-                                 + "date. Skipping it.");
+                        log.debug ("URL \"" +
+                                   itemURLString +
+                                   "\" is not newer than cached publication " +
+                                   "date. Skipping it.");
                         isNew = false;
                     }
                 }

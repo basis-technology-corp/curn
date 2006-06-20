@@ -763,11 +763,11 @@ public class AtomParser extends ParserCommon
                     // Swallow the exception. No sense aborting the whole
                     // feed for a bad <link> element.
 
-                    log.error ("Feed \""
-                             + url.toString()
-                             + "\": Bad <link> element \""
-                             + sURL
-                             + "\"", ex);
+                    log.error ("Feed \"" +
+                               url.toString() +
+                               "\": Bad <link> element \"" +
+                               sURL +
+                               "\"", ex);
                 }
             }
         }

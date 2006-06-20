@@ -222,13 +222,13 @@ public class EmptyArticleSummaryPlugIn
                 ReplacementType type = LEGAL_VALUES_MAP.get (value);
                 if (type == null)
                 {
-                    throw new CurnException ("Bad value \""
-                                           + value
-                                           + "\" for \""
-                                           + paramName
-                                           + " parameter in ["
-                                           + sectionName
-                                           + "] section.");
+                    throw new CurnException ("Bad value \"" +
+                                             value +
+                                             "\" for \"" +
+                                             paramName +
+                                             " parameter in [" +
+                                             sectionName +
+                                             "] section.");
                 }
                 globalDefault = type;
                 log.debug ("[" + sectionName + "] " + paramName + "=" + type);
@@ -296,13 +296,13 @@ public class EmptyArticleSummaryPlugIn
                 ReplacementType type = LEGAL_VALUES_MAP.get (value);
                 if (type == null)
                 {
-                    throw new CurnException ("Bad value \""
-                                           + value
-                                           + "\" for \""
-                                           + paramName
-                                           + " parameter in ["
-                                           + sectionName
-                                           + "] section.");
+                    throw new CurnException ("Bad value \"" +
+                                             value +
+                                             "\" for \"" +
+                                             paramName +
+                                             " parameter in [" +
+                                             sectionName +
+                                             "] section.");
                 }
 
                 perFeedSetting.put (feedInfo, type);
@@ -355,10 +355,9 @@ public class EmptyArticleSummaryPlugIn
                     break;
 
                 case CONTENT:
-                    log.debug ("Replacing empty summaries with content in "
-                             + "feed \""
-                             + feedInfo.getURL().toString()
-                             + "\"");
+                    log.debug ("Replacing empty summaries with content in " +
+                               "feed \"" + feedInfo.getURL().toString() +
+                               "\"");
                     String s;
                     for (RSSItem item : channel.getItems())
                     {
@@ -373,10 +372,9 @@ public class EmptyArticleSummaryPlugIn
                     break;
 
                 case TITLE:
-                    log.debug ("Replacing empty summaries with title in "
-                             + "feed \""
-                             + feedInfo.getURL().toString()
-                             + "\"");
+                    log.debug ("Replacing empty summaries with title in " +
+                               "feed \"" + feedInfo.getURL().toString() +
+                               "\"");
                     for (RSSItem item : channel.getItems())
                     {
                         if (item.getSummary() == null)

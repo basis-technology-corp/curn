@@ -371,18 +371,11 @@ public class SortArticlesPlugIn
 
         if (val == null)
         {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "CurnConfig.badVarValue",
-                                              "Section \"{0}\" in the "
-                                            + "configuration file has a bad "
-                                            + "value (\"{1}\") for the \"{2}\""
-                                            + "parameter",
-                                              new Object[]
-                                              {
-                                                  sectionName,
-                                                  value,
-                                                  VAR_SORT_BY
-                                              });
+            throw new ConfigurationException
+                (Constants.BUNDLE_NAME, "CurnConfig.badVarValue",
+                 "Section \"{0}\" in the configuration file has a bad " +
+                 "value (\"{1}\") for the \"{2}\" parameter",
+                 new Object[] {sectionName, value, VAR_SORT_BY});
         }
 
         return val;

@@ -87,6 +87,12 @@ Version 3.0 (...)
 - The global "GzipDownload" parameter may now be overridden on a per-feed
   basis.
 
+- The "SummaryOnly" configuration parameter is now deprecated. Please
+  use the new "ReplaceEmptySummaryWith" configuration parameter. Use
+  of the "SummaryOnly" parameter will result in a warning message, though
+  it will still be honored. It will be removed entirely in a future
+  release.
+
 - curn no longer accepts email addresses on the command line. Instead,
   email addresses must be specified in the configuration file, using a new
   "MailOutputTo" configuration option in the main [curn] configuration

@@ -301,10 +301,10 @@ public class MiniRSSParser
 
         else
         {
-            throw new SAXException ("Unknown or unsupported RSS type. "
-                                  + "First XML element is <"
-                                  + elementName
-                                  + ">");
+            throw new SAXException ("Unknown or unsupported RSS type. " +
+                                    "First XML element is <" +
+                                    elementName +
+                                    ">");
         }
     }
 

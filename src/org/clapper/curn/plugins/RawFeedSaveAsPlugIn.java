@@ -215,8 +215,8 @@ public class RawFeedSaveAsPlugIn
                                                     paramName,
                                                     false);
                 saveInfo.sectionName = sectionName;
-                log.debug ("[" + sectionName + "]: SaveOnly="
-                         + saveInfo.saveOnly);
+                log.debug ("[" + sectionName + "]: SaveOnly=" +
+                           saveInfo.saveOnly);
             }
 
             else if (paramName.equals (VAR_SAVE_AS_ENCODING))
@@ -225,8 +225,8 @@ public class RawFeedSaveAsPlugIn
                 saveInfo.saveAsEncoding =
                     config.getConfigurationValue (sectionName, paramName);
                 saveInfo.sectionName = sectionName;
-                log.debug ("[" + sectionName + "]: SaveAsEncoding="
-                         + saveInfo.saveAsEncoding);
+                log.debug ("[" + sectionName + "]: SaveAsEncoding=" +
+                           saveInfo.saveAsEncoding);
             }
 
             return true;
@@ -266,8 +266,8 @@ public class RawFeedSaveAsPlugIn
                 throw new CurnException
                     (Constants.BUNDLE_NAME,
                      "CurnConfig.saveOnlyButNoSaveAs",
-                     "Configuration section \"{0}\": "
-                   + "\"[1}\" may only be specified if \"{2}\" is set.",
+                     "Configuration section \"{0}\": " +
+                     "\"[1}\" may only be specified if \"{2}\" is set.",
                      new Object[]
                      {
                          saveInfo.sectionName,
@@ -323,10 +323,10 @@ public class RawFeedSaveAsPlugIn
             
             if ((saveInfo == null) || (saveInfo.saveAsFile == null))
             {
-                log.debug ("Feed "
-                         + feedInfo.getURL().toString()
-                         + " has no SaveAs file, and this is a download-only "
-                         + " run. Skipping feed.");
+                log.debug ("Feed " +
+                           feedInfo.getURL().toString() +
+                           " has no SaveAs file, and this is a " +
+                           " download-only run. Skipping feed.");
                 processFeed = false;
             }
         }
@@ -372,15 +372,15 @@ public class RawFeedSaveAsPlugIn
             try
             {
                 String s = ((encoding == null) ? "default" : encoding);
-                log.debug ("Copying temporary file \""
-                         + feedDataFile.getPath()
-                         + "\" (encoding "
-                         + s
-                         + ") to \""
-                         + saveInfo.saveAsFile.getPath()
-                         + "\" (encoding "
-                         + saveInfo.saveAsEncoding
-                         + ")");
+                log.debug ("Copying temporary file \"" +
+                           feedDataFile.getPath() +
+                           "\" (encoding " +
+                           s +
+                           ") to \"" +
+                           saveInfo.saveAsFile.getPath() +
+                           "\" (encoding " +
+                           saveInfo.saveAsEncoding +
+                           ")");
                 
                 FileUtil.copyTextFile (feedDataFile,
                                        encoding,
@@ -390,11 +390,11 @@ public class RawFeedSaveAsPlugIn
 
             catch (IOException ex)
             {
-                throw new CurnException ("Can't copy \""
-                                       + feedDataFile.getPath()
-                                       + "\" to \""
-                                       + saveInfo.saveAsFile.getPath()
-                                       + "\": ",
+                throw new CurnException ("Can't copy \"" +
+                                         feedDataFile.getPath() +
+                                         "\" to \"" +
+                                         saveInfo.saveAsFile.getPath() +
+                                         "\": ",
                                          ex);
             }
 

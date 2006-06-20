@@ -220,10 +220,8 @@ public class ShowAuthorsPlugIn
                 boolean flag = config.getRequiredBooleanValue (sectionName,
                                                                paramName);
                 perFeedShowAuthorsFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: "
-                         + paramName
-                         + "="
-                         + flag);
+                log.debug ("[" + sectionName + "]: " + paramName + "=" +
+                           flag);
             }
 
             return true;
@@ -269,16 +267,14 @@ public class ShowAuthorsPlugIn
         if (showBoxed != null)
             show = showBoxed;
 
-        log.debug ("Post-parse, "
-                 + feedInfo.getURL()
-                 + ": showAuthors="
-                 + show);
+        log.debug ("Post-parse, " + feedInfo.getURL() + ": showAuthors=" +
+                   show);
 
         if (! show)
         {
-            log.debug ("Removing author fields from feed \""
-                     + feedInfo.getURL().toString()
-                     + "\"");
+            log.debug ("Removing author fields from feed \"" +
+                       feedInfo.getURL().toString() +
+                       "\"");
 
             channel.clearAuthors();
             for (RSSItem item : channel.getItems())

@@ -457,11 +457,11 @@ public class ArticleFilterPlugIn
                     // items, this call will not cause a
                     // ConcurrentModificationException to be thrown.
 
-                    log.debug ("Feed \""
-                             + feedInfo.getURL()
-                             + "\": Filtering out item \""
-                             + item.getTitle()
-                             + "\"");
+                    log.debug ("Feed \"" +
+                               feedInfo.getURL() +
+                               "\": Filtering out item \"" +
+                               item.getTitle() +
+                               "\"");
                     channel.removeItem (item);
                 }
             }
@@ -496,8 +496,9 @@ public class ArticleFilterPlugIn
                     throw new CurnException
                         (Constants.BUNDLE_NAME,
                          "ArticleFilterPlugIn.badFilterCommand",
-                         "Configuration section \"{0}\": Value for parameter "
-                       + "\"{1}\" has a bad command field of \"{2}\".",
+                         "Configuration section \"{0}\": Value for " +
+                         "parameter \"{1}\" has a bad command field of " +
+                         "\"{2}\".",
                          new Object[] {sectionName, paramName, sCommand});
                 }
 
@@ -540,9 +541,9 @@ public class ArticleFilterPlugIn
                             throw new CurnException
                                 (Constants.BUNDLE_NAME,
                                  "ArticleFilterPlugIn.badRSSField",
-                                 "Configuration section \"{0}\": Value for "
-                               + "parameter \"{1}\" has a bad RSS field of "
-                               + "\"{2}\".",
+                                 "Configuration section \"{0}\": Value for " +
+                                 "parameter \"{1}\" has a bad RSS field of " +
+                                 "\"{2}\".",
                                  new Object[]
                                  {
                                      sectionName,
@@ -581,8 +582,8 @@ public class ArticleFilterPlugIn
             throw new CurnException
                 (Constants.BUNDLE_NAME,
                  "ArticleFilterPlugIn.wrongNumberOfFields",
-                 "Configuration section \"{0}\": Value for parameter "
-               + "\"{1}\" is missing at least one field.",
+                 "Configuration section \"{0}\": Value for parameter " +
+                 "\"{1}\" is missing at least one field.",
                  new Object[] {sectionName, paramName});
         }
 
@@ -598,10 +599,8 @@ public class ArticleFilterPlugIn
                        + ", "
                        + item.getTitle();
 
-        log.debug ("item "
-                 + itemId
-                 + ": checking filter: "
-                 + rules.toString());
+        log.debug ("item " + itemId + ": checking filter: " +
+                   rules.toString());
         for (MatchRule rule : rules)
         {
             boolean match = true;
@@ -609,12 +608,8 @@ public class ArticleFilterPlugIn
 
             for (FieldMatchRule fieldRule : rule.getFieldRules())
             {
-                log.debug ("item="
-                         + item.getTitle()
-                         + ", command="
-                         + rule.getCommand()
-                         + ", "
-                         + fieldRule.toString());
+                log.debug ("item=" + item.getTitle() + ", command=" +
+                           rule.getCommand() + ", " + fieldRule.toString());
 
                 StringBuilder buf = new StringBuilder();
 
@@ -658,11 +653,9 @@ public class ArticleFilterPlugIn
                 Pattern regex = fieldRule.getRegex();
                 Matcher matcher = regex.matcher (toMatch);
                 boolean regexMatches = matcher.find();
-                log.debug ("regex '"
-                         + regex.toString()
-                         + "' "
-                         + (regexMatches ? "matches: " : "doesn't match: ")
-                         + toMatch);
+                log.debug ("regex '" + regex.toString() + "' " +
+                           (regexMatches ? "matches: " : "doesn't match: ") +
+                           toMatch);
                 if (! regexMatches)
                     match = false;
             }

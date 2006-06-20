@@ -305,8 +305,8 @@ public class Tool
 
             default:
                 // Should not happen.
-                throw new IllegalStateException ("(BUG) Unknown option. "
-                                               + "Why am I here?");
+                throw new IllegalStateException ("(BUG) Unknown option. " +
+                                                 "Why am I here?");
         }
     }
 
@@ -385,33 +385,34 @@ public class Tool
         info.addOption ('a', "show-authors", null);
         info.addOption ('A', "no-authors", null);
         info.addOption ('B', "build-info",
-                        "Show full build information, then exit. "
-                      + "This option shows a bit more information than the "
-                      + UsageInfo.LONG_OPTION_PREFIX
-                      + "version option. This option can be combined with the "
-                      + UsageInfo.LONG_OPTION_PREFIX
-                      + "plug-ins option to show the loaded plug-ins.");
+                        "Show full build information, then exit. " +
+                        "This option shows a bit more information than the " +
+                        UsageInfo.LONG_OPTION_PREFIX +
+                        "version option. This option can be combined with " +
+                        "the " +
+                        UsageInfo.LONG_OPTION_PREFIX +
+                        "plug-ins option to show the loaded plug-ins.");
         info.addOption ('C', "no-cache", "Don't use a cache file at all.");
         info.addOption ('d', "show-dates", null);
         info.addOption ('D', "no-dates", null);
         info.addOption ('p', "plug-ins",
-                        "Show the list of located plug-ins and output "
-                      + "handlers, then exit. This option can be combined "
-                      + "with either "
-                      + UsageInfo.LONG_OPTION_PREFIX
-                      + "build-info or "
-                      + UsageInfo.LONG_OPTION_PREFIX
-                      + "version to show version information, as well.");
+                        "Show the list of located plug-ins and output " +
+                        "handlers, then exit. This option can be combined " +
+                        "with either " +
+                        UsageInfo.LONG_OPTION_PREFIX +
+                        "build-info or " +
+                        UsageInfo.LONG_OPTION_PREFIX +
+                        "version to show version information, as well.");
         info.addOption ('r', "rss-version", null);
         info.addOption ('R', "no-rss-version", null);
         info.addOption ('T', "threads", "<n>", null);
         info.addOption ('u', "no-update",
                         "Read the cache, but don't update it.");
         info.addOption ('v', "version",
-                        "Show version information, then exit. "
-                      + "This option can be combined with the "
-                      + UsageInfo.LONG_OPTION_PREFIX
-                      + "plug-ins option to show the loaded plug-ins.");
+                        "Show version information, then exit. " +
+                        "This option can be combined with the " +
+                        UsageInfo.LONG_OPTION_PREFIX +
+                        "plug-ins option to show the loaded plug-ins.");
         info.addOption ('z', "gzip", null);
         info.addOption ('Z', "no-gzip", null);
 
@@ -430,11 +431,11 @@ public class Tool
 
         catch (Exception ex)
         {
-            log.error ("Can't parse build date string \""
-                     + dateString
-                     + "\" using format \""
-                     + BuildInfo.DATE_FORMAT_STRING
-                     + "\"",
+            log.error ("Can't parse build date string \"" +
+                       dateString +
+                       "\" using format \"" +
+                       BuildInfo.DATE_FORMAT_STRING +
+                       "\"",
                        ex);
             sampleDate = new Date();
         }
@@ -452,10 +453,10 @@ public class Tool
         }
 
         info.addOption ('t', "time", "<time>",
-                        "For the purposes of cache expiration, pretend the "
-                      + "current time is <time>. <time> may be in one of the "
-                      + "following formats."
-                      + sw.toString());
+                        "For the purposes of cache expiration, pretend the " +
+                        "current time is <time>. <time> may be in one of " +
+                        "the following formats." +
+                        sw.toString());
 
         info.addParameter ("config",
                            "Path to configuration file",
@@ -602,10 +603,8 @@ public class Tool
         System.out.println();
         for (String name : plugIns.keySet())
         {
-            System.out.println (name
-                              + " ("
-                              + plugIns.get (name).getName()
-                              + ")");
+            System.out.println (name + " (" + plugIns.get (name).getName() +
+                                ")");
         }
 
         System.out.println();
@@ -613,21 +612,19 @@ public class Tool
         System.out.println();
         for (String name : outputHandlers.keySet())
         {
-            System.out.println (name
-                              + " ("
-                              + outputHandlers.get (name).getName()
-                              + ")");
+            System.out.println (name + " (" +
+                                outputHandlers.get (name).getName() + ")");
         }
     }
 
     private void deprecatedOption (char shortOption, String longOption)
     {
-        Util.getErrorOut().println ("WARNING: Ignoring deprecated "
-                                  + UsageInfo.SHORT_OPTION_PREFIX
-                                  + shortOption
-                                  + " ("
-                                  + UsageInfo.LONG_OPTION_PREFIX
-                                  + longOption
-                                  + ") command-line option.");
+        Util.getErrorOut().println ("WARNING: Ignoring deprecated " +
+                                    UsageInfo.SHORT_OPTION_PREFIX +
+                                    shortOption +
+                                    " (" +
+                                    UsageInfo.LONG_OPTION_PREFIX +
+                                    longOption +
+                                    ") command-line option.");
     }
 }

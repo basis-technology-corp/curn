@@ -313,11 +313,8 @@ public class UserAgentPlugIn
 
         // Set the user-agent header.
 
-        log.debug ("Using user agent \""
-                 + userAgent
-                 + "\" for feed \""
-                 + feedInfo.getURL()
-                 + "\"");
+        log.debug ("Using user agent \"" + userAgent + "\" for feed \"" +
+                   feedInfo.getURL() + "\"");
         urlConn.setRequestProperty ("User-Agent", userAgent);
 
         return true;
