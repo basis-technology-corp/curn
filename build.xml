@@ -85,17 +85,40 @@ source and documentation packages.
   <property name="zip_dir_prefix" value="curn/"/>
   <property name="javadoc_zip_dir_prefix" value=""/>
   <property name="release_dir" value="${build.dir}/release"/>
+  <property file="build.properties"/>
 
   <!--
   ***************************************************************************
                             Paths and Patterns
   ***************************************************************************
   -->
+  <condition property="third.party.jar.dir" value="/usr/local/java/classes">
+    <not>
+      <isset property="third.party.jar.dir"/>
+    </not>
+  </condition>
 
   <path id="project.class.path">
     <pathelement location="lib/"/>
-    <pathelement path="${java.class.path}/"/>
-    <pathelement path="classes/"/>
+    <pathelement location="${third.party.jar.dir}/activation.jar"/>
+    <pathelement location="${third.party.jar.dir}/mail.jar"/>
+    <pathelement location="${third.party.jar.dir}/asm-2.2.1.jar"/>
+    <pathelement location="${third.party.jar.dir}/asm-commons-2.2.1.jar"/>
+    <pathelement location="${third.party.jar.dir}/asm-util-2.2.1.jar"/>
+    <pathelement location="${third.party.jar.dir}/commons-logging.jar"/>
+    <pathelement location="${third.party.jar.dir}/freemarker.jar"/>
+    <pathelement location="${third.party.jar.dir}/ocutil.jar"/>
+    <pathelement location="${third.party.jar.dir}/xerces.jar"/>
+    <pathelement location="${third.party.jar.dir}/bsf.jar"/>
+    <pathelement location="${third.party.jar.dir}/rome.jar"/>
+    <pathelement location="${third.party.jar.dir}/informa.jar"/>
+    <pathelement location="${third.party.jar.dir}/jdom.jar"/>
+    <pathelement location="${ant.home}/lib/ant.jar"/>
+  </path>
+
+  <path id="installer.class.path">
+    <path refid="project.class.path"/>
+    <pathelement location="${third.party.jar.dir}/izpack-compiler.jar"/>
   </path>
 
   <!--
@@ -199,6 +222,7 @@ source and documentation packages.
 
   <target name="-check.informa.exists">
     <available classname="de.nava.informa.parsers.FeedParser"
+               classpathref="project.class.path"
                property="informa.exists" value="true"/>
   </target>
 
@@ -253,6 +277,7 @@ source and documentation packages.
 
   <target name="-check.rome.exists">
     <available classname="com.sun.syndication.io.SyndFeedInput"
+               classpathref="project.class.path"
                property="rome.exists" value="true"/>
   </target>
 
@@ -374,6 +399,7 @@ source and documentation packages.
 
   <target name="-check.bsf.exists">
     <available classname="org.apache.bsf.BSFManager"
+               classpathref="project.class.path"
                property="bsf.exists" value="true"/>
   </target>
 
@@ -395,6 +421,7 @@ source and documentation packages.
 
   <target name="-check.email.exists">
     <available classname="org.clapper.util.mail.EmailMessage"
+               classpathref="project.class.path"
                property="email.exists" value="true"/>
   </target>
 
@@ -635,7 +662,8 @@ source and documentation packages.
 
     <!-- Define the IzPack task -->
 
-    <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"/>
+    <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"
+             classpathref="installer.class.path"/>
 
     <!-- Create a temporary installation directory -->
 
