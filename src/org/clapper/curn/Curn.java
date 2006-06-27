@@ -27,11 +27,8 @@
 package org.clapper.curn;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +49,6 @@ import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
 
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 
 /**
@@ -93,7 +89,6 @@ public class Curn
     \*----------------------------------------------------------------------*/
 
     private CurnConfig config = null;
-    private boolean useCache = true;
     private FeedCache cache = null;
     private Date currentTime = new Date();
     private MetaPlugIn metaPlugIn = null;
@@ -194,7 +189,6 @@ public class Curn
                RSSParserException,
                CurnException
     {
-        String                   parserClassName;
         Map<FeedInfo,RSSChannel> channels;
         boolean                  parsingEnabled = true;
         File                     cacheFile = config.getCacheFile();
@@ -351,10 +345,15 @@ public class Curn
 
         log.info ("Doing single-threaded download of feeds.");
 
+        RSSParser parser = null;
+
+        if (parsingEnabled)
+            parser = getRSSParser(configuration);
+
         downloadThread =
             new FeedDownloadThread
                 ("main",
-                 getRSSParser (configuration),
+                 parser,
                  feedCache,
                  configuration,
                  null,
@@ -539,7 +538,6 @@ public class Curn
         throws CurnException,
                ConfigurationException
     {
-        ConfiguredOutputHandler   firstOutput = null;
         OutputHandler             handler;
         Collection<OutputHandler> outputHandlers =
             new ArrayList<OutputHandler>(); 
