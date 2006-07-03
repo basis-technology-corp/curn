@@ -121,17 +121,23 @@ public class CommonXMLFixupsPlugIn
 
         "s/ & / \\&amp; /g",
         "s/&$/\\&amp;/g",
-        "s/&ouml;/\\&#246;/g",
         "s/ &amp;amp; / \\&amp; /g",
         "s/&([^;]+)(\\s)/\\&amp;$1$2/g",
- 
+
         // Remove "&nbsp;" and "nbsp;". The first is legal HTML, but not
         // legal XML. The second is illegal.
 
         "s/&nbsp;/ /g",
         "s/([^&])nbsp;/$1 /g",
 
-        "s/&mdash;/\\&#8212;/g" 
+        // Non-existent XML entities
+
+        "s/&ouml;/\\&#246;/g",
+        "s/&mdash;/\\&#8212;/g",
+        
+        // For some reason, no one seems to escape "AT&T" properly...
+        
+        "s/AT&T/AT\\&amp;T/g"
     };
 
     /*----------------------------------------------------------------------*\
