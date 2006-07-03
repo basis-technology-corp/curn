@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -130,7 +129,6 @@ public class CurnConfig extends Configuration
     private File cacheFile = null;
     private int defaultCacheDays = DEF_DAYS_TO_CACHE;
     private boolean updateCache = true;
-    private boolean summaryOnly = false;
     private boolean showRSSFormat = false;
     private Collection<FeedInfo> feeds = new ArrayList<FeedInfo>();
     private Map<String, FeedInfo> feedMap = new HashMap<String, FeedInfo>();
@@ -729,7 +727,6 @@ public class CurnConfig extends Configuration
         for (String varName : getVariableNames (sectionName))
         {
             String value   = null;
-            boolean flag;
 
             if (varName.equals (VAR_DAYS_TO_CACHE))
             {
