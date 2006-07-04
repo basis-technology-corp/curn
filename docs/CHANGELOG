@@ -187,6 +187,12 @@ Version 3.0 (...)
   However, there are some broken HTTP servers (or servers with broken
   configurations) that insist on quoting the field.
 
+- Various SaveAs parameters weren't properly being processed on Windows.
+  Specifically, embedded file separators ("\" characters) were being swallowed
+  when they should not have been. This bug fix actually occurred in the
+  RollingFileWriter class (in the org.clapper.util library) that is bundled
+  with curn.
+
 
 ---------------------------------------------------------------------------
 Version 2.6.4 (5 February, 2006)
