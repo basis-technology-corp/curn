@@ -433,7 +433,7 @@ function init()
                     <li><a href="#CfgRawValues">Suppressing Metacharacter Expansion and Variable Substitution</a></li>
                   </ul>
               </li>
-
+              <li><a href="#CfgPathNames">Path Names</a>
               <li><a href="#CfgIncludes">Includes</a></li>
               <li><a href="#CfgComments">Comments and Blank Lines</a></li>
             </ul>
@@ -1150,6 +1150,20 @@ reference, you could use:</p>
 <blockquote><pre>abc: '${foo}'</pre></blockquote>
 
 <p>To include a literal single quote, you must escape it with a backslash.</p>
+
+<h3><a name="CfgPathNames"></a>Path Names</h3>
+
+<p>Regardless of the underlying operating system, path names in the
+<i>curn</i> configuration file can always use Unix-style forward slash ("/")
+characters. At runtime <i>curn</i> will convert the path names to use the
+appropriate file separator (e.g., "\" on Windows). This capability provides
+two benefits:</p>
+
+<ol>
+  <li>It enhances the portability of <i>curn</i> configuration files.</li>
+  <li>It provides a means to avoid using (and, therefore, having to escape)
+  backslash characters in the configuration file.</li>
+</ol>
 
 <h3><a name="CfgIncludes"></a>Includes</h3>
 

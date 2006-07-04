@@ -33,6 +33,16 @@ Version 3.0 (...)
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
+- Path names in the curn configuration file can now be expressed with
+  Unix-style file separators ("/" characters), regardless of the operating
+  system where curn is being run. At runtime, curn will convert them to the
+  appropriate file separator (e.g., "\" on Windows). This enhancement
+  provides two benefits:
+
+  1. It enhances the portability of curn configuration files.
+  2. It provides a means to avoid using (and, therefore, having to escape)
+     backslash characters in the configuration file.
+
 - The "EditItemURL" feed configuration parameter may now be specified multiple
   times within a feed, provided each instance has its own unique suffix (e.g.,
   "EditItemURL1", "EditItemURL2", "EditItemURLFoo", etc.)
