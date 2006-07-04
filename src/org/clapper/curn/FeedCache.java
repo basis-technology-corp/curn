@@ -270,10 +270,10 @@ public class FeedCache implements Serializable
                 // doesn't matter as much). This allows the file names to
                 // sort better in a directory listing.
 
-                Writer cacheOut = Util.openOutputFile
+                Writer cacheOut = CurnUtil.openOutputFile
                                              (cacheFile,
                                               null,
-                                              Util.IndexMarker.AFTER_EXTENSION,
+                                              CurnUtil.IndexMarker.AFTER_EXTENSION,
                                               totalCacheBackups);
 
                 // Transform it to the output file.
@@ -329,7 +329,7 @@ public class FeedCache implements Serializable
      */
     public boolean containsURL (URL url)
     {
-        String  urlKey = Util.urlToLookupKey (url);
+        String  urlKey = CurnUtil.urlToLookupKey (url);
         boolean hasURL = cacheByURL.containsKey (urlKey);
         log.debug ("Cache contains \"" + urlKey + "\"? " + hasURL);
         return hasURL;
@@ -358,27 +358,26 @@ public class FeedCache implements Serializable
      */
     public FeedCacheEntry getItemByURL (URL url)
     {
-        return (FeedCacheEntry) cacheByURL.get (Util.urlToLookupKey (url));
+        return (FeedCacheEntry) cacheByURL.get (CurnUtil.urlToLookupKey (url));
     }
 
     /**
      * Add (or replace) a cached URL.
-     *
+     * 
      * @param uniqueID   the unique ID string for the cache entry, or null.
      *                   If null, the URL is used as the unique ID.
      * @param url        the URL to cache. May be an individual item URL, or
      *                   the URL for an entire feed.
      * @param pubDate    the publication date, if known; or null
      * @param parentFeed the associated feed
-     *
-     * @see Util#normalizeURL
+     * @see CurnUtil#normalizeURL
      */
     public synchronized void addToCache (String   uniqueID,
                                          URL      url,
                                          Date     pubDate,
                                          FeedInfo parentFeed)
     {
-        String urlKey = Util.urlToLookupKey (url);
+        String urlKey = CurnUtil.urlToLookupKey (url);
 
         if (uniqueID == null)
             uniqueID = urlKey;
@@ -722,7 +721,7 @@ public class FeedCache implements Serializable
             {
                 // Add to URL cache.
 
-                String urlKey = Util.urlToLookupKey (entry.getEntryURL());
+                String urlKey = CurnUtil.urlToLookupKey (entry.getEntryURL());
                 log.debug ("Loading URL \"" + urlKey +
                            "\" into in-memory lookup cache.");
                 cacheByURL.put (urlKey, entry);

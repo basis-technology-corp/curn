@@ -34,13 +34,11 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.Version;
 import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
-import org.clapper.util.text.TextUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,11 +49,11 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFManager;
+import org.clapper.curn.CurnUtil;
 
 /**
  * Provides an output handler calls a script via the Apache Jakarta
@@ -439,7 +437,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         // Verify that the script exists.
 
-        File scriptFile = new File (scriptPath);
+        File scriptFile = CurnUtil.mapConfiguredPathName (scriptPath);
         if (! scriptFile.exists())
         {
             scriptPath = null;

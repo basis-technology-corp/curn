@@ -74,15 +74,14 @@ public class FeedInfo
 
     /**
      * Default constructor.
-     *
+     * 
      * @param siteURL  the main URL for the site's RSS feed. This constructor
      *                 normalizes the URL.
-     *
-     * @see Util#normalizeURL
+     * @see UtiCurnUtilrmalizeURL
      */
     public FeedInfo (URL siteURL)
     {
-        this.siteURL = Util.normalizeURL (siteURL);
+        this.siteURL = CurnUtil.normalizeURL (siteURL);
     }
 
     /*----------------------------------------------------------------------*\
@@ -120,10 +119,9 @@ public class FeedInfo
 
     /**
      * Get the main RSS URL for the site.
-     *
+     * 
      * @return the site's main RSS URL, guaranteed to be normalized
-     *
-     * @see Util#normalizeURL
+     * @see UtiCurnUtilrmalizeURL
      */
     public URL getURL()
     {

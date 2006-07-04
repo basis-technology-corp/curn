@@ -27,11 +27,9 @@
 package org.clapper.curn.plugins;
 
 import org.clapper.curn.Constants;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostConfigPlugIn;
 import org.clapper.curn.PreFeedDownloadPlugIn;
@@ -49,6 +47,7 @@ import java.net.URLConnection;
 
 import java.util.Map;
 import java.util.HashMap;
+import org.clapper.curn.CurnUtil;
 
 /**
  * The <tt>RawFeedSaveAsPlugIn</tt> handles saving a feed to a known location.
@@ -202,7 +201,7 @@ public class RawFeedSaveAsPlugIn
                 FeedSaveInfo saveInfo = getOrMakeFeedSaveInfo (feedInfo);
                 String value = config.getConfigurationValue (sectionName,
                                                              paramName);
-                saveInfo.saveAsFile = new File (value);
+                saveInfo.saveAsFile = CurnUtil.mapConfiguredPathName (value);
                 saveInfo.sectionName = sectionName;
                 log.debug ("[" + sectionName + "]: SaveAs=" + value);
             }

@@ -53,7 +53,7 @@ import org.clapper.util.logging.Logger;
  *
  * @version <tt>$Revision$</tt>
  */
-public class Util
+public class CurnUtil
 {
     /*----------------------------------------------------------------------*\
                            Public Inner Classes
@@ -85,13 +85,13 @@ public class Util
     /**
      * For log messages
      */
-    private static Logger log = new Logger (Util.class);
+    private static Logger log = new Logger (CurnUtil.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
-    private Util()
+    private CurnUtil()
     {
     }
 
@@ -162,7 +162,7 @@ public class Util
      */
     public static String urlToLookupKey (URL url)
     {
-        return Util.normalizeURL (url).toExternalForm();
+        return CurnUtil.normalizeURL (url).toExternalForm();
     }
 
     /**
@@ -295,7 +295,7 @@ public class Util
 
             if (totalBackups != 0)
             {
-                String pattern = Util.makeRollingFileWriterPattern
+                String pattern = CurnUtil.makeRollingFileWriterPattern
                                                      (file, indexMarkerLoc);
                 log.debug ("Opening rolling output file \"" + pattern + "\"");
                 w = new RollingFileWriter (pattern,
@@ -341,5 +341,45 @@ public class Util
     public static PrintWriter getErrorOut()
     {
         return err;
+    }
+    
+    /**
+     * Map a configured path name to a <tt>File</tt> object. This method parses
+     * the path name and converts any Unix-style path separators to the
+     * appropriate separator for the current platform. Use of this method
+     * allows Unix-style paths in the configuration file, even on non-Unix
+     * systems (which also bypasses some parsing issues).
+     *
+     * @param pathName  the path name to map
+     *
+     * @return an appropriate <tt>File</tt> object for the current system.
+     */
+    public static File mapConfiguredPathName (String pathName)
+    {
+        File result = null;
+        
+        if (File.separatorChar == '/')
+        {
+            // Nothing to do.
+            
+            result = new File (pathName);
+        }
+        
+        else
+        {
+            char[] ch = pathName.toCharArray();
+            StringBuilder buf = new StringBuilder();
+            for (int i = 0; i < ch.length; i++)
+            {
+                if (ch[i] == '/')
+                    buf.append (File.separatorChar);
+                else
+                    buf.append (ch[i]);
+            }
+            
+            result = new File (buf.toString());
+        }
+        
+        return result;
     }
 }

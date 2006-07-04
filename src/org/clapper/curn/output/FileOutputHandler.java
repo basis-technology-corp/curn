@@ -32,7 +32,7 @@ import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
-import org.clapper.curn.Util;
+import org.clapper.curn.CurnUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -227,7 +227,7 @@ public abstract class FileOutputHandler implements OutputHandler
         }
 
         if (saveAs != null)
-            outputFile = new File (saveAs);
+            outputFile = CurnUtil.mapConfiguredPathName (saveAs);
 
         else
         {
@@ -387,9 +387,9 @@ public abstract class FileOutputHandler implements OutputHandler
             // the file name and the extension, rather than at the end of
             // the file (since the extension is likely to matter).
 
-            w = Util.openOutputFile (outputFile,
+            w = CurnUtil.openOutputFile (outputFile,
                                      encoding,
-                                     Util.IndexMarker.BEFORE_EXTENSION,
+                                     CurnUtil.IndexMarker.BEFORE_EXTENSION,
                                      savedBackups);
         }
 

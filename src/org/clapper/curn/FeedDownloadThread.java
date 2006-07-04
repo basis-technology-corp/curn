@@ -502,7 +502,7 @@ class FeedDownloadThread extends Thread
         URL feedURL = feedInfo.getURL();
         String feedURLString = feedURL.toString();
         int totalBytes = 0;
-        File tempFile = Util.createTempXMLFile();
+        File tempFile = CurnUtil.createTempXMLFile();
 
         log.debug ("Downloading \"" + feedURLString + "\" to file \"" +
                    tempFile.getPath());
@@ -815,7 +815,7 @@ class FeedDownloadThread extends Thread
 
             // Normalize the URL and save it.
 
-            itemURL = Util.normalizeURL (itemURL);
+            itemURL = CurnUtil.normalizeURL (itemURL);
             itemLink.setURL (itemURL);
 
             // Skip it if it's cached. Note:

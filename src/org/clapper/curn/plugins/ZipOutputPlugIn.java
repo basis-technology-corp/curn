@@ -26,7 +26,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.MainConfigItemPlugIn;
@@ -38,13 +37,11 @@ import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 
 import org.clapper.util.io.Zipper;
-import org.clapper.util.text.TextUtil;
 
 import java.io.File;
 import java.io.IOException;
-
-import java.util.ArrayList;
 import java.util.Collection;
+import org.clapper.curn.CurnUtil;
 
 /**
  * The <tt>ZipOutputPlugIn</tt> handles zipping up the output from a
@@ -150,7 +147,7 @@ public class ZipOutputPlugIn
             {
                 String zipFilePath = config.getConfigurationValue (sectionName,
                                                                    paramName);
-                this.zipFile = new File (zipFilePath);
+                this.zipFile = CurnUtil.mapConfiguredPathName (zipFilePath);
             }
         }
 

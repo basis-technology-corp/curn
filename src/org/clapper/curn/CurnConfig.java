@@ -600,7 +600,7 @@ public class CurnConfig extends Configuration
             val = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_FILE, null);
             if (val != null)
             {
-                cacheFile = new File (val);
+                cacheFile = CurnUtil.mapConfiguredPathName (val);
                 if (cacheFile.isDirectory())
                 {
                     throw new ConfigurationException
@@ -697,7 +697,7 @@ public class CurnConfig extends Configuration
 
         try
         {
-            url = Util.normalizeURL (feedURLString);
+            url = CurnUtil.normalizeURL (feedURLString);
             String urlString = url.toString();
             log.debug ("Configured feed: URL=\"" + urlString + "\"");
             feedInfo = new FeedInfo (url);

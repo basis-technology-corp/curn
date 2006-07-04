@@ -28,7 +28,7 @@ package org.clapper.curn.plugins;
 
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.Util;
+import org.clapper.curn.CurnUtil;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
@@ -116,7 +116,7 @@ public abstract class AbstractXMLEditPlugIn
 
         try
         {
-            File tempOutputFile = Util.createTempXMLFile();
+            File tempOutputFile = CurnUtil.createTempXMLFile();
 
             if (encoding != null)
             {

@@ -34,7 +34,7 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedDownloadPlugIn;
-import org.clapper.curn.Util;
+import org.clapper.curn.CurnUtil;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;

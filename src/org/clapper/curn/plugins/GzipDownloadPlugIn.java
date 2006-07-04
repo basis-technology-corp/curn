@@ -34,7 +34,7 @@ import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostConfigPlugIn;
 import org.clapper.curn.PreFeedDownloadPlugIn;
-import org.clapper.curn.Util;
+import org.clapper.curn.CurnUtil;
 import org.clapper.curn.Version;
 
 import org.clapper.util.classutil.ClassUtil;
@@ -185,7 +185,7 @@ public class GzipDownloadPlugIn
                 String msg =
                     config.getDeprecatedParamMessage (paramName,
                                                       VAR_GZIP_DOWNLOAD);
-                Util.getErrorOut().println (msg);
+                CurnUtil.getErrorOut().println (msg);
                 log.warn (msg);
 
                 requestGzipDefault =
@@ -248,7 +248,7 @@ public class GzipDownloadPlugIn
                 String msg =
                     config.getDeprecatedParamMessage (paramName,
                                                       VAR_GZIP_DOWNLOAD);
-                Util.getErrorOut().println (msg);
+                CurnUtil.getErrorOut().println (msg);
                 log.warn (msg);
 
                 boolean flag = config.getRequiredBooleanValue (sectionName,

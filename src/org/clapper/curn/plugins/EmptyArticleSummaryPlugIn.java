@@ -33,7 +33,7 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.MainConfigItemPlugIn;
-import org.clapper.curn.Util;
+import org.clapper.curn.CurnUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -207,7 +207,7 @@ public class EmptyArticleSummaryPlugIn
                 String msg =
                     config.getDeprecatedParamMessage
                        (paramName, VAR_REPLACE_EMPTY_SUMMARY);
-                Util.getErrorOut().println (msg);
+                CurnUtil.getErrorOut().println (msg);
                 log.warn (msg);
                 boolean on = config.getRequiredBooleanValue (sectionName,
                                                              paramName);
@@ -281,7 +281,7 @@ public class EmptyArticleSummaryPlugIn
                 String msg =
                     config.getDeprecatedParamMessage
                        (paramName, VAR_REPLACE_EMPTY_SUMMARY);
-                Util.getErrorOut().println (msg);
+                CurnUtil.getErrorOut().println (msg);
                 log.warn (msg);
                 boolean on = config.getRequiredBooleanValue (sectionName,
                                                              paramName);

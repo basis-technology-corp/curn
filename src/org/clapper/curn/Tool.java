@@ -619,7 +619,7 @@ public class Tool
 
     private void deprecatedOption (char shortOption, String longOption)
     {
-        Util.getErrorOut().println ("WARNING: Ignoring deprecated " +
+        CurnUtil.getErrorOut().println ("WARNING: Ignoring deprecated " +
                                     UsageInfo.SHORT_OPTION_PREFIX +
                                     shortOption +
                                     " (" +
