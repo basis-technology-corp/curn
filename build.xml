@@ -756,7 +756,7 @@ source and documentation packages.
     <!-- Build the installer -->
 
     <izpack input="${install.tmp}/install.xml"
-            output="${release_dir}/install-curn.jar"
+            output="${release_dir}/install-curn-${curn.version}.jar"
             installerType="standard"
             basedir="."
             izPackDir="${izpack.home}">
