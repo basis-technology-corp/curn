@@ -290,6 +290,25 @@ th
     font-style: italic
 }
 
+.alert
+{
+    margin-left: 15em;
+    margin-right: 15em;
+
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    
+    border-width: 3px;
+    border-spacing: 5px;
+    border-style: solid;
+    border-color: red;
+    border-collapse: collapse;
+
+    background-color: #d9d9d9;
+}
+
 -->
 </style>
 <script language="JavaScript" type="text/javascript">
@@ -612,6 +631,20 @@ script (called <span class="code">curn</span>) or a Windows command file
 <span class="path">bin</span> directory beneath the <i>curn</i> installation
 directory. You must put the <i>curn</i> <span class="path">bin</span> directory
 in your path.</p>
+
+<div class="alert">
+<a name="PleaseUseTheScript"></a>
+<p>Note: While it is possible to invoke <i>curn</i> via the <i>java</i>
+command, it's not recommended. For <i>curn</i>'s
+<a href="#Plug-ins">plug-ins</a> to work properly, <i>curn</i> must do some
+fancy <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/ClassLoader.html">class loader</a> footwork.
+Basically, <i>curn</i> uses a special bootstrap class to
+find all plug-ins and create a special class loader that can load 
+everything&#8212;plug-ins, core code, etc. If you don't invoke <i>curn</i> via
+the bootstrap class, the plug-ins don't load properly.
+The <i>curn</i> shell script and command file handle invoking <i>curn</i>
+so that plug-ins will work properly.</p>
+</div>
 
 <p><i>curn</i>'s command line uses a UNIX-like syntax. If you invoke
 <i>curn</i> without any parameters, you get the following usage display.
@@ -5650,6 +5683,45 @@ logging frameworks, <span class="code">java.util.logging</span> and Log4J.</p>
 
 <h3><a name="java.util.logging"></a>java.util.logging</h3>
 
+<div class="alert">
+
+<p>Note: Please be aware that, as of <i>curn</i> 3.0, there are some subtle
+"issues" with JDK logging. If you happened to be using the
+<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/logging/JavaUtilLoggingTextFormatter.html" class="code">org.clapper.util.logging.JavaUtilLoggingTextFormatter</a>
+class to format your output, you're out of luck.
+In general, 
+you're far better off using <a href="#Log4J">Log4J</a>. The gory details,
+for those who care about such things, follow.</p>
+
+<p><i>curn</i> now uses a special  
+<a href="#PleaseUseTheScript">bootstrap mechanism</a> to enable the use
+of plug-ins. As part of this bootstrap logic, <i>curn</i> installs its own
+class loader. However, the built-in JDK logging API doesn't play well in
+that environment. It always uses the system class loader&#8212;the
+CLASSPATH-driven class loader&#8212;to find its classes. Normally, this isn't
+too much of a problem, but <i>curn</i> doesn't rely on the CLASSPATH to find
+its code; instead, it uses its own class loader. Among the jar files
+<i>curn</i>'s class loader searches is the <i>org.clapper.util</i> utility
+library, the very library that contains the 
+<span class="code">JavaUtilLoggingTextFormatter</span> class. If you try
+to ensure that the <i>org.clapper.util</i> utility library is in the CLASSPATH
+(and, therefore, available to the JDK logging API), you run the risk of causing
+problems with <i>curn</i>'s runtime environment.</p>
+
+<p>Further, any third-party formatters you are using (such as the
+<a href="#smtphandler" class="code">SMTPHandler</a> formatter), you have to
+ensure that the jar files containing those formatters are listed in the
+classpath. To do that, you'll have to modify the
+<a href="#curn-script">shell script or Windows command file</a> used to
+invoke <i>curn</i>.</p>
+
+<p>If you're not using the
+<span class="code">JavaUtilLoggingTextFormatter</span> class
+in the <i>org.clapper.util</i> library, and you're not using any
+third-party formatters, then this warning probably
+doesn't apply to you.</p>
+</div>
+
 <p>This section assumes that you're using a properties file to configure
 the logging framework; if you're using a custom logging configuration class,
 you'll have to work out the configuration details yourself.</p>
@@ -5700,12 +5772,13 @@ handlers=java.util.logging.FileHandler
 java.util.logging.FileHandler.pattern = %h/curn/log.out
 java.util.logging.FileHandler.level=FINEST
 java.util.logging.FileHandler.count = 1
-java.util.logging.FileHandler.formatter = org.clapper.util.misc.JDK14TextLogFormatter
+java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
 
 org.clapper.curn.level=INFO</pre>
   </td></tr>
 </table>
 
+<a name="smtphandler"></a>
 <p>If you want to have exceptions mailed to you (which can be useful when
 running <i>curn</i> from a scheduler, such as <i>cron</i>(8)), then download
 and install the <a href="http://smtphandler.sourceforge.net/">SMTPHandler</a> class from
@@ -5720,7 +5793,7 @@ handlers=java.util.logging.FileHandler
 java.util.logging.FileHandler.pattern = %h/curn/log.out
 java.util.logging.FileHandler.level=FINEST
 java.util.logging.FileHandler.count = 1
-java.util.logging.FileHandler.formatter = org.clapper.util.misc.JDK14TextLogFormatter
+java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
 
 smtphandler.SMTPHandler.level=WARNING
 smtphandler.SMTPHandler.smtpHost=<b>your_smtp_host_here</b>
@@ -5728,7 +5801,7 @@ smtphandler.SMTPHandler.to=<b>your_email_address_here</b>
 smtphandler.SMTPHandler.from=<b>your_email_address_here</b>
 smtphandler.SMTPHandler.subject=[SMTPHandler] curn error
 smtphandler.SMTPHandler.bufferSize=4096
-smtphandler.SMTPHandler.formatter=org.clapper.util.logging.JavaUtilLoggingTextFormatter
+smtphandler.SMTPHandler.formatter=smtphandler.SMTPHandler
 
 org.clapper.curn.level=INFO</pre>
   </td></tr>
