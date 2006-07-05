@@ -29,7 +29,6 @@ package org.clapper.curn;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -38,7 +37,6 @@ import java.net.MalformedURLException;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * <p>Main program that bootstraps <i>curn</i> by adding new elements to the

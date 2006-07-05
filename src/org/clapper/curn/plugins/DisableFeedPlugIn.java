@@ -26,8 +26,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Constants;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -35,7 +33,6 @@ import org.clapper.curn.FeedConfigItemPlugIn;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 
 /**

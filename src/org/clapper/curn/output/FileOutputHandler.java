@@ -34,27 +34,15 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.OutputHandler;
 import org.clapper.curn.CurnUtil;
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
-import org.clapper.util.io.FileUtil;
 import org.clapper.util.io.IOExceptionExt;
-import org.clapper.util.io.RollingFileWriter;
 import org.clapper.util.logging.Logger;
-import org.clapper.util.text.HTMLUtil;
-import org.clapper.util.text.Unicode;
 
 import java.io.IOException;
-import java.io.FileOutputStream;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * <p><tt>FileOutputHandler</tt> is an abstract base class for

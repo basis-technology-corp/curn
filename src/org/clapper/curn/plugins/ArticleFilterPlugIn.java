@@ -27,12 +27,10 @@
 package org.clapper.curn.plugins;
 
 import org.clapper.curn.Constants;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
-import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -48,10 +46,8 @@ import java.io.StringReader;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -715,6 +711,7 @@ public class ArticleFilterPlugIn
 
                 else if (Character.isWhitespace (ch))
                 {
+                    // Skip
                 }
 
                 else

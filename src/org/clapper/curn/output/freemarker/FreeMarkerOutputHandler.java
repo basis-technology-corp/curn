@@ -42,21 +42,12 @@ import org.clapper.util.config.NoSuchSectionException;
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.TextUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleDate;

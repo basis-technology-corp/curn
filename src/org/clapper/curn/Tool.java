@@ -26,8 +26,6 @@
 
 package org.clapper.curn;
 
-import java.io.IOException;
-import java.io.File;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -43,15 +41,12 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.clapper.curn.parser.RSSChannel;
-
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.cmdline.CommandLineUtility;
 import org.clapper.util.cmdline.CommandLineException;
 import org.clapper.util.cmdline.CommandLineUsageException;
 import org.clapper.util.cmdline.UsageInfo;
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.misc.BuildInfo;
 
@@ -161,9 +156,6 @@ public class Tool
 
         catch (CommandLineException ex)
         {
-            WordWrapWriter err = new WordWrapWriter (System.err);
-
-            //err.println (ex.getMessage());
             ex.printStackTrace (System.err);
             System.exit (1);
         }
@@ -594,7 +586,6 @@ public class Tool
         throws CurnException
     {
         Map<String,Class> plugIns = new TreeMap<String,Class>();
-        Map<String,Class> outputHandlers = new TreeMap<String,Class>();
 
         PlugInManager.listPlugIns (plugIns);
 

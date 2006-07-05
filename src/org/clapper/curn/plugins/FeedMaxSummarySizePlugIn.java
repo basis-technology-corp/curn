@@ -26,7 +26,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -100,11 +99,6 @@ public class FeedMaxSummarySizePlugIn
      * The global default
      */
     private int maxSummarySizeDefault = NO_MAX;
-
-    /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
 
     /**
      * For log messages

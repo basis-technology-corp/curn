@@ -26,14 +26,11 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Constants;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
-import org.clapper.curn.CurnUtil;
 
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
@@ -125,11 +122,6 @@ public class ParsedFeedURLEditPlugIn
      */
     private Map<FeedInfo,FeedEditInfo> perFeedEditInfoMap =
         new HashMap<FeedInfo,FeedEditInfo>();
-
-    /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
 
     /**
      * For log messages

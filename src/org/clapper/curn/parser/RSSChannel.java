@@ -31,7 +31,6 @@ import org.clapper.util.text.HTMLUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.TreeSet;
 
 /**
  * This abstract class defines a simplified view of an RSS channel,

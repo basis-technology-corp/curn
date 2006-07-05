@@ -26,7 +26,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -40,7 +39,6 @@ import org.clapper.curn.parser.RSSItem;
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
-import org.clapper.util.text.HTMLUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -130,11 +128,6 @@ public class EmptyArticleSummaryPlugIn
      * The global default
      */
     private ReplacementType globalDefault = ReplacementType.CONTENT;
-
-    /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
 
     /**
      * For log messages
@@ -380,7 +373,10 @@ public class EmptyArticleSummaryPlugIn
                         if (item.getSummary() == null)
                             item.setSummary (item.getTitle());
                     }
-                    break;                    
+                    break;
+
+                default:
+                    assert (false);
             }       
         }
 

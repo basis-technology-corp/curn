@@ -26,10 +26,6 @@
 
 package org.clapper.curn;
 
-import org.clapper.curn.Curn;
-import org.clapper.curn.CurnConfig;
-import org.clapper.curn.CurnException;
-import org.clapper.curn.FeedCache;
 import org.clapper.curn.parser.RSSChannel;
 
 import org.clapper.util.logging.Logger;
@@ -40,8 +36,6 @@ import java.net.URLConnection;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A <tt>MetaPlugIn</tt> object is basically a plug-in that contains all the

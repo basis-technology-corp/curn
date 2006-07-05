@@ -27,24 +27,13 @@
 package org.clapper.curn;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InvalidClassException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
 import java.io.Writer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.Iterator;
@@ -431,7 +420,6 @@ public class FeedCache implements Serializable
     {
         FeedCacheMap result        = null;
         String       cacheFilePath = cacheFile.getPath();
-        long         fileModTime   = cacheFile.lastModified();
 
         // First, parse the XML file into a DOM.
 
@@ -596,7 +584,6 @@ public class FeedCache implements Serializable
         Date publicationDate = null;
         if (sPubDate != null)
         {
-            long pubTimestamp = 0;
             try
             {
                 publicationDate = new Date (Long.parseLong (sPubDate));

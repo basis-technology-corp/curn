@@ -26,7 +26,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -82,11 +81,6 @@ public class IgnoreDuplicateArticlesPlugIn
      */
     private Map<FeedInfo,Boolean> perFeedIgnoreFlagMap =
         new HashMap<FeedInfo,Boolean>();
-
-    /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
 
     /**
      * For log messages

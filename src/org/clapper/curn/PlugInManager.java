@@ -38,7 +38,6 @@ import org.clapper.util.io.FileFilterMatchType;
 import org.clapper.util.classutil.ClassFinder;
 import org.clapper.util.classutil.ClassFilter;
 import org.clapper.util.classutil.ClassInfo;
-import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.classutil.ClassModifiersClassFilter;
 import org.clapper.util.classutil.AndClassFilter;
 import org.clapper.util.classutil.OrClassFilter;

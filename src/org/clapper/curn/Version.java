@@ -26,7 +26,6 @@
 
 package org.clapper.curn;
 
-import java.lang.System;
 import java.io.PrintWriter;
 import java.io.PrintStream;
 import java.util.Locale;

@@ -26,7 +26,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;

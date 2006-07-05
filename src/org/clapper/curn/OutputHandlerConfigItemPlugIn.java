@@ -26,8 +26,6 @@
 
 package org.clapper.curn;
 
-import java.io.File;
-
 /**
  * This interface defines the methods that must be supported by plug-ins
  * that wish intercept <i>curn</i> output handler-related configuration items.

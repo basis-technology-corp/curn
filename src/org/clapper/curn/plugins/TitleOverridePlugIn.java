@@ -82,11 +82,6 @@ public class TitleOverridePlugIn
         new HashMap<FeedInfo,String>();
 
     /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
-
-    /**
      * For log messages
      */
     private static Logger log = new Logger (TitleOverridePlugIn.class);

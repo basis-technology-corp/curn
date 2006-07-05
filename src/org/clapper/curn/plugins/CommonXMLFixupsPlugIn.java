@@ -26,35 +26,19 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Constants;
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedDownloadPlugIn;
-import org.clapper.curn.CurnUtil;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -154,11 +138,6 @@ public class CommonXMLFixupsPlugIn
      * Whether globally enabled or not.
      */
     private boolean globallyEnabled = false;
-
-    /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
 
     /**
      * For log messages

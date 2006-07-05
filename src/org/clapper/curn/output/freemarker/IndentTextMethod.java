@@ -26,8 +26,6 @@
 
 package org.clapper.curn.output.freemarker;
 
-import java.io.StringWriter;
-
 import java.util.List;
 
 import org.clapper.util.logging.Logger;

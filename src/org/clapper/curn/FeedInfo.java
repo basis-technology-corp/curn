@@ -27,7 +27,6 @@
 package org.clapper.curn;
 
 import java.net.URL;
-import java.io.File;
 
 import org.clapper.curn.parser.RSSChannel;
 
@@ -59,12 +58,8 @@ public class FeedInfo
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private boolean     summaryOnly           = false;
-    private boolean     enabled               = true;
     private int         daysToCache           = 0;
-    private String      titleOverride         = null;
     private URL         siteURL               = null;
-    private boolean     ignoreDuplicateTitles = false;
     private RSSChannel  parsedChannelData     = null;
     private String      forcedEncoding        = null;
 

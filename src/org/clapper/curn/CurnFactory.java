@@ -28,9 +28,6 @@ package org.clapper.curn;
 
 import org.clapper.util.logging.Logger;
 
-import java.io.File;
-import java.util.Collection;
-
 /**
  * <p>This static singleton class is used to allocate a new {@link Curn}
  * object for RSS processing. Hiding the allocation behind a factory allows

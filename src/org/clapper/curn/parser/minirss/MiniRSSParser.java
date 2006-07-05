@@ -33,11 +33,7 @@ import org.clapper.curn.parser.RSSParserException;
 import org.clapper.util.logging.Logger;
 
 import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.File;
 import java.io.InputStreamReader;
-import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
