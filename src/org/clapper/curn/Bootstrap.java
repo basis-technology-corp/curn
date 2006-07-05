@@ -121,14 +121,14 @@ public class Bootstrap
             File[] searchItems = new File[endOfArgsIndex];
             for (i = 0; i < endOfArgsIndex; i++)
             {
-                String path = args[i].replaceAll ("@user.home",
-                                                  getProperty ("user.home"))
-                                     .replaceAll ("@user.name",
-                                                  getProperty ("user.name"))
-                                     .replaceAll ("@java.home",
-                                                  getProperty ("java.home"))
-                                     .replaceAll ("@pwd",
-                                                  getProperty ("user.dir"));
+                String path = args[i].replace ("@user.home",
+                                               getProperty ("user.home"))
+                                     .replace ("@user.name",
+                                               getProperty ("user.name"))
+                                     .replace ("@java.home",
+                                               getProperty ("java.home"))
+                                     .replace ("@pwd",
+                                               getProperty ("user.dir"));
                 searchItems[i] = new File (path);
             }
 
