@@ -146,6 +146,7 @@ public class PlugInManager
             plugInLocFilter = new OrFileFilter
                 (
                  // must be a directory ...
+
                  new DirectoryFilter(),
 
                  // or, must be a file ending in .jar
