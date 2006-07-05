@@ -90,7 +90,12 @@ h6
     font-family: monospace, Courier New, Courier;
 }
 
-.path
+.env_var
+{
+    font-family: monospace, Courier New, Courier;
+}
+
+.filename
 {
     font-family: monospace, Courier New, Courier;
 }
@@ -309,6 +314,11 @@ th
     background-color: #d9d9d9;
 }
 
+a.sectionRef
+{
+    font-weight: bold;
+}
+
 -->
 </style>
 <script language="JavaScript" type="text/javascript">
@@ -430,6 +440,8 @@ function init()
 <ul class="toc">
   <li><a href="#Introduction">Introduction</a></li>
 
+  <li><a href="#Terminology">Terminology</a></li>
+
   <li><a href="#CommandLine"><i>curn</i> Command Line Syntax</a>
       <ul class="toc">
         <li><a href="#CommandLineOptions">Command Line Options</a></li>
@@ -500,7 +512,6 @@ function init()
 	      <li><a href="#PlugInOverview">Overview of Plug-In Support</a>
 	      <li><a href="#StockPlugIns">Stock Plug-ins</a>
 	      <li><a href="#PlugInInstallation">Installing New Plug-ins</a>
-	      <li><a href="#PlugInOutputHandlers">Output Handlers are also Plug-ins</a>
 	      <li><a href="#PlugInWriting">Writing <i>curn</i> Plug-ins</a>
 	      <ul class="toc">
 		<li><a href="#PlugInAPI">The <i>curn</i> Plug-in API</a>
@@ -521,6 +532,7 @@ function init()
                 </li>
             </ul>
         </li>
+	<li><a href="#InstallingSupportSoftware">Installing Supporting Software</a>
       </ul>
   </li>
 
@@ -579,7 +591,7 @@ also comes with built-in adapters for the
 See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
 item for information on how to specify which parser <i>curn</i> should use.
 See the section entitled
-<a href="#UnsupportedParser">Using an Unsupported RSS Parser</a> for more
+<a href="#UnsupportedParser" class="sectionRef">Using an Unsupported RSS Parser</a> for more
 details on adapting <i>curn</i> to use other RSS parsers.</p>
 
 <p><i>curn</i> supports a several output formats; you can configure
@@ -588,7 +600,7 @@ one or more output handlers in <i>curn</i>'s
 with Java programming or comfortable with a scripting language, such as
 Python or Ruby, can easily extend <i>curn</i> to handle a new output
 format. See the section entitled
-<a href="#NewOutputHandler">Writing Your Own Output Handler</a> for more
+<a href="#NewOutputHandler" class="sectionRef">Writing Your Own Output Handler</a> for more
 details. Finally, as of version 2.6, <i>curn</i> has a built-in template-driven
 output handler, based on the
 <a href="http://freemarker.sourceforge.net/">FreeMarker</a> template engine;
@@ -596,7 +608,7 @@ The <a href="#FreeMarkerOutputHandler" class="code">FreeMarkerOutputHandler</a>
 this handler uses a text template
 to generate output, so anyone conversant with FreeMarker can easily write
 his own template to generate custom output. See the section describing the
-<a href="#FreeMarkerOutputHandler" class="code">FreeMarkerOutputHandler</a>
+<a href="#FreeMarkerOutputHandler" class="code, sectionRef">FreeMarkerOutputHandler</a>
 for more details.</p>
 
 <p><i>curn</i>'s predefined output handlers can generate:</p>
@@ -616,9 +628,23 @@ then <i>curn</i> creates a MIME multipart/alternative email
 message&nbsp;<a href="#Note1">[1]</a>, using
 the output of each output handler as one of the alternative attachments.</p>
 
+<!-- ********************************************************************** -->
+<h1><a name="Terminology"></a>Terminology</h1>
+
+<p>Throughout this document, the following terms are used:</p>
+
+<ul>
+  <li><i>curn_home</i> is the <i>curn</i> installation directory.
+  <li><i>user_home</i> is the home directory of the user who's running
+      <i>curn</i>.(On Windows, the
+       <a href="#curn-script" class="code">curn.bat</a> front-end command
+       script uses the value of the <span class="env_var">%HOME%</span> variable
+       to override the Java VM's notion of the user's home directory, if
+       <span class="env_var">%HOME%</span> is set.)
+</ul>
 
 <!-- ********************************************************************** -->
-<h1><a name="CommandLine"><i>curn</i> Command Line Syntax</a></h1>
+<h1><a name="CommandLine"></a><i>curn</i> Command Line Syntax</h1>
 
 <p><i>curn</i> is invoked from the command line as follows:</p>
 
@@ -628,8 +654,8 @@ the output of each output handler as one of the alternative attachments.</p>
 The <i>curn</i> graphical installer automatically creates a Unix shell
 script (called <span class="code">curn</span>) or a Windows command file
 (<span class="code">curn.bat</span>) in the
-<span class="path">bin</span> directory beneath the <i>curn</i> installation
-directory. You must put the <i>curn</i> <span class="path">bin</span> directory
+<span class="filename">bin</span> directory beneath the <i>curn</i> installation
+directory. You must put the <i>curn</i> <span class="filename">bin</span> directory
 in your path.</p>
 
 <div class="alert">
@@ -639,7 +665,8 @@ command, it's not recommended. For <i>curn</i>'s
 <a href="#Plug-ins">plug-ins</a> to work properly, <i>curn</i> must do some
 fancy <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/ClassLoader.html">class loader</a> footwork.
 Basically, <i>curn</i> uses a special bootstrap class to
-find all plug-ins and create a special class loader that can load 
+find all plug-ins and create a special
+<a name="ClassLoader"></a>class loader that can load 
 everything&#8212;plug-ins, core code, etc. If you don't invoke <i>curn</i> via
 the bootstrap class, the plug-ins don't load properly.
 The <i>curn</i> shell script and command file handle invoking <i>curn</i>
@@ -1424,7 +1451,7 @@ detail, below. (Parameters marked with
     <td align="left">
       Default maximum number of days to cache an already-read item.
       This parameter is used when the configuration section for a
-      section for a particular site lacks its own
+      particular site lacks its own
       <a href="#Feed_DaysToCache" class="code">DaysToCache</a>
       value. Items older than this many days are tossed from the
       cache when it's read, which means <i>curn</i> forgets that it saw
@@ -1804,9 +1831,9 @@ detail, below. (Parameters marked with
       is greater than 0, then <i>curn</i> will keep that many numbered backups
       of the cache. If the cache exists when <i>curn</i> attempts to update
       it, <i>curn</i> will copy the existing cache to
-      <span class="path">cacheFile.0</span>. If
-      <span class="path">cacheFile.0</span> exists, it will be moved to
-      <span class="path">cacheFile.1</span> first, and so on down the line,
+      <span class="filename">cacheFile.0</span>. If
+      <span class="filename">cacheFile.0</span> exists, it will be moved to
+      <span class="filename">cacheFile.1</span> first, and so on down the line,
       until the maximum number of cache backup files exists.
       The newest cache is always the one without a numeric extension.
       the oldest file is the one with the largest numeric extension.
@@ -2899,7 +2926,7 @@ TemplateFile: file ../.curn/summary.ftl</pre></blockquote>
 		single quotes.) So, in the second example, above,
 		<span class="code">${system:user.home}\\curn\\text.ftl</span>
 		is double-quoted, in case the home directory is something
-		like <span class="path">C:\My Documents</span>.
+		like <span class="filename">C:\My Documents</span>.
  </li>
 	  </ol>
 	</td>
@@ -2925,9 +2952,9 @@ TemplateFile: url "${program:cwd.url}/curn/bin/html.ftl"</pre></blockquote>
 	  that last example above,
 	  <span class="code">${program:cwd:url}/curn/bin/html.ftl</span>
 	  might very well expand to
-	  <span class="path">file:/C:/Program Files/clapper.org/curn/bin/html.ftl</span>
+	  <span class="filename">file:/C:/Program Files/clapper.org/curn/bin/html.ftl</span>
 	  on a Windows system. Double-quoting it is necessary, because of the
-	  blank in <span class="path">Program Files</span>.
+	  blank in <span class="filename">Program Files</span>.
 	</td>
 	</tr>
       </table>
@@ -3518,13 +3545,14 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     <p>The scripting language, as recognized by BSF. This
     handler supports all the scripting language engines that
     are built into the BSF distribution. Of course, the jar
-    files for the scripting languages themselves must be in the
-    CLASSPATH at runtime, for those languages to be
-    available.</p>
+    files for the scripting languages themselves must be available at
+    runtime, for those languages to be
+    available. (See the section entitled
+    <a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details.)</p>
 
     <p>The following values are initially legal for this
     parameter. This set of values comes from the
-    <span class="path">Languages.properties</span> file
+    <span class="filename">Languages.properties</span> file
     distributed with BSF version 2.3.0; it represents the
     default language bindings recognized by BSF, minus those
     entries that are platform-specific (such as the ActiveScript
@@ -3765,52 +3793,17 @@ Windows) run <i>curn</i> for you automatically, every so often.</p>
 <p>I typically run <i>curn</i> three times a day, via <i>cron</i>, on
 weekdays and once on weekends, and I have it mail me the output. I use my
 personal crontab, rather than the system-wide
-<span class="path">/etc/crontab</span> file.
+<span class="filename">/etc/crontab</span> file.
 Here's a sample crontab entry that does this:</p>
 
 <table summary="" class="bordered uncolored" align="center">
   <tr valign="top">
     <td align="left">
-<blockquote><pre>0 8,12,16 * * 1-5  java org.clapper.curn.Tool my_address@example.com
-0 16 * * 0,6  java org.clapper.curn.Tool my_address@example.com</pre></blockquote>
+<blockquote><pre>0 8,12,16 * * 1-5  /usr/local/curn/bin/curn $HOME/.curn/my.cfg
+0 16 * * 0,6  /usr/local/curn/bin/curn $HOME/.curn/my.cfg</pre></blockquote>
     </td>
   </tr>
 </table>
-
-<p>Note the inclusion of an email address on the <i>curn</i> command line.
-A seasoned <i>cron</i> user will wonder why this is necessary. After all,
-<i>cron</i> handles emailing output just fine; why not let it do the
-emailing? That's certainly possible. But <i>curn</i> has emailing
-capabilities built into it (primarily for portability), and letting
-<i>curn</i> do the emailing permits me to control things like the
-<a href="#Cfg_MailSubject">email subject</a> from the <i>curn</i>
-configuration file.</p>
-
-<p>Of course, that <i>cron</i> command will fail, unless the classpath is
-set properly. You have several options here:</p>
-
-<ol>
-  <li>Set the <span class="code">CLASSPATH</span> environment variable at
-      the top of the crontab.
-  <li>Pass an explicit <span class="code">-classpath</span> parameter to the
-      <span class="code">java</span> command.
-  <li>Use a front-end <a href="curn_sh.txt">shell script</a> that contains the
-      appropriate <span class="code">CLASSPATH</span> value.
-</ol>
-
-<p>Any of those approaches will work. However, I use a shell script, for a
-couple of reasons:</p>
-
-<ul>
-  <li>Putting the <span class="code">CLASSPATH</span> ugliness in a shell
-      script makes for a cleaner and more readable crontab file.
-  <li>I occasionally invoke <i>curn</i> from the command line.
-      I'd rather type <span class="code">curn</span> than
-      <span class="code">java&nbsp;org.clapper.curn.Tool</span>.
-</ul>
-
-<p>You can find a sample shell script <a href="curn_sh.txt">here</a>. It's a
-trivial matter to customize it for your environment.</p>
 
 <h2><a name="UsingWindowsScheduler">Running <i>curn</i> via the Windows Scheduler</a></h2>
 
@@ -3953,6 +3946,8 @@ to <i>curn</i>'s main logic.</p>
 phases:</p>
 
 <ol>
+  <li><b>startup</b>: Initialization
+
   <li><b>configuration</b>: Read the configuration file (which includes the
       set of RSS feeds, the output handlers to use, the RSS parser to use,
       various cache-control values, and other things), load the on-disk
@@ -3971,15 +3966,16 @@ phases:</p>
   <li><b>output</b>: Pass the parsed feed data to the configured output
       handlers
 
-  <li><b>email</b>: Email the results, if email addresses were passed on the
-      command line.
+  <li><b>shutdown</b>: Cleanup.
 
 </ol>
 
 <p>Since <i>curn</i> permits you to specify the parsing and output handler
 classes in its configuration file, you can easily extend <i>curn's</i>
 capabilities by writing your output handler or integrating a different
-RSS parser.</p>
+RSS parser. In addition, as of version 3.0, <i>curn</i> supports
+general-purpose <a href="#Plug-ins">plug-ins</a> that can intercept
+various phases of <i>curn</i> processing.</p>
 
 <h2><a name="UnsupportedParser"></a>Using an Unsupported RSS Parser</h2>
 
@@ -4046,6 +4042,13 @@ integration, see the classes in the <i>curn</i> source code package
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
 <a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
 
+<p>Note: If you've written an adapter for an unsupported RSS parser engine,
+you'll have to make your adapter classes and the RSS parser classes available
+to <i>curn</i>. It's not sufficient to add the appropriate jar files to
+your <span class="env_var">CLASSPATH</span> environment variable.
+Please refer to the section entitled
+<a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details.</p>
+
 <h2><a name="Plug-ins"></a>Plug-ins</h2>
 
 <p>As of version 3.0, <i>curn</i> supports plug-ins. <i>curn</i> plug-ins
@@ -4061,14 +4064,10 @@ will search for and load plug-ins before it begins doing its real work.
 <i>curn</i> looks for plug-ins in the following directories:</p>
 
 <ul>
-  <li><span class="path"><i>curn_home</i>/plugins</span>
-  <li><span class="path"><i>user_home</i>/curn/plugins</span>
-  <li><span class="path"><i>user_home</i>/.curn/plugins</span>
+  <li><span class="filename"><i>curn_home</i>/plugins</span>
+  <li><span class="filename"><i>user_home</i>/curn/plugins</span>
+  <li><span class="filename"><i>user_home</i>/.curn/plugins</span>
 </ul>
-
-<p>(<i>curn_home</i> is the <i>curn</i> installation directory.
-<i>user_home</i> is the home directory of the user who's running
-<i>curn</i>.)</p>
 
 <p><a name="PlugInSearch"></a><i>curn</i> searches all jar files, zip files,
 and subdirectories in each of those directories, looking for any
@@ -4091,7 +4090,7 @@ plug-in.</p>
 Some of those plug-ins implement capabilities that were formerly in the
 <i>curn</i> core code; others provide new functionality. These plug-ins
 are automatically available (provided you don't delete the
-<span class="path">curn-plugins.jar</span> file that's shipped with
+<span class="filename">curn-plugins.jar</span> file that's shipped with
 <i>curn</i>). The following table summarizes the stock plug-ins. All
 stock plug-ins are in the
 <span class="code">org.clapper.curn.plugins</span> package.</p>
@@ -4290,23 +4289,7 @@ stock plug-ins are in the
 <p>Installing a custom plug-in (i.e., not one of <i>curn</i>'s
 <a href="#StockPlugIns">stock plug-ins</a>) is simple: Copy the plug-in's
 jar or zip file to one of the directories listed in the
-<a href="#PlugInOverview">Overview of Plug-In Support</a> section.</p>
-
-<h3><a name="PlugInOutputHandlers"></a>Output Handlers are also Plug-ins</h3>
-
-<p>Custom output handlers are also treated more or less like plug-ins. As
-<i>curn</i> is <a href="#PlugInSearch">searching for plug-ins</a>, it also
-attempts to locate new, non-stock
-<a href="#NewOutputHandler">output handler</a> classes. In fact, as of
-version 3.0, third-party and custom Java output handlers <i>must</i>
-be placed in one of the plug-in directories; because <i>curn</i>'s plug-in
-architecture uses a different Java
-<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/ClassLoader.html">class loader</a>,
-you can no longer just put your custom output handler's jar file in
-<i>curn</i>'s
-CLASSPATH. <i>curn</i> will not honor the CLASSPATH setting. If you copy
-your output handler's jar file to one of <i>curn</i>'s plug-in directories,
-however, it will find your output handler and make it available at run-time.</p>
+<a href="#PlugInOverview" class="sectionRef">Overview of Plug-In Support</a> section.</p>
 
 <h3><a name="PlugInWriting"></a>Writing <i>curn</i> Plug-ins</h3>
 
@@ -4735,7 +4718,7 @@ ZipOutputTo: /tmp/curn.zip
 
 <h2><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h2>
 
-<p>There are two ways to write your own output handler. You can write a
+<p>There are two ways to write your own output handler: You can write a
 Java class that implements the output handler, or you can write a script
 using a scripting language supported by the Apache Jakarta
 <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework</a> (BSF).
@@ -4759,8 +4742,9 @@ writing a FreeMarker template will be simpler and faster.</p>
   <li>First, write a Java class the implements the
       <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
       interface.
-  <li>Compile the class and place the compiled class somewhere in your
-      CLASSPATH.
+  <li>Compile the class, place it in a jar file, and put the jar file 
+      someplace where <i>curn</i> can find it. (See the section entitled
+      <a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details on where to place the jar file.)
   <li>Specify your new output handler in your <i>curn</i>
       <a href="#ConfigFile">configuration file</a>.
 </ul>
@@ -5293,8 +5277,8 @@ come bundled with BSF; see the <a href="#CfgScriptOutputHandler">configuration
 section for the <span class="code">ScriptOutputHandler</span> class</a>
 for the list of languages supported by default.</p>
 
-<p>At runtime, <i>curn</i>'s CLASSPATH must include the
-BSF jar file and the jar files for the scripting languages you want to use.</p>
+<p class="alert" align="center">Note: <i>curn</i> comes bundled with a compatible version of the
+BSF <span class="filename">bsf.jar</span> file.</p>
 
 <h4><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h4>
 
@@ -5483,7 +5467,7 @@ you can use existing Java classes from a Jython script.)</p>
 script for brevity. You can find the complete script, along with a
 <a href="http://jruby.sourceforge.net/">JRuby</a> implementation
 of the same functionality, in the <i>curn</i> source bundle, in directory
-<span class="path">src/org/clapper/curn/output/script</span>.</p>
+<span class="filename">src/org/clapper/curn/output/script</span>.</p>
 
 <table summary="" class="bordered uncolored" align="center">
   <tr>
@@ -5642,6 +5626,55 @@ Message: Copy saved in file ${system:user.home}/curn/rss-py.txt
   </tr>
 </table>
 
+<h2><a name="InstallingSupportSoftware"></a>Installing Supporting Software</h2>
+
+<p>As noted in the <a href="#PlugInOverview" class="sectionRef">Overview of Plug-In Support</a>
+section, <i>curn</i> searches for plug-ins in the following directories:</p>
+
+<ul>
+  <li><span class="filename"><i>curn_home</i>/plugins</span>
+  <li><span class="filename"><i>user_home</i>/curn/plugins</span>
+  <li><span class="filename"><i>user_home</i>/.curn/plugins</span>
+</ul>
+
+<p><i>curn</i> implicitly adds those directories to the internal class path
+used by the <i>curn</i> custom <a href="#ClassLoader">class loader</a>.
+<i>curn</i> also loads the following directories into its class loader:</p>
+
+<ul>
+  <li><span class="filename"><i>curn_home</i>/lib</span>
+  <li><span class="filename"><i>user_home</i>/curn/lib</span>
+  <li><span class="filename"><i>user_home</i>/.curn/lib</span>
+</ul>
+
+<p>If you've written or installed a plug-in, output handler or RSS parser
+adapter that requires some third-party support software (e.g., a
+third-party RSS parser engine), or if you want to enable logging using a
+non-bundled logging framework such as
+<a href="#Log4J" class="sectionRef">Log4J</a>), you'll have to install the
+appropriate support jars somewhere where <i>curn</i> can find them. If you
+install the jars in the <span class="filename">lib</span> directory
+underneath the <i>curn</i> installation directory, then they'll be available
+to any user who runs that <i>curn</i> installation. However, if you don't
+have permission to update that directory, or you only want to make your
+extensions available to you, then you can install your software in the
+appropriate <span class="filename">lib</span> directory under your home
+directory.</p>
+
+<div class="alert">
+
+As of version 3.0, non-bundled plug-ins <i>must</i> be placed in one of the
+sanctioned <span class="filename">plug-in</span> directories and
+non-bundled third-party software <i>must</i> be placed in one of the
+sanctioned <span class="filename">lib</span> directories. You
+<i>cannot</i> simply add the appropriate jars to your
+<span class="env_var">CLASSPATH</span> environment variable.
+To support plug-ins
+properly, <i>curn</i>'s plug-in architecture uses a different Java
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/ClassLoader.html">class loader</a>
+that does not honor the <span class="env_var">CLASSPATH</span> setting.
+</div>
+
 <!-- ********************************************************************** -->
 
 <h1><a name="Troubleshooting"></a>Troubleshooting</h1>
@@ -5698,13 +5731,13 @@ for those who care about such things, follow.</p>
 of plug-ins. As part of this bootstrap logic, <i>curn</i> installs its own
 class loader. However, the built-in JDK logging API doesn't play well in
 that environment. It always uses the system class loader&#8212;the
-CLASSPATH-driven class loader&#8212;to find its classes. Normally, this isn't
-too much of a problem, but <i>curn</i> doesn't rely on the CLASSPATH to find
+<span class="env_var">CLASSPATH</span>-driven class loader&#8212;to find its classes. Normally, this isn't
+too much of a problem, but <i>curn</i> doesn't rely on <span class="env_var">CLASSPATH</span> to find
 its code; instead, it uses its own class loader. Among the jar files
 <i>curn</i>'s class loader searches is the <i>org.clapper.util</i> utility
 library, the very library that contains the 
 <span class="code">JavaUtilLoggingTextFormatter</span> class. If you try
-to ensure that the <i>org.clapper.util</i> utility library is in the CLASSPATH
+to ensure that the <i>org.clapper.util</i> utility library is in the <span class="env_var">CLASSPATH</span>
 (and, therefore, available to the JDK logging API), you run the risk of causing
 problems with <i>curn</i>'s runtime environment.</p>
 
@@ -5820,9 +5853,12 @@ similar to the default Log4J text formatter.</p>
 
 <h3><a name="Log4J"></a>Log4J</h3>
 
-<p>This section assumes that you're using a properties file to configure
-the logging framework; if you're using an XML configuration file, you'll have
-to adapt these instructions as appropriate.</p>
+<p>Before you can use the Log4J framework with <i>curn</i>, you must install
+the  <span class="filename">log4j.jar</span> file so that <i>curn</i> can find
+it. (You can download that file from
+<a href="http://logging.apache.org/log4j/" class="url">http://logging.apache.org/log4j/</a>.) See the section entitled
+<a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a>
+for details on where to install <span class="filename">log4j.jar</span>.</p>
 
 <p>When you use the Log4J framework with <i>curn</i>, you must specify the
 location of the logging configuration file using
