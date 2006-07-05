@@ -23,7 +23,9 @@ Before building curn, you'll need:
 6. A SAX2 XML parser library. Apache Xerces (http://xerces.apache.org/)
    is a good choice. The appropriate jar files must be in the CLASSPATH.
 
-7. The izpack-compiler.jar file from the IzPack distribution
+7. The Jakarta Bean Scripting Framework (BSF) jar file, bsf.jar.
+
+8. The izpack-compiler.jar file from the IzPack distribution
    (http://izforge.com/izpack/). This is only necessary if you're going to
    build the graphical installer.
 
