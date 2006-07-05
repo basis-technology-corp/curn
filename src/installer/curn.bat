@@ -6,6 +6,28 @@ rem
 rem $Id$
 rem ---------------------------------------------------------------------------
 
-"$JAVA_HOME\bin\java" -classpath $INSTALL_PATH\lib\curnboot.jar -ea -client -Dcurn.home=$INSTALL_PATH org.clapper.curn.Bootstrap $INSTALL_PATH\lib $INSTALL_PATH\plugins @user.home\curn\plugins @user.home\.curn\plugins -- org.clapper.curn.Tool %1 %2 %3 %4 %5 %6 %7 %8 %9
+set JAVA_VM_ARGS=-Dcurn.home=$INSTALL_PATH
 
-:end 
+rem Make sure Java user.home property accurately reflects home directory
+if "%HOME%"=="" goto nohome
+set JAVA_VM_ARGS=%JAVA_VM_ARGS% -Duser.home=%HOME%
+
+:nohome
+
+"$JAVA_HOME\bin\java" ^
+%JAVA_VM_ARGS% ^
+-classpath $INSTALL_PATH\lib\curnboot.jar ^
+-ea ^
+-client ^
+org.clapper.curn.Bootstrap ^
+$INSTALL_PATH\lib ^
+$INSTALL_PATH\plugins ^
+@user.home\curn\plugins ^
+@user.home\.curn\plugins ^
+@user.home\curn\lib ^
+@user.home\.curn\lib ^
+-- ^
+org.clapper.curn.Tool %1 %2 %3 %4 %5 %6 %7 %8 %9
+
+:end
+
