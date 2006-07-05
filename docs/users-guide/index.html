@@ -795,6 +795,8 @@ Ant version:    Apache Ant version 1.6.5 compiled on June 2 2005</pre>
         via a <span class="code">-Djava.util.logging.config.file</span>
         system property. For instance,
         <blockquote><pre>java -Djava.util.logging.config.file=/tmp/logging.properties org.clapper.curn.Tool --logging ...</pre></blockquote>
+      See the section entitled <a href="#Logging" class="sectionRef">Logging</a>
+      for more details on specifying logging parameters.
     </td>
   </tr>
 
@@ -5784,12 +5786,25 @@ if you use the shell script, you can shorten the above command to:</p>
 <pre>curn -Djava.util.logging.config.file=/home/bmc/curn/logging.properties --logging /home/bmc/curn/curn.cfg</pre>
 </blockquote>
 
-<p>The Windows <a href="#curn-script" class="code">curn.bat</a> command file
-currently does not understand <span class="code">-D</span> parameters, so you
-either have to hack the command file or run <i>curn</i> manually, like this:</p>
+<p>Alternatively, you can set those values in the
+<span class="env_var">CURN_JAVA_VM_ARGS</span> environment variable, and
+<i>curn</i> will automatically supply them to the Java virtual machine.
+For example:</p>
 
 <blockquote>
-<pre>java -Djava.util.logging.config.file=C:\curn\logging.properties org.clapper.curn.Tool --logging /home/bmc/curn/curn.cfg</pre>
+<pre>export CURN_JAVA_VM_ARGS="-Djava.util.logging.config.file=/home/bmc/curn/logging.properties"
+curn --logging /home/bmc/.curn/curn.cfg</pre>
+</blockquote>
+
+<p>The Windows <a href="#curn-script" class="code">curn.bat</a> command file
+currently does not understand <span class="code">-D</span> parameters, so you
+must use the
+<span class="env_var">CURN_JAVA_VM_ARGS</span> environment variable method.
+For instance:
+
+<blockquote>
+<pre>set CURN_JAVA_VM_ARGS=-Djava.util.logging.config.file=/home/bmc/curn/logging.properties
+curn --logging %HOME%\.curn\curn.cfg</pre>
 </blockquote>
 
 <p>Here's a configuration file that writes logs all messages at the
@@ -5879,15 +5894,28 @@ by the graphical installer understands <span class="code">-D</span> parameters;
 if you use the shell script, you can shorten the above command to:</p>
 
 <blockquote>
-<pre>curn -Dlog4j.configuration=file:///home/bmc/curn/logging.properties --logging /home/bmc/curn/curn.cfg</pre>
+<pre>curn -Djava.util.logging.config.file=/home/bmc/curn/logging.properties --logging /home/bmc/curn/curn.cfg</pre>
+</blockquote>
+
+<p>Alternatively, you can set those values in the
+<span class="env_var">CURN_JAVA_VM_ARGS</span> environment variable, and
+<i>curn</i> will automatically supply them to the Java virtual machine.
+For example:</p>
+
+<blockquote>
+<pre>export CURN_JAVA_VM_ARGS="-Djava.util.logging.config.file=/home/bmc/curn/logging.properties"
+curn --logging /home/bmc/.curn/curn.cfg</pre>
 </blockquote>
 
 <p>The Windows <a href="#curn-script" class="code">curn.bat</a> command file
 currently does not understand <span class="code">-D</span> parameters, so you
-either have to hack the command file or run <i>curn</i> manually, like this:</p>
+must use the
+<span class="env_var">CURN_JAVA_VM_ARGS</span> environment variable method.
+For instance:
 
 <blockquote>
-<pre>java -Dlog4j.configuration=file://C|/curn/logging.properties org.clapper.curn.Tool --logging /home/bmc/curn/curn.cfg</pre>
+<pre>set CURN_JAVA_VM_ARGS=-Djava.util.logging.config.file=/home/bmc/curn/logging.properties
+curn --logging %HOME%\.curn\curn.cfg</pre>
 </blockquote>
 
 <p>Here's a configuration file that writes logs all messages at the

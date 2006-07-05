@@ -9,10 +9,9 @@ rem ---------------------------------------------------------------------------
 set JAVA_VM_ARGS=-Dcurn.home=$INSTALL_PATH
 
 rem Make sure Java user.home property accurately reflects home directory
-if "%HOME%"=="" goto nohome
-set JAVA_VM_ARGS=%JAVA_VM_ARGS% -Duser.home=%HOME%
+if NOT "%HOME%"=="" set JAVA_VM_ARGS=%JAVA_VM_ARGS% -Duser.home=%HOME%
 
-:nohome
+if NOT "%CURN_JAVA_VM_ARGS%"=="" set JAVA_VM_ARGS=%JAVA_VM_ARGS% %CURN_JAVA_VM_ARGS%
 
 "$JAVA_HOME\bin\java" ^
 %JAVA_VM_ARGS% ^

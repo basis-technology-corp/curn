@@ -19,6 +19,11 @@ do
     esac
 done
 
+if [ "$CURN_JAVA_VM_ARGS" != "" ]
+then
+    vm_opts="$vm_opts $CURN_JAVA_VM_ARGS"
+fi
+
 exec $JAVA_HOME/bin/java \
 -classpath \
 $INSTALL_PATH/lib/curnboot.jar \
