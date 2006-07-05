@@ -26,9 +26,6 @@
 
 package org.clapper.curn;
 
-import org.clapper.curn.Curn;
-import org.clapper.curn.CurnException;
-
 import org.clapper.util.logging.Logger;
 
 import org.clapper.util.io.AndFileFilter;
@@ -46,21 +43,17 @@ import org.clapper.util.classutil.ClassModifiersClassFilter;
 import org.clapper.util.classutil.AndClassFilter;
 import org.clapper.util.classutil.OrClassFilter;
 import org.clapper.util.classutil.AbstractClassFilter;
-import org.clapper.util.classutil.InterfaceOnlyClassFilter;
 import org.clapper.util.classutil.NotClassFilter;
 import org.clapper.util.classutil.RegexClassFilter;
 import org.clapper.util.classutil.SubclassClassFilter;
-import org.clapper.util.classutil.ClassLoaderBuilder;
 
 import java.lang.reflect.Modifier;
 
-import java.io.File;
 import java.io.FileFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -85,8 +78,6 @@ public class PlugInManager
     /*----------------------------------------------------------------------*\
                                  Constants
     \*----------------------------------------------------------------------*/
-
-    private static final String BUNDLE_NAME = "org.clapper.curn.PlugInManager";
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -122,12 +113,6 @@ public class PlugInManager
      */
     private static Collection<PlugIn> plugIns =
         new TreeSet<PlugIn> (new PlugInComparator());
-
-    /**
-     * The located OutputHandler classes
-     */
-    private static Collection<Class> outputHandlerClasses =
-        new ArrayList<Class>();
 
     /**
      * Whether or not plug-ins are loaded
@@ -197,21 +182,16 @@ public class PlugInManager
      * in a <tt>Map</tt> that's indexed by short class name.
      *
      * @param plugInMap        the map for plug-ins
-     * @param outputHandlerMap the map for output handlers
      *
      * @throws CurnException on error
      */
-    static void listPlugIns (Map<String,Class> plugInMap,
-                             Map<String,Class> outputHandlerMap)
+    static void listPlugIns (Map<String,Class> plugInMap)
         throws CurnException
     {
         loadPlugIns();
 
         for (PlugIn plugIn : plugIns)
             plugInMap.put (plugIn.getName(), plugIn.getClass());
-
-        for (Class cls : outputHandlerClasses)
-            outputHandlerMap.put (ClassUtil.getShortClassName (cls), cls);
     }
 
     /**
@@ -224,7 +204,7 @@ public class PlugInManager
     {
         if (! plugInsLoaded)
         {
-            MetaPlugIn metaPlugIn = MetaPlugIn.createMetaPlugIn();
+            MetaPlugIn.createMetaPlugIn();
 
             ClassFinder classFinder = new ClassFinder();
 
@@ -320,7 +300,6 @@ public class PlugInManager
         MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
 
         int totalPlugInsLoaded = 0;
-        int totalOutputHandlersLoaded = 0;
 
         for (ClassInfo classInfo : classes)
         {
@@ -329,28 +308,14 @@ public class PlugInManager
             {
                 Class cls = Class.forName (className);
 
-                if (OutputHandler.class.isAssignableFrom (cls))
-                {
-                    // It's an output handler. We're done, since the class
-                    // is now loaded.
+                // Instantite the plug-in via the default constructor and
+                // add it to the meta-plug-in.
 
-                    log.info ("Loaded output handler class \"" + className +
-                              "\"");
-                    outputHandlerClasses.add (cls);
-                    totalOutputHandlersLoaded++;
-                }
-
-                else
-                {
-                    // It must be a plug-in. Instantite the plug-in via the
-                    // default constructor and add it to the meta-plug-in
-
-                    PlugIn plugIn = (PlugIn) cls.newInstance();
-                    log.info ("Loaded \"" + plugIn.getName() + "\" plug-in");
-                    metaPlugIn.addPlugIn (plugIn);
-                    plugIns.add (plugIn);
-                    totalPlugInsLoaded++;
-                }
+                PlugIn plugIn = (PlugIn) cls.newInstance();
+                log.info("Loaded \"" + plugIn.getName() + "\" plug-in");
+                metaPlugIn.addPlugIn(plugIn);
+                plugIns.add(plugIn);
+                totalPlugInsLoaded++;
             }
 
             catch (ClassNotFoundException ex)
@@ -403,10 +368,6 @@ public class PlugInManager
                       totalPlugInsLoaded +
                       " plug-in" +
                       ((totalPlugInsLoaded == 1) ? "" : "s") +
-                      " and " +
-                      totalOutputHandlersLoaded +
-                      " output handler" +
-                      ((totalOutputHandlersLoaded == 1) ? "" : "s") +
                       " of " +
                       totalClasses +
                       " plug-in class" +
