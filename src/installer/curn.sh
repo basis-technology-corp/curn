@@ -31,5 +31,7 @@ $INSTALL_PATH/lib \
 $INSTALL_PATH/plugins \
 @user.home/curn/plugins \
 @user.home/.curn/plugins \
+@user.home/curn/lib \
+@user.home/.curn/lib \
 -- \
 org.clapper.curn.Tool "${@}"
