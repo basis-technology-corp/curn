@@ -596,7 +596,7 @@ public class Tool
         Map<String,Class> plugIns = new TreeMap<String,Class>();
         Map<String,Class> outputHandlers = new TreeMap<String,Class>();
 
-        PlugInManager.listPlugIns (plugIns, outputHandlers);
+        PlugInManager.listPlugIns (plugIns);
 
         System.out.println();
         System.out.println ("Plug-ins:");
@@ -605,15 +605,6 @@ public class Tool
         {
             System.out.println (name + " (" + plugIns.get (name).getName() +
                                 ")");
-        }
-
-        System.out.println();
-        System.out.println ("Output Handler Plug-ins:");
-        System.out.println();
-        for (String name : outputHandlers.keySet())
-        {
-            System.out.println (name + " (" +
-                                outputHandlers.get (name).getName() + ")");
         }
     }
 
