@@ -112,7 +112,6 @@ source and documentation packages.
     <pathelement location="${third.party.jar.dir}/bsf.jar"/>
     <pathelement location="${third.party.jar.dir}/rome.jar"/>
     <pathelement location="${third.party.jar.dir}/informa.jar"/>
-    <pathelement location="${third.party.jar.dir}/jdom.jar"/>
     <pathelement location="${ant.home}/lib/ant.jar"/>
   </path>
 
