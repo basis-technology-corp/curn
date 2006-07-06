@@ -27,9 +27,9 @@ Version 3.0 (5 July, 2006)
      Bootstrap class that finds all the plug-in jar files and installs an
      alternate class loader that will load classes from them.
 
-  2. Custom OutputHandler classes should also be placed in one of the
-     plug-in directories, so that curn can find them. Simply adding them to
-     the CLASSPATH won't work any more.
+  2. Custom OutputHandler classes should now be placed in ${curn.home}/lib,
+     ${user.home}/curn/lib or ${user.home}/.curn/lib, so that curn can find
+     them. Simply adding them to the CLASSPATH won't work any more.
 
 - Converted some base curn functionality into (built-in) plug-ins.
 
@@ -136,11 +136,6 @@ Version 3.0 (5 July, 2006)
 
 - Completely removed support for old-style curn binary cache file. curn
   will no longer read and convert a pre-2.0 binary cache file.
-
-- The old HTMLOutputHandler, TextOutputHandler and SimpleSummaryOutputHandler
-  classes have been removed. They were deprecated in version 2.6, in favor
-  of the (then new) FreemarkerOutputHandler which, in combination with some
-  predefined templates shipped with curn, produces the same output.
 
 - All classes extending org.clapper.curn.parser.RSSChannel must now provide
   a "removeItem()" method. This change only affects custom adapters for RSS
