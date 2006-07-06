@@ -30,6 +30,17 @@ Before building curn, you'll need:
    build the graphical installer.
 
 
+PREPARATION:
+------------
+
+Place the third-party jar files you downloaded, above, in a directory
+somewhere (except, obviously, for the Ant jars). Then, in the source
+directory (the directory containing curn's "build.xml" file), create a
+file called "build.properties", with the following line:
+
+    third.party.jar.dir: /path/to/directory/containing/jars
+
+
 BUILDING:
 ---------
 
@@ -78,32 +89,10 @@ made the appropriate jar files available in the CLASSPATH, the curn Ant
 "build.xml" file will automatically detect their presence and will
 build the adapter classes.
 
-See the Curn Users Guide for details on using other RSS parsers at run-time.
+See the curn Users Guide for details on using other RSS parsers at run-time.
 
 
-B. Output Handlers
-
-By default, curn builds with a simple text output handler. That output
-handler writes the parsed RSS information in plain text. curn also ships
-with an output handler that writes HTML output. However, the HTML output
-handler classes will not build unless you have installed the third-party
-XMLC component. If you've installed XMLC and made the appropriate jar files
-available in the CLASSPATH, the curn Ant "build.xml" file will
-automatically detect XMLC's presence and will build the HTML output
-handler. To install XMLC:
-
-- Download and install XMLC, available at http://xmlc.objectweb.org/
-
-- Place the required XMLC run-time jar files in your CLASSPATH.
-
-- Place the xmlc-taskdef.jar jar file in your CLASSPATH (or in ANT_HOME/lib).
-  This makes the <xmlc> ant task available.
-
-See the sample configuration file, sample.cfg, for a sample entry to
-enable use of the HTML output handler.
-
-
-C. Email support
+B. Email support
 
 curn can email its output, rather than simply printing it on standard
 output. This is especially useful when multiple output handlers are used.
