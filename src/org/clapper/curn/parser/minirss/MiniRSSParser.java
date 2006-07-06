@@ -339,6 +339,7 @@ public class MiniRSSParser
 
         catch (SAXException ex)
         {
+            log.error ("XML parse error", ex);
             throw new RSSParserException (ex);
         }
 
