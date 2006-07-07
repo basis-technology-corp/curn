@@ -85,6 +85,12 @@ source and documentation packages.
   <property name="zip_dir_prefix" value="curn/"/>
   <property name="javadoc_zip_dir_prefix" value=""/>
   <property name="release_dir" value="${build.dir}/release"/>
+
+  <property name="asm.version" value="2.2.3"/>
+
+  <!--
+      Load properties file containing user overrides for certain things.
+  -->
   <property file="build.properties"/>
 
   <!--
@@ -102,9 +108,11 @@ source and documentation packages.
     <pathelement location="lib/"/>
     <pathelement location="${third.party.jar.dir}/activation.jar"/>
     <pathelement location="${third.party.jar.dir}/mail.jar"/>
-    <pathelement location="${third.party.jar.dir}/asm-2.2.1.jar"/>
-    <pathelement location="${third.party.jar.dir}/asm-commons-2.2.1.jar"/>
-    <pathelement location="${third.party.jar.dir}/asm-util-2.2.1.jar"/>
+    <pathelement location="${third.party.jar.dir}/asm-${asm.version}.jar"/>
+    <pathelement
+        location="${third.party.jar.dir}/asm-commons-${asm.version}.jar"/>
+    <pathelement
+        location="${third.party.jar.dir}/asm-util-${asm.version}.jar"/>
     <pathelement location="${third.party.jar.dir}/commons-logging.jar"/>
     <pathelement location="${third.party.jar.dir}/freemarker.jar"/>
     <pathelement location="${third.party.jar.dir}/ocutil.jar"/>
@@ -679,6 +687,7 @@ source and documentation packages.
         <filter token="SRC_INSTALL" value="${src.install}"/>
         <filter token="RELEASE_DIR" value="${release_dir}"/>
         <filter token="THIRD_PARTY_JAR_DIR" value="${third.party.jar.dir}"/>
+        <filter token="ASM_VERSION" value="${asm.version}"/>
         <filter token="TOP_DIR" value="${top.dir}"/>
         <filter token="SRC_TOP" value="${src.top}"/>
         <filter token="BUILD_DIR" value="${build.dir}"/>

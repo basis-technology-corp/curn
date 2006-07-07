@@ -83,11 +83,11 @@
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/xerces.jar"
             targetdir="$INSTALL_PATH/lib"/>
-      <file src="@THIRD_PARTY_JAR_DIR@/asm-2.2.1.jar"
+      <file src="@THIRD_PARTY_JAR_DIR@/asm-@ASM_VERSION@.jar"
             targetdir="$INSTALL_PATH/lib"/>
-      <file src="@THIRD_PARTY_JAR_DIR@/asm-commons-2.2.1.jar"
+      <file src="@THIRD_PARTY_JAR_DIR@/asm-commons-@ASM_VERSION@.jar"
             targetdir="$INSTALL_PATH/lib"/>
-      <file src="@THIRD_PARTY_JAR_DIR@/asm-util-2.2.1.jar"
+      <file src="@THIRD_PARTY_JAR_DIR@/asm-util-@ASM_VERSION@.jar"
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/bsf.jar"
             targetdir="$INSTALL_PATH/lib"/>
