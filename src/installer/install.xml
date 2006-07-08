@@ -26,7 +26,7 @@
   </locale>
 
   <resources>
-    <res id="LicencePanel.licence" src="@INSTALL_TMP@/LICENSE"/>
+    <res id="HTMLLicencePanel.licence" src="@TOP_DIR@/LICENSE.html"/>
     <res id="Installer.image" src="@SRC_INSTALL@/curn-logo.png"/>
     <res id="HTMLInfoPanel.info" src="@TOP_DIR@/README.html"/>
 
@@ -50,7 +50,7 @@
   <panels>
     <panel classname="HelloPanel"/>
     <panel classname="HTMLInfoPanel"/>
-    <panel classname="LicencePanel"/>
+    <panel classname="HTMLLicencePanel"/>
     <panel classname="TargetPanel"/>
     <panel classname="PacksPanel"/>
     <panel classname="InstallPanel"/>
@@ -63,6 +63,8 @@
     <pack name="Core" required="yes">
       <description>The curn jar file, binaries, and dependent jars</description>
       <singlefile src="@TOP_DIR@/LICENSE" target="$INSTALL_PATH/LICENSE.txt"/>
+      <singlefile src="@TOP_DIR@/LICENSE.html" 
+                  target="$INSTALL_PATH/LICENSE.html"/>
       <singlefile src="@TOP_DIR@/README.html"
                   target="$INSTALL_PATH/README.html"/>
       <singlefile src="@TOP_DIR@/README" target="$INSTALL_PATH/README.txt"/>
