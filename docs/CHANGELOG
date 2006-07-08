@@ -6,6 +6,12 @@ $Id$
 Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.0.1 (...)
+
+- Graphical installer now renders the license in a more readable,
+  proportional font.
+
+
 Version 3.0 (5 July, 2006)
 
 			       ------------
