@@ -469,6 +469,44 @@ source and documentation packages.
 
   <!--
   ***************************************************************************
+                       Profiling & Debugging Targets
+  ***************************************************************************
+  -->
+
+  <target name="profile" depends="build"
+          description="Profile the project under the NetBeans IDEx">
+    <fail unless="netbeans.home">This target requires the NetBeans IDE.</fail>
+    <nbprofiledirect>
+      <classpath refid="project.class.path"/>
+    </nbprofiledirect>
+
+    <java classname="org.clapper.curn.Bootstrap" fork="true">
+      <classpath>
+        <pathelement location="${curnboot_jar_path}"/>
+      </classpath>
+
+      <jvmarg value="${profiler.info.jvmargs.agent}"/>
+      <jvmarg value="-Dcurn.home=${build.dir}"/>
+      <jvmarg value="-ea"/>
+      <jvmarg value="-client"/>
+      <jvmarg value="-Dorg.apache.commons.logging.log=org.apache.commons.logging.impl.Log4JLogger"/>
+      <jvmarg value="-Dlog4j.configuration=file:${user.home}/.curn/log4j-debug.properties"/>
+      <jvmarg value="-Did=profiler"/>
+      <arg value="${curn_jar_dir}"/>
+      <arg value="${third.party.jar.dir}"/>
+      <arg value="@user.home/curn/plugins"/>
+      <arg value="@user.home/.curn/lib"/>
+      <arg value="@user.home/.curn/plugins"/>
+      <arg value="--"/>
+      <arg value="org.clapper.curn.Tool"/>
+      <arg value="--logging"/>
+      <arg value="--no-cache"/>
+      <arg value="${user.home}/.curn/tst.cfg"/>
+    </java>
+  </target>
+
+  <!--
+  ***************************************************************************
                       Version and Build-info Targets
   ***************************************************************************
   -->
