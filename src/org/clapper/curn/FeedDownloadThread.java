@@ -321,7 +321,6 @@ class FeedDownloadThread extends Thread
         URL         feedURL = feedInfo.getURL();
         String      feedURLString = feedURL.toString();
         RSSChannel  channel = null;
-        String      s;
 
         try
         {
@@ -661,7 +660,6 @@ class FeedDownloadThread extends Thread
                                            FeedCache     cache)
     {
         long     lastSeen = 0;
-        boolean  hasChanged = false;
         URL      feedURL = feedInfo.getURL();
 
         if (cache != null)

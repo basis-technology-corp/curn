@@ -196,15 +196,18 @@ public class CurnUtil
      */
     public static String getResourceFromBundle (String key, Locale locale)
     {
+        String result = null;
+
         try
         {
-            return getResourceBundle (locale).getString (key);
+            result = getResourceBundle(locale).getString(key);
         }
 
         catch (MissingResourceException ex)
         {
-            return null;
         }
+        
+        return result;
     }
 
     /**
@@ -247,6 +250,9 @@ public class CurnUtil
                 buf.append (path);
                 buf.append (RollingFileWriter.INDEX_PATTERN);
                 break;
+                
+            default:
+                assert (false);
         }
 
         return buf.toString();

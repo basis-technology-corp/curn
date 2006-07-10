@@ -276,8 +276,7 @@ public class FeedException extends CurnException
      */
     public String getMessage (Locale locale)
     {
-	StringBuffer buf = new StringBuffer();
-        String       msg = null;
+	StringBuilder buf = new StringBuilder();
 
         buf.append (BundleUtil.getMessage (Constants.BUNDLE_NAME,
                                            locale,

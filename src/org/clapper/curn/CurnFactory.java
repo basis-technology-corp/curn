@@ -46,7 +46,7 @@ public class CurnFactory
     /**
      * For log messages
      */
-    private static Logger log = new Logger (CurnFactory.class);
+    private static Logger log = new Logger (CurnFactory.class); // NOPMD
 
     /*----------------------------------------------------------------------*\
                                 Constructor

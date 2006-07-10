@@ -121,7 +121,7 @@ public class PlugInManager
     /**
      * File filter to use when looking for jars, zip files, and directories.
      */
-    private static FileFilter plugInLocFilter = null;
+    private static FileFilter plugInLocFilter = null; // NOPMD
 
     static
     {
