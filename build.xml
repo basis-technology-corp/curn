@@ -605,6 +605,7 @@ source and documentation packages.
       <fileset dir="${compiled.classes.dir}">
         <exclude name="**/plugins/*.class"/>
         <exclude name="org/clapper/curn/Bootstrap.class"/>
+        <exclude name="org/clapper/curn/BootstrapException.class"/>
       </fileset>
     </jar>
   </target>
@@ -614,7 +615,8 @@ source and documentation packages.
     <mkdir dir="${curnboot_jar_dir}"/>
     <jar jarfile="${curnboot_jar_path}">
       <fileset dir="${compiled.classes.dir}">
-        <include name="org/clapper/curn/Bootstrap*.class"/>
+        <include name="org/clapper/curn/Bootstrap.class"/>
+        <include name="org/clapper/curn/BootstrapException.class"/>
       </fileset>
     </jar>
   </target>
