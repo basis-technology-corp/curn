@@ -89,17 +89,16 @@ public class Curn
     \*----------------------------------------------------------------------*/
 
     private CurnConfig config = null;
-    private FeedCache cache = null;
     private Date currentTime = new Date();
-    private MetaPlugIn metaPlugIn = null;
+    private MetaPlugIn metaPlugIn = null;            // NOPMD
 
-    private Collection<ConfiguredOutputHandler> configuredOutputHandlers =
+    private final Collection<ConfiguredOutputHandler> configuredOutputHandlers =
         new ArrayList<ConfiguredOutputHandler>();
 
     /**
      * For log messages
      */
-    private static Logger log = new Logger (Curn.class);
+    private static final Logger log = new Logger (Curn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -129,7 +128,7 @@ public class Curn
      *
      * @throws CurnException on error
      */
-    public void run (String configPath, boolean useCache)
+    public void run (final String configPath, final boolean useCache)
         throws CurnException
     {
         metaPlugIn.runStartupPlugIn();
@@ -164,7 +163,7 @@ public class Curn
      *
      * @param newTime  the time to pretend is the current time
      */
-    public void setCurrentTime (Date newTime)
+    public void setCurrentTime (final Date newTime)
     {
         this.currentTime = newTime;
     }
@@ -184,7 +183,7 @@ public class Curn
      * @throws RSSParserException      error parsing XML feed(s)
      * @throws CurnException           any other error
      */
-    private void processRSSFeeds (boolean useCache)
+    private void processRSSFeeds (final boolean useCache)
         throws ConfigurationException,
                RSSParserException,
                CurnException
@@ -192,6 +191,7 @@ public class Curn
         Map<FeedInfo,RSSChannel> channels;
         boolean                  parsingEnabled = true;
         File                     cacheFile = config.getCacheFile();
+        FeedCache                cache = null;
 
         loadOutputHandlers (config);
 
@@ -246,7 +246,7 @@ public class Curn
         }
     }
 
-    private CurnConfig loadConfig (String configPath)
+    private CurnConfig loadConfig (final String configPath)
         throws CurnException
     {
         try
@@ -281,7 +281,7 @@ public class Curn
         }
     }
 
-    private void loadOutputHandlers (CurnConfig configuration)
+    private void loadOutputHandlers (final CurnConfig configuration)
         throws ConfigurationException,
                CurnException
     {
@@ -329,9 +329,9 @@ public class Curn
      * @throws CurnException      some other error
      */
     private Map<FeedInfo,RSSChannel>
-    doSingleThreadedFeedDownload (boolean    parsingEnabled,
-                                  FeedCache  feedCache,
-                                  CurnConfig configuration)
+    doSingleThreadedFeedDownload (final boolean    parsingEnabled,
+                                  final FeedCache  feedCache,
+                                  final CurnConfig configuration)
         throws RSSParserException,
                CurnException
     {
@@ -403,9 +403,9 @@ public class Curn
      * @throws CurnException      some other error
      */
     private Map<FeedInfo,RSSChannel>
-    doMultithreadedFeedDownload (boolean    parsingEnabled,
-                                 FeedCache  feedCache,
-                                 CurnConfig configuration)
+    doMultithreadedFeedDownload (final boolean    parsingEnabled,
+                                 final FeedCache  feedCache,
+                                 final CurnConfig configuration)
         throws RSSParserException,
                CurnException
     {
@@ -526,7 +526,7 @@ public class Curn
      *
      * @throws RSSParserException error instantiating parser
      */
-    private RSSParser getRSSParser (CurnConfig configuration)
+    private RSSParser getRSSParser (final CurnConfig configuration)
         throws RSSParserException
     {
         String parserClassName = configuration.getRSSParserClassName();
@@ -534,7 +534,7 @@ public class Curn
         return RSSParserFactory.getRSSParser (parserClassName);
     }
 
-    private void outputChannels (Map<FeedInfo,RSSChannel> channels)
+    private void outputChannels (final Map<FeedInfo,RSSChannel> channels)
         throws CurnException,
                ConfigurationException
     {

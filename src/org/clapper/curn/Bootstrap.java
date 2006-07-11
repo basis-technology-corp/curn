@@ -90,13 +90,24 @@ public class Bootstrap
     \*----------------------------------------------------------------------*/
 
     /*----------------------------------------------------------------------*\
+                               Constructor
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Can't be instantiated.
+     */
+    private Bootstrap()
+    {
+    }
+
+    /*----------------------------------------------------------------------*\
                                Main Program
     \*----------------------------------------------------------------------*/
 
     /**
      * Main program
      */
-    public static void main (String[] args) throws Throwable
+    public static void main (final String[] args) throws Throwable
     {
         try
         {
@@ -192,7 +203,8 @@ public class Bootstrap
                             "programClassName [args]");
     }
 
-    private static ClassLoader createClassLoader (ArrayList<File> searchItems)
+    private static ClassLoader
+    createClassLoader (final ArrayList<File> searchItems)
         throws MalformedURLException
     {
         ArrayList<URL> urlList = new ArrayList<URL>();
@@ -228,8 +240,8 @@ public class Bootstrap
                                    ClassLoader.getSystemClassLoader());
     }
 
-    private static void expandSearchItems (File[]          searchItems,
-                                           ArrayList<File> expandedItems)
+    private static void expandSearchItems (final File[]          searchItems,
+                                           final ArrayList<File> expandedItems)
         throws MalformedURLException
     {
         for (int i = 0; i < searchItems.length; i++)
@@ -257,16 +269,51 @@ public class Bootstrap
         }
     }
 
-    private static void loadAndRun (String commandClassName,
-                                    String[] args,
-                                    ClassLoader classLoader)
-        throws Throwable
+    private static void loadAndRun (final String commandClassName,
+                                    final String[] args,
+                                    final ClassLoader classLoader)
+        throws BootstrapException
     {
-        Class cls = classLoader.loadClass (commandClassName);
-        Method mainMethod = cls.getMethod ("main",
-                                           new Class[] {String[].class});
+        Class cls;
+        try
+        {
+            cls = classLoader.loadClass(commandClassName);
+        }
+
+        catch (ClassNotFoundException ex)
+        {
+            throw new BootstrapException ("Can't load command class " +
+                                          commandClassName,
+                                          ex);
+        }
+        Method mainMethod;
+        try
+        {
+            mainMethod = cls.getMethod("main",
+                                      new Class[] {String[].class});
+        }
+
+        catch (SecurityException ex)
+        {
+            throw new BootstrapException ("Can't get method " +
+                                          commandClassName +
+                                          ".main()",
+                                          ex);
+        }
+
+        catch (NoSuchMethodException ex)
+        {
+            throw new BootstrapException ("Can't findmethod " +
+                                          commandClassName +
+                                          ".main()",
+                                          ex);
+        }
+
         if ((mainMethod.getModifiers() & Modifier.STATIC) == 0)
-            throw new Exception (commandClassName + ".main() is not static");
+        {
+            throw new BootstrapException (commandClassName +
+                                          ".main() is not static");
+        }
 
         try
         {
@@ -276,11 +323,22 @@ public class Bootstrap
 
         catch (InvocationTargetException ex)
         {
-            throw ex.getTargetException();
+            throw new BootstrapException ("Cannot invoke " +
+                                          commandClassName +
+                                          ".main()",
+                                          ex);
         }
-    }
 
-    private static String getProperty (String name)
+        catch (IllegalAccessException ex)
+        {
+            throw new BootstrapException ("Cannot invoke " +
+                                          commandClassName +
+                                          ".main()",
+                                          ex);
+        }
+     }
+
+    private static String getProperty (final String name)
     {
         String val = System.getProperty (name);
 

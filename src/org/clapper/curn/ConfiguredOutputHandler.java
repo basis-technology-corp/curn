@@ -47,17 +47,19 @@ public class ConfiguredOutputHandler implements Comparable
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private String        sectionName;
-    private String        className;
-    private String        name;
-    private OutputHandler handler = null;
-    private boolean       disabled = false;
-    private Map<String,String> extraVariables = new HashMap<String,String>();
+    private final String             sectionName;
+    private final String             className;
+    private final String             name;
+    private OutputHandler            handler = null;
+    private boolean                  disabled = false;
+    private final Map<String,String> extraVariables =
+        new HashMap<String,String>();
 
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ConfiguredOutputHandler.class);
+    private static final Logger log =
+        new Logger (ConfiguredOutputHandler.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -187,7 +189,7 @@ public class ConfiguredOutputHandler implements Comparable
      * @throws ClassCastException  if the specified object's type prevents
      *                             it from being compared to this Object.
      */
-    public int compareTo (Object o)
+    public int compareTo (final Object o)
         throws ClassCastException
     {
         int cmp = 0;
@@ -215,7 +217,7 @@ public class ConfiguredOutputHandler implements Comparable
      * @param name  the variable name
      * @param value the value
      */
-    void addExtraVariable (String name, String value)
+    void addExtraVariable (final String name, final String value)
     {
         extraVariables.put (name, value);
     }

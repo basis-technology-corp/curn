@@ -141,7 +141,7 @@ public class CurnConfig extends Configuration
     /**
      * For log messages
      */
-    private static Logger log = new Logger (CurnConfig.class);
+    private static final Logger log = new Logger (CurnConfig.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -338,7 +338,7 @@ public class CurnConfig extends Configuration
      *
      * @see #getMaxThreads
      */
-    public void setMaxThreads (int newValue)
+    public void setMaxThreads (final int newValue)
         throws ConfigurationException
     {
         if (newValue <= 0)
@@ -368,7 +368,7 @@ public class CurnConfig extends Configuration
      * @see #mustUpdateCache
      * @see #getCacheFile
      */
-    public void setMustUpdateCacheFlag (boolean val)
+    public void setMustUpdateCacheFlag (final boolean val)
     {
         updateCache = val;
     }
@@ -393,7 +393,7 @@ public class CurnConfig extends Configuration
      *
      * @see #showRSSVersion
      */
-    public void setShowRSSVersionFlag (boolean val)
+    public void setShowRSSVersionFlag (final boolean val)
     {
         this.showRSSFormat = val;
     }
@@ -425,7 +425,7 @@ public class CurnConfig extends Configuration
      * @see #getFeedInfoFor(String)
      * @see #getFeedInfoFor(URL)
      */
-    public boolean hasFeed (URL url)
+    public boolean hasFeed (final URL url)
     {
         return feedMap.containsKey (url.toString());
     }
@@ -443,7 +443,7 @@ public class CurnConfig extends Configuration
      * @see #getFeedInfoFor(String)
      * @see FeedInfo
      */
-    public FeedInfo getFeedInfoFor (URL url)
+    public FeedInfo getFeedInfoFor (final URL url)
     {
         return (FeedInfo) feedMap.get (url.toString());
     }
@@ -461,7 +461,7 @@ public class CurnConfig extends Configuration
      * @see #getFeedInfoFor(URL)
      * @see FeedInfo
      */
-    public FeedInfo getFeedInfoFor (String urlString)
+    public FeedInfo getFeedInfoFor (final String urlString)
     {
         return (FeedInfo) feedMap.get (urlString);
     }
@@ -474,8 +474,8 @@ public class CurnConfig extends Configuration
      *
      * @return the message
      */
-    public String getDeprecatedParamMessage (String badParam,
-                                             String goodParam)
+    public String getDeprecatedParamMessage (final String badParam,
+                                             final String goodParam)
     {
         StringBuilder buf = new StringBuilder();
 
@@ -576,7 +576,8 @@ public class CurnConfig extends Configuration
                      {
                          ex.getVariableName(),
                          ex.getSectionName()
-                     });
+                     },
+                     ex);
             }
         }
     }
