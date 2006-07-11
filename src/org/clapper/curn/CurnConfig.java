@@ -141,88 +141,19 @@ public class CurnConfig extends Configuration
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (CurnConfig.class);
+    private static final Logger log = new Logger(CurnConfig.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Construct an <tt>CurnConfig</tt> object that parses data
-     * from the specified file.
-     *
-     * @param f  The <tt>File</tt> to open and parse
-     *
-     * @throws IOException             can't open or read file
-     * @throws ConfigurationException  error in configuration data
-     * @throws CurnException           some other error
+     * Construct an <tt>CurnConfig</tt> object. You must call one of the
+     * {@link #load(File)} methods to load the configuration.
      */
-    CurnConfig (File f)
-        throws IOException,
-               ConfigurationException,
-               CurnException
+    CurnConfig()
     {
-        super (f);
-        validate();
-    }
-
-    /**
-     * Construct an <tt>CurnConfig</tt> object that parses data
-     * from the specified file.
-     *
-     * @param path  the path to the file to parse
-     *
-     * @throws FileNotFoundException   specified file doesn't exist
-     * @throws IOException             can't open or read file
-     * @throws ConfigurationException  error in configuration data
-     * @throws CurnException           some other error
-     */
-    CurnConfig (String path)
-        throws FileNotFoundException,
-               IOException,
-               ConfigurationException,
-               CurnException
-    {
-        super (path);
-        validate();
-    }
-
-    /**
-     * Construct an <tt>CurnConfig</tt> object that parses data
-     * from the specified URL.
-     *
-     * @param url  the URL to open and parse
-     *
-     * @throws IOException             can't open or read URL
-     * @throws ConfigurationException  error in configuration data
-     * @throws CurnException           some other error
-     */
-    CurnConfig (URL url)
-        throws IOException,
-               ConfigurationException,
-               CurnException
-    {
-        super (url);
-        validate();
-    }
-
-    /**
-     * Construct an <tt>CurnConfig</tt> object that parses data
-     * from the specified <tt>InputStream</tt>.
-     *
-     * @param iStream  the <tt>InputStream</tt>
-     *
-     * @throws IOException             can't open or read URL
-     * @throws ConfigurationException  error in configuration data
-     * @throws CurnException           some other error
-     */
-    CurnConfig (InputStream iStream)
-        throws IOException,
-               ConfigurationException,
-               CurnException
-    {
-        super (iStream);
-        validate();
+        super();
     }
 
     /*----------------------------------------------------------------------*\
@@ -504,6 +435,103 @@ public class CurnConfig extends Configuration
         }
 
         return buf.toString();
+    }
+    /**
+     * Load configuration from a path. Any existing data is discarded.
+     *
+     * @param path the path
+     *
+     * @throws IOException            read error
+     * @throws ConfigurationException parse error
+     */
+    public void load(String path)
+        throws FileNotFoundException,
+               IOException,
+               ConfigurationException
+    {
+        super.load(path);
+        try
+        {
+            validate();
+        }
+
+        catch (CurnException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+    }
+
+    /**
+     * Load configuration from an open <tt>InputStream</tt>.
+     * Any existing data is discarded.
+     *
+     * @param iStream open input stream
+     *
+     * @throws IOException            read error
+     * @throws ConfigurationException parse error
+     */
+    public void load(InputStream iStream)
+        throws IOException,
+               ConfigurationException
+    {
+        super.load(iStream);
+        try
+        {
+            validate();
+        }
+
+        catch (CurnException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+    }
+
+    /**
+     * Load configuration from a URL. Any existing data is discarded.
+     *
+     * @param url  the URL
+     *
+     * @throws IOException            read error
+     * @throws ConfigurationException parse error
+     */
+    public void load(URL url)
+        throws IOException,
+               ConfigurationException
+    {
+        super.load(url);
+        try
+        {
+            validate();
+        }
+
+        catch (CurnException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
+    }
+
+    /**
+     * Load configuration from a file. Any existing data is discarded.
+     *
+     * @param file the file
+     *
+     * @throws IOException            read error
+     * @throws ConfigurationException parse error
+     */
+    public void load(File file)
+        throws IOException,
+               ConfigurationException
+    {
+        super.load(file);
+        try
+        {
+            validate();
+        }
+
+        catch (CurnException ex)
+        {
+            throw new ConfigurationException (ex);
+        }
     }
 
     /*----------------------------------------------------------------------*\

@@ -11,7 +11,14 @@ Version 3.0.1 (...)
 - Graphical installer now renders the license in a more readable,
   proportional font.
 
+- The org.clapper.curn.CurnConfig class no longer provides constructors
+  that parse the configuration; Such constructors are unsafe, since they
+  invoke methods in the parent class that, in turn, call methods that could
+  be overridden--and thus could be called on an incompletely constructed
+  object. CurnConfig now provides explicit load() methods, instead.
 
+
+---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
 
 			       ------------

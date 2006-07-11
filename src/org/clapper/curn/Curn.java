@@ -251,7 +251,8 @@ public class Curn
     {
         try
         {
-            config = new CurnConfig (configPath);
+            config = new CurnConfig();
+            config.load (configPath);
             MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn (config);
             return config;
         }
