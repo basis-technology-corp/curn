@@ -45,7 +45,7 @@ class DateParseInfo
         this.timeOnly     = timeOnly;
     }
 
-    public String formatDate (Date date)
+    public String formatDate (final Date date)
     {
         return format.format (date);
     }

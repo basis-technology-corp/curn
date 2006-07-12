@@ -85,7 +85,7 @@ public class CurnUtil
     /**
      * For log messages
      */
-    private static Logger log = new Logger (CurnUtil.class);
+    private static final Logger log = new Logger (CurnUtil.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -145,7 +145,7 @@ public class CurnUtil
      *
      * @throws MalformedURLException bad URL string
      */
-    public static URL normalizeURL (String url)
+    public static URL normalizeURL (final String url)
         throws MalformedURLException
     {
         return normalizeURL (new URL (url));
@@ -160,7 +160,7 @@ public class CurnUtil
      *
      * @return the lookup key (really, the normalized, stringified URL)
      */
-    public static String urlToLookupKey (URL url)
+    public static String urlToLookupKey (final URL url)
     {
         return CurnUtil.normalizeURL (url).toExternalForm();
     }
@@ -194,7 +194,8 @@ public class CurnUtil
      * @see Constants#BUNDLE_NAME
      * @see #getResourceBundle
      */
-    public static String getResourceFromBundle (String key, Locale locale)
+    public static String getResourceFromBundle (final String key,
+                                                final Locale locale)
     {
         String result = null;
 
@@ -221,8 +222,8 @@ public class CurnUtil
      * @return the transformed path string
      */
     public static String
-    makeRollingFileWriterPattern (File        file,
-                                  IndexMarker indexMarkerLoc)
+    makeRollingFileWriterPattern (final File        file,
+                                  final IndexMarker indexMarkerLoc)
     {
         // Transform the parameter into a pattern suitable for use by a
         // RollingFileWriter. Split the file name into its base name and
@@ -289,10 +290,10 @@ public class CurnUtil
      *
      * @throws IOExceptionExt on error
      */
-    public static PrintWriter openOutputFile (File        file,
-                                              String      encoding,
-                                              IndexMarker indexMarkerLoc,
-                                              int         totalBackups)
+    public static PrintWriter openOutputFile (final File        file,
+                                              final String      encoding,
+                                              final IndexMarker indexMarkerLoc,
+                                              final int         totalBackups)
         throws IOExceptionExt
     {
         try
@@ -335,7 +336,8 @@ public class CurnUtil
             throw new IOExceptionExt (Constants.BUNDLE_NAME,
                                       "Util.cantOpenFile",
                                       "Unable to open file \"{0}\" for output",
-                                      new Object[] {file.getPath()});
+                                      new Object[] {file.getPath()},
+                                      ex);
         }
     }
 
@@ -360,7 +362,7 @@ public class CurnUtil
      *
      * @return an appropriate <tt>File</tt> object for the current system.
      */
-    public static File mapConfiguredPathName (String pathName)
+    public static File mapConfiguredPathName (final String pathName)
     {
         File result = null;
         

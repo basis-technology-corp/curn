@@ -49,8 +49,6 @@ class IndentTextMethod implements TemplateMethodModel
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private StringBuffer buf = new StringBuffer();
-
     /**
      * For logging
      */
@@ -85,7 +83,7 @@ class IndentTextMethod implements TemplateMethodModel
         if (args.size() != 2)
             throw new TemplateModelException ("Wrong number of arguments");
 
-        buf.setLength (0);
+        StringBuilder buf = new StringBuilder();
 
         String sIndent = (String) args.get (1);
         int indentation = 0;

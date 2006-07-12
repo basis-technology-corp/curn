@@ -27,7 +27,6 @@
 package org.clapper.curn;
 
 import java.net.URL;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -39,7 +38,7 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-class FeedCacheEntry implements Serializable
+class FeedCacheEntry
 {
     /*----------------------------------------------------------------------*\
                          Private Static Variables
@@ -49,11 +48,11 @@ class FeedCacheEntry implements Serializable
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private long    timestamp       = 0;
-    private String  entryID         = null;
-    private URL     entryURL        = null;
-    private URL     channelURL      = null;
-    private Date    publicationDate = null;
+    private       long    timestamp = 0;
+    private final String  entryID;
+    private final URL     entryURL;
+    private final URL     channelURL;
+    private final Date    publicationDate;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -145,7 +144,7 @@ class FeedCacheEntry implements Serializable
      *
      * @param timestamp the timestamp
      */
-    void setTimestamp (long timestamp)
+    void setTimestamp (final long timestamp)
     {
         this.timestamp = timestamp;
     }

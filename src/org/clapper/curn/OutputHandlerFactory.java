@@ -48,7 +48,7 @@ public class OutputHandlerFactory
     /**
      * For log messages
      */
-    private static Logger log = new Logger (OutputHandlerFactory.class);
+    private static final Logger log = new Logger (OutputHandlerFactory.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -75,7 +75,7 @@ public class OutputHandlerFactory
      * @throws CurnException Error instantiating class. The exception will
      *                       contain the real underlying exception.
      */
-    public static OutputHandler getOutputHandler (Class cls)
+    public static OutputHandler getOutputHandler (final Class cls)
         throws CurnException
     {
         try
@@ -120,7 +120,7 @@ public class OutputHandlerFactory
      * @throws CurnException Error instantiating class. The exception will
      *                       contain the real underlying exception.
      */
-    public static OutputHandler getOutputHandler (String className)
+    public static OutputHandler getOutputHandler (final String className)
         throws CurnException
     {
         try

@@ -146,7 +146,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @throws CurnException on error
      */
-    public void setName (String name)
+    public void setName (final String name)
         throws CurnException
     {
         this.name = name;
@@ -164,8 +164,8 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public final void init (CurnConfig              config,
-                            ConfiguredOutputHandler cfgHandler)
+    public final void init (final CurnConfig              config,
+                            final ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -410,7 +410,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @see #getOutputEncoding
      */
-    protected final void setOutputEncoding (String newEncoding)
+    protected final void setOutputEncoding (final String newEncoding)
     {
         this.encoding = newEncoding;
     }

@@ -26,29 +26,18 @@
 
 package org.clapper.curn;
 
-import org.clapper.util.misc.NestedException;
-
 /**
- * <tt>CurnException</tt> is the base class for all exceptions thrown
- * by this tool.
+ * Thrown during feed cache processing.
  *
  * @version <tt>$Revision$</tt>
  */
-public class CurnException extends NestedException
+public class FeedCacheEntryException extends CurnException
 {
-    /*----------------------------------------------------------------------*\
-                         Private Static Variables
-    \*----------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------*\
-                                Constructor
-    \*----------------------------------------------------------------------*/
-
     /**
      * Default constructor, for an exception with no nested exception and
      * no message.
      */
-    public CurnException()
+    public FeedCacheEntryException()
     {
 	super();
     }
@@ -59,7 +48,7 @@ public class CurnException extends NestedException
      *
      * @param exception  the exception to contain
      */
-    public CurnException (Throwable exception)
+    public FeedCacheEntryException (Throwable exception)
     {
 	super (exception);
     }
@@ -70,7 +59,7 @@ public class CurnException extends NestedException
      *
      * @param message  the message to associate with this exception
      */
-    public CurnException (String message)
+    public FeedCacheEntryException (String message)
     {
         super (message);
     }
@@ -81,7 +70,7 @@ public class CurnException extends NestedException
      * @param message    the message to associate with this exception
      * @param exception  the exception to contain
      */
-    public CurnException (String message, Throwable exception)
+    public FeedCacheEntryException (String message, Throwable exception)
     {
 	super (message, exception);
     }
@@ -90,7 +79,7 @@ public class CurnException extends NestedException
      * Constructs an exception containing a resource bundle name, a message
      * key, and a default message (in case the resource bundle can't be
      * found). Using this constructor is equivalent to calling the
-     * {@link #CurnException(String,String,String,Object[])} constructor,
+     * {@link #FeedCacheEntryException(String,String,String,Object[])} constructor,
      * with a null pointer for the <tt>Object[]</tt> parameter.
      * Calls to {@link NestedException#getMessage(Locale)} will attempt to
      * retrieve the top-most message (i.e., the message from this exception,
@@ -105,12 +94,12 @@ public class CurnException extends NestedException
      * @param messageKey  the key to the message to find in the bundle
      * @param defaultMsg  the default message
      *
-     * @see #CurnException(String,String,String,Object[])
+     * @see #FeedCacheEntryException(String,String,String,Object[])
      * @see NestedException#getMessage(Locale)
      */
-    public CurnException (String bundleName,
-                          String messageKey,
-                          String defaultMsg)
+    public FeedCacheEntryException (String bundleName,
+                                    String messageKey,
+                                    String defaultMsg)
     {
         super (bundleName, messageKey, defaultMsg);
     }
@@ -119,7 +108,7 @@ public class CurnException extends NestedException
      * Constructs an exception containing a resource bundle name, a message
      * key, and a default message (in case the resource bundle can't be
      * found). Using this constructor is equivalent to calling the
-     * {@link #CurnException(String,String,String,Object[],Throwable)}
+     * {@link #FeedCacheEntryException(String,String,String,Object[],Throwable)}
      * constructor, with a null pointer for the <tt>Object[]</tt> parameter.
      * Calls to {@link NestedException#getMessage(Locale)} will attempt to
      * retrieve the top-most message (i.e., the message from this exception,
@@ -135,13 +124,13 @@ public class CurnException extends NestedException
      * @param defaultMsg  the default message
      * @param msgParams   parameters to the message, if any, or null
      *
-     * @see #CurnException(String,String,String,Object[],Throwable)
+     * @see #FeedCacheEntryException(String,String,String,Object[],Throwable)
      * @see NestedException#getMessage(Locale)
      */
-    public CurnException (String   bundleName,
-                          String   messageKey,
-                          String   defaultMsg,
-                          Object[] msgParams)
+    public FeedCacheEntryException (String   bundleName,
+                                    String   messageKey,
+                                    String   defaultMsg,
+                                    Object[] msgParams)
     {
         super (bundleName, messageKey, defaultMsg, msgParams);
     }
@@ -150,7 +139,7 @@ public class CurnException extends NestedException
      * Constructs an exception containing a resource bundle name, a message
      * key, a default message (in case the resource bundle can't be found), and
      * another exception. Using this constructor is equivalent to calling the
-     * {@link #CurnException(String,String,String,Object[],Throwable)}
+     * {@link #FeedCacheEntryException(String,String,String,Object[],Throwable)}
      * constructor, with a null pointer for the <tt>Object[]</tt>
      * parameter. Calls to {@link #getMessage(Locale)} will attempt to
      * retrieve the top-most message (i.e., the message from this
@@ -167,13 +156,13 @@ public class CurnException extends NestedException
      * @param defaultMsg  the default message
      * @param exception   the exception to nest
      *
-     * @see #CurnException(String,String,String,Object[],Throwable)
+     * @see #FeedCacheEntryException(String,String,String,Object[],Throwable)
      * @see NestedException#getMessage(Locale)
      */
-    public CurnException (String    bundleName,
-                          String    messageKey,
-                          String    defaultMsg,
-                          Throwable exception)
+    public FeedCacheEntryException (String    bundleName,
+                                    String    messageKey,
+                                    String    defaultMsg,
+                                    Throwable exception)
     {
         this (bundleName, messageKey, defaultMsg, null, exception);
     }
@@ -198,14 +187,14 @@ public class CurnException extends NestedException
      * @param msgParams   parameters to the message, if any, or null
      * @param exception   exception to be nested
      *
-     * @see #CurnException(String,String,String,Object[])
+     * @see #FeedCacheEntryException(String,String,String,Object[])
      * @see NestedException#getMessage(Locale)
      */
-    public CurnException (String    bundleName,
-                          String    messageKey,
-                          String    defaultMsg,
-                          Object[]  msgParams,
-                          Throwable exception)
+    public FeedCacheEntryException (String    bundleName,
+                                    String    messageKey,
+                                    String    defaultMsg,
+                                    Object[]  msgParams,
+                                    Throwable exception)
     {
         super (bundleName, messageKey, defaultMsg, msgParams, exception);
     }

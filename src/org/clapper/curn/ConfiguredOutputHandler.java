@@ -154,13 +154,13 @@ public class ConfiguredOutputHandler implements Comparable
     public synchronized OutputHandler getOutputHandler()
         throws CurnException
     {
-        if (handler == null)
+        if (this.handler == null)
         {
-            handler = OutputHandlerFactory.getOutputHandler (className);
-            handler.setName (name);
+            this.handler = OutputHandlerFactory.getOutputHandler (className);
+            this.handler.setName (name);
         }
 
-        return handler;
+        return this.handler;
     }
 
     /**

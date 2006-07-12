@@ -70,16 +70,16 @@ class FeedDownloadThread extends Thread
                            Private Instance Data
     \*----------------------------------------------------------------------*/ 
 
-    private Logger                  log           = null;
-    private String                  id            = null;
-    private CurnConfig              configuration = null;
-    private RSSParser               rssParser     = null;
-    private FeedCache               cache         = null;
-    private List                    feedQueue     = null;
-    private FeedException           exception     = null;
-    private MetaPlugIn              metaPlugIn    = MetaPlugIn.getMetaPlugIn();
-    private RSSChannel              channel       = null;
-    private FeedDownloadDoneHandler doneHandler   = null;
+    private final Logger                  log;
+    private final String                  id;
+    private final CurnConfig              configuration;
+    private final RSSParser               rssParser;
+    private final FeedCache               cache;
+    private final List                    feedQueue;
+    private       FeedException           exception = null;
+    private final MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
+    private       RSSChannel              channel       = null;
+    private final FeedDownloadDoneHandler doneHandler;
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -203,7 +203,7 @@ class FeedDownloadThread extends Thread
      * @see #errorOccurred
      * @see #getException
      */
-    void processFeed (FeedInfo feed)
+    void processFeed (final FeedInfo feed)
     {
         this.exception = null;
         this.channel = null;
@@ -312,9 +312,9 @@ class FeedDownloadThread extends Thread
      * @throws FeedException  feed download error
      * @throws CurnException  some other error (e.g., plug-in error)
      */
-    private RSSChannel handleFeed (FeedInfo   feedInfo,
-                                   RSSParser  parser,
-                                   CurnConfig configuration)
+    private RSSChannel handleFeed (final FeedInfo   feedInfo,
+                                   final RSSParser  parser,
+                                   final CurnConfig configuration)
         throws FeedException,
                CurnException
     {
@@ -374,10 +374,10 @@ class FeedDownloadThread extends Thread
      * @throws FeedException  feed download error
      * @throws CurnException  some other error (e.g., plug-in error)
      */
-    private RSSChannel downloadAndProcessFeed (FeedInfo      feedInfo,
-                                               RSSParser     parser,
-                                               CurnConfig    configuration,
-                                               URLConnection urlConn)
+    private RSSChannel downloadAndProcessFeed (final FeedInfo      feedInfo,
+                                               final RSSParser     parser,
+                                               final CurnConfig    configuration,
+                                               final URLConnection urlConn)
         throws FeedException,
                CurnException
     {
@@ -483,8 +483,8 @@ class FeedDownloadThread extends Thread
      * @return the <tt>DownloadedTempFile</tt> object that captures the
      *         details about the downloaded file
      */
-    private DownloadedTempFile downloadFeed (URLConnection conn,
-                                             FeedInfo      feedInfo)
+    private DownloadedTempFile downloadFeed (final URLConnection conn,
+                                             final FeedInfo      feedInfo)
         throws CurnException,
                IOException
     {
@@ -588,7 +588,7 @@ class FeedDownloadThread extends Thread
      *
      * @return the character set, or null if not available
      */
-    private String contentTypeCharSet (String contentType)
+    private String contentTypeCharSet (final String contentType)
     {
         String result = null;
         String[] fields = TextUtil.split (contentType, "; \t");
@@ -622,7 +622,7 @@ class FeedDownloadThread extends Thread
      *
      * @return the <tt>InputStream</tt>
      */
-    private InputStream getURLInputStream (URLConnection conn)
+    private InputStream getURLInputStream (final URLConnection conn)
         throws IOException
     {
         InputStream is = conn.getInputStream();
@@ -655,9 +655,9 @@ class FeedDownloadThread extends Thread
      * @param feedInfo the information on the feed
      * @param cache    the cache
      */
-    private void setIfModifiedSinceHeader (URLConnection conn,
-                                           FeedInfo      feedInfo,
-                                           FeedCache     cache)
+    private void setIfModifiedSinceHeader (final URLConnection conn,
+                                           final FeedInfo      feedInfo,
+                                           final FeedCache     cache)
     {
         long     lastSeen = 0;
         URL      feedURL = feedInfo.getURL();
@@ -702,9 +702,9 @@ class FeedDownloadThread extends Thread
      * @param feedInfo the information on the feed
      * @param cache    the cache
      */
-    private boolean feedHasChanged (URLConnection conn,
-                                    FeedInfo      feedInfo,
-                                    FeedCache     cache)
+    private boolean feedHasChanged (final URLConnection conn,
+                                    final FeedInfo      feedInfo,
+                                    final FeedCache     cache)
         throws IOException
     {
         long     lastSeen = 0;
@@ -767,8 +767,8 @@ class FeedDownloadThread extends Thread
      * @throws RSSParserException    parser exception
      * @throws MalformedURLException bad URL
      */
-    private void processChannelItems (RSSChannel  channel,
-                                      FeedInfo    feedInfo)
+    private void processChannelItems (final RSSChannel  channel,
+                                      final FeedInfo    feedInfo)
         throws RSSParserException,
                MalformedURLException
     {
@@ -825,13 +825,10 @@ class FeedDownloadThread extends Thread
             log.debug ("Item link: " + itemURL);
             log.debug ("Item ID: " + ((itemID == null) ? "<null>" : itemID));
 
-            if (cache != null)
+            if ((cache != null) && (! itemIsNew (item, itemURL)))
             {
-                if (! itemIsNew (item, itemURL))
-                {
-                    log.debug ("Discarding old, cached item.");
-                    it.remove();
-                }
+                log.debug("Discarding old, cached item.");
+                it.remove();
             }
         }
 
@@ -869,7 +866,7 @@ class FeedDownloadThread extends Thread
      *
      * @return true if cached, false if not
      */
-    private boolean itemIsNew (RSSItem item, URL itemURL)
+    private boolean itemIsNew (final RSSItem item, final URL itemURL)
     {
         String   itemURLString = itemURL.toString();
         String   itemID        = item.getID();

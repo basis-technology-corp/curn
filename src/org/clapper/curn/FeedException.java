@@ -52,7 +52,7 @@ public class FeedException extends CurnException
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private FeedInfo feedInfo;
+    private final FeedInfo feedInfo;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -274,7 +274,7 @@ public class FeedException extends CurnException
      *
      * @return  the error message string for this exception
      */
-    public String getMessage (Locale locale)
+    public String getMessage (final Locale locale)
     {
 	StringBuilder buf = new StringBuilder();
 

@@ -75,10 +75,6 @@ import java.util.regex.PatternSyntaxException;
 public class PlugInManager
 {
     /*----------------------------------------------------------------------*\
-                                 Constants
-    \*----------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------*\
                                Inner Classes
     \*----------------------------------------------------------------------*/
 
@@ -87,15 +83,24 @@ public class PlugInManager
      */
     private static class PlugInComparator implements Comparator<PlugIn>
     {
-        public int compare (PlugIn pl1, PlugIn pl2)
+        PlugInComparator()
+        {
+        }
+
+        public int compare (final PlugIn pl1, final PlugIn pl2)
         {
             return pl1.getSortKey().compareToIgnoreCase (pl2.getSortKey());
         }
 
-        public boolean equals (Object o)
+        public boolean equals (final Object o)
         {
             return (o instanceof PlugInComparator);
-        }                
+        }
+        
+        public int hashCode()
+        {
+            return super.hashCode();
+        }
     }
 
     /*----------------------------------------------------------------------*\
@@ -105,7 +110,7 @@ public class PlugInManager
     /**
      * For log messages
      */
-    private static Logger log = new Logger (PlugInManager.class);
+    private static final Logger log = new Logger (PlugInManager.class);
 
     /**
      * The located PlugIns
@@ -155,7 +160,7 @@ public class PlugInManager
 
             assert (false);
         }
-    }    
+    }
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -184,7 +189,7 @@ public class PlugInManager
      *
      * @throws CurnException on error
      */
-    static void listPlugIns (Map<String,Class> plugInMap)
+    static void listPlugIns (final Map<String,Class> plugInMap)
         throws CurnException
     {
         loadPlugIns();
@@ -294,7 +299,7 @@ public class PlugInManager
      *
      * @param classes  classes to load
      */
-    private static void loadPlugInClasses (Collection<ClassInfo> classes)
+    private static void loadPlugInClasses (final Collection<ClassInfo> classes)
     {
         MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
 

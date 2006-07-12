@@ -444,7 +444,7 @@ public class CurnConfig extends Configuration
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(String path)
+    public void load(final String path)
         throws FileNotFoundException,
                IOException,
                ConfigurationException
@@ -470,7 +470,7 @@ public class CurnConfig extends Configuration
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(InputStream iStream)
+    public void load(final InputStream iStream)
         throws IOException,
                ConfigurationException
     {
@@ -494,7 +494,7 @@ public class CurnConfig extends Configuration
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(URL url)
+    public void load(final URL url)
         throws IOException,
                ConfigurationException
     {
@@ -518,7 +518,7 @@ public class CurnConfig extends Configuration
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(File file)
+    public void load(final File file)
         throws IOException,
                ConfigurationException
     {
@@ -618,7 +618,7 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processMainSectionVariable (String varName)
+    private void processMainSectionVariable (final String varName)
         throws ConfigurationException,
                CurnException
     {
@@ -712,7 +712,7 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processFeedSection (String sectionName)
+    private void processFeedSection (final String sectionName)
         throws ConfigurationException,
                CurnException
     {
@@ -824,7 +824,7 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processOutputHandlerSection (String sectionName)
+    private void processOutputHandlerSection (final String sectionName)
         throws ConfigurationException,
                CurnException
     {
@@ -889,7 +889,7 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processUnknownSection (String sectionName)
+    private void processUnknownSection (final String sectionName)
         throws ConfigurationException,
                CurnException
     {
@@ -916,9 +916,9 @@ public class CurnConfig extends Configuration
      * @throws NoSuchSectionException no such section
      * @throws ConfigurationException bad numeric value
      */
-    private int parseMaxDaysParameter (String sectionName,
-                                       String variableName,
-                                       int    def)
+    private int parseMaxDaysParameter (final String sectionName,
+                                       final String variableName,
+                                       final int    def)
         throws NoSuchSectionException,
                ConfigurationException
     {

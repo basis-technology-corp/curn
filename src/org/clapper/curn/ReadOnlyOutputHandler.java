@@ -51,7 +51,7 @@ public class ReadOnlyOutputHandler implements OutputHandler
     /**
      * The wrapped output handler
      */
-    private OutputHandler outputHandler = null;
+    private final OutputHandler outputHandler;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -87,7 +87,7 @@ public class ReadOnlyOutputHandler implements OutputHandler
      *
      * @param name  the name
      */
-    public void setName (String name)
+    public void setName (final String name)
         throws CurnException
     {
         throw new CurnException (Constants.BUNDLE_NAME,
@@ -117,7 +117,8 @@ public class ReadOnlyOutputHandler implements OutputHandler
      * @see CurnConfig
      * @see ConfiguredOutputHandler
      */
-    public void init (CurnConfig config, ConfiguredOutputHandler cfgHandler)
+    public void init (final CurnConfig config, 
+                      final ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -140,7 +141,8 @@ public class ReadOnlyOutputHandler implements OutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (RSSChannel channel, FeedInfo feedInfo)
+    public void displayChannel (final RSSChannel channel, 
+                                final FeedInfo feedInfo)
         throws CurnException
     {
         throw new CurnException (Constants.BUNDLE_NAME,

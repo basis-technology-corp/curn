@@ -199,7 +199,7 @@ import freemarker.template.TemplateException;
  *  |    +-- needed                             whether a TOC is needed
  *  |    |
  *  |    +-- channels                           sequence of channel TOC
- *  |          |                                items 
+ *  |          |                                items
  *  |          |
  *  |          +-- (channel)                    TOC entry for one channel
  *  |                |
@@ -208,7 +208,7 @@ import freemarker.template.TemplateException;
  *  |                +-- totalItems             total items in channel
  *  |                |
  *  |                +-- channelAnchor          HTML anchor for channel
- *  | 
+ *  |
  *  +-- channels                                sequence of channel data
  *         |
  *         +-- (channel)                        hash for a single channel
@@ -378,7 +378,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     private int               tocThreshold        = DEFAULT_TOC_THRESHOLD;
     private int               totalChannels       = 0;
     private int               totalItems          = 0;
-    private Date              now                 = null;
     private String            handlerName         = null;
 
     private freemarker.template.Configuration freemarkerConfig;
@@ -390,7 +389,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     /**
      * For logging
      */
-    private static Logger log = new Logger (FreeMarkerOutputHandler.class);
+    private static final Logger log =
+        new Logger (FreeMarkerOutputHandler.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -419,14 +419,15 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (CurnConfig              config,
-                                   ConfiguredOutputHandler cfgHandler)
+    public void initOutputHandler (final CurnConfig              config,
+                                   final ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
         this.config = config;
         this.totalChannels = 0;
-        this.now = new Date();
+
+        Date now = new Date();
 
         // Parse handler-specific configuration variables
 
@@ -451,7 +452,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                         (section,
                          CurnConfig.CFG_ALLOW_EMBEDDED_HTML,
                          false);
-                
+
                 // Get the title.
 
                 title = config.getOptionalStringValue (section,
@@ -472,7 +473,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                                 DEFAULT_TOC_THRESHOLD);
             }
         }
-        
+
         catch (NoSuchSectionException ex)
         {
             throw new ConfigurationException (ex);
@@ -554,7 +555,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (RSSChannel channel, FeedInfo feedInfo)
+    public void displayChannel (final RSSChannel channel,
+                                final FeedInfo   feedInfo)
         throws CurnException
     {
         // Both the feed AND the handler must enable HTML for it not to
@@ -665,7 +667,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             itemData.put ("description", desc);
         }
     }
-    
+
     /**
      * Flush any buffered-up output.
      *
@@ -763,7 +765,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           any other error
      */
-    private void parseTemplateLocation (CurnConfig config, String section)
+    private void parseTemplateLocation (final CurnConfig config,
+                                        final String     section)
         throws ConfigurationException,
                CurnException
     {

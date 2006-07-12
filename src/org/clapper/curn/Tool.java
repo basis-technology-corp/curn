@@ -82,7 +82,7 @@ public class Tool
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static Collection<DateParseInfo> DATE_FORMATS;
+    private static Collection<DateParseInfo> DATE_FORMATS; // NOPMD
 
     static
     {
@@ -132,13 +132,13 @@ public class Tool
     /**
      * For log messages
      */
-    private static Logger log = new Logger (Tool.class);
+    private static final Logger log = new Logger (Tool.class);
 
     /*----------------------------------------------------------------------*\
                                Main Program
     \*----------------------------------------------------------------------*/
 
-    public static void main (String[] args)
+    public static void main (final String[] args)
     {
         Tool tool = new Tool();
 
@@ -189,7 +189,7 @@ public class Tool
         return ClassUtil.getShortClassName (this.getClass());
     }
 
-    public void runPostConfigPlugIn (CurnConfig config)
+    public void runPostConfigPlugIn (final CurnConfig config)
 	throws CurnException
     {
         try
@@ -227,9 +227,9 @@ public class Tool
      * @throws NoSuchElementException     overran the iterator (i.e., missing
      *                                    parameter) 
      */
-    protected void parseCustomOption (char             shortOption,
-                                      String           longOption,
-                                      Iterator<String> it)
+    protected void parseCustomOption (final char             shortOption,
+                                      final String           longOption,
+                                      final Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
@@ -328,7 +328,7 @@ public class Tool
      *                                    safe for subclass implementations of
      *                                    this method not to handle it
      */
-    protected void processPostOptionCommandLine (Iterator<String> it)
+    protected void processPostOptionCommandLine (final Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
@@ -366,7 +366,7 @@ public class Tool
      *
      * @param info   The <tt>UsageInfo</tt> object to fill.
      */
-    protected void getCustomUsageInfo (UsageInfo info)
+    protected void getCustomUsageInfo (final UsageInfo info)
     {
         info.setCommandName ("curn");
 
@@ -521,7 +521,7 @@ public class Tool
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void adjustConfiguration (CurnConfig config)
+    private void adjustConfiguration (final CurnConfig config)
         throws ConfigurationException
     {
         log.debug ("adjustConfiguration() called.");
@@ -533,7 +533,7 @@ public class Tool
             config.setMustUpdateCacheFlag (optUpdateCache.booleanValue());
     }
 
-    private Date parseDateTime (String s)
+    private Date parseDateTime (final String s)
         throws CommandLineUsageException
     {
         Date date = null;
@@ -599,7 +599,8 @@ public class Tool
         }
     }
 
-    private void deprecatedOption (char shortOption, String longOption)
+    private void deprecatedOption (final char   shortOption, 
+                                   final String longOption)
     {
         CurnUtil.getErrorOut().println ("WARNING: Ignoring deprecated " +
                                     UsageInfo.SHORT_OPTION_PREFIX +

@@ -58,10 +58,10 @@ public class FeedInfo
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private int         daysToCache           = 0;
-    private URL         siteURL               = null;
-    private RSSChannel  parsedChannelData     = null;
-    private String      forcedEncoding        = null;
+    private       int         daysToCache           = 0;
+    private final URL         siteURL;
+    private       RSSChannel  parsedChannelData     = null;
+    private       String      forcedEncoding        = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -102,7 +102,7 @@ public class FeedInfo
      * @return <tt>true</tt> if <tt>obj</tt> is a <tt>FeedInfo</tt> object
      *         that specifies the same URL, <tt>false</tt> otherwise
      */
-    public boolean equals (Object obj)
+    public boolean equals (final Object obj)
     {
         boolean eq = false;
 
@@ -158,7 +158,7 @@ public class FeedInfo
      * @see #getDaysToCache
      * @see #getMillisecondsToCache
      */
-    public void setDaysToCache (int cacheDays)
+    public void setDaysToCache (final int cacheDays)
     {
         this.daysToCache = cacheDays;
     }
@@ -216,7 +216,7 @@ public class FeedInfo
      * @see Curn
      * @see RSSChannel
      */
-    void setParsedChannelData (RSSChannel channel)
+    void setParsedChannelData (final RSSChannel channel)
     {
         this.parsedChannelData = channel;
     }
@@ -227,7 +227,7 @@ public class FeedInfo
      *
      * @see #getForcedCharacterEncoding
      */
-    public void setForcedCharacterEncoding (String encoding)
+    public void setForcedCharacterEncoding (final String encoding)
     {
         this.forcedEncoding = encoding;
     }

@@ -90,66 +90,66 @@ public class MetaPlugIn
     /**
      * The loaded plug-ins, by type.
      */
-    private Collection<CacheLoadedPlugIn>
+    private final Collection<CacheLoadedPlugIn>
         cacheLoadedPlugIns = new ArrayList<CacheLoadedPlugIn>();
 
-    private Collection<FeedConfigItemPlugIn>
+    private final Collection<FeedConfigItemPlugIn>
         feedConfigItemPlugIns = new ArrayList<FeedConfigItemPlugIn>();
 
-    private Collection<MainConfigItemPlugIn>
+    private final Collection<MainConfigItemPlugIn>
         mainConfigItemPlugIns = new ArrayList<MainConfigItemPlugIn>();
 
-    private Collection<OutputHandlerConfigItemPlugIn>
+    private final Collection<OutputHandlerConfigItemPlugIn>
         outputHandlerConfigItemPlugIns =
             new ArrayList<OutputHandlerConfigItemPlugIn>();
 
-    private Collection<PostConfigPlugIn>
+    private final Collection<PostConfigPlugIn>
         postConfigPlugIns = new ArrayList<PostConfigPlugIn>();
 
-    private Collection<PostFeedDownloadPlugIn>
+    private final Collection<PostFeedDownloadPlugIn>
         postFeedDownloadPlugIns = new ArrayList<PostFeedDownloadPlugIn>();
 
-    private Collection<PostFeedOutputPlugIn>
+    private final Collection<PostFeedOutputPlugIn>
         postFeedOutputPlugIns = new ArrayList<PostFeedOutputPlugIn>();
 
-    private Collection<PostFeedParsePlugIn>
+    private final Collection<PostFeedParsePlugIn>
         postFeedParsePlugIns = new ArrayList<PostFeedParsePlugIn>();
 
-    private Collection<PostOutputHandlerFlushPlugIn>
+    private final Collection<PostOutputHandlerFlushPlugIn>
         postOutputHandlerFlushPlugIns =
             new ArrayList<PostOutputHandlerFlushPlugIn>();
 
-    private Collection<PreCacheSavePlugIn>
+    private final Collection<PreCacheSavePlugIn>
         preCacheSavePlugIns = new ArrayList<PreCacheSavePlugIn>();
 
-    private Collection<PreFeedDownloadPlugIn>
+    private final Collection<PreFeedDownloadPlugIn>
         preFeedDownloadPlugIns = new ArrayList<PreFeedDownloadPlugIn>();
 
-    private Collection<PreFeedOutputPlugIn>
+    private final Collection<PreFeedOutputPlugIn>
         preFeedOutputPlugIns = new ArrayList<PreFeedOutputPlugIn>();
 
-    private Collection<PostOutputPlugIn>
+    private final Collection<PostOutputPlugIn>
         postOutputPlugIns = new ArrayList<PostOutputPlugIn>();
 
-    private Collection<ShutdownPlugIn>
+    private final Collection<ShutdownPlugIn>
         shutdownPlugIns = new ArrayList<ShutdownPlugIn>();
 
-    private Collection<StartupPlugIn>
+    private final Collection<StartupPlugIn>
         startupPlugIns = new ArrayList<StartupPlugIn>();
 
-    private Collection<UnknownSectionConfigItemPlugIn>
+    private final Collection<UnknownSectionConfigItemPlugIn>
         unknownSectionConfigItemPlugIns =
             new ArrayList<UnknownSectionConfigItemPlugIn>();
 
     /**
      * The singleton
      */
-    private static MetaPlugIn metaPlugIn = null;
+    private static MetaPlugIn metaPlugInWrapper = null;
 
     /**
      * For log messages
      */
-    private static Logger log = new Logger (MetaPlugIn.class);
+    private static final Logger log = new Logger (MetaPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -175,8 +175,8 @@ public class MetaPlugIn
      */
     public static MetaPlugIn getMetaPlugIn()
     {
-        assert (metaPlugIn != null);
-        return metaPlugIn;
+        assert (metaPlugInWrapper != null);
+        return metaPlugInWrapper;
     }
 
     /**
@@ -185,7 +185,7 @@ public class MetaPlugIn
      *
      * @param plugIn  the {@link PlugIn} to add
      */
-    public void addPlugIn (PlugIn plugIn)
+    public void addPlugIn (final PlugIn plugIn)
     {
         synchronized (MetaPlugIn.class)
         {
@@ -266,9 +266,10 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runMainConfigItemPlugIn (String     sectionName,
-                                                    String     paramName,
-                                                    CurnConfig config)
+    public synchronized void 
+    runMainConfigItemPlugIn (final String     sectionName,
+                             final String     paramName,
+                             final CurnConfig config)
 	throws CurnException
     {
         for (MainConfigItemPlugIn plugIn : mainConfigItemPlugIns)
@@ -282,10 +283,10 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
-    runFeedConfigItemPlugIn (String     sectionName,
-                             String     paramName,
-                             CurnConfig config,
-                             FeedInfo   feedInfo)
+    runFeedConfigItemPlugIn (final String     sectionName,
+                             final String     paramName,
+                             final CurnConfig config,
+                             final FeedInfo   feedInfo)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -308,10 +309,10 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
-    runOutputHandlerConfigItemPlugIn (String                  sectionName,
-                                    String                  paramName,
-                                    CurnConfig              config,
-                                    ConfiguredOutputHandler handler)
+    runOutputHandlerConfigItemPlugIn (final String                  sectionName,
+                                      final String                  paramName,
+                                      final CurnConfig              config,
+                                      final ConfiguredOutputHandler handler)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -335,9 +336,9 @@ public class MetaPlugIn
     }
 
     public synchronized void
-    runUnknownSectionConfigItemPlugIn (String     sectionName,
-                                       String     paramName,
-                                       CurnConfig config)
+    runUnknownSectionConfigItemPlugIn (final String     sectionName,
+                                       final String     paramName,
+                                       final CurnConfig config)
 	throws CurnException
     {
         for (UnknownSectionConfigItemPlugIn plugIn :
@@ -353,7 +354,7 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runPostConfigPlugIn (CurnConfig config)
+    public synchronized void runPostConfigPlugIn (final CurnConfig config)
 	throws CurnException
     {
         for (PostConfigPlugIn plugIn : postConfigPlugIns)
@@ -363,7 +364,7 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runCacheLoadedPlugIn (FeedCache cache)
+    public synchronized void runCacheLoadedPlugIn (final FeedCache cache)
 	throws CurnException
     {
         for (CacheLoadedPlugIn plugIn : cacheLoadedPlugIns)
@@ -374,8 +375,8 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
-    runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
-                              URLConnection urlConn)
+    runPreFeedDownloadPlugIn (final FeedInfo      feedInfo,
+                              final URLConnection urlConn)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -392,9 +393,10 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
-                                                           File     feedDataFile,
-                                                           String   encoding)
+    public synchronized boolean 
+    runPostFeedDownloadPlugIn (final FeedInfo feedInfo,
+                               final File     feedDataFile,
+                               final String   encoding)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -412,8 +414,9 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                                        RSSChannel channel)
+    public synchronized boolean 
+    runPostFeedParsePlugIn (final FeedInfo   feedInfo,
+                            final RSSChannel channel)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -429,9 +432,10 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized void runPreFeedOutputPlugIn (FeedInfo      feedInfo,
-                                                     RSSChannel    channel,
-                                                     OutputHandler outputHandler)
+    public synchronized void 
+    runPreFeedOutputPlugIn (final FeedInfo      feedInfo,
+                            final RSSChannel    channel,
+                            final OutputHandler outputHandler)
 	throws CurnException
     {
         for (PreFeedOutputPlugIn plugIn : preFeedOutputPlugIns)
@@ -441,8 +445,9 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runPostFeedOutputPlugIn (FeedInfo      feedInfo,
-                                       OutputHandler outputHandler)
+    public synchronized void 
+    runPostFeedOutputPlugIn (final FeedInfo      feedInfo,
+                             final OutputHandler outputHandler)
 	throws CurnException
     {
         for (PostFeedOutputPlugIn plugIn : postFeedOutputPlugIns)
@@ -453,7 +458,7 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
-    runPostOutputHandlerFlushPlugIn (OutputHandler outputHandler)
+    runPostOutputHandlerFlushPlugIn (final OutputHandler outputHandler)
 	throws CurnException
     {
         boolean keepGoing = true;
@@ -471,7 +476,8 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public void runPostOutputPlugIn (Collection<OutputHandler> outputHandlers)
+    public void 
+    runPostOutputPlugIn (final Collection<OutputHandler> outputHandlers)
 	throws CurnException
     {
         for (PostOutputPlugIn plugIn : postOutputPlugIns)
@@ -481,7 +487,7 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runPreCacheSavePlugIn (FeedCache cache)
+    public synchronized void runPreCacheSavePlugIn (final FeedCache cache)
 	throws CurnException
     {
         for (PreCacheSavePlugIn plugIn : preCacheSavePlugIns)
@@ -515,11 +521,11 @@ public class MetaPlugIn
     static MetaPlugIn createMetaPlugIn()
         throws CurnException
     {
-        assert (metaPlugIn == null);
+        assert (metaPlugInWrapper == null);
         try
         {
-            metaPlugIn = new MetaPlugIn();
-            return metaPlugIn;
+            metaPlugInWrapper = new MetaPlugIn();
+            return metaPlugInWrapper;
         }
 
         catch (Exception ex)
@@ -539,9 +545,9 @@ public class MetaPlugIn
      * @param plugIn      plug-in class
      * @param args        method args, if any
      */
-    private void logPlugInInvocation (String    methodName,
-                                      PlugIn    plugIn,
-                                      Object... args)
+    private void logPlugInInvocation (final String    methodName,
+                                      final PlugIn    plugIn,
+                                      final Object... args)
     {
         if (log.isDebugEnabled())
         {

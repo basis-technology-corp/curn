@@ -58,7 +58,7 @@ public class CurnTemplateLoader implements TemplateLoader
     /**
      * For logging
      */
-    private static Logger log = new Logger (CurnTemplateLoader.class);
+    private static final Logger log = new Logger (CurnTemplateLoader.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -91,7 +91,7 @@ public class CurnTemplateLoader implements TemplateLoader
      *
      * @throws IOException on error
      */
-    public Object findTemplateSource (String name)
+    public Object findTemplateSource (final String name)
         throws IOException
     {
         try
@@ -119,7 +119,7 @@ public class CurnTemplateLoader implements TemplateLoader
      * @return the time of last modification of the specified template source,
      *         or -1 if the time is not known.
      */
-    public long getLastModified (Object templateSource)
+    public long getLastModified (final Object templateSource)
     {
         long              result = -1;
         TemplateLocation  tl = (TemplateLocation) templateSource;
@@ -196,7 +196,8 @@ public class CurnTemplateLoader implements TemplateLoader
      *
      * @throws IOException if an I/O error occurs while accessing the stream.
      */
-    public Reader getReader (Object templateSource, String encoding)
+    public Reader getReader (final Object templateSource, 
+                             final String encoding)
         throws IOException
     {
         TemplateLocation  tl = (TemplateLocation) templateSource;
@@ -265,8 +266,9 @@ public class CurnTemplateLoader implements TemplateLoader
      *
      * @param templateSource the template source that should be closed.
      */
-    public void closeTemplateSource (Object templateSource)
+    public void closeTemplateSource (final Object templateSource)
         throws IOException
     {
+        // Must be provided, but there's nothing to do here.
     }
 }

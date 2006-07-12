@@ -29,7 +29,6 @@ package org.clapper.curn;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 
 import java.net.MalformedURLException;
@@ -61,6 +60,7 @@ import org.xml.sax.SAXException;
 import org.clapper.util.io.IOExceptionExt;
 import org.clapper.util.io.XMLWriter;
 import org.clapper.util.logging.Logger;
+import org.clapper.util.text.TextUtil;
 
 /**
  * Defines the in-memory format of the <i>curn</i> cache, and provides
@@ -71,7 +71,7 @@ import org.clapper.util.logging.Logger;
  *
  * @version <tt>$Revision$</tt>
  */
-public class FeedCache implements Serializable
+public class FeedCache
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -105,7 +105,7 @@ public class FeedCache implements Serializable
     /**
      * The configuration
      */
-    private CurnConfig config;
+    private final CurnConfig config;
 
     /**
      * The actual cache, indexed by unique ID.
@@ -131,7 +131,7 @@ public class FeedCache implements Serializable
     /**
      * For log messages
      */
-    private static Logger log = new Logger (FeedCache.class);
+    private static final Logger log = new Logger (FeedCache.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -155,10 +155,10 @@ public class FeedCache implements Serializable
      * Load the cache from the file specified in the configuration. If the
      * file doesn't exist, this method quietly returns.
      *
-     * @throws CurnException  unable to read cache
+     * @throws FeedCacheException  unable to read cache
      */
     public void loadCache()
-        throws CurnException
+        throws FeedCacheException
     {
         File cacheFile = config.getCacheFile();
         this.cacheByURL = new FeedCacheMap();
@@ -176,7 +176,7 @@ public class FeedCache implements Serializable
             this.cacheByID = readSerializedXMLCache (cacheFile);
             if (this.cacheByID == null)
             {
-                throw new CurnException (Constants.BUNDLE_NAME,
+                throw new FeedCacheException (Constants.BUNDLE_NAME,
                                          "FeedCache.badCacheFile",
                                          "Unable to load cache file \"{0}\"",
                                          new Object[] {cacheFile.getPath()});
@@ -197,10 +197,10 @@ public class FeedCache implements Serializable
      *
      * @param totalCacheBackups total number of backup files to keep
      *
-     * @throws CurnException  unable to write cache
+     * @throws FeedCacheException  unable to write cache
      */
-    public void saveCache (int totalCacheBackups)
-        throws CurnException
+    public void saveCache (final int totalCacheBackups)
+        throws FeedCacheException
     {
         log.debug ("modified=" + this.modified);
         if (this.modified)
@@ -277,17 +277,17 @@ public class FeedCache implements Serializable
 
             catch (IOExceptionExt ex)
             {
-                throw new CurnException (ex);
+                throw new FeedCacheException (ex);
             }
 
             catch (ParserConfigurationException ex)
             {
-                throw new CurnException (ex);
+                throw new FeedCacheException (ex);
             }
 
             catch (TransformerException ex)
             {
-                throw new CurnException (ex);
+                throw new FeedCacheException (ex);
             }
         }
     }
@@ -301,7 +301,7 @@ public class FeedCache implements Serializable
      * @return <tt>true</tt> if the ID is present in the cache,
      *         <tt>false</tt> if not
      */
-    public boolean containsID (String id)
+    public boolean containsID (final String id)
     {
         boolean hasKey = cacheByID.containsKey (id);
         log.debug ("Cache contains \"" + id + "\"? " + hasKey);
@@ -316,7 +316,7 @@ public class FeedCache implements Serializable
      * @return <tt>true</tt> if the ID is present in the cache,
      *         <tt>false</tt> if not
      */
-    public boolean containsURL (URL url)
+    public boolean containsURL (final URL url)
     {
         String  urlKey = CurnUtil.urlToLookupKey (url);
         boolean hasURL = cacheByURL.containsKey (urlKey);
@@ -332,7 +332,7 @@ public class FeedCache implements Serializable
      * @return the corresponding <tt>FeedCacheEntry</tt> object, or null if
      *         not found
      */
-    public FeedCacheEntry getItem (String id)
+    public FeedCacheEntry getItem (final String id)
     {
         return (FeedCacheEntry) cacheByID.get (id);
     }
@@ -345,14 +345,14 @@ public class FeedCache implements Serializable
      * @return the corresponding <tt>FeedCacheEntry</tt> object, or null if
      *         not found
      */
-    public FeedCacheEntry getItemByURL (URL url)
+    public FeedCacheEntry getItemByURL (final URL url)
     {
         return (FeedCacheEntry) cacheByURL.get (CurnUtil.urlToLookupKey (url));
     }
 
     /**
      * Add (or replace) a cached URL.
-     * 
+     *
      * @param uniqueID   the unique ID string for the cache entry, or null.
      *                   If null, the URL is used as the unique ID.
      * @param url        the URL to cache. May be an individual item URL, or
@@ -361,10 +361,10 @@ public class FeedCache implements Serializable
      * @param parentFeed the associated feed
      * @see CurnUtil#normalizeURL
      */
-    public synchronized void addToCache (String   uniqueID,
-                                         URL      url,
-                                         Date     pubDate,
-                                         FeedInfo parentFeed)
+    public synchronized void addToCache (String         uniqueID,
+                                         final URL      url,
+                                         final Date     pubDate,
+                                         final FeedInfo parentFeed)
     {
         String urlKey = CurnUtil.urlToLookupKey (url);
 
@@ -396,7 +396,7 @@ public class FeedCache implements Serializable
      *
      * @param datetime  the time to use
      */
-    public void setCurrentTime (Date datetime)
+    public void setCurrentTime (final Date datetime)
     {
         this.currentTime = datetime.getTime();
     }
@@ -413,10 +413,11 @@ public class FeedCache implements Serializable
      *
      * @return a deserialized FeedCacheMap on success, or null on failure
      *
-     * @throws CurnException file is XML, but there's something wrong with it
+     * @throws FeedCacheException file is XML, but there's something wrong
+     *                            with it
      */
-    private FeedCacheMap readSerializedXMLCache (File cacheFile)
-        throws CurnException
+    private FeedCacheMap readSerializedXMLCache (final File cacheFile)
+        throws FeedCacheException
     {
         FeedCacheMap result        = null;
         String       cacheFilePath = cacheFile.getPath();
@@ -438,7 +439,7 @@ public class FeedCache implements Serializable
 
             catch (ParserConfigurationException ex)
             {
-                throw new CurnException (ex);
+                throw new FeedCacheException (ex);
             }
 
             log.info ("Attempting to parse \"" + cacheFilePath + "\" as XML.");
@@ -456,17 +457,17 @@ public class FeedCache implements Serializable
 
             if (! rootTagName.equals (XML_ROOT_ELEMENT_TAG))
             {
-                throw new CurnException (Constants.BUNDLE_NAME,
-                                         "FeedCache.nonCacheXML",
-                                         "File \"{0}\" is not a curn XML " +
-                                         "cache file. The root XML element " +
-                                         "is <{1}>, not the expected <{2}>.",
-                                         new Object[]
-                                         {
-                                             cacheFilePath,
-                                             rootTagName,
-                                             XML_ROOT_ELEMENT_TAG
-                                         });
+                throw new FeedCacheException
+                    (Constants.BUNDLE_NAME,
+                     "FeedCache.nonCacheXML",
+                     "File \"{0}\" is not a curn XML cache file. The root " +
+                     "XML element is <{1}>, not the expected <{2}>.",
+                     new Object[]
+                     {
+                         cacheFilePath,
+                         rootTagName,
+                         XML_ROOT_ELEMENT_TAG
+                     });
             }
 
             // Okay, it's a curn cache. Start traversing the child nodes,
@@ -493,30 +494,39 @@ public class FeedCache implements Serializable
                     continue;
                 }
 
-                FeedCacheEntry entry = parseXMLCacheEntry (childNode);
-                if (entry != null)
+                try
+                {
+                    FeedCacheEntry entry = parseXMLCacheEntry(childNode);
                     result.put (entry.getUniqueID(), entry);
+                }
+
+                catch (FeedCacheEntryException ex)
+                {
+                    // Bad entry. Log the error, but move on.
+
+                    log.error ("Error parsing feed cache entry", ex);
+                }
             }
         }
 
         catch (SAXException ex)
         {
-            throw new CurnException (Constants.BUNDLE_NAME,
-                                     "FeedCache.xmlParseFailure",
-                                     "Unable to parse cache file \"{0}\" " +
-                                     "as an XML file.",
-                                     new Object[] {cacheFilePath},
-                                     ex);
+            throw new FeedCacheException (Constants.BUNDLE_NAME,
+                                          "FeedCache.xmlParseFailure",
+                                          "Unable to parse cache file " +
+                                          "\"{0}\" as an XML file.",
+                                          new Object[] {cacheFilePath},
+                                          ex);
         }
 
         catch (IOException ex)
         {
-            throw new CurnException (Constants.BUNDLE_NAME,
-                                     "FeedCache.xmlParseFailure",
-                                     "Unable to parse cache file \"{0}\" " +
-                                     "as an XML file.",
-                                     new Object[] {cacheFilePath},
-                                     ex);
+            throw new FeedCacheException (Constants.BUNDLE_NAME,
+                                          "FeedCache.xmlParseFailure",
+                                          "Unable to parse cache file " +
+                                          "\"{0}\" as an XML file.",
+                                          new Object[] {cacheFilePath},
+                                          ex);
         }
 
         return result;
@@ -527,9 +537,12 @@ public class FeedCache implements Serializable
      *
      * @param node  the XML node for the feed cache entry
      *
-     * @return the FeedCacheEntry, or null on error
+     * @return the FeedCacheEntry
+     *
+     * @throws FeedCacheEntryException bad entry
      */
-    private FeedCacheEntry parseXMLCacheEntry (Node node)
+    private FeedCacheEntry parseXMLCacheEntry (final Node node)
+        throws FeedCacheEntryException
     {
         // Parse out the attributes.
 
@@ -552,87 +565,98 @@ public class FeedCache implements Serializable
                                                     null,
                                                     entryID);
 
-        if ((entryID == null) ||
-            (sChannelURL == null) ||
-            (sEntryURL == null) ||
-            (sTimestamp == null))
+        FeedCacheEntry result = null;
+
+        if ((entryID != null) &&
+            (sChannelURL != null) &&
+            (sEntryURL != null) &&
+            (sTimestamp != null))
         {
-            // Error(s) already logged.
+            // Parse the timestamp.
 
-            return null;
-        }
-
-        // Parse the timestamp.
-
-        long timestamp = 0;
-        try
-        {
-            timestamp = Long.parseLong (sTimestamp);
-        }
-
-        catch (NumberFormatException ex)
-        {
-            log.error ("Bad timestamp value of \"" + sTimestamp +
-                       "\" for <" + XML_ENTRY_ELEMENT_TAG +
-                       "> with unique ID \"" + entryID +
-                       "\". Skipping entry.");
-            return null;
-        }
-
-        // Parse the publication date, if any
-
-        Date publicationDate = null;
-        if (sPubDate != null)
-        {
+            long timestamp = 0;
             try
             {
-                publicationDate = new Date (Long.parseLong (sPubDate));
+                timestamp = Long.parseLong(sTimestamp);
             }
 
             catch (NumberFormatException ex)
             {
-                log.error ("Bad publication date value of \"" + sPubDate +
-                           "\" for <" + XML_ENTRY_ELEMENT_TAG +
-                           "> with unique ID \"" + entryID +
-                           "\". Ignoring publication date.");
+                throw new FeedCacheEntryException 
+                    ("Bad timestamp value of \"" +
+                     sTimestamp +
+                     "\" for <" +
+                     XML_ENTRY_ELEMENT_TAG +
+                     "> with unique ID \"" +
+                     entryID +
+                     "\". Skipping entry.");
             }
+
+            // Parse the publication date, if any
+
+            Date publicationDate = null;
+            if (sPubDate != null)
+            {
+                try
+                {
+                    publicationDate = new Date(Long.parseLong(sPubDate));
+                }
+
+                catch (NumberFormatException ex)
+                {
+                    log.error("Bad publication date value of \"" + sPubDate +
+                        "\" for <" + XML_ENTRY_ELEMENT_TAG +
+                        "> with unique ID \"" + entryID +
+                        "\". Ignoring publication date.");
+                }
+            }
+
+            // Parse the URLs.
+
+            URL channelURL = null;
+            try
+            {
+                channelURL = new URL(sChannelURL);
+            }
+
+            catch (MalformedURLException ex)
+            {
+                throw new FeedCacheEntryException 
+                    ("Bad channel URL \"" +
+                     sChannelURL +
+                     "\" for <" +
+                     XML_ENTRY_ELEMENT_TAG +
+                     "> with unique ID \"" +
+                     entryID +
+                     "\". Skipping entry.");
+            }
+
+            URL entryURL = null;
+            try
+            {
+                entryURL = new URL(sEntryURL);
+            }
+
+            catch (MalformedURLException ex)
+            {
+                throw new FeedCacheEntryException 
+                    ("Bad item URL \"" +
+                     sChannelURL +
+                     "\" for <" +
+                     XML_ENTRY_ELEMENT_TAG +
+                     "> with unique ID \"" +
+                     entryID +
+                     "\". Skipping entry.");
+            }
+
+            result = new FeedCacheEntry (entryID, 
+                                         channelURL,
+                                         entryURL,
+                                         publicationDate,
+                                         timestamp);
         }
 
-        // Parse the URLs.
-
-        URL channelURL = null;
-        try
-        {
-            channelURL = new URL (sChannelURL);
-        }
-
-        catch (MalformedURLException ex)
-        {
-            log.error ("Bad channel URL \"" + sChannelURL + "\" for <" +
-                       XML_ENTRY_ELEMENT_TAG + "> with unique ID \"" +
-                       entryID + "\". Skipping entry.");
-            return null;
-        }
-
-        URL entryURL = null;
-        try
-        {
-            entryURL = new URL (sEntryURL);
-        }
-
-        catch (MalformedURLException ex)
-        {
-            log.error ("Bad entry URL \"" + sEntryURL + "\" for <" +
-                       XML_ENTRY_ELEMENT_TAG + "> with unique ID \"" +
-                       entryID + "\". Skipping entry.");
-            return null;
-        }
-
-        return new FeedCacheEntry (entryID,
-                                   channelURL,
-                                   entryURL,
-                                   publicationDate,
-                                   timestamp);
+        return result;
     }
 
     /**
@@ -723,13 +747,13 @@ public class FeedCache implements Serializable
      *
      * @param label  a label, or initial message, to identify the dump
      */
-    private void dumpCache (String label)
+    private void dumpCache (final String label)
     {
         log.debug ("CACHE DUMP: " + label);
         Set<String> sortedKeys = new TreeSet<String> (cacheByID.keySet());
         for (String itemKey : sortedKeys)
             dumpCacheEntry (itemKey, (FeedCacheEntry) cacheByID.get (itemKey), "");
-    }   
+    }
 
     /**
      * Dump a single cache entry via the "debug" log facility.
@@ -738,9 +762,9 @@ public class FeedCache implements Serializable
      * @param entry   the cache entry
      * @param indent  string to use to indent output, if desired
      */
-    private void dumpCacheEntry (Object         itemKey,
-                                 FeedCacheEntry entry,
-                                 String         indent)
+    private void dumpCacheEntry (final Object         itemKey,
+                                 final FeedCacheEntry entry,
+                                       String         indent)
     {
         long timestamp  = entry.getTimestamp();
 
@@ -768,10 +792,10 @@ public class FeedCache implements Serializable
      *
      * @throws DOMException  DOM parsing error
      */
-    private String getOptionalXMLAttribute (NamedNodeMap attrs,
-                                            String       name,
-                                            String       defaultValue,
-                                            String       entryID)
+    private String getOptionalXMLAttribute (final NamedNodeMap attrs,
+                                            final String       name,
+                                            final String       defaultValue,
+                                            final String       entryID)
         throws DOMException
     {
         Node attr = attrs.getNamedItem (name);
@@ -782,7 +806,7 @@ public class FeedCache implements Serializable
             assert (attr.getNodeType() == Node.ATTRIBUTE_NODE);
             value = attr.getNodeValue();
 
-            if ((value != null) && (value.trim().length() == 0))
+            if (TextUtil.stringIsEmpty(value))
                 value = null;
         }
 
@@ -802,9 +826,9 @@ public class FeedCache implements Serializable
      *
      * @throws DOMException  DOM parsing error
      */
-    private String getRequiredXMLAttribute (NamedNodeMap attrs,
-                                            String       name,
-                                            String       entryID)
+    private String getRequiredXMLAttribute (final NamedNodeMap attrs,
+                                            final String       name,
+                                                  String       entryID)
         throws DOMException
     {
         String value = getOptionalXMLAttribute (attrs, name, null, entryID);

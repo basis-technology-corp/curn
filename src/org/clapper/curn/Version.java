@@ -123,7 +123,7 @@ public final class Version
      * @see #showVersion(PrintStream)
      * @see #getVersionNumber
      */
-    public static String getFullVersion (Locale locale)
+    public static String getFullVersion (final Locale locale)
     {
         String    name = getUtilityName();
         String    version = getVersionNumber();
@@ -190,7 +190,7 @@ public final class Version
      * @see #showVersion()
      * @see #showVersion(PrintStream)
      */
-    public static void showVersion (PrintWriter out)
+    public static void showVersion (final PrintWriter out)
     {
         out.println (getFullVersion (null));
     }
@@ -203,7 +203,7 @@ public final class Version
      * @see #showVersion()
      * @see #showVersion(PrintWriter)
      */
-    public static void showVersion (PrintStream out)
+    public static void showVersion (final PrintStream out)
     {
         out.println (getFullVersion (null));
     }
@@ -229,7 +229,7 @@ public final class Version
      * @see #showBuildInfo(PrintWriter)
      * @see #getBuildInfo
      */
-    public static void showBuildInfo (PrintStream out)
+    public static void showBuildInfo (final PrintStream out)
     {
         showBuildInfo (new PrintWriter (out));
     }
@@ -243,7 +243,7 @@ public final class Version
      * @see #showBuildInfo(PrintStream)
      * @see #getBuildInfo
      */
-    public static void showBuildInfo (PrintWriter out)
+    public static void showBuildInfo (final PrintWriter out)
     {
         BuildInfo buildInfo = getBuildInfo();
 
