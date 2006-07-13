@@ -132,7 +132,7 @@ public class EmptyArticleSummaryPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (EmptyArticleSummaryPlugIn.class);
+    private static final Logger log = new Logger (EmptyArticleSummaryPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -143,6 +143,7 @@ public class EmptyArticleSummaryPlugIn
      */
     public EmptyArticleSummaryPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
@@ -183,7 +184,7 @@ public class EmptyArticleSummaryPlugIn
      *                     the item was found
      * @param paramName    the name of the parameter
      * @param config       the {@link CurnConfig} object
-     * 
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
@@ -191,7 +192,7 @@ public class EmptyArticleSummaryPlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -223,6 +224,7 @@ public class EmptyArticleSummaryPlugIn
                                              sectionName +
                                              "] section.");
                 }
+
                 globalDefault = type;
                 log.debug ("[" + sectionName + "] " + paramName + "=" + type);
             }
@@ -251,7 +253,7 @@ public class EmptyArticleSummaryPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -265,7 +267,7 @@ public class EmptyArticleSummaryPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -279,7 +281,7 @@ public class EmptyArticleSummaryPlugIn
                 boolean on = config.getRequiredBooleanValue (sectionName,
                                                              paramName);
                 if (on)
-                    globalDefault = ReplacementType.NOTHING;
+                    perFeedSetting.put (feedInfo, ReplacementType.NOTHING);
             }
 
             else if (paramName.equals (VAR_REPLACE_EMPTY_SUMMARY))
@@ -337,47 +339,47 @@ public class EmptyArticleSummaryPlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         ReplacementType type = perFeedSetting.get(feedInfo);
-        if (type != null)
+        if (type == null)
+            type = globalDefault;
+
+        switch (type)
         {
-            switch (type)
-            {
-                case NOTHING:
-                    break;
+            case NOTHING:
+                break;
 
-                case CONTENT:
-                    log.debug ("Replacing empty summaries with content in " +
-                               "feed \"" + feedInfo.getURL().toString() +
-                               "\"");
-                    String s;
-                    for (RSSItem item : channel.getItems())
+            case CONTENT:
+                log.debug("Replacing empty summaries with content in " +
+                          "feed \"" + feedInfo.getURL().toString() +
+                          "\"");
+                String s;
+                for (RSSItem item : channel.getItems())
+                {
+                    if (item.getSummary() == null)
                     {
-                        if (item.getSummary() == null)
-                        {
-                            s = item.getFirstContentOfType ("text/html",
-                                                            "text/plain");
-                            if (s != null)
-                                item.setSummary (s);
-                        }
+                        s = item.getFirstContentOfType("text/html",
+                                                       "text/plain");
+                        if (s != null)
+                            item.setSummary(s);
                     }
-                    break;
+                }
+                break;
 
-                case TITLE:
-                    log.debug ("Replacing empty summaries with title in " +
-                               "feed \"" + feedInfo.getURL().toString() +
-                               "\"");
-                    for (RSSItem item : channel.getItems())
-                    {
-                        if (item.getSummary() == null)
-                            item.setSummary (item.getTitle());
-                    }
-                    break;
+            case TITLE:
+                log.debug("Replacing empty summaries with title in " +
+                         "feed \"" + feedInfo.getURL().toString() +
+                         "\"");
+                for (RSSItem item : channel.getItems())
+                {
+                    if (item.getSummary() == null)
+                        item.setSummary(item.getTitle());
+                }
+                break;
 
-                default:
-                    assert (false);
-            }       
+            default:
+                assert (false);
         }
 
         return true;
