@@ -17,6 +17,11 @@ Version 3.0.1 (...)
   be overridden--and thus could be called on an incompletely constructed
   object. CurnConfig now provides explicit load() methods, instead.
 
+- Fixed global default handling logic in EmptyArticleSummaryPlugin class.
+  Plug-in was parsing the global default setting, but not honoring it.
+
+- Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
+
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
