@@ -59,6 +59,7 @@ class StripHTMLMethod implements TemplateMethodModel
      */
     public StripHTMLMethod()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

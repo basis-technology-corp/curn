@@ -111,6 +111,7 @@ public final class ParserUtil
      */
     private ParserUtil()
     {
+        // Cannot be instantiated.
     }
 
     /*----------------------------------------------------------------------*\
@@ -150,9 +151,14 @@ public final class ParserUtil
 
         if ((sDate != null) && (sDate.length() > 0))
         {
-            result = parseDate (sDate,
-                                RFC822_DATE_FORMATS,
-                                TimeZone.getDefault());
+            // DateFormat objects are not synchronized.
+
+            synchronized (RFC822_DATE_FORMATS)
+            {
+                result = parseDate(sDate,
+                                   RFC822_DATE_FORMATS,
+                                   TimeZone.getDefault());
+            }
         }
 
         return result;
@@ -184,9 +190,13 @@ public final class ParserUtil
                 timeZone = parseW3CTimeZone (sDate.substring (tzIndex));
             }
 
-            // Now, parse the date.
+            // Now, parse the date. NOTE: DateFormat objects are not
+            // synchronized.
 
-            result = parseDate (sDate, W3C_DATE_FORMATS, timeZone);
+            synchronized (W3C_DATE_FORMATS)
+            {
+                result = parseDate(sDate, W3C_DATE_FORMATS, timeZone);
+            }
         }
 
         return result;
@@ -300,7 +310,7 @@ public final class ParserUtil
                                             RSSLink.Type ...    linkTypes)
     {
         RSSLink result = null;
-        
+
         outerLoop:
         for (RSSLink link : links)
         {
@@ -495,7 +505,7 @@ public final class ParserUtil
 
                 timeZone = TimeZone.getDefault();
                 break;
-                        
+
         }
 
         return timeZone;

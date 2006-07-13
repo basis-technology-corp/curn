@@ -70,6 +70,7 @@ public class RSSParserAdapter implements RSSParser
      */
     public RSSParserAdapter()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

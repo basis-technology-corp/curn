@@ -80,7 +80,7 @@ public class ZipOutputPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ZipOutputPlugIn.class);
+    private static final Logger log = new Logger (ZipOutputPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -91,6 +91,7 @@ public class ZipOutputPlugIn
      */
     public ZipOutputPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

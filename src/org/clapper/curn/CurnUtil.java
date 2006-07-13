@@ -93,6 +93,7 @@ public class CurnUtil
 
     private CurnUtil()
     {
+        // Cannot be instantiated.
     }
 
     /*----------------------------------------------------------------------*\

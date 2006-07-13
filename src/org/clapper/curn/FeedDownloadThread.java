@@ -70,7 +70,7 @@ class FeedDownloadThread extends Thread
                            Private Instance Data
     \*----------------------------------------------------------------------*/ 
 
-    private final Logger                  log;
+    private final Logger                  log;                         //NOPMD
     private final String                  id;
     private final CurnConfig              configuration;
     private final RSSParser               rssParser;
@@ -212,7 +212,7 @@ class FeedDownloadThread extends Thread
         {
             log.info ("Processing feed: " + feed.getURL().toString());
 
-            channel = handleFeed (feed, rssParser, configuration);
+            channel = handleFeed (feed, rssParser);
             if (channel != null)
             {
                 metaPlugIn.runPostFeedParsePlugIn (feed, channel);
@@ -304,7 +304,6 @@ class FeedDownloadThread extends Thread
      * @param feedInfo      the info about the feed
      * @param parser        the RSS parser to use, or null if parsing is to
      *                      be skipped
-     * @param configuration the parsed configuration data
      *
      * @return the <tt>RSSChannel</tt> representing the parsed feed, if
      *         parsing was enabled; otherwise, null.
@@ -313,8 +312,7 @@ class FeedDownloadThread extends Thread
      * @throws CurnException  some other error (e.g., plug-in error)
      */
     private RSSChannel handleFeed (final FeedInfo   feedInfo,
-                                   final RSSParser  parser,
-                                   final CurnConfig configuration)
+                                   final RSSParser  parser)
         throws FeedException,
                CurnException
     {
@@ -338,10 +336,7 @@ class FeedDownloadThread extends Thread
 
             else
             {
-                channel = downloadAndProcessFeed (feedInfo,
-                                                  parser,
-                                                  configuration,
-                                                  conn);
+                channel = downloadAndProcessFeed (feedInfo, parser, conn);
             }
         }
 
@@ -365,7 +360,6 @@ class FeedDownloadThread extends Thread
      * @param feedInfo      the info about the feed
      * @param parser        the RSS parser to use, or null if parsing is to
      *                      be skipped
-     * @param configuration the parsed configuration data
      * @param urlConn       open URLConnection for the feed
      *
      * @return the <tt>RSSChannel</tt> representing the parsed feed, if
@@ -376,7 +370,6 @@ class FeedDownloadThread extends Thread
      */
     private RSSChannel downloadAndProcessFeed (final FeedInfo      feedInfo,
                                                final RSSParser     parser,
-                                               final CurnConfig    configuration,
                                                final URLConnection urlConn)
         throws FeedException,
                CurnException

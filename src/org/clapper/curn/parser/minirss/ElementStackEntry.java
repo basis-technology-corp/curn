@@ -67,10 +67,10 @@ class ElementStackEntry
 
         try
         {
-            throw new Throwable ("allocationPoint");
+            throw new Throwable ("allocationPoint");                 // NOPMD
         }
 
-        catch (Throwable ex)
+        catch (Throwable ex)                                         // NOPMD
         {
             this.allocationPoint = ex;
         }

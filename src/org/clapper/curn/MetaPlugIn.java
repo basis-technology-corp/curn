@@ -160,6 +160,7 @@ public class MetaPlugIn
      */
     private MetaPlugIn()
     {
+        // Cannot be instantiated directly.
     }
 
     /*----------------------------------------------------------------------*\
@@ -270,7 +271,7 @@ public class MetaPlugIn
     runMainConfigItemPlugIn (final String     sectionName,
                              final String     paramName,
                              final CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         for (MainConfigItemPlugIn plugIn : mainConfigItemPlugIns)
         {
@@ -287,7 +288,7 @@ public class MetaPlugIn
                              final String     paramName,
                              final CurnConfig config,
                              final FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 
@@ -313,7 +314,7 @@ public class MetaPlugIn
                                       final String                  paramName,
                                       final CurnConfig              config,
                                       final ConfiguredOutputHandler handler)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 
@@ -339,7 +340,7 @@ public class MetaPlugIn
     runUnknownSectionConfigItemPlugIn (final String     sectionName,
                                        final String     paramName,
                                        final CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         for (UnknownSectionConfigItemPlugIn plugIn :
                  unknownSectionConfigItemPlugIns)
@@ -355,7 +356,7 @@ public class MetaPlugIn
     }
 
     public synchronized void runPostConfigPlugIn (final CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         for (PostConfigPlugIn plugIn : postConfigPlugIns)
         {
@@ -365,7 +366,7 @@ public class MetaPlugIn
     }
 
     public synchronized void runCacheLoadedPlugIn (final FeedCache cache)
-	throws CurnException
+        throws CurnException
     {
         for (CacheLoadedPlugIn plugIn : cacheLoadedPlugIns)
         {
@@ -377,7 +378,7 @@ public class MetaPlugIn
     public synchronized boolean
     runPreFeedDownloadPlugIn (final FeedInfo      feedInfo,
                               final URLConnection urlConn)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 
@@ -397,7 +398,7 @@ public class MetaPlugIn
     runPostFeedDownloadPlugIn (final FeedInfo feedInfo,
                                final File     feedDataFile,
                                final String   encoding)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 
@@ -417,7 +418,7 @@ public class MetaPlugIn
     public synchronized boolean 
     runPostFeedParsePlugIn (final FeedInfo   feedInfo,
                             final RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 
@@ -436,7 +437,7 @@ public class MetaPlugIn
     runPreFeedOutputPlugIn (final FeedInfo      feedInfo,
                             final RSSChannel    channel,
                             final OutputHandler outputHandler)
-	throws CurnException
+        throws CurnException
     {
         for (PreFeedOutputPlugIn plugIn : preFeedOutputPlugIns)
         {
@@ -448,7 +449,7 @@ public class MetaPlugIn
     public synchronized void 
     runPostFeedOutputPlugIn (final FeedInfo      feedInfo,
                              final OutputHandler outputHandler)
-	throws CurnException
+        throws CurnException
     {
         for (PostFeedOutputPlugIn plugIn : postFeedOutputPlugIns)
         {
@@ -459,7 +460,7 @@ public class MetaPlugIn
 
     public synchronized boolean
     runPostOutputHandlerFlushPlugIn (final OutputHandler outputHandler)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 
@@ -478,7 +479,7 @@ public class MetaPlugIn
 
     public void 
     runPostOutputPlugIn (final Collection<OutputHandler> outputHandlers)
-	throws CurnException
+        throws CurnException
     {
         for (PostOutputPlugIn plugIn : postOutputPlugIns)
         {
@@ -488,7 +489,7 @@ public class MetaPlugIn
     }
 
     public synchronized void runPreCacheSavePlugIn (final FeedCache cache)
-	throws CurnException
+        throws CurnException
     {
         for (PreCacheSavePlugIn plugIn : preCacheSavePlugIns)
         {

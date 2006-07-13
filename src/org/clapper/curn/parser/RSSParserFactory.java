@@ -47,6 +47,7 @@ public class RSSParserFactory
 
     private RSSParserFactory()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

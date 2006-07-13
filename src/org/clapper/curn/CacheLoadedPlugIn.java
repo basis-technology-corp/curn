@@ -54,5 +54,5 @@ public interface CacheLoadedPlugIn extends PlugIn
      * @see FeedCache
      */
     public void runCacheLoadedPlugIn (FeedCache cache)
-	throws CurnException;
+        throws CurnException;
 }

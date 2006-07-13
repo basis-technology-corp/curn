@@ -102,7 +102,7 @@ public abstract class FileOutputHandler implements OutputHandler
 
     private String      name           = null;
     private File        outputFile     = null;
-    private CurnConfig  config         = null;
+    private CurnConfig  config         = null;                      // NOPMD
     private boolean     saveOnly       = false;
     private boolean     showToolInfo   = true;
     private int         savedBackups   = 0;
@@ -111,7 +111,7 @@ public abstract class FileOutputHandler implements OutputHandler
     /**
      * For logging
      */
-    private Logger log = null;
+    private Logger log = null;                                      // NOPMD
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -122,6 +122,7 @@ public abstract class FileOutputHandler implements OutputHandler
      */
     public FileOutputHandler()
     {
+        // Nothing to do.
     }
 
     /*----------------------------------------------------------------------*\

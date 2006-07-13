@@ -63,7 +63,7 @@ public class DisableFeedPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (DisableFeedPlugIn.class);
+    private static final Logger log = new Logger (DisableFeedPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -74,6 +74,7 @@ public class DisableFeedPlugIn
      */
     public DisableFeedPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

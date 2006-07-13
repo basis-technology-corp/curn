@@ -36,6 +36,7 @@ import org.clapper.util.logging.Logger;
 
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSLink;
+import org.clapper.util.text.TextUtil;
 
 /**
  * <p><tt>V2Parser</tt> is a stripped down RSS parser for RSS versions
@@ -70,7 +71,7 @@ public class V2Parser extends ParserCommon
     /**
      * For logging
      */
-    private static Logger log = new Logger (V2Parser.class);
+    private static final Logger log = new Logger (V2Parser.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -251,7 +252,7 @@ public class V2Parser extends ParserCommon
         Channel theChannel = (Channel) stackEntry.getContainer();
         String  chars      = stackEntry.getCharacters().trim();
 
-        if (chars.trim().length() == 0)
+        if (TextUtil.stringIsEmpty (chars))
             chars = null;
 
         if (chars != null)
@@ -344,7 +345,7 @@ public class V2Parser extends ParserCommon
         Item    item  = (Item) stackEntry.getContainer();
         String  chars   = stackEntry.getCharacters().trim();
 
-        if (chars.trim().length() == 0)
+        if (TextUtil.stringIsEmpty (chars))
             chars = null;
 
         if (chars != null)

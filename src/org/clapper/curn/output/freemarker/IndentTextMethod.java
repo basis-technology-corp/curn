@@ -28,8 +28,6 @@ package org.clapper.curn.output.freemarker;
 
 import java.util.List;
 
-import org.clapper.util.logging.Logger;
-
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateMethodModel;
@@ -49,11 +47,6 @@ class IndentTextMethod implements TemplateMethodModel
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    /**
-     * For logging
-     */
-    private static Logger log = new Logger (IndentTextMethod.class);
-
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -63,6 +56,7 @@ class IndentTextMethod implements TemplateMethodModel
      */
     public IndentTextMethod()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
@@ -95,7 +89,8 @@ class IndentTextMethod implements TemplateMethodModel
         catch (NumberFormatException ex)
         {
             throw new TemplateModelException ("Bad indentation value \"" +
-                                              sIndent + "\"");
+                                              sIndent + "\"",
+                                              ex);
         }
 
         while (indentation-- > 0)

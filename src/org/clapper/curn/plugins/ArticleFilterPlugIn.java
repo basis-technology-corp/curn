@@ -58,7 +58,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * The <tt>ArticleFilterPlugIn</tt> provides per-feed filtering capabilities.
  * It can be used to filter out items (articles) that match one or more regular
- * expressions. 
+ * expressions.
  *
  * <p>The filtering syntax is (shamelessly) adapted from the
  * <a href="http://offog.org/code/rawdog.html" target="_top"><i>rawdog</i></a>
@@ -147,7 +147,7 @@ import java.util.regex.PatternSyntaxException;
  * <p>The following, more complicated, entry hides everything by author
  * "Joe Blow", unless the title has the word "rant" in it ('cause his rants
  * are hilarious):</p>
- * 
+ *
  * <blockquote>
  * <pre>
  * ArticleFilter: hide author '^joe *blow$' ; show author '^joe *blow$' title rant
@@ -206,6 +206,7 @@ public class ArticleFilterPlugIn
 
         FieldMatchRule()
         {
+            // Nothing to do
         }
 
         public FieldMatchRule addField (Field field)
@@ -271,6 +272,11 @@ public class ArticleFilterPlugIn
             return matchRules;
         }
 
+        private String getUnparsedFilter()
+        {
+            return unparsedFilter;
+        }
+
         private Command getCommand()
         {
             return command;
@@ -295,6 +301,11 @@ public class ArticleFilterPlugIn
     {
         private Collection<MatchRule> filterRules = new ArrayList<MatchRule>();
 
+        FeedFilterRules()
+        {
+            // Nothing to do
+        }
+
         public void add (MatchRule rule)
         {
             filterRules.add (rule);
@@ -318,7 +329,7 @@ public class ArticleFilterPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ArticleFilterPlugIn.class);
+    private static final Logger log = new Logger (ArticleFilterPlugIn.class);
 
     /**
      * Per-feed match rules
@@ -335,6 +346,7 @@ public class ArticleFilterPlugIn
      */
     public ArticleFilterPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
@@ -378,7 +390,7 @@ public class ArticleFilterPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -399,7 +411,7 @@ public class ArticleFilterPlugIn
             if (paramName.equals (VAR_ITEM_FILTER))
             {
                 String rawValue = config.getRawValue (sectionName, paramName);
-                perFeedMatchRules.put (feedInfo, 
+                perFeedMatchRules.put (feedInfo,
                                        parseFilterSpec (sectionName,
                                                         paramName,
                                                         rawValue));

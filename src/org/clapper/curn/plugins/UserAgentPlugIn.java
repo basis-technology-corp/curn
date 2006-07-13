@@ -98,14 +98,9 @@ public class UserAgentPlugIn
     private String defaultUserAgent = null;
 
     /**
-     * Saved reference to the configuration
-     */
-    private CurnConfig config = null;
-
-    /**
      * For log messages
      */
-    private static Logger log = new Logger (UserAgentPlugIn.class);
+    private static final Logger log = new Logger (UserAgentPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -116,6 +111,7 @@ public class UserAgentPlugIn
      */
     public UserAgentPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
@@ -164,7 +160,7 @@ public class UserAgentPlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -212,7 +208,7 @@ public class UserAgentPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -248,10 +244,8 @@ public class UserAgentPlugIn
      * @see CurnConfig
      */
     public void runPostConfigPlugIn (CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
-        this.config = config;
-
         if (defaultUserAgent == null)
         {
             StringBuilder buf = new StringBuilder();
@@ -304,7 +298,7 @@ public class UserAgentPlugIn
      */
     public boolean runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
                                              URLConnection urlConn)
-	throws CurnException
+        throws CurnException
     {
         String userAgent = perFeedUserAgentMap.get (feedInfo);
         if (userAgent == null)

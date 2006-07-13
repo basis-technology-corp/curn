@@ -98,7 +98,7 @@ public class ShowDatesPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ShowDatesPlugIn.class);
+    private static final Logger log = new Logger (ShowDatesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -109,6 +109,7 @@ public class ShowDatesPlugIn
      */
     public ShowDatesPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

@@ -89,7 +89,7 @@ import org.clapper.curn.CurnUtil;
  *         course, the actual the jar files for the scripting
  *         languages themselves must be in the CLASSPATH at runtime, for those
  *         languages to be available.</p>
- * 
+ *
  *         <p>If you want to use a BSF scripting language engine that isn't
  *         automatically registered with BSF, simply extend this class and
  *         override the {@link #registerAdditionalScriptingEngines} method.
@@ -343,9 +343,14 @@ public class ScriptOutputHandler extends FileOutputHandler
         public String     outputPath    = null;
         public CurnConfig config        = null;
         public String     configSection = null;
-        public Logger     logger        = null;
+        public Logger     logger        = null;                       // NOPMD
 
         String mimeType = null;
+
+        CurnScriptObjects()
+        {
+            // Nothing to do
+        }
 
         public void setMIMEType (String mimeType)
         {
@@ -369,14 +374,14 @@ public class ScriptOutputHandler extends FileOutputHandler
     private String                     scriptString       = null;
     private StringWriter               mimeTypeBuffer     = null;
     private String                     language           = null;
-    private Logger                     scriptLogger       = null;
+    private Logger                     scriptLogger       = null;     // NOPMD
     private CurnScriptObjects          scriptObjects      = null;
     private boolean                    allowEmbeddedHTML  = false;
 
     /**
      * For logging
      */
-    private static Logger log = new Logger (ScriptOutputHandler.class);
+    private static final Logger log = new Logger (ScriptOutputHandler.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -387,6 +392,7 @@ public class ScriptOutputHandler extends FileOutputHandler
      */
     public ScriptOutputHandler()
     {
+        // Nothing to do.
     }
 
     /*----------------------------------------------------------------------*\
@@ -429,7 +435,7 @@ public class ScriptOutputHandler extends FileOutputHandler
                          false);
             }
         }
-        
+
         catch (NoSuchSectionException ex)
         {
             throw new ConfigurationException (ex);
@@ -471,8 +477,8 @@ public class ScriptOutputHandler extends FileOutputHandler
         BSFManager.registerScriptingEngine ("ObjectScript",
                                             "oscript.bsf.ObjectScriptEngine",
                                             new String[] {"os"});
-        BSFManager.registerScriptingEngine ("groovy", 
-                                            "org.codehaus.groovy.bsf.GroovyEngine", 
+        BSFManager.registerScriptingEngine ("groovy",
+                                            "org.codehaus.groovy.bsf.GroovyEngine",
                                             new String[] {"groovy", "gy"});
 
         BSFManager.registerScriptingEngine ("beanshell",
@@ -489,7 +495,7 @@ public class ScriptOutputHandler extends FileOutputHandler
         StringBuffer scriptLoggerName = new StringBuffer();
         String scriptName = scriptFile.getName();
         scriptLoggerName.append (FileUtil.getFileNameNoExtension (scriptName));
-        scriptLoggerName.append ("_");
+        scriptLoggerName.append ('_');
         scriptLoggerName.append (FileUtil.getFileNameExtension (scriptName));
         scriptLogger = new Logger (scriptLoggerName.toString());
 
@@ -554,7 +560,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         channels.add (new ChannelWrapper (channel, feedInfo));
     }
-    
+
     /**
      * Flush any buffered-up output.
      *
@@ -627,6 +633,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     public void registerAdditionalScriptingEngines()
         throws CurnException
     {
+        // Nothing to do.
     }
 
     /*----------------------------------------------------------------------*\

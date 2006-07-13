@@ -338,6 +338,7 @@ public class RSSItemAdapter extends RSSItem
      */
     public void setID (String id)
     {
+        // Nothing to do here.
     }
 
     /*----------------------------------------------------------------------*\

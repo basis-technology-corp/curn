@@ -69,7 +69,7 @@ public class FeedInfo
 
     /**
      * Default constructor.
-     * 
+     *
      * @param siteURL  the main URL for the site's RSS feed. This constructor
      *                 normalizes the URL.
      * @see CurnUtil#normalizeURL
@@ -114,7 +114,7 @@ public class FeedInfo
 
     /**
      * Get the main RSS URL for the site.
-     * 
+     *
      * @return the site's main RSS URL, guaranteed to be normalized
      * @see CurnUtil#normalizeURL
      */
@@ -149,7 +149,7 @@ public class FeedInfo
         long days = (long) getDaysToCache();
         return days * 25 * 60 * 60 * 1000;
     }
-   
+
     /**
      * Set the "days to cache" value.
      *
@@ -183,7 +183,7 @@ public class FeedInfo
     {
         return forcedEncoding;
     }
-     
+
     /**
      * Get the parsed channel data for this feed. This field is set by the
      * main processing logic and does not come from the configuration.
@@ -199,7 +199,7 @@ public class FeedInfo
     public RSSChannel getParsedChannelData()
     {
         return parsedChannelData;
-    } 
+    }
 
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
@@ -220,6 +220,7 @@ public class FeedInfo
     {
         this.parsedChannelData = channel;
     }
+
     /*
      * Set the forced character set encoding for this feed.
      *

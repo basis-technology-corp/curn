@@ -85,7 +85,7 @@ public class IgnoreDuplicateArticlesPlugIn
     /**
      * For log messages
      */
-    private static Logger log =
+    private static final Logger log =
         new Logger (IgnoreDuplicateArticlesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
@@ -97,6 +97,7 @@ public class IgnoreDuplicateArticlesPlugIn
      */
     public IgnoreDuplicateArticlesPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

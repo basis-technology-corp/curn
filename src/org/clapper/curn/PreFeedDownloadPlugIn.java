@@ -78,5 +78,5 @@ public interface PreFeedDownloadPlugIn extends PlugIn
      */
     public boolean runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
                                              URLConnection urlConn)
-	throws CurnException;
+        throws CurnException;
 }

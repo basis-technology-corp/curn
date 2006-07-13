@@ -54,5 +54,5 @@ public interface PreCacheSavePlugIn extends PlugIn
      * @see FeedCache
      */
     public void runPreCacheSavePlugIn (FeedCache cache)
-	throws CurnException;
+        throws CurnException;
 }

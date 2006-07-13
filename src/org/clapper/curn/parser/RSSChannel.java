@@ -56,6 +56,18 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
     private boolean htmlStripped = false;
 
     /*----------------------------------------------------------------------*\
+                              Constructors
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Default constructor.
+     */
+    protected RSSChannel()
+    {
+        // Nothing to do
+    }
+
+    /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
 
@@ -147,26 +159,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
             if ((items != null) && (items.size() > 0))
             {
                 for (RSSItem item : items)
-                {
-                    title = item.getTitle();
-                    if (title != null)
-                        item.setTitle (HTMLUtil.textFromHTML (title));
-
-                    authors = item.getAuthors();
-                    if (authors != null)
-                    {
-                        Collection<String> newAuthors =
-                            new ArrayList<String>();
-                        for (String author : authors)
-                            newAuthors.add (HTMLUtil.textFromHTML (author));
-
-                        setAuthors (newAuthors);
-                    }
-
-                    String summary = item.getSummary();
-                    if (summary != null)
-                        item.setSummary (HTMLUtil.textFromHTML (summary));
-                }
+                    stripItemHTML(item);
             }
 
             htmlStripped = true;
@@ -361,7 +354,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      * method exists for underlying implementations that store the RSS
      * format as something other than a string; the method allows the
      * {@link #makeCopy} method to copy the RSS format without knowing
-     * how it's stored. The default implementation of this method 
+     * how it's stored. The default implementation of this method
      * simply calls {@link #getRSSFormat}.
      *
      * @return the format, or null if not available
@@ -415,4 +408,35 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      * @see #setAuthor
      */
     public abstract void clearAuthors();
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     ** Strip the HTML from an item.
+     *
+     * @param item  the item
+     */
+    private void stripItemHTML(final RSSItem item) 
+    {
+        String title = item.getTitle();
+        if (title != null)
+            item.setTitle (HTMLUtil.textFromHTML (title));
+
+        Collection<String> authors = item.getAuthors();
+        if (authors != null)
+        {
+            Collection<String> newAuthors =
+                new ArrayList<String>();
+            for (String author : authors)
+                newAuthors.add (HTMLUtil.textFromHTML (author));
+
+            setAuthors (newAuthors);
+        }
+
+        String summary = item.getSummary();
+        if (summary != null)
+            item.setSummary (HTMLUtil.textFromHTML (summary));
+    }
 }

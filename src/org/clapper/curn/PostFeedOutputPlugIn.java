@@ -64,5 +64,5 @@ public interface PostFeedOutputPlugIn extends PlugIn
      */
     public void runPostFeedOutputPlugIn (FeedInfo      feedInfo,
                                          OutputHandler outputHandler)
-	throws CurnException;
+        throws CurnException;
 }

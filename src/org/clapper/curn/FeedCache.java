@@ -562,8 +562,7 @@ public class FeedCache
                                                      entryID);
         String sPubDate =  getOptionalXMLAttribute (attrs,
                                                     XML_ENTRY_ATTR_PUB_DATE,
-                                                    null,
-                                                    entryID);
+                                                    null);
 
         FeedCacheEntry result = null;
 
@@ -786,7 +785,6 @@ public class FeedCache
      * @param attrs        the list of attributes
      * @param defaultValue the default value
      * @param name         the attribute name
-     * @param entryID      entry ID string, if available, for errors
      *
      * @return the attribute's value, or null if the attribute wasn't found
      *
@@ -794,8 +792,7 @@ public class FeedCache
      */
     private String getOptionalXMLAttribute (final NamedNodeMap attrs,
                                             final String       name,
-                                            final String       defaultValue,
-                                            final String       entryID)
+                                            final String       defaultValue)
         throws DOMException
     {
         Node attr = attrs.getNamedItem (name);
@@ -831,7 +828,7 @@ public class FeedCache
                                                   String       entryID)
         throws DOMException
     {
-        String value = getOptionalXMLAttribute (attrs, name, null, entryID);
+        String value = getOptionalXMLAttribute (attrs, name, null);
 
         if (value == null)
         {

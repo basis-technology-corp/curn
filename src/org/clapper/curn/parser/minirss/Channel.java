@@ -72,6 +72,7 @@ public class Channel extends RSSChannel
      */
     Channel()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

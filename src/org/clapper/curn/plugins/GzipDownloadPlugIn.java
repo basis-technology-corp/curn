@@ -100,7 +100,7 @@ public class GzipDownloadPlugIn
     /**
      * For log messages
      */
-    private static Logger log =
+    private static final Logger log =
         new Logger (GzipDownloadPlugIn.class);
 
     /*----------------------------------------------------------------------*\
@@ -112,6 +112,7 @@ public class GzipDownloadPlugIn
      */
     public GzipDownloadPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

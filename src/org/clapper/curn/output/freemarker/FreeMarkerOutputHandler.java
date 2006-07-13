@@ -371,14 +371,12 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     \*----------------------------------------------------------------------*/
 
     private PrintWriter       out                 = null;
-    private CurnConfig        config              = null;
     private TemplateLocation  templateLocation    = null;
     private String            mimeType            = "text/html";
     private boolean           allowEmbeddedHTML   = false;
     private int               tocThreshold        = DEFAULT_TOC_THRESHOLD;
     private int               totalChannels       = 0;
     private int               totalItems          = 0;
-    private String            handlerName         = null;
 
     private freemarker.template.Configuration freemarkerConfig;
     private SimpleHash                        freemarkerDataModel;
@@ -401,6 +399,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      */
     public FreeMarkerOutputHandler()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
@@ -424,7 +423,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         throws ConfigurationException,
                CurnException
     {
-        this.config = config;
         this.totalChannels = 0;
 
         Date now = new Date();
@@ -434,8 +432,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         String section = cfgHandler.getSectionName();
         String title = DEFAULT_TITLE;
         String extraText = "";
-
-        this.handlerName = section;
 
         try
         {

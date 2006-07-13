@@ -31,7 +31,6 @@ import java.io.StringWriter;
 import java.util.List;
 
 import org.clapper.util.io.WordWrapWriter;
-import org.clapper.util.logging.Logger;
 
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateModel;
@@ -53,11 +52,6 @@ class WrapTextMethod implements TemplateMethodModel
     private StringWriter   stringWriter = new StringWriter();
     private WordWrapWriter wrapWriter   = new WordWrapWriter (stringWriter);
 
-    /**
-     * For logging
-     */
-    private static Logger log = new Logger (WrapTextMethod.class);
-
     /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
@@ -67,6 +61,7 @@ class WrapTextMethod implements TemplateMethodModel
      */
     public WrapTextMethod()
     {
+        // Nothing to do.
     }
 
     /*----------------------------------------------------------------------*\
@@ -132,7 +127,7 @@ class WrapTextMethod implements TemplateMethodModel
 
         // Strip the last trailing newline from the wrapped string and return
         // it.
-        
+
         String s = buf.deleteCharAt (buf.length() - 1).toString();
         return new SimpleScalar (s);
     }

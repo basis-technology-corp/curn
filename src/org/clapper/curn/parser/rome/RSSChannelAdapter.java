@@ -34,7 +34,6 @@ import org.clapper.curn.parser.RSSLink;
 import org.clapper.util.logging.Logger;
 
 import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This class implements the <tt>RSSChannel</tt> interface and defines an
@@ -73,7 +71,7 @@ public class RSSChannelAdapter extends RSSChannel
     /**
      * For log messages
      */
-    private static Logger log = new Logger (RSSChannelAdapter.class);
+    private static final Logger log = new Logger (RSSChannelAdapter.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor

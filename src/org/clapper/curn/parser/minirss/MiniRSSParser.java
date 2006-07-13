@@ -84,7 +84,7 @@ public class MiniRSSParser
     implements RSSParser, ErrorHandler
 {
     /*----------------------------------------------------------------------*\
-			     Private Constants
+                             Private Constants
     \*----------------------------------------------------------------------*/
 
     private static final String DEFAULT_XML_PARSER_CLASS_NAME =
@@ -102,7 +102,7 @@ public class MiniRSSParser
     /**
      * For logging
      */
-    private static Logger log = new Logger (MiniRSSParser.class);
+    private static final Logger log = new Logger (MiniRSSParser.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -129,10 +129,10 @@ public class MiniRSSParser
      */
     public MiniRSSParser (String parserClassName)
     {
-	if (parserClassName == null)
-	    parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
+        if (parserClassName == null)
+            parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
 
-	this.parserClassName = parserClassName;
+        this.parserClassName = parserClassName;
     }
 
     /*----------------------------------------------------------------------*\
@@ -324,10 +324,10 @@ public class MiniRSSParser
      * @see RSSChannel
      */
     private RSSChannel parse (URL url, Reader r)
-	throws IOException,
-	       RSSParserException
+        throws IOException,
+               RSSParserException
     {
-	try
+        try
         {
             xmlReader = XMLReaderFactory.createXMLReader (parserClassName);
             xmlReader.setContentHandler (this);

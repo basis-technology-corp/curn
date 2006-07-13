@@ -62,5 +62,5 @@ public interface PostConfigPlugIn extends PlugIn
      * @see CurnConfig
      */
     public void runPostConfigPlugIn (CurnConfig config)
-	throws CurnException;
+        throws CurnException;
 }

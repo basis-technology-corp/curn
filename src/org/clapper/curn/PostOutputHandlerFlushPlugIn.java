@@ -63,5 +63,5 @@ public interface PostOutputHandlerFlushPlugIn extends PlugIn
      */
     public boolean
     runPostOutputHandlerFlushPlugIn (OutputHandler outputHandler)
-	throws CurnException;
+        throws CurnException;
 }

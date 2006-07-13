@@ -83,6 +83,7 @@ public class RawFeedEditPlugIn
 
         FeedEditInfo()
         {
+            // Nothing to do
         }
     }
 
@@ -99,7 +100,7 @@ public class RawFeedEditPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (RawFeedEditPlugIn.class);
+    private static final Logger log = new Logger (RawFeedEditPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -110,6 +111,7 @@ public class RawFeedEditPlugIn
      */
     public RawFeedEditPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

@@ -81,7 +81,7 @@ public class RSSItemAdapter extends RSSItem
     /**
      * For log messages
      */
-    private static Logger log = new Logger (RSSItemAdapter.class);
+    private static final Logger log = new Logger (RSSItemAdapter.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -389,6 +389,7 @@ public class RSSItemAdapter extends RSSItem
      */
     public void setID (String id)
     {
+        // Nothing to do here.
     }
 
     /*----------------------------------------------------------------------*\

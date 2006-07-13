@@ -69,6 +69,7 @@ public class CurnTemplateLoader implements TemplateLoader
      */
     CurnTemplateLoader()
     {
+        // Nothing to do.
     }
 
     /*----------------------------------------------------------------------*\
@@ -107,7 +108,7 @@ public class CurnTemplateLoader implements TemplateLoader
             throw new IOException (ex.toString());
         }
     }
-        
+
     /**
      * Returns the time of last modification of the specified template source.
      * This method is called after {@link #findTemplateSource(String)}.
@@ -179,7 +180,7 @@ public class CurnTemplateLoader implements TemplateLoader
 
         return result;
     }
-    
+
     /**
      * Returns the character stream of a template represented by the specified
      * template source. This method is called after {@link #getLastModified}
@@ -196,7 +197,7 @@ public class CurnTemplateLoader implements TemplateLoader
      *
      * @throws IOException if an I/O error occurs while accessing the stream.
      */
-    public Reader getReader (final Object templateSource, 
+    public Reader getReader (final Object templateSource,
                              final String encoding)
         throws IOException
     {
@@ -257,7 +258,7 @@ public class CurnTemplateLoader implements TemplateLoader
 
         return result;
     }
-    
+
     /**
      * Closes the template source. This is the last method that is called
      * by the FreeMarker <tt>TemplateCache</tt> for a template source. The

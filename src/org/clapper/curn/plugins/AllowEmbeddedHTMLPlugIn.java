@@ -102,7 +102,7 @@ public class AllowEmbeddedHTMLPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (AllowEmbeddedHTMLPlugIn.class);
+    private static final Logger log = new Logger (AllowEmbeddedHTMLPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -113,6 +113,7 @@ public class AllowEmbeddedHTMLPlugIn
      */
     public AllowEmbeddedHTMLPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

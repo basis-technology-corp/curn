@@ -103,6 +103,7 @@ public class RawFeedSaveAsPlugIn
 
         FeedSaveInfo()
         {
+            // Nothing to do
         }
     }
 
@@ -124,7 +125,7 @@ public class RawFeedSaveAsPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (RawFeedSaveAsPlugIn.class);
+    private static final Logger log = new Logger (RawFeedSaveAsPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -135,6 +136,7 @@ public class RawFeedSaveAsPlugIn
      */
     public RawFeedSaveAsPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
@@ -178,7 +180,7 @@ public class RawFeedSaveAsPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -246,7 +248,7 @@ public class RawFeedSaveAsPlugIn
      * options.
      *
      * @param config  the parsed {@link CurnConfig} object
-     * 
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
@@ -259,7 +261,7 @@ public class RawFeedSaveAsPlugIn
         for (FeedInfo feedInfo : perFeedSaveAsMap.keySet())
         {
             FeedSaveInfo saveInfo = perFeedSaveAsMap.get (feedInfo);
-            
+
             if (saveInfo.saveOnly && (saveInfo.saveAsFile == null))
             {
                 throw new CurnException
@@ -315,11 +317,11 @@ public class RawFeedSaveAsPlugIn
 
         // If this is a download-only configuration, and there's no
         // save-as file, then we can skip this feed.
-        
+
         if (config.isDownloadOnly())
         {
             FeedSaveInfo saveInfo = perFeedSaveAsMap.get (feedInfo);
-            
+
             if ((saveInfo == null) || (saveInfo.saveAsFile == null))
             {
                 log.debug ("Feed " +
@@ -342,7 +344,7 @@ public class RawFeedSaveAsPlugIn
      *
      * @param feedInfo      the {@link FeedInfo} object for the feed that
      *                      has been downloaded
-     * @param feedDataFile  the file containing the downloaded, unparsed feed 
+     * @param feedDataFile  the file containing the downloaded, unparsed feed
      *                      XML. <b><i>curn</i> may delete this file after all
      *                      plug-ins are notified!</b>
      * @param encoding      the encoding used to store the data in the file,
@@ -380,7 +382,7 @@ public class RawFeedSaveAsPlugIn
                            "\" (encoding " +
                            saveInfo.saveAsEncoding +
                            ")");
-                
+
                 FileUtil.copyTextFile (feedDataFile,
                                        encoding,
                                        saveInfo.saveAsFile,

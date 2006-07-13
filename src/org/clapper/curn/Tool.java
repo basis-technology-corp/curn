@@ -173,6 +173,7 @@ public class Tool
 
     private Tool()
     {
+        // Cannot be instantiated directly.
     }
 
     /*----------------------------------------------------------------------*\
@@ -190,7 +191,7 @@ public class Tool
     }
 
     public void runPostConfigPlugIn (final CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {

@@ -72,5 +72,5 @@ public interface UnknownSectionConfigItemPlugIn extends PlugIn
     runUnknownSectionConfigItemPlugIn (String     sectionName,
                                        String     paramName,
                                        CurnConfig config)
-	throws CurnException;
+        throws CurnException;
 }

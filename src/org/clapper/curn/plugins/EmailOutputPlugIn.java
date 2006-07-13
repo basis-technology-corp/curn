@@ -126,7 +126,7 @@ public class EmailOutputPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (EmailOutputPlugIn.class);
+    private static final Logger log = new Logger (EmailOutputPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -137,6 +137,7 @@ public class EmailOutputPlugIn
      */
     public EmailOutputPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

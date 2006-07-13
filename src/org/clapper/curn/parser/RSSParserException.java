@@ -57,7 +57,7 @@ public class RSSParserException extends NestedException
      */
     public RSSParserException()
     {
-	super();
+        super();
     }
 
     /**
@@ -68,7 +68,7 @@ public class RSSParserException extends NestedException
      */
     public RSSParserException (Throwable exception)
     {
-	super (exception);
+        super (exception);
     }
 
     /**
@@ -90,7 +90,7 @@ public class RSSParserException extends NestedException
      */
     public RSSParserException (String message, Throwable exception)
     {
-	super (message, exception);
+        super (message, exception);
     }
 
     /**

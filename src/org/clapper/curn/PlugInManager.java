@@ -85,6 +85,7 @@ public class PlugInManager
     {
         PlugInComparator()
         {
+            // Nothing to do.
         }
 
         public int compare (final PlugIn pl1, final PlugIn pl2)
@@ -96,8 +97,8 @@ public class PlugInManager
         {
             return (o instanceof PlugInComparator);
         }
-        
-        public int hashCode()
+
+        public int hashCode()                                       // NOPMD
         {
             return super.hashCode();
         }
@@ -171,6 +172,7 @@ public class PlugInManager
      */
     private PlugInManager()
     {
+        // Cannot be instantiated.
     }
 
     /*----------------------------------------------------------------------*\

@@ -38,6 +38,7 @@ public class BootstrapException extends Exception
      */
     public BootstrapException()
     {
+        // Here fror completeness.
     }
 
     /**

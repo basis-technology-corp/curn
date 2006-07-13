@@ -76,6 +76,18 @@ public abstract class RSSItem
     private Map<String,String>   contentMap = new HashMap<String,String>();
 
     /*----------------------------------------------------------------------*\
+                              Constructor
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Default constructor
+     */
+    protected RSSItem()
+    {
+        // nothing to do
+    }
+
+    /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
 
@@ -202,7 +214,7 @@ public abstract class RSSItem
     public void setContent (String content, String mimeType)
     {
         contentMap.put (mimeType, content);
-    }   
+    }
 
     /**
      * Clear the stored content for all MIME types, without clearing any

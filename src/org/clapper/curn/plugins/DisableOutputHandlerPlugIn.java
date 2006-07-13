@@ -63,7 +63,7 @@ public class DisableOutputHandlerPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (DisableOutputHandlerPlugIn.class);
+    private static final Logger log = new Logger (DisableOutputHandlerPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -74,6 +74,7 @@ public class DisableOutputHandlerPlugIn
      */
     public DisableOutputHandlerPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

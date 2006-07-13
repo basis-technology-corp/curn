@@ -98,7 +98,7 @@ public class ShowAuthorsPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ShowAuthorsPlugIn.class);
+    private static final Logger log = new Logger (ShowAuthorsPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -109,6 +109,7 @@ public class ShowAuthorsPlugIn
      */
     public ShowAuthorsPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

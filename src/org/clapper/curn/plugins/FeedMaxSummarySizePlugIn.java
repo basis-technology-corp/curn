@@ -103,7 +103,7 @@ public class FeedMaxSummarySizePlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (FeedMaxSummarySizePlugIn.class);
+    private static final Logger log = new Logger (FeedMaxSummarySizePlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -114,6 +114,7 @@ public class FeedMaxSummarySizePlugIn
      */
     public FeedMaxSummarySizePlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

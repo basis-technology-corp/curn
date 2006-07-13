@@ -26,15 +26,12 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.Curn;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
@@ -84,7 +81,7 @@ public class TitleOverridePlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (TitleOverridePlugIn.class);
+    private static final Logger log = new Logger (TitleOverridePlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -95,6 +92,7 @@ public class TitleOverridePlugIn
      */
     public TitleOverridePlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

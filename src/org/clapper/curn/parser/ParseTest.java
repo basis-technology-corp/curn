@@ -32,12 +32,13 @@ import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 
-public class tester
+public class ParseTest
 {
     private static WordWrapWriter out = new WordWrapWriter (System.out);
 
-    private tester()
+    private ParseTest()
     {
+        // Nothing to do
     }
 
     public static void main (String args[])
@@ -49,7 +50,7 @@ public class tester
 
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            ex.printStackTrace();   // NOPMD
             System.exit (1);
         }
 
@@ -68,7 +69,7 @@ public class tester
     {
         if (args.length < 2)
         {
-            System.err.println ("Usage: java " + tester.class.getName() +
+            System.err.println ("Usage: java " + ParseTest.class.getName() +
                                 " parserClass XMLfile [XMLfile] ...");
             System.exit (1);
         }

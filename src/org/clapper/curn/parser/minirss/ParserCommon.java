@@ -80,7 +80,7 @@ class ParserCommon extends DefaultHandler
     /**
      * For logging
      */
-    private Logger log;
+    private Logger log;                                              // NOPMD
 
     /*----------------------------------------------------------------------*\
                                 Constructor

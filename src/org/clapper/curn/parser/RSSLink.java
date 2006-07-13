@@ -79,6 +79,7 @@ public class RSSLink
      */
     public RSSLink()
     {
+        // nothing to do
     }
 
     /**

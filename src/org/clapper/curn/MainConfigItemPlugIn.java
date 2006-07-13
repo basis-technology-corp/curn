@@ -67,5 +67,5 @@ public interface MainConfigItemPlugIn extends PlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException;
+        throws CurnException;
 }

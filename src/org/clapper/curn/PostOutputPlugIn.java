@@ -62,5 +62,5 @@ public interface PostOutputPlugIn extends PlugIn
      * @see OutputHandler
      */
     public void runPostOutputPlugIn (Collection<OutputHandler> outputHandlers)
-	throws CurnException;
+        throws CurnException;
 }

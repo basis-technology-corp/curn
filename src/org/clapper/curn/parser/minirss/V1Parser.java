@@ -36,6 +36,7 @@ import org.clapper.util.logging.Logger;
 
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSLink;
+import org.clapper.util.text.TextUtil;
 
 /**
  * <p><tt>V1Parser</tt> is a stripped down RSS parser for
@@ -65,7 +66,7 @@ public class V1Parser extends ParserCommon
     /**
      * For logging
      */
-    private static Logger log = new Logger (V1Parser.class);
+    private static final Logger log = new Logger (V1Parser.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -302,7 +303,7 @@ public class V1Parser extends ParserCommon
         Channel theChannel = (Channel) stackEntry.getContainer();
         String  chars      = stackEntry.getCharacters().trim();
 
-        if (chars.trim().length() == 0)
+        if (TextUtil.stringIsEmpty (chars))
             chars = null;
 
         if (chars != null)
@@ -372,7 +373,7 @@ public class V1Parser extends ParserCommon
         Item    item  = (Item) stackEntry.getContainer();
         String  chars   = stackEntry.getCharacters().trim();
 
-        if (chars.trim().length() == 0)
+        if (TextUtil.stringIsEmpty (chars))
             chars = null;
 
         if (chars != null)
@@ -421,7 +422,7 @@ public class V1Parser extends ParserCommon
             // protocol. Abort if (a) there's no ":" anywhere in the
             // string, or (b) we reach the ":" without finding a valid URL.
 
-            int iColon = sUrl.indexOf (":");
+            int iColon = sUrl.indexOf (':');
             if (iColon < 0)
             {
                 throw new SAXException ("Can't save item link \"" +

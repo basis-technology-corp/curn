@@ -74,6 +74,7 @@ public abstract class AbstractXMLEditPlugIn
      */
     protected AbstractXMLEditPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

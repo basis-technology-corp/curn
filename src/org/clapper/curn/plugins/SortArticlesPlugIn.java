@@ -154,7 +154,7 @@ public class SortArticlesPlugIn
             return cmp;
         }
 
-        public int hashCode()
+        public int hashCode()                                        // NOPMD
         {
             return super.hashCode();
         }
@@ -182,7 +182,7 @@ public class SortArticlesPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (SortArticlesPlugIn.class);
+    private static final Logger log = new Logger (SortArticlesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -193,6 +193,7 @@ public class SortArticlesPlugIn
      */
     public SortArticlesPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

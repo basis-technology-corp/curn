@@ -110,6 +110,7 @@ public class ParsedFeedURLEditPlugIn
 
         FeedEditInfo()
         {
+            // Nothing to do
         }
     }
 
@@ -126,7 +127,8 @@ public class ParsedFeedURLEditPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (ParsedFeedURLEditPlugIn.class);
+    private static final Logger log = 
+        new Logger (ParsedFeedURLEditPlugIn.class);
 
     /**
      * Regular expression helper
@@ -142,6 +144,7 @@ public class ParsedFeedURLEditPlugIn
      */
     public ParsedFeedURLEditPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

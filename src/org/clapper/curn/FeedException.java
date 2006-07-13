@@ -66,7 +66,7 @@ public class FeedException extends CurnException
      */
     public FeedException (FeedInfo feedInfo)
     {
-	super();
+        super();
         this.feedInfo = feedInfo;
     }
 
@@ -79,7 +79,7 @@ public class FeedException extends CurnException
      */
     public FeedException (FeedInfo feedInfo, Throwable exception)
     {
-	super (exception);
+        super (exception);
         this.feedInfo = feedInfo;
     }
 
@@ -107,7 +107,7 @@ public class FeedException extends CurnException
                           String    message,
                           Throwable exception)
     {
-	super (message, exception);
+        super (message, exception);
         this.feedInfo = feedInfo;
     }
 
@@ -276,7 +276,7 @@ public class FeedException extends CurnException
      */
     public String getMessage (final Locale locale)
     {
-	StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
 
         buf.append (BundleUtil.getMessage (Constants.BUNDLE_NAME,
                                            locale,

@@ -74,5 +74,5 @@ public interface PostFeedParsePlugIn extends PlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException;
+        throws CurnException;
 }

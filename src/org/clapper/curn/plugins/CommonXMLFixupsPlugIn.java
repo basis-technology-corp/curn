@@ -142,7 +142,7 @@ public class CommonXMLFixupsPlugIn
     /**
      * For log messages
      */
-    private static Logger log = new Logger (CommonXMLFixupsPlugIn.class);
+    private static final Logger log = new Logger (CommonXMLFixupsPlugIn.class);
 
     /*----------------------------------------------------------------------* \
                                 Constructor
@@ -153,6 +153,7 @@ public class CommonXMLFixupsPlugIn
      */
     public CommonXMLFixupsPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\

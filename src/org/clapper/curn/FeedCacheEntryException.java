@@ -26,6 +26,8 @@
 
 package org.clapper.curn;
 
+import org.clapper.util.misc.NestedException;
+
 /**
  * Thrown during feed cache processing.
  *
@@ -39,7 +41,7 @@ public class FeedCacheEntryException extends CurnException
      */
     public FeedCacheEntryException()
     {
-	super();
+        super();
     }
 
     /**
@@ -50,7 +52,7 @@ public class FeedCacheEntryException extends CurnException
      */
     public FeedCacheEntryException (Throwable exception)
     {
-	super (exception);
+        super (exception);
     }
 
     /**
@@ -72,7 +74,7 @@ public class FeedCacheEntryException extends CurnException
      */
     public FeedCacheEntryException (String message, Throwable exception)
     {
-	super (message, exception);
+        super (message, exception);
     }
 
     /**

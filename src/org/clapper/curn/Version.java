@@ -71,6 +71,7 @@ public final class Version
 
     private Version()
     {
+        // Cannot be instantiated.
     }
 
     /*----------------------------------------------------------------------*\

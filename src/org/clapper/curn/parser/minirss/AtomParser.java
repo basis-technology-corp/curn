@@ -34,6 +34,7 @@ import org.clapper.util.logging.Logger;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import org.clapper.util.text.TextUtil;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
@@ -65,7 +66,7 @@ public class AtomParser extends ParserCommon
     /**
      * For logging
      */
-    private static Logger log = new Logger (AtomParser.class);
+    private static final Logger log = new Logger (AtomParser.class);
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -433,11 +434,8 @@ public class AtomParser extends ParserCommon
         if (chars.length() == 0)
             chars = null;
 
-        if (chars != null)
-        {
-            if (elementName.equals ("name"))
-                author.setAuthorName (chars);
-        }
+        if ((chars != null) && (elementName.equals ("name")))
+            author.setAuthorName(chars);
     }
 
     /**
@@ -558,7 +556,7 @@ public class AtomParser extends ParserCommon
         String      mimeType = attributes.getValue ("type");
         ItemContent content;
 
-        if ((mimeType != null) && (mimeType.trim().length() == 0))
+        if (TextUtil.stringIsEmpty (mimeType))
             mimeType = null;
 
         if (mimeType == null)

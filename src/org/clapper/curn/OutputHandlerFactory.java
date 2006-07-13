@@ -56,6 +56,7 @@ public class OutputHandlerFactory
 
     private OutputHandlerFactory()
     {
+        // Can't be instantiated directly.
     }
 
     /*----------------------------------------------------------------------*\
