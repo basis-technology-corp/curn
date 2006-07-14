@@ -63,6 +63,7 @@ source and documentation packages.
             value="${compiled.classes.dir}/${pkg.path}/BuildInfoBundle.properties"/>
   <property name="javac.listfiles" value="no"/>
   <property name="javac.source" value="1.5"/>
+  <property name="javac.target" value="1.5"/>
   <property name="javac.debug" value="true"/>
   <property name="javac.depend" value="false"/>
   <property name="curn_jar_name" value="curn"/>
@@ -169,6 +170,7 @@ source and documentation packages.
   <target name="main">
     <javac srcdir="${javac.src.dir}"
            source="${javac.source}"
+           target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -251,6 +253,7 @@ source and documentation packages.
     <echo level="verbose">Found Informa parser. Compiling Informa classes.</echo>
     <javac srcdir="${javac.src.dir}"
            source="${javac.source}"
+           target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -305,6 +308,7 @@ source and documentation packages.
     <echo level="verbose">Found Rome parser. Compiling Rome classes.</echo>
     <javac srcdir="${javac.src.dir}"
            source="${javac.source}"
+           target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -341,6 +345,7 @@ source and documentation packages.
     -->
     <javac srcdir="${javac.src.dir}"
            source="${javac.source}"
+           target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -381,6 +386,7 @@ source and documentation packages.
 
     <javac srcdir="${javac.src.dir}"
            source="${javac.source}"
+           target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
@@ -445,6 +451,7 @@ source and documentation packages.
     <echo level="verbose">Found mail classes. Compiling mail support.</echo>
     <javac srcdir="${javac.src.dir}"
            source="${javac.source}"
+           target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
            listfiles="${javac.listfiles}"
