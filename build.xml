@@ -66,26 +66,27 @@ source and documentation packages.
   <property name="javac.target" value="1.5"/>
   <property name="javac.debug" value="true"/>
   <property name="javac.depend" value="false"/>
-  <property name="curn_jar_name" value="curn"/>
-  <property name="curn_jar_file" value="${curn_jar_name}.jar"/>
-  <property name="curn_jar_dir" value="${build.dir}/lib"/>
-  <property name="curn_jar_path" value="${curn_jar_dir}/${curn_jar_file}"/>
-  <property name="curnboot_jar_name" value="curnboot"/>
-  <property name="curnboot_jar_file" value="${curnboot_jar_name}.jar"/>
-  <property name="curnboot_jar_dir" value="${curn_jar_dir}"/>
-  <property name="curnboot_jar_path"
-            value="${curnboot_jar_dir}/${curnboot_jar_file}"/>
-  <property name="plugins_jar_name" value="curn-plugins"/>
-  <property name="plugins_jar_file" value="${plugins_jar_name}.jar"/>
-  <property name="plugins_jar_dir" value="${build.dir}/plugins"/>
-  <property name="plugins_jar_path"
-            value="${plugins_jar_dir}/${plugins_jar_file}"/>
+  <property name="javac.lint.unchecked.opt" value="-Xlint:unchecked"/>
+  <property name="curn.jar.name" value="curn"/>
+  <property name="curn.jar.file" value="${curn.jar.name}.jar"/>
+  <property name="curn.jar.dir" value="${build.dir}/lib"/>
+  <property name="curn.jar.path" value="${curn.jar.dir}/${curn.jar.file}"/>
+  <property name="curnboot.jar.name" value="curnboot"/>
+  <property name="curnboot.jar.file" value="${curnboot.jar.name}.jar"/>
+  <property name="curnboot.jar.dir" value="${curn.jar.dir}"/>
+  <property name="curnboot.jar.path"
+            value="${curnboot.jar.dir}/${curnboot.jar.file}"/>
+  <property name="plugins.jar.name" value="curn-plugins"/>
+  <property name="plugins.jar.file" value="${plugins.jar.name}.jar"/>
+  <property name="plugins.jar.dir" value="${build.dir}/plugins"/>
+  <property name="plugins.jar.path"
+            value="${plugins.jar.dir}/${plugins.jar.file}"/>
   <property name="docs.dir" value="${top.dir}/docs"/>
   <property name="javadocs.dir" value="${build.dir}/javadocs"/>
   <property name="javadocs.api.dir" value="${javadocs.dir}/api"/>
-  <property name="zip_dir_prefix" value="curn/"/>
-  <property name="javadoc_zip_dir_prefix" value=""/>
-  <property name="release_dir" value="${build.dir}/release"/>
+  <property name="zip.dir.prefix" value="curn/"/>
+  <property name="javadoc.zip.dir.prefix" value=""/>
+  <property name="release.dir" value="${build.dir}/release"/>
 
   <property name="asm.version" value="2.2.3"/>
 
@@ -121,6 +122,7 @@ source and documentation packages.
     <pathelement location="${third.party.jar.dir}/bsf.jar"/>
     <pathelement location="${third.party.jar.dir}/rome.jar"/>
     <pathelement location="${third.party.jar.dir}/informa.jar"/>
+    <pathelement location="${third.party.jar.dir}/jdom.jar"/>
     <pathelement location="${ant.home}/lib/ant.jar"/>
   </path>
 
@@ -182,7 +184,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
 
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
+      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
 
       <classpath refid="project.class.path"/>
 
@@ -265,7 +268,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
 
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
+      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
 
       <classpath refid="project.class.path"/>
 
@@ -320,7 +324,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
 
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
+      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
 
       <classpath refid="project.class.path"/>
 
@@ -357,7 +362,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
 
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
+      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
 
       <classpath refid="project.class.path"/>
 
@@ -398,7 +404,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
 
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
+      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
 
       <classpath refid="project.class.path"/>
 
@@ -463,7 +470,8 @@ source and documentation packages.
       <compilerarg compiler="jikes" value="+Pmodifier-order"/>
       <compilerarg compiler="jikes" value="+Pserial"/>
 
-      <compilerarg compiler="javac1.5" value="-Xlint:unchecked"/>
+      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
+      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
 
       <classpath refid="project.class.path"/>
 
@@ -489,7 +497,7 @@ source and documentation packages.
 
     <java classname="org.clapper.curn.Bootstrap" fork="true">
       <classpath>
-        <pathelement location="${curnboot_jar_path}"/>
+        <pathelement location="${curnboot.jar.path}"/>
       </classpath>
 
       <jvmarg value="${profiler.info.jvmargs.agent}"/>
@@ -499,7 +507,7 @@ source and documentation packages.
       <jvmarg value="-Dorg.apache.commons.logging.log=org.apache.commons.logging.impl.Log4JLogger"/>
       <jvmarg value="-Dlog4j.configuration=file:${user.home}/.curn/log4j-debug.properties"/>
       <jvmarg value="-Did=profiler"/>
-      <arg value="${curn_jar_dir}"/>
+      <arg value="${curn.jar.dir}"/>
       <arg value="${third.party.jar.dir}"/>
       <arg value="@user.home/curn/plugins"/>
       <arg value="@user.home/.curn/lib"/>
@@ -588,14 +596,14 @@ source and documentation packages.
     <property name="versioned_src_zipfile"
               value="src-${curn.version}.zip"/>
 
-    <property name="versioned_curn_jar_file"
-              value="${curn_jar_name}-${curn.version}.jar"/>
+    <property name="versioned_curn.jar.file"
+              value="${curn.jar.name}-${curn.version}.jar"/>
 
-    <property name="versioned_curnboot_jar_file"
-              value="${curnboot_jar_name}-${curn.version}.jar"/>
+    <property name="versioned_curnboot.jar.file"
+              value="${curnboot.jar.name}-${curn.version}.jar"/>
 
-    <property name="versioned_plugins_jar_file"
-              value="${plugins_jar_name}-${curn.version}.jar"/>
+    <property name="versioned_plugins.jar.file"
+              value="${plugins.jar.name}-${curn.version}.jar"/>
 
     <property name="versioned_docs_zipfile"
               value="docs-${curn.version}.zip"/>
@@ -607,8 +615,8 @@ source and documentation packages.
   <target name="code.jar" depends="curn.jar, curnboot.jar"/>
   <target name="curn.jar" depends="all"
           description="Generate the binary jar file">
-    <mkdir dir="${curn_jar_dir}"/>
-    <jar jarfile="${curn_jar_path}">
+    <mkdir dir="${curn.jar.dir}"/>
+    <jar jarfile="${curn.jar.path}">
       <fileset dir="${compiled.classes.dir}">
         <exclude name="**/plugins/*.class"/>
         <exclude name="org/clapper/curn/Bootstrap.class"/>
@@ -619,8 +627,8 @@ source and documentation packages.
 
   <target name="curnboot.jar" depends="all"
           description="Generate the binary bootstrap jar file">
-    <mkdir dir="${curnboot_jar_dir}"/>
-    <jar jarfile="${curnboot_jar_path}">
+    <mkdir dir="${curnboot.jar.dir}"/>
+    <jar jarfile="${curnboot.jar.path}">
       <fileset dir="${compiled.classes.dir}">
         <include name="org/clapper/curn/Bootstrap.class"/>
         <include name="org/clapper/curn/BootstrapException.class"/>
@@ -630,8 +638,8 @@ source and documentation packages.
 
   <target name="plugins.jar" depends="all"
           description="Generate the binary jar file">
-    <mkdir dir="${plugins_jar_dir}"/>
-    <jar jarfile="${plugins_jar_path}">
+    <mkdir dir="${plugins.jar.dir}"/>
+    <jar jarfile="${plugins.jar.path}">
       <fileset dir="${compiled.classes.dir}">
         <include name="**/plugins/*.class"/>
       </fileset>
@@ -644,32 +652,32 @@ source and documentation packages.
 
   <target name="javadoczip" depends="javadocs"
           description="Builds the javadocs zip file">
-    <mkdir dir="${release_dir}"/>
-    <zip destfile="${release_dir}/${versioned_javadocs_zipfile}">
+    <mkdir dir="${release.dir}"/>
+    <zip destfile="${release.dir}/${versioned_javadocs_zipfile}">
       <zipfileset dir="${javadocs.dir}"
-                  prefix="${javadoc_zip_dir_prefix}"/>
+                  prefix="${javadoc.zip.dir.prefix}"/>
     </zip>
   </target>
 
   <target name="doczip"
           description="Builds the non-Javadocs documentation zip file">
-    <mkdir dir="${release_dir}"/>
-    <zip destfile="${release_dir}/${versioned_docs_zipfile}">
+    <mkdir dir="${release.dir}"/>
+    <zip destfile="${release.dir}/${versioned_docs_zipfile}">
       <zipfileset dir="${docs.dir}"
-                  prefix="${zip_dir_prefix}"/>
+                  prefix="${zip.dir.prefix}"/>
     </zip>
   </target>
 
   <target name="srczip" depends=""
           description="Generate the source zip">
-    <mkdir dir="${release_dir}"/>
-    <zip destfile="${release_dir}/${versioned_src_zipfile}">
+    <mkdir dir="${release.dir}"/>
+    <zip destfile="${release.dir}/${versioned_src_zipfile}">
       <!--
           WARNING: This file set is essentially duplicated in the installer's
           config file, below. There's no way around that, unfortunately.
       -->
       <zipfileset id="source.fileset" dir="."
-                  prefix="${zip_dir_prefix}" casesensitive="yes">
+                  prefix="${zip.dir.prefix}" casesensitive="yes">
         <exclude name="${build.dir}/**"/>
         <exclude name="${compiled.classes.dir}"/>
         <exclude name="**/CVS"/>
@@ -690,12 +698,12 @@ source and documentation packages.
                    doczip,
                    javadoczip"
           description="Generate the distribution and source jars">
-    <copy file="${curnboot_jar_path}"
-          tofile="${release_dir}/${versioned_curnboot_jar_file}"/>
-    <copy file="${curn_jar_path}"
-          tofile="${release_dir}/${versioned_curn_jar_file}"/>
-    <copy file="${plugins_jar_path}"
-          tofile="${release_dir}/${versioned_plugins_jar_file}"/>
+    <copy file="${curnboot.jar.path}"
+          tofile="${release.dir}/${versioned_curnboot.jar.file}"/>
+    <copy file="${curn.jar.path}"
+          tofile="${release.dir}/${versioned_curn.jar.file}"/>
+    <copy file="${plugins.jar.path}"
+          tofile="${release.dir}/${versioned_plugins.jar.file}"/>
   </target>
 
   <!--
@@ -732,7 +740,7 @@ source and documentation packages.
         <filter token="CURN_VERSION" value="${curn.version}"/>
         <filter token="INSTALL_TMP" value="${install.tmp}"/>
         <filter token="SRC_INSTALL" value="${src.install}"/>
-        <filter token="RELEASE_DIR" value="${release_dir}"/>
+        <filter token="RELEASE.DIR" value="${release.dir}"/>
         <filter token="THIRD_PARTY_JAR_DIR" value="${third.party.jar.dir}"/>
         <filter token="ASM_VERSION" value="${asm.version}"/>
         <filter token="TOP_DIR" value="${top.dir}"/>
@@ -742,12 +750,12 @@ source and documentation packages.
         <filter token="JAVADOCS_DIR" value="${javadocs.dir}"/>
         <filter token="DOCS_DIR" value="${docs.dir}"/>
         <filter token="CLASSES_DIR" value="${compiled.classes.dir}"/>
-        <filter token="VERSIONED_CURN_JAR_FILE"
-                value="${versioned_curn_jar_file}"/>
-        <filter token="VERSIONED_CURNBOOT_JAR_FILE"
-                value="${versioned_curnboot_jar_file}"/>
-        <filter token="VERSIONED_PLUGINS_JAR_FILE"
-                value="${versioned_plugins_jar_file}"/>
+        <filter token="VERSIONED_CURN.JAR.FILE"
+                value="${versioned_curn.jar.file}"/>
+        <filter token="VERSIONED_CURNBOOT.JAR.FILE"
+                value="${versioned_curnboot.jar.file}"/>
+        <filter token="VERSIONED_PLUGINS.JAR.FILE"
+                value="${versioned_plugins.jar.file}"/>
       </filterset>
     </copy>
 
@@ -811,7 +819,7 @@ source and documentation packages.
     <!-- Build the installer -->
 
     <izpack input="${install.tmp}/install.xml"
-            output="${release_dir}/install-curn-${curn.version}.jar"
+            output="${release.dir}/install-curn-${curn.version}.jar"
             installerType="standard"
             basedir="."
             izPackDir="${izpack.home}">
