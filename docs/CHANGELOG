@@ -8,7 +8,7 @@ Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 
 Version 3.0.1 (...)
 
-- Graphical installer now renders the license in a more readable,
+- The graphical installer now renders the license in a more readable,
   proportional font.
 
 - The org.clapper.curn.CurnConfig class no longer provides constructors
