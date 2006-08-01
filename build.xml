@@ -142,7 +142,6 @@ source and documentation packages.
     <pathelement location="${third.party.jar.dir}/rome.jar"/>
     <pathelement location="${third.party.jar.dir}/informa.jar"/>
     <pathelement location="${third.party.jar.dir}/jdom.jar"/>
-    <pathelement location="${ant.home}/lib/ant.jar"/>
   </path>
 
   <path id="installer.class.path">
@@ -559,7 +558,8 @@ source and documentation packages.
   <target name="-build.info" depends="-get.version">
 
     <taskdef name="make_build_info"
-             classname="org.clapper.util.ant.MakeBuildInfoTask"/>
+             classname="org.clapper.util.ant.MakeBuildInfoTask"
+             classpathref="project.class.path"/>
 
     <condition property="compiler" value="${build.compiler}">
       <isset property="build.compiler"/>
