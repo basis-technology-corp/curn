@@ -56,11 +56,13 @@ import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
 import java.io.File;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.clapper.util.io.FileUtil;
 
 /**
  * The <tt>RawFeedEditPlugIn</tt> edits the raw downloaded XML before it's
@@ -88,7 +90,8 @@ public class RawFeedEditPlugIn
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VAR_PREPARSE_EDIT     = "PreparseEdit";
+    private static final String VAR_PREPARSE_EDIT      = "PreparseEdit";
+    private static final String VAR_SAVE_EDITED_XML_AS = "SaveEditedXMLAs";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -100,6 +103,7 @@ public class RawFeedEditPlugIn
     class FeedEditInfo
     {
         List<String> editCommands = new ArrayList<String>();
+        File saveAs = null;
 
         FeedEditInfo()
         {
@@ -175,7 +179,7 @@ public class RawFeedEditPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -189,7 +193,7 @@ public class RawFeedEditPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -200,6 +204,16 @@ public class RawFeedEditPlugIn
                                                              paramName);
                 editInfo.editCommands.add (value);
                 log.debug ("[" + sectionName + "]: added regexp " + value);
+            }
+
+            else if (paramName.equals(VAR_SAVE_EDITED_XML_AS))
+            {
+                FeedEditInfo editInfo = getOrMakeFeedEditInfo (feedInfo);
+                String value = config.getConfigurationValue (sectionName,
+                                                             paramName);
+                editInfo.saveAs = new File(value);
+                log.debug ("[" + sectionName + "]: will save edited XML " +
+                           "as \"" + editInfo.saveAs.getPath() + "\"");
             }
 
             return true;
@@ -220,7 +234,7 @@ public class RawFeedEditPlugIn
      *
      * @param feedInfo      the {@link FeedInfo} object for the feed that
      *                      has been downloaded
-     * @param feedDataFile  the file containing the downloaded, unparsed feed 
+     * @param feedDataFile  the file containing the downloaded, unparsed feed
      *                      XML. <b><i>curn</i> may delete this file after all
      *                      plug-ins are notified!</b>
      * @param encoding      the encoding used to store the data in the file,
@@ -239,12 +253,29 @@ public class RawFeedEditPlugIn
     public boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
                                               File     feedDataFile,
                                               String   encoding)
-	throws CurnException
+        throws CurnException
     {
         FeedEditInfo editInfo  = perFeedEditInfoMap.get (feedInfo);
 
         if ((editInfo != null) && (editInfo.editCommands.size() > 0))
+        {
             editXML (feedInfo, feedDataFile, encoding, editInfo.editCommands);
+            if (editInfo.saveAs != null)
+            {
+                try
+                {
+                    FileUtil.copyTextFile(feedDataFile,
+                                          encoding,
+                                          editInfo.saveAs,
+                                          encoding);
+                }
+
+                catch (IOException ex)
+                {
+                    throw new CurnException(ex);
+                }
+            }
+        }
 
         return true;
     }
