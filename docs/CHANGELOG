@@ -22,6 +22,10 @@ Version 3.0.1 (...)
 - Fixed global default handling logic in EmptyArticleSummaryPlugin class.
   Plug-in was parsing the global default setting, but not honoring it.
 
+- Fixed an editing bug in the CommonsXMLFixups plug-in. The plug-in would
+  convert the sequence "&amp;nbsp;" in the XML to "&amp;", leaving a stray
+  "&" in the XML.
+
 - Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
 
 
