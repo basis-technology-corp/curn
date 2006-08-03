@@ -131,6 +131,18 @@ public final class Version
     }
 
     /**
+     * Get the copyright.
+     *
+     * @return the copyright string
+     */
+    public static String getCopyright()
+    {
+        return BundleUtil.getString (VERSION_BUNDLE_NAME,
+                                     "curn.copyright",
+                                     "?");
+    }
+
+    /**
      * Get the full program version string, which contains the program
      * name, the version number and the build ID string. This is the string
      * that the {@link #showVersion()} method displays.
@@ -268,15 +280,16 @@ public final class Version
     {
         BuildInfo buildInfo = getBuildInfo();
 
-        showVersion (out);
-        out.println ();
-        out.println ("Build:          " + buildInfo.getBuildID());
-        out.println ("Build date:     " + buildInfo.getBuildDate());
-        out.println ("Built by:       " + buildInfo.getBuildUserID());
-        out.println ("Built on:       " + buildInfo.getBuildOperatingSystem());
-        out.println ("Build Java VM:  " + buildInfo.getBuildJavaVM());
-        out.println ("Build compiler: " + buildInfo.getBuildJavaCompiler());
-        out.println ("Ant version:    " + buildInfo.getBuildAntVersion());
+        showVersion(out);
+        out.println(getCopyright());
+        out.println();
+        out.println("Build:          " + buildInfo.getBuildID());
+        out.println("Build date:     " + buildInfo.getBuildDate());
+        out.println("Built by:       " + buildInfo.getBuildUserID());
+        out.println("Built on:       " + buildInfo.getBuildOperatingSystem());
+        out.println("Build Java VM:  " + buildInfo.getBuildJavaVM());
+        out.println("Build compiler: " + buildInfo.getBuildJavaCompiler());
+        out.println("Ant version:    " + buildInfo.getBuildAntVersion());
         out.flush();
     }
 
