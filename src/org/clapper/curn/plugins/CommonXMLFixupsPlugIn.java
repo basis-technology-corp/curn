@@ -129,18 +129,22 @@ public class CommonXMLFixupsPlugIn
         "s/&([^;]+)(\\s)/\\&amp;$1$2/g",
 
         // Remove "&nbsp;" and "nbsp;". The first is legal HTML, but not
-        // legal XML. The second is illegal.
+        // legal XML. The second is illegal. Also have to handle this:
+        //
+        //        &amp;nbsp
+        //
+        // That doesn't have to be removed.
 
         "s/&nbsp;/ /g",
-        "s/([^&])nbsp;/$1 /g",
+        "s/([^&;])nbsp;/$1 /g",
 
         // Non-existent XML entities
 
         "s/&ouml;/\\&#246;/g",
         "s/&mdash;/\\&#8212;/g",
-        
+
         // For some reason, no one seems to escape "AT&T" properly...
-        
+
         "s/AT&T/AT\\&amp;T/g"
     };
 
@@ -214,7 +218,7 @@ public class CommonXMLFixupsPlugIn
      *                     the item was found
      * @param paramName    the name of the parameter
      * @param config       the {@link CurnConfig} object
-     * 
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
@@ -222,7 +226,7 @@ public class CommonXMLFixupsPlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -256,7 +260,7 @@ public class CommonXMLFixupsPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -270,7 +274,7 @@ public class CommonXMLFixupsPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -302,7 +306,7 @@ public class CommonXMLFixupsPlugIn
      *
      * @param feedInfo      the {@link FeedInfo} object for the feed that
      *                      has been downloaded
-     * @param feedDataFile  the file containing the downloaded, unparsed feed 
+     * @param feedDataFile  the file containing the downloaded, unparsed feed
      *                      XML. <b><i>curn</i> may delete this file after all
      *                      plug-ins are notified!</b>
      * @param encoding      the encoding used to store the data in the file,
@@ -321,7 +325,7 @@ public class CommonXMLFixupsPlugIn
     public boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
                                               File     feedDataFile,
                                               String   encoding)
-	throws CurnException
+        throws CurnException
     {
         Boolean enabledBoxed = perFeedEnabledFlag.get (feedInfo);
         boolean enabled = globallyEnabled;
