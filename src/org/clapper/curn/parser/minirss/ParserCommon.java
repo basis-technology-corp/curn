@@ -70,7 +70,7 @@ import org.xml.sax.helpers.DefaultHandler;
 class ParserCommon extends DefaultHandler
 {
     /*----------------------------------------------------------------------*\
-			     Private Constants
+                             Private Constants
     \*----------------------------------------------------------------------*/
 
     /*----------------------------------------------------------------------*\
