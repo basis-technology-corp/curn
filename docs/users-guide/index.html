@@ -2127,7 +2127,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_Disabled">Disabled</a></td>
+    <td align="left"><a name="Feed_Disabled"></a><span class="code">Disabled</span><br/><a href="#PlugIn_DisableFeed" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">If <span class="code">true</span>, then the feed is skipped.
     If <span class="code">false</span>, the feed is processed. This variable
@@ -2139,8 +2139,9 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_EditFeedURL"></a>EditFeedURL<br/>
-      <a name="Feed_EditItemURL"></a>EditItemURL</td>
+    <td align="left"><a name="Feed_EditFeedURL"></a><span class="code">EditFeedURL</span><br/>
+      <a name="Feed_EditItemURL"></a><span class="code">EditItemURL</span><br/>
+      <a href="#PlugIn_EditParsedFeedURL" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
         Apply the specified regular expression edit to the site's
@@ -2290,7 +2291,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_IgnoreDuplicateTitles">IgnoreDuplicateTitles</a></td>
+    <td align="left"><a name="Feed_IgnoreDuplicateTitles"></a><span class="code">IgnoreDuplicateTitles</span><br/><a href="#PlugIn_IgnoreDuplicateArticles" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       If <span class="code">true</span>, <i>curn</i> will ignore any item
@@ -2326,7 +2327,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_PreparseEdit"></a>PreparseEdit<i>suffix</i></td>
+    <td align="left"><a name="Feed_PreparseEdit"></a><span class="code">PreparseEdit<i>suffix</i></span><br/><a href="#PlugIn_RawFeedEdit" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
         A parameter in a Feed section that starts with
@@ -2452,7 +2453,9 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_PruneURLs">PruneURLs</a></td>
+    <td align="left"><a name="Feed_PruneURLs"></a><span class="code">PruneURLs</span><br/>
+      <a href="#PlugIn_EditParsedFeedURL" class="plug-in-flag">plug-in</a></td>
+</td>
     <td align="left">Boolean</td>
     <td align="left">Specifies a string to be used as the site's
       title, instead of the title supplied in the RSS XML. Useful
