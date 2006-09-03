@@ -987,8 +987,9 @@ cannot span multiple lines.</p>
 
 <h3><a name="CfgExpansions"></a>Expansions of Variable Values</h3>
 
-<p>The configuration parser preprocesses each variable's value, replacing
-embedded metacharacter sequences and substituting variable references. You
+<p>The configuration parser preprocesses each variable's value, expanding
+embedded metacharacter sequences and substituting variable references. (See
+below.) You
 can use backslashes to escape the special characters that the parser uses
 to recognize metacharacter and variable sequences; you can also use single
 quotes. See <a href="#CfgRawValues">Suppressing Metacharacter Expansion and
@@ -1007,15 +1008,19 @@ single characters. Note that metacharacter expansion is performed
 
 <h4><a name="CfgVariableSubst"></a>Variable Substitution</h4>
 
-<p>A variable value can interpolate the values of other variables, using a
-variable substitution syntax. The general form of a variable reference is
+<p>A variable's value can interpolate the values of other variables, using a
+variable substitution syntax reminiscent of the Unix shell (The syntax is
+also similar to the 
+<a href="http://ant.apache.org/"><i>ant</i></a> variable
+substitution syntax).
+The general form of a variable reference is
 <span class="code">${sectionName:varName}</span>.
 <span class="code">sectionName</span> is the name of the section containing the
 variable to substitute; if omitted, it defaults to the current section.
 <span class="code">varName</span> is the name of the variable to
 substitute. If the variable has an empty value, an empty string is
 substituted. If the variable (or the referenced section) does not exist,
-the configuration parser throws an exception. If a variable reference
+the <i>curn</i> will abort. If a variable reference
 specifies a section name, the referenced section must precede the current
 section. It is not possible to substitute the value of a variable in a
 section that occurs later in the file.</p>
@@ -1254,7 +1259,7 @@ also legal to include a properties file, provided it's included within a
 valid section.</p>
 
 <p>Attempting to include a file from itself, either directly or indirectly,
-will cause the parser to throw an exception.</p>
+will cause <i>curn</i> to abort processing.</p>
 
 <h3><a name="CfgComments"></a>Comments and Blank Lines</h3>
 
@@ -1343,7 +1348,7 @@ detail, below. (Parameters marked with
 
   <tbody>
   <tr valign="top">
-    <td align="left"><a name="Cfg_AllowEmbeddedHTML"></a><span class="code">AllowEmbeddedHTML</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_AllowEmbeddedHTML"></a><span class="code">AllowEmbeddedHTML</span><br/><a href="#PlugIn_AllowEmbeddedHTML" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">Default setting for whether or not to allow
       embedded HTML in certain RSS feed elements, such as description,
@@ -1424,7 +1429,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_CommonXMLFixups"></a><span class="code">CommonXMLFixups&nbsp;</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_CommonXMLFixups"></a><span class="code">CommonXMLFixups</span><br/><a  href="#PlugIn_CommonXMLFixups" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">Enables or disables the Common XML Fixups plug-in,
       which attempts to fix common syntax problems in downloaded XML feeds.
@@ -1469,7 +1474,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_GzipDownload"></a><span class="code">GzipDownload</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_GzipDownload"></a><span class="code">GzipDownload</span><br/><a href="#PlugIn_GzipDownload" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
@@ -1493,7 +1498,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="MailOutputTo"></a><span class="code">MailOutputTo</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="MailOutputTo"></a><span class="code">MailOutputTo</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td>One or more comma-separated email addresses to receive the output.
         This parameter is optional. If any email addresses are specified, then
@@ -1517,7 +1522,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_MailFrom"></a><span class="code">MailFrom</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_MailFrom"></a><span class="code">MailFrom</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       The email address to use as the sender, when mailing output.
@@ -1541,7 +1546,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_MailSubject"></a><span class="code">MailSubject</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_MailSubject"></a><span class="code">MailSubject</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       The subject line to use when mailing output.
@@ -1560,7 +1565,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">Positive integer</td>
     <td align="left">
       If an article has a summary,
@@ -1697,7 +1702,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_ReplaceEmptySummaryWith"></a><span class="code">ReplaceEmptySummaryWith</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_ReplaceEmptySummaryWith"></a><span class="code">ReplaceEmptySummaryWith</span><br/><a href="#PlugIn_EmptyArticleSummary" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       Tells <i>curn</i> what to do when the summary for a feed
@@ -1721,7 +1726,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_ShowAuthors"></a><span class="code">ShowAuthors</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_ShowAuthors"></a><span class="code">ShowAuthors</span><br/><a href="#PlugIn_ShowAuthors" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
@@ -1736,7 +1741,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_ShowDates"></a><span class="code">ShowDates</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_ShowDates"></a><span class="code">ShowDates</span><br/><a href="#PlugIn_ShowDates" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds or the individual items within each feed
@@ -1764,7 +1769,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_SummaryOnly"></a><span class="code">SummaryOnly</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_SummaryOnly"></a><span class="code">SummaryOnly</span><br/><a href="#PlugIn_FeedSummaryOnly" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds provide a description for each item, in addition
@@ -1783,7 +1788,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_SMTPHost"></a><span class="code">SMTPHost</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_SMTPHost"></a><span class="code">SMTPHost</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       The SMTP host to use when mailing output.
@@ -1800,7 +1805,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_SortBy"></a><span class="code">SortBy</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_SortBy"></a><span class="code">SortBy</span><br/><a href="#PlugIn_SortArticles" class="plug-in-flag">plug-in</span></td>
     <td align="left">String</td>
     <td align="left">
       Default method to use to sort items within each feed. This
@@ -1853,7 +1858,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_UserAgent"></a><span class="code">UserAgent</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_UserAgent"></a><span class="code">UserAgent</span><br/><a href="#PlugIn_UserAgent" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       Specifies the default HTTP <span class="code">User-Agent</span> header to use.
@@ -1872,7 +1877,7 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Cfg_ZipOutputTo"></a><span class="code">ZipOutputTo</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Cfg_ZipOutputTo"></a><span class="code">ZipOutputTo</span><br/><a href="#PlugIn_ZipOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       Path to a zip file to receive all output generated by output handlers.
@@ -1922,7 +1927,7 @@ the core code.)</p>
 
   <tbody>
   <tr valign="top">
-    <td align="left"><a name="Feed_AllowEmbeddedHTML"></a><span class="code">AllowEmbeddedHTML</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_AllowEmbeddedHTML"></a><span class="code">AllowEmbeddedHTML</span><br/><a href="#PlugIn_AllowEmbeddedHTML" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">Whether or not to allow
     embedded HTML in certain RSS feed elements, such as description,
@@ -1954,7 +1959,7 @@ the core code.)</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Feed_ArticleFilter"></a><span class="code">ArticleFilter</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_ArticleFilter"></a><span class="code">ArticleFilter</span><br/><a href="#PlugIn_ArticleFilter" class="plug-in-flag">plug-in</a></td>
     <td align="left">Strings</td>
     <td align="left">Specifies a set of filters to discard feed item (article)
       content, based on regular expressions.
@@ -1963,7 +1968,7 @@ the core code.)</p>
       <a href="http://offog.org/code/rawdog.html" target="_top"><i>rawdog</i></a>
       RSS reader's
       <a href="http://offog.org/files/rawdog-plugins/article-filter.py" target="_top"><i>article-filter</i></a>
-      plug-in.A feed filter is configured by adding an
+      plug-in. A feed filter is configured by adding an
       <tt>ArticleFilter</tt> property to the feed's configuration section.
       The property's value consists of one or more filter command
       sequences, separated by ";" characters. (The ";" must be surrounded
@@ -2070,7 +2075,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
 
   <tr valign="top">
 
-    <td align="left"><a name="Feed_CommonXMLFixups"></a><span class="code">CommonXMLFixups</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_CommonXMLFixups"></a><span class="code">CommonXMLFixups</span><br/><a href="#PlugIn_CommonXMLFixups" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       Enables or disables the Common XML Fixups plug-in, which attempts
@@ -2267,7 +2272,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Feed_GzipDownload"></a><span class="code">GzipDownload</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_GzipDownload"></a><span class="code">GzipDownload</span><br/><a href="#PlugIn_GzipDownload" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this parameter directs <i>curn</i> to use the
@@ -2305,7 +2310,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Feed_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><a href="#PlugIn_FeedMaxSummarySize" class="plug-in-flag">plug-in</a></td>
     <td align="left">Positive integer</td>
     <td align="left">
       If an article has a summary,
@@ -2458,23 +2463,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Feed_SaveAs"></a><span class="code">SaveAs</span><br/><span class="plug-in-flag">plug-in</span></td>
-    <td align="left">File name or path name</td>
-    <td align="left">If set, this parameter specifies the path to
-      a file where <i>curn</i> should save the raw XML contents of
-      the feed, whenever it downloads the feed. This can be useful
-      if you have a master version of <i>curn</i> that downloads
-      a bunch of feeds, with multiple slave versions of <i>curn</i>
-      that then run against the downloaded files. (See
-      <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
-      detailed discussion of this tactic.)
-    </td>
-    <td align="left">No</td>
-    <td align="left">None</td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left"><a name="Feed_ReplaceEmptySummaryWith"></a><span class="code">ReplaceEmptySummaryWith</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_ReplaceEmptySummaryWith"></a><span class="code">ReplaceEmptySummaryWith</span><br/><a href="#PlugIn_EmptyArticleSummary" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       Tells <i>curn</i> what to do when the summary for a feed
@@ -2495,7 +2484,23 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Feed_SaveAsEncoding"></a><span class="code">SaveAsEncoding</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_SaveAs"></a><span class="code">SaveAs</span><br/><a href="#PlugIn_SaveAs" class="plug-in-flag">plug-in</a></td>
+    <td align="left">File name or path name</td>
+    <td align="left">If set, this parameter specifies the path to
+      a file where <i>curn</i> should save the raw XML contents of
+      the feed, whenever it downloads the feed. This can be useful
+      if you have a master version of <i>curn</i> that downloads
+      a bunch of feeds, with multiple slave versions of <i>curn</i>
+      that then run against the downloaded files. (See
+      <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
+      detailed discussion of this tactic.)
+    </td>
+    <td align="left">No</td>
+    <td align="left">None</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Feed_SaveAsEncoding"></a><span class="code">SaveAsEncoding</span><br/><a href="#PlugIn_SaveAs" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">If set, and if
       <a href="#Feed_SaveAs" class="code">SaveAs</a> parameter is also
@@ -2514,7 +2519,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="Feed_SaveOnly"></a><span class="code">SaveOnly</span><br/><span class="plug-in-flag">plug-in</span></td>
+    <td align="left"><a name="Feed_SaveOnly"></a><span class="code">SaveOnly</span><br/><a href="#PlugIn_SaveAs" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">If set, and if
      <a href="#Feed_SaveAs" class="code">SaveAs</a> is also set,
@@ -2537,7 +2542,8 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_ShowAuthors"></a>ShowAuthors</td>
+    <td align="left"><a name="Feed_ShowAuthors"></a><span class="code">ShowAuthors</span>
+    <br/><a href="#PlugIn_ShowAuthors" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
@@ -2552,7 +2558,8 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_ShowDates"></a>ShowDates</td>
+    <td align="left"><a name="Feed_ShowDates"></a><span class="code">ShowDates</span>
+    <br/><a href="#PlugIn_ShowDates" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       If set to <span class="code">true</span>, this configuration item instructs <i>curn</i>
@@ -2567,7 +2574,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SortBy"></a>SortBy</td>
+    <td align="left"><a name="Feed_SortBy"></a><span class="code">SortBy</span><br/><a href="#PlugIn_SortArticles" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       How to sort items in this feed. This value locally overrides the
@@ -2594,7 +2601,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_SummaryOnly"></a>SummaryOnly</td>
+    <td align="left"><a name="Feed_SummaryOnly"></a><span class="code">SummaryOnly</span><br/><a href="#PlugIn_FeedSummaryOnly" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
       Some RSS feeds provide a description for each item, in addition
@@ -2614,7 +2621,7 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_TitleOverride">TitleOverride</a></td>
+    <td align="left"><a name="Feed_TitleOverride"></a><span class="code">TitleOverride</span><br/><a href="#PlugIn_OverrideFeedTitle" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">Specifies a string to be used as the site's
       title, instead of the title supplied in the RSS XML. Useful
@@ -2631,10 +2638,11 @@ ArticleFilter: hide ; show author '^moe *howard$'
     files, use a "<span class="code">file:</span>" URL.
     </td>
     <td align="left">Yes</td>
+    <td align="left">None</td>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code"><a name="Feed_UserAgent"></a>UserAgent</td>
+    <td align="left"><a name="Feed_UserAgent"></a><span class="code">UserAgent</span><br/><a href="#PlugIn_UserAgent" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
       Specifies the HTTP <span class="code">User-Agent</span> header to use when
@@ -4109,7 +4117,7 @@ stock plug-ins are in the
 
   <tbody>
   <tr valign="top">
-    <td align="left">Allow Embedded HTML</td>
+    <td align="left"><a name="PlugIn_AllowEmbeddedHTML"></a>Allow Embedded HTML</td>
     <td align="left" class="code">AllowEmbeddedHTMLPlugIn</td>
     <td align="left">Enables or disables embedded HTML in a feed's output.</td>
     <td align="left">
@@ -4118,7 +4126,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Article Filter</td>
+    <td align="left"><a name="PlugIn_ArticleFilter"></a>Article Filter</td>
     <td align="left" class="code">ArticleFilterPlugIn</td>
     <td align="left">Filter items (articles) from a feed, based on regular
     expressions.</td>
@@ -4126,7 +4134,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Common XML Fixups</td>
+    <td align="left"><a name="PlugIn_CommonXMLFixups"></a>Common XML Fixups</td>
     <td align="left" class="code">CommonXMLFixupsPlugIn</td>
     <td align="left">Fix some common syntax errors in downloaded XML.</td>
     <td align="left">
@@ -4135,21 +4143,21 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Disable Feed</td>
+    <td align="left"><a name="PlugIn_DisableFeed"></a>Disable Feed</td>
     <td align="left" class="code">DisableFeedPlugIn</td>
     <td align="left">Disable a feed, without having to comment it out or remove it from the configuration.</td>
     <td align="left"><a href="#Feed_Disabled" class="code">Disabled</a> (feed)</td>
   </tr>
 
   <tr valign="top">
-    <td align="left">Disable Output Handler</td>
+    <td align="left"><a name="PlugIn_DisableOutputHandler"></a>Disable Output Handler</td>
     <td align="left" class="code">DisableOutputHandlerPlugIn</td>
     <td align="left">Disable an output handler, without having to comment it out or remove it from the configuration.</td>
     <td align="left"><a href="#OutputHandler_Disabled" class="code">Disabled</a> (output handler)</td>
   </tr>
 
   <tr valign="top">
-    <td align="left">Edit Parsed Feed URL</td>
+    <td align="left"><a name="PlugIn_EditParsedFeedURL"></a>Edit Parsed Feed URL</td>
     <td align="left" class="code">ParsedFeedURLEditPlugIn</td>
     <td align="left">Edit the parsed feed data, changing the feed URL
     and/or the individual item (article) URLs.</td>
@@ -4160,7 +4168,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Email Output</td>
+    <td align="left"><a name="PlugIn_EmailOutput"></a>Email Output</td>
     <td align="left" class="code"><a name="EmailOutputPlugIn"></a>EmailOutputPlugIn</td>
     <td align="left">Email any output created by the output handlers to
     one or more recipients.</td>
@@ -4173,7 +4181,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Empty Article Summary</td>
+    <td align="left"><a name="PlugIn_EmptyArticleSummary"></a>Empty Article Summary</td>
     <td align="left" class="code">Empty Article Summary PlugIn</td>
     <td align="left">How to handle an empty summary in an article.</td>
     <td align="left">
@@ -4182,7 +4190,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Feed Max Summary Size</td>
+    <td align="left"><a name="PlugIn_FeedMaxSummarySize"></a>Feed Max Summary Size</td>
     <td align="left" class="code">FeedMaxSummarySizePlugIn</td>
     <td align="left">Truncate a feed's summary to a maximum number of characters.</td>
     <td align="left"><a href="#Feed_MaxSummarySize" class="code">MaxSummarySize</a>
@@ -4190,7 +4198,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Feed Summary Only</td>
+    <td align="left"><a name="PlugIn_FeedSummaryOnly"></a>Feed Summary Only</td>
     <td align="left" class="code">FeedSummaryOnlyPlugIn</td>
     <td align="left">Optionally strips the full content for a
       feed, leaving only the summary.</td>
@@ -4198,7 +4206,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Gzip Download</td>
+    <td align="left"><a name="PlugIn_GzipDownload"></a>Gzip Download</td>
     <td align="left" class="code">GzipDownloadPlugIn</td>
     <td align="left">Optionally requests that web sites gzip (compress)
     the XML content before sending it to <i>curn</i>, to save network
@@ -4207,7 +4215,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Ignore Duplicate Articles</td>
+    <td align="left"><a name="PlugIn_IgnoreDuplicateArticles"></a>Ignore Duplicate Articles</td>
     <td align="left" class="code">IgnoreDuplicateArticlesPlugIn</td>
     <td align="left">Suppress duplicate articles in a feed, based on a
     comparison of the article titles.</td>
@@ -4215,14 +4223,14 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Override Feed Title</td>
+    <td align="left"><a name="PlugIn_OverrideFeedTitle"></a>Override Feed Title</td>
     <td align="left" class="code">TitleOverridePlugIn</td>
     <td align="left">Overrides the title of a feed.</td>
     <td align="left"><a href="#Feed_TitleOverride" class="code">TitleOverride</a></td>
   </tr>
 
   <tr valign="top">
-    <td align="left">Raw Feed Edit</td>
+    <td align="left"><a name="PlugIn_RawFeedEdit"></a>Raw Feed Edit</td>
     <td align="left" class="code">RawFeedEditPlugIn</td>
     <td align="left">Apply regular expression edits to a feed's XML
     before it's parsed.</td>
@@ -4230,7 +4238,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Save As</td>
+    <td align="left"><a name="PlugIn_SaveAs"></a>Save As</td>
     <td align="left" class="code"><a name="RawFeedSaveAsPlugIn"></a>RawFeedSaveAsPlugIn</td>
     <td align="left">Save a feed's XML to a file.</td>
     <td align="left">
@@ -4241,7 +4249,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Show Authors</td>
+    <td align="left"><a name="PlugIn_ShowAuthors"></a>Show Authors</td>
     <td align="left" class="code">ShowAuthorsPlugIn</td>
     <td align="left">Enable or disable the display of the author(s) of
       a feed and a feed's articles.</td>
@@ -4250,7 +4258,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Show Dates</td>
+    <td align="left"><a name="PlugIn_ShowDates"></a>Show Dates</td>
     <td align="left" class="code">ShowDatesPlugIn</td>
     <td align="left">Enable or disable the display of the dates for
       a feed and a feed's articles.</td>
@@ -4259,7 +4267,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Sort Articles</td>
+    <td align="left"><a name="PlugIn_SortArticles"></a>Sort Articles</td>
     <td align="left" class="code">SortArticlesPlugIn</td>
     <td align="left">Control how a feed article's are sorted.</td>
     <td align="left"><a href="#Feed_SortBy" class="code">SortBy</a>
@@ -4267,7 +4275,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">User Agent</td>
+    <td align="left"><a name="PlugIn_UserAgent"></a>User Agent</td>
     <td align="left" class="code">UserAgentPlugIn</td>
     <td align="left">Specify the HTTP user-agent to send when downloading
     a feed.</td>
@@ -4275,7 +4283,7 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
-    <td align="left">Zip Output</td>
+    <td align="left"><a name="PlugIn_ZipOutput"></a>Zip Output</td>
     <td align="left" class="code"><a name="ZipOutputPlugIn"></a>ZipOutputPlugIn</td>
     <td align="left">Zip any output created by the output handlers into a
     configured zip file.</td>
