@@ -397,7 +397,6 @@ source and documentation packages.
      Now the subtargets.
     -->
     <antcall target="output.script"/>
-    <antcall target="email"/>
   </target>
 
   <!--
@@ -449,55 +448,6 @@ source and documentation packages.
 *** bsf.jar in ANT_HOME/lib or in the CLASSPATH. BSF is available at
 *** http://jakarta.apache.org/bsf/
     </echo>
-  </target>
-
-  <!--
-  ***************************************************************************
-                       Email Output Handler Targets
-  ***************************************************************************
-  -->
-
-  <target name="-check.email.exists">
-    <available classname="org.clapper.util.mail.EmailMessage"
-               classpathref="project.class.path"
-               property="email.exists" value="true"/>
-  </target>
-
-  <target name="-check.email" depends="-check.email.exists"
-          unless="email.exists">
-    <echo>
-*** The email classes from the org.clapper.util.mail package are not
-*** currently available in the build environment. Curn will build without
-*** internal email support.
-    </echo>
-  </target>
-
-  <target name="email" depends="-check.email" if="email.exists">
-    <echo level="verbose">Found mail classes. Compiling mail support.</echo>
-    <javac srcdir="${javac.src.dir}"
-           source="${javac.source}"
-           target="${javac.target}"
-           debug="${javac.debug}"
-           depend="${javac.depend}"
-           listfiles="${javac.listfiles}"
-           destdir="${compiled.classes.dir}">
-
-      <compilerarg compiler="jikes" value="+Peffective-java"/>
-      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
-      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
-      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
-      <compilerarg compiler="jikes" value="+Pserial"/>
-
-      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
-      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
-
-      <classpath refid="project.class.path"/>
-
-      <patternset id="output.email">
-        <include name="${pkg.path}/output/email/*.java"/>
-      </patternset>
-
-    </javac>
   </target>
 
   <!--
