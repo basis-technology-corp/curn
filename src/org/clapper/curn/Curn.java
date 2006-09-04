@@ -142,7 +142,7 @@ public class Curn
 
     /**
      * Run <i>curn</i> against a configuration file.
-     *     
+     *
      * @param configPath      path to the configuration data
      * @param useCache        whether or not to use the cache
      *
@@ -561,7 +561,7 @@ public class Curn
     {
         OutputHandler             handler;
         Collection<OutputHandler> outputHandlers =
-            new ArrayList<OutputHandler>(); 
+            new ArrayList<OutputHandler>();
 
         // Dump the output to each output handler
 
@@ -599,12 +599,13 @@ public class Curn
     }
 
     /**
-     * Log all system properties and other information about the Java VM.
+     * Log all system properties and other information about the Java VM, as
+     * well as other environmental trivia deemed useful to log.
      */
     private void logEnvironmentInfo()
     {
         log.info (Version.getFullVersion());
-        
+
         Properties properties = System.getProperties();
         TreeSet<String> sortedNames = new TreeSet<String>();
         for (Enumeration<?> e = properties.propertyNames();
@@ -613,10 +614,12 @@ public class Curn
             sortedNames.add ((String) e.nextElement());
         }
 
-        log.info ("--- Start of Java properties");
+        log.info("Using org.clapper.util library version: " +
+                 org.clapper.util.misc.Version.getVersion());
+        log.info("--- Start of Java properties");
         for (String name : sortedNames)
-            log.info (name + "=" + properties.getProperty (name));
+            log.info(name + "=" + properties.getProperty(name));
 
-        log.info ("--- End of Java properties");
+        log.info("--- End of Java properties");
     }
 }
