@@ -73,6 +73,7 @@ import java.util.Collection;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFManager;
+
 import org.clapper.curn.CurnUtil;
 
 /**
@@ -490,7 +491,7 @@ public class ScriptOutputHandler extends FileOutputHandler
         // Allocate a new BSFManager. This must happen after all the extra
         // scripting engines are registered.
 
-	bsfManager = new BSFManager();
+        bsfManager = new BSFManager();
 
         // Register some additional scripting languages.
 
