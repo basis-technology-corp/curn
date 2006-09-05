@@ -61,9 +61,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
 import java.util.Date;
-import java.util.List;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 
 import org.clapper.curn.parser.RSSChannel;
@@ -76,34 +78,38 @@ import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.TextUtil;
 
-class FeedDownloadThread extends Thread
+class FeedDownloadThread
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
-    \*----------------------------------------------------------------------*/ 
-    
+    \*----------------------------------------------------------------------*/
+
     private static final String HTTP_CONTENT_TYPE_CHARSET_FIELD = "charset=";
     private static final int    HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN =
                                       HTTP_CONTENT_TYPE_CHARSET_FIELD.length();
 
     /*----------------------------------------------------------------------*\
                            Private Instance Data
-    \*----------------------------------------------------------------------*/ 
+    \*----------------------------------------------------------------------*/
 
     private final Logger                  log;                         //NOPMD
     private final String                  id;
     private final CurnConfig              configuration;
     private final RSSParser               rssParser;
     private final FeedCache               cache;
-    private final List                    feedQueue;
+    private final Queue<FeedInfo>         feedQueue;
     private       FeedException           exception = null;
     private final MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
-    private       RSSChannel              channel       = null;
-    private final FeedDownloadDoneHandler doneHandler;
+    private       RSSChannel              channel = null;
+    private       CountDownLatch          doneLatch = null;
+    private       CountDownLatch          startLatch = null;
+    private       FeedDownloadDoneHandler feedDownloadDoneHandler = null;
+
+    private static AtomicInteger nextThreadID = new AtomicInteger(0);
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
-    \*----------------------------------------------------------------------*/ 
+    \*----------------------------------------------------------------------*/
 
     /**
      * Encapsulates information about a downloaded feed.
@@ -126,48 +132,51 @@ class FeedDownloadThread extends Thread
 
     /*----------------------------------------------------------------------*\
                                 Constructor
-    \*----------------------------------------------------------------------*/ 
+    \*----------------------------------------------------------------------*/
 
     /**
      * Create a new <tt>FeedDownloadThread</tt> object to download feeds.
      *
-     * @param threadId    the unique identifier for the thread, for log
-     *                    messages
-     * @param parser      the RSS parser to use
-     * @param feedCache   the feed cache to save cache data to
-     * @param configFile  the parsed configuration file
-     * @param feedQueue   list of feeds to be processed. This list must contain
-     *                    contain <tt>FeedInfo</tt> objects. The list is
-     *                    assumed to be shared across multiple threads, and
-     *                    should be thread safe.
-     * @param doneHandler Callback to notify when feed downloads are done
+     * @param parser          the RSS parser to use
+     * @param feedCache       the feed cache to save cache data to
+     * @param configFile      the parsed configuration file
+     * @param feedQueue       list of feeds to be processed. The list is
+     *                        assumed to be shared across multiple threads,
+     *                        and must be thread safe.
+     * @param feedDoneHandler called when afeed is finished downloading
+     * @param startLatch      latch to wait on before starting, or null not
+     *                        to bother.
+     * @param doneLatch       latch to notify when thread is finished, or
+     *                        null if no latch is to be used.
      */
-    FeedDownloadThread (String     threadId,
-                        RSSParser  parser,
-                        FeedCache  feedCache,
-                        CurnConfig configFile,
-                        List       feedQueue,
-                        FeedDownloadDoneHandler doneHandler)
+    FeedDownloadThread (RSSParser               parser,
+                        FeedCache               feedCache,
+                        CurnConfig              configFile,
+                        Queue<FeedInfo>         feedQueue,
+                        FeedDownloadDoneHandler feedDownloadDoneHandler,
+                        CountDownLatch          startLatch,
+                        CountDownLatch          doneLatch)
     {
-
-        this.id = threadId;
+        this.id = String.valueOf(nextThreadID.getAndIncrement());
 
         String name = "FeedDownloadThread-" + this.id;
 
-        super.setName (name);
+        Thread.currentThread().setName(name);
         this.log = new Logger (name);
         this.configuration = configFile;
         this.rssParser = parser;
         this.cache = feedCache;
         this.feedQueue = feedQueue;
-        this.doneHandler = doneHandler;
+        this.feedDownloadDoneHandler = feedDownloadDoneHandler;
+        this.startLatch = startLatch;
+        this.doneLatch = doneLatch;
 
         //setPriority (getPriority() + 1);
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
-    \*----------------------------------------------------------------------*/ 
+    \*----------------------------------------------------------------------*/
 
     /**
      * Run the thread. Pulls the next <tt>FeedInfo</tt> object from the
@@ -177,35 +186,53 @@ class FeedDownloadThread extends Thread
      */
     public void run()
     {
-        log.info ("Thread is alive at priority " + getPriority());
+        boolean done = false;
 
-        for (;;)
+        log.info ("Thread is alive at priority " +
+                  Thread.currentThread().getPriority());
+
+        if (startLatch != null)
+        {
+            log.info("Waiting for start signal.");
+            try
+            {
+                startLatch.await();
+            }
+
+            catch (InterruptedException ex)
+            {
+                log.error("Interrupted while waiting for start signal.", ex);
+                done = true;
+            }
+        }
+
+        while (! done)
         {
             FeedInfo feed = null;
 
             log.debug ("Checking feed queue.");
-
-            synchronized (feedQueue)
-            {
-                if (feedQueue.size() > 0)
-                    feed = (FeedInfo) feedQueue.remove (0);
-            }
+            feed = feedQueue.poll();
 
             if (feed == null)
             {
                 log.info ("Queue of feeds is empty. Nothing left to do.");
-                break;
+                done = true;
             }
 
-            processFeed (feed);
+            else
+            {
+                processFeed(feed);
+            }
         }
 
         log.debug ("Thread is finishing.");
+        if (doneLatch != null)
+            doneLatch.countDown();
     }
 
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
-    \*----------------------------------------------------------------------*/ 
+    \*----------------------------------------------------------------------*/
 
     /**
      * Processes the specified feed. This method is called by {@link #run}.
@@ -236,7 +263,7 @@ class FeedDownloadThread extends Thread
             if (channel != null)
             {
                 metaPlugIn.runPostFeedParsePlugIn (feed, channel);
-                doneHandler.feedFinished (feed, channel);
+                feedDownloadDoneHandler.feedFinished (feed, channel);
             }
         }
 
@@ -314,7 +341,7 @@ class FeedDownloadThread extends Thread
 
     /*----------------------------------------------------------------------*\
                               Private Methods
-    \*----------------------------------------------------------------------*/ 
+    \*----------------------------------------------------------------------*/
 
     /**
      * Actually processes a feed. This method is called by checkFeed()
@@ -581,7 +608,7 @@ class FeedDownloadThread extends Thread
                        "\". Using VM default of \"" + isr.getEncoding() +
                        "\"");
         }
-        
+
         totalBytes = FileUtil.copyReader (reader, writer);
         log.debug ("Total bytes downloaded: " + totalBytes);
         writer.close();

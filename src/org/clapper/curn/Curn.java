@@ -52,16 +52,19 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
@@ -239,14 +242,7 @@ public class Curn
                                               "No configured RSS feed URLs.");
         }
 
-        if ((config.getMaxThreads() == 1) || (feeds.size() == 1))
-            channels = doSingleThreadedFeedDownload (parsingEnabled,
-                                                     cache,
-                                                     config);
-        else
-            channels = doMultithreadedFeedDownload (parsingEnabled,
-                                                    cache,
-                                                    config);
+        channels = downloadFeeds(parsingEnabled, cache, config);
 
         log.debug ("After downloading, total (parsed) channels = " +
                    channels.size());
@@ -335,79 +331,6 @@ public class Curn
     }
 
     /**
-     * Download the configured feeds sequentially. This method is called
-     * when the configured number of concurrent download threads is 1.
-     *
-     * @param parsingEnabled <tt>true</tt> if parsing is to be done,
-     *                       <tt>false</tt> otherwise
-     * @param feedCache      the loaded cache of feed data; may be modified
-     * @param configuration  the parsed configuration
-     *
-     * @return a <tt>Map</tt> of <tt>RSSChannel</tt> objects, indexed
-     *         by <tt>FeedInfo</tt>
-     *
-     * @throws RSSParserException error parsing feeds
-     * @throws CurnException      some other error
-     */
-    private Map<FeedInfo,RSSChannel>
-    doSingleThreadedFeedDownload (final boolean    parsingEnabled,
-                                  final FeedCache  feedCache,
-                                  final CurnConfig configuration)
-        throws RSSParserException,
-               CurnException
-    {
-        // Instantiate a single FeedDownloadThread object, but call it
-        // within this thread, instead of spawning another thread.
-
-        final Map<FeedInfo,RSSChannel> channels =
-            new LinkedHashMap<FeedInfo,RSSChannel>();
-
-        FeedDownloadThread  downloadThread;
-
-        log.info ("Doing single-threaded download of feeds.");
-
-        RSSParser parser = null;
-
-        if (parsingEnabled)
-            parser = getRSSParser(configuration);
-
-        downloadThread =
-            new FeedDownloadThread
-                ("main",
-                 parser,
-                 feedCache,
-                 configuration,
-                 null,
-                 new FeedDownloadDoneHandler()
-                 {
-                     public void feedFinished (FeedInfo  feedInfo,
-                                               RSSChannel channel)
-                     {
-                         channels.put (feedInfo, channel);
-                     }
-                 });
-
-        for (FeedInfo feedInfo : configuration.getFeeds())
-        {
-            downloadThread.processFeed (feedInfo);
-
-            // Don't abort if an exception occurred. It might just be a
-            // parse error for this feed. Don't want to abort the whole
-            // run if one feed has problems.
-            /*
-            if (downloadThread.errorOccurred())
-                throw downloadThread.getException();
-            */
-
-            RSSChannel channel = downloadThread.getParsedChannelData();
-            if (channel != null)
-                channels.put (feedInfo, channel);
-        }
-
-        return channels;
-    }
-
-    /**
      * Download the configured feeds using multiple simultaneous threads.
      * This method is called when the configured number of concurrent
      * download threads is greater than 1.
@@ -424,9 +347,9 @@ public class Curn
      * @throws CurnException      some other error
      */
     private Map<FeedInfo,RSSChannel>
-    doMultithreadedFeedDownload (final boolean    parsingEnabled,
-                                 final FeedCache  feedCache,
-                                 final CurnConfig configuration)
+    downloadFeeds (final boolean    parsingEnabled,
+                   final FeedCache  feedCache,
+                   final CurnConfig configuration)
         throws RSSParserException,
                CurnException
     {
@@ -434,9 +357,12 @@ public class Curn
         Collection<FeedInfo> feeds = configuration.getFeeds();
         int totalFeeds = feeds.size();
         final Map<FeedInfo,RSSChannel> channels =
-            new LinkedHashMap<FeedInfo,RSSChannel>();
-        List<FeedDownloadThread> threads = new ArrayList<FeedDownloadThread>();
-        List<FeedInfo> feedQueue  = new LinkedList<FeedInfo>();
+            new ConcurrentHashMap<FeedInfo,RSSChannel>(totalFeeds,
+                                                       0.75f,
+                                                       maxThreads);
+        final Queue<FeedInfo> feedQueue  = new ConcurrentLinkedQueue<FeedInfo>();
+        final RSSParser parser = (parsingEnabled ? getRSSParser(configuration)
+                                                 : null);
 
         if (maxThreads > totalFeeds)
             maxThreads = totalFeeds;
@@ -444,19 +370,10 @@ public class Curn
         log.info ("Doing multithreaded download of feeds, using " +
                   maxThreads + " threads.");
 
-        // Fill the feed queue and make it a synchronized list. Also, prime
-        // the "channels" LinkedHashMap with the feeds. This ensures that
-        // the channels are traversed in the original order they were
-        // specified in the configuration file. If we don't do this, then
-        // the channels will be put in the LinkedHashMap in the order the
-        // feed threads finish with them, which might not match the
-        // original order.
+        // Fill the feed queue and make it a synchronized list.
 
         for (FeedInfo feedInfo : feeds)
-        {
-            feedQueue.add (feedInfo);
-            channels.put (feedInfo, null);
-        }
+             feedQueue.offer(feedInfo);
 
         if (feedQueue.size() == 0)
         {
@@ -465,63 +382,87 @@ public class Curn
                                      "All configured RSS feeds are disabled.");
         }
 
-        // Create a synchronized view of the feed queue.
+        // Create the thread objects in a concurrent thread pool. They'll pull
+        // feeds off the queue themselves. Note that the concurrent Executor
+        // model is to spawn multiple threads that run against a single
+        // object. FeedDownloadThread isn't organized that way; it assumes it
+        // can keep state in instance variables, which wouldn't work if
+        // multiple threads were executing against a single FeedDownloadThread
+        // object. So, we use a simple Runnable front-end whose run() method
+        // creates and invokes individual FeedDownloadThread objects.
 
-        feedQueue = Collections.synchronizedList (feedQueue);
+        ExecutorService threadPool;
+        if (maxThreads == 1)
+            threadPool = Executors.newSingleThreadExecutor();
+        else
+            threadPool = Executors.newFixedThreadPool(maxThreads);
 
-        // Create the thread objects. They'll pull feeds off the queue
-        // themselves.
+        // Create a FeedDownloadHandler to handle the completion of each
+        // feed.
 
-        for (int i = 0; i < maxThreads; i++)
+        final FeedDownloadDoneHandler feedDownloadDoneHandler =
+            new FeedDownloadDoneHandler()
         {
-            RSSParser parser = null;
+            public void feedFinished(FeedInfo feedInfo, RSSChannel channel)
+            {
+                channels.put(feedInfo, channel);
+            }
+        };
 
-            if (parsingEnabled)
-                parser = getRSSParser (configuration);
+        final CountDownLatch doneLatch = new CountDownLatch(maxThreads);
+        final CountDownLatch startLatch = new CountDownLatch(1);
+        Runnable r = new Runnable()
+        {
+            public void run()
+            {
+                new FeedDownloadThread(parser,
+                                       feedCache,
+                                       configuration,
+                                       feedQueue,
+                                       feedDownloadDoneHandler,
+                                       startLatch,
+                                       doneLatch)
+                   .run();
+            }
+        };
 
-            FeedDownloadThread thread =
-                new FeedDownloadThread
-                    (String.valueOf (i),
-                     parser,
-                     feedCache,
-                     configuration,
-                     feedQueue,
-                     new FeedDownloadDoneHandler()
-                     {
-                         public void feedFinished (FeedInfo  feedInfo,
-                                                   RSSChannel channel)
-                         {
-                             channels.put (feedInfo, channel);
-                         }
-                     });
-            thread.start();
-            threads.add (thread);
-        }
+        // Start the download threads.
 
+        log.info("Starting " + maxThreads + " feed-download threads.");
         log.debug ("Main thread priority is " +
                    Thread.currentThread().getPriority());
 
-        log.debug ("All feeds have been parceled out to threads. Waiting " +
-                   "for threads to complete.");
+        for (int i = 0; i < maxThreads; i++)
+            threadPool.execute(r);
 
-        for (FeedDownloadThread thread : threads)
+        // Open the starting gate.
+
+        log.info("Issuing the start signal.");
+        startLatch.countDown();
+
+        log.info("All feeds have been parceled out to threads. Waiting " +
+                  "for threads to complete.");
+
+        boolean threadsLeft = true;
+        while (threadsLeft)
         {
-            String threadName = thread.getName();
-
-            log.info ("Waiting for thread " + threadName);
-
             try
             {
-                thread.join();
+                doneLatch.await();
+                threadsLeft = false;
             }
-
             catch (InterruptedException ex)
             {
-                log.debug ("Interrupted during thread join: " + ex.toString());
+                log.error("Main thread interrupted while waiting on " +
+                          "CountDownLatch", ex);
             }
-
-            log.info ("Joined thread " + threadName);
         }
+
+        log.info("Feed download threads are done.");
+
+        // Reap the threads.
+
+        threadPool.shutdown();
 
         // Finally, remove any entries that still have null channels. (This
         // can happen if there's no new data in a feed.)
@@ -535,7 +476,18 @@ public class Curn
                 it.remove();
         }
 
-        return channels;
+        // Copy the channels to a LinkedHashMap in feed order.
+
+        LinkedHashMap<FeedInfo,RSSChannel> result =
+            new LinkedHashMap<FeedInfo,RSSChannel>(totalFeeds);
+        for (FeedInfo feedInfo : feeds)
+        {
+            RSSChannel channel = channels.get(feedInfo);
+            if (channel != null)
+                result.put(feedInfo, channel);
+        }
+
+        return result;
     }
 
     /**

@@ -6,7 +6,7 @@ $Id$
 Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.0.1 (...)
+Version 3.1 (...)
 
 - The graphical installer now renders the license in a more readable,
   proportional font.
@@ -27,6 +27,11 @@ Version 3.0.1 (...)
   "&" in the XML.
 
 - Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
+
+- curn's multithreaded download logic now uses the java.util.concurrent
+  library, instead of native Java synchronization. While this change won't
+  necessarily improve performance for small numbers of feeds and threads,
+  it should permit curn to scale better to large numbers of feeds.
 
 
 ---------------------------------------------------------------------------
