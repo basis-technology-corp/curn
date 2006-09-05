@@ -410,7 +410,9 @@ public class Curn
         };
 
         final CountDownLatch doneLatch = new CountDownLatch(maxThreads);
-        final CountDownLatch startLatch = new CountDownLatch(1);
+        final CountDownLatch startLatch =
+            (maxThreads == 1) ? null : new CountDownLatch(1);
+
         Runnable r = new Runnable()
         {
             public void run()
@@ -437,17 +439,20 @@ public class Curn
 
         // Open the starting gate.
 
-        log.info("Issuing the start signal.");
-        startLatch.countDown();
+        if (startLatch != null)
+        {
+            log.info("Issuing the start signal.");
+            startLatch.countDown();
+        }
 
-        log.info("All feeds have been parceled out to threads. Waiting " +
-                  "for threads to complete.");
+        log.info("All feeds have been parceled out to threads.");
 
         boolean threadsLeft = true;
         while (threadsLeft)
         {
             try
             {
+                log.info("Waiting for threads to complete.");
                 doneLatch.await();
                 threadsLeft = false;
             }
