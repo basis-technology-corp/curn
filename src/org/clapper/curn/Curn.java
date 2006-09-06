@@ -114,6 +114,7 @@ public class Curn
     private CurnConfig config = null;
     private Date currentTime = new Date();
     private MetaPlugIn metaPlugIn = null;            // NOPMD
+    private boolean abortOnUndefinedVariable = true;
 
     private final Collection<ConfiguredOutputHandler> configuredOutputHandlers =
         new ArrayList<ConfiguredOutputHandler>();
@@ -149,7 +150,8 @@ public class Curn
      * @param configPath      path to the configuration data
      * @param useCache        whether or not to use the cache
      *
-     * @throws CurnException on error
+     * @throws CurnUsageException user error (e.g., bad configuration)
+     * @throws CurnException      some other error
      */
     public void run (final String configPath, final boolean useCache)
         throws CurnException
@@ -158,18 +160,18 @@ public class Curn
 
         try
         {
-            this.config = loadConfig (configPath);
-            processRSSFeeds (useCache);
+            this.config = loadConfig(configPath);
+            processRSSFeeds(useCache);
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnUsageException(ex);
         }
 
         catch (RSSParserException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
 
         finally
@@ -189,6 +191,22 @@ public class Curn
     public void setCurrentTime (final Date newTime)
     {
         this.currentTime = newTime;
+    }
+
+    /**
+     * Set or clear the flag that controls whether the <i>curn</i>
+     * configuration parser will abort when it encounters an undefined
+     * configuration variable. If thisd flag is clear, then an undefined
+     * variable is expanded to an empty string. If this flag is set, then
+     * an undefined value causes <i>curn</i> to abort. The flag defaults
+     * to <tt>true</tt>.
+     *
+     * @param enable  <tt>true</tt> to enable the "abort on undefined variable"
+     *                flag, <tt>false</tt> to disable it.
+     */
+    public void setAbortOnUndefinedConfigVariable(boolean enable)
+    {
+        abortOnUndefinedVariable = enable;
     }
 
     /*----------------------------------------------------------------------*\
@@ -216,89 +234,86 @@ public class Curn
         File                     cacheFile = config.getCacheFile();
         FeedCache                cache = null;
 
-        loadOutputHandlers (config);
+        loadOutputHandlers(config);
 
         if (useCache && (cacheFile != null))
         {
-            cache = new FeedCache (config);
-            cache.setCurrentTime (currentTime);
+            cache = new FeedCache(config);
+            cache.setCurrentTime(currentTime);
             cache.loadCache();
-            metaPlugIn.runCacheLoadedPlugIn (cache);
+            metaPlugIn.runCacheLoadedPlugIn(cache);
         }
 
         if (config.isDownloadOnly())
         {
             // No output handlers. No need to instantiate a parser.
 
-            log.debug ("Config is download-only. Skipping XML parse phase.");
+            log.debug("Config is download-only. Skipping XML parse phase.");
             parsingEnabled = false;
         }
 
         Collection<FeedInfo> feeds = config.getFeeds();
         if (feeds.size() == 0)
         {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "Curn.noConfiguredFeeds",
-                                              "No configured RSS feed URLs.");
+            throw new ConfigurationException(Constants.BUNDLE_NAME,
+                                             "Curn.noConfiguredFeeds",
+                                             "No configured RSS feed URLs.");
         }
 
         channels = downloadFeeds(parsingEnabled, cache, config);
 
-        log.debug ("After downloading, total (parsed) channels = " +
-                   channels.size());
+        log.debug("After downloading, total (parsed) channels = " +
+                  channels.size());
 
         if (channels.size() > 0)
-            outputChannels (channels);
+            outputChannels(channels);
 
-        log.debug ("cacheFile=" +
-                   ((cacheFile == null) ? "null" : cacheFile.getPath()) +
-                   ", mustUpdateCache=" + config.mustUpdateCache());
+        log.debug("cacheFile=" +
+                  ((cacheFile == null) ? "null" : cacheFile.getPath()) +
+                  ", mustUpdateCache=" + config.mustUpdateCache());
 
         if ((cache != null) && config.mustUpdateCache())
         {
             int totalCacheBackups = config.totalCacheBackups();
-            metaPlugIn.runPreCacheSavePlugIn (cache);
-            cache.saveCache (totalCacheBackups);
+            metaPlugIn.runPreCacheSavePlugIn(cache);
+            cache.saveCache(totalCacheBackups);
         }
     }
 
-    private CurnConfig loadConfig (final String configPath)
-        throws CurnException
+    private CurnConfig loadConfig(final String configPath)
+        throws CurnException,
+               ConfigurationException
     {
         try
         {
             config = new CurnConfig();
-            config.load (configPath);
-            MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn (config);
+            config.setAbortOnUndefinedVariable(abortOnUndefinedVariable);
+            config.load(configPath);
+            MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn(config);
             return config;
         }
 
         catch (FileNotFoundException ex)
         {
-            throw new CurnException (Constants.BUNDLE_NAME,
-                                     "Curn.cantFindConfig",
-                                     "Cannot find configuration file \"{0}\"",
-                                     new Object[] {configPath},
-                                     ex);
+            throw new CurnException(Constants.BUNDLE_NAME,
+                                    "Curn.cantFindConfig",
+                                    "Cannot find configuration file \"{0}\"",
+                                    new Object[] {configPath},
+                                    ex);
         }
 
         catch (IOException ex)
         {
-            throw new CurnException (Constants.BUNDLE_NAME,
-                                     "Curn.cantReadConfig",
-                                     "I/O error reading configuration file " +
-                                     "\"{0}\"",
-                                     new Object[] {configPath},
-                                     ex);
-        }
-
-        catch (ConfigurationException ex)
-        {
-            throw new CurnException (ex);
+            throw new CurnException(Constants.BUNDLE_NAME,
+                                    "Curn.cantReadConfig",
+                                    "I/O error reading configuration file " +
+                                    "\"{0}\"",
+                                    new Object[] {configPath},
+                                    ex);
         }
     }
 
-    private void loadOutputHandlers (final CurnConfig configuration)
+    private void loadOutputHandlers(final CurnConfig configuration)
         throws ConfigurationException,
                CurnException
     {
@@ -310,22 +325,22 @@ public class Curn
 
                 String className = cfgHandler.getClassName();
 
-                log.debug ("Instantiating output handler \"" +
-                           cfgHandler.getName() +
-                           "\", of type " +
-                           className);
+                log.debug("Instantiating output handler \"" +
+                          cfgHandler.getName() +
+                          "\", of type " +
+                          className);
                 OutputHandler handler = cfgHandler.getOutputHandler();
 
-                log.debug ("Initializing output handler \"" +
-                           cfgHandler.getName() +
-                           "\", of type " +
-                           className);
+                log.debug("Initializing output handler \"" +
+                          cfgHandler.getName() +
+                          "\", of type " +
+                          className);
 
-                handler.init (config, cfgHandler);
+                handler.init(config, cfgHandler);
 
                 // Save it.
 
-                configuredOutputHandlers.add (cfgHandler);
+                configuredOutputHandlers.add(cfgHandler);
             }
         }
     }
@@ -367,8 +382,8 @@ public class Curn
         if (maxThreads > totalFeeds)
             maxThreads = totalFeeds;
 
-        log.info ("Doing multithreaded download of feeds, using " +
-                  maxThreads + " threads.");
+        log.info("Doing multithreaded download of feeds, using " +
+                 maxThreads + " threads.");
 
         // Fill the feed queue and make it a synchronized list.
 
@@ -377,9 +392,9 @@ public class Curn
 
         if (feedQueue.size() == 0)
         {
-            throw new CurnException (Constants.BUNDLE_NAME,
-                                     "Curn.allFeedsDisabled",
-                                     "All configured RSS feeds are disabled.");
+            throw new CurnException(Constants.BUNDLE_NAME,
+                                    "Curn.allFeedsDisabled",
+                                    "All configured RSS feeds are disabled.");
         }
 
         // Create the thread objects in a concurrent thread pool. They'll pull
@@ -524,13 +539,13 @@ public class Curn
 
         for (ConfiguredOutputHandler cfgHandler : configuredOutputHandlers)
         {
-            log.info ("Preparing to call output handler \"" +
-                      cfgHandler.getName() +
-                      "\", of type " +
-                      cfgHandler.getClassName());
+            log.info("Preparing to call output handler \"" +
+                     cfgHandler.getName() +
+                     "\", of type " +
+                     cfgHandler.getClassName());
 
             handler = cfgHandler.getOutputHandler();
-            outputHandlers.add (handler);
+            outputHandlers.add(handler);
 
             for (FeedInfo fi : channels.keySet())
             {
@@ -538,19 +553,19 @@ public class Curn
                 // the output handler can modify its content freely, without
                 // affecting anyone else.
 
-                RSSChannel channel = channels.get (fi).makeCopy();
-                metaPlugIn.runPreFeedOutputPlugIn (fi, channel, handler);
-                handler.displayChannel (channel, fi);
-                metaPlugIn.runPostFeedOutputPlugIn (fi, handler);
+                RSSChannel channel = channels.get(fi).makeCopy();
+                metaPlugIn.runPreFeedOutputPlugIn(fi, channel, handler);
+                handler.displayChannel(channel, fi);
+                metaPlugIn.runPostFeedOutputPlugIn(fi, handler);
             }
 
             handler.flush();
-            ReadOnlyOutputHandler ro = new ReadOnlyOutputHandler (handler);
-            if (! metaPlugIn.runPostOutputHandlerFlushPlugIn (ro))
+            ReadOnlyOutputHandler ro = new ReadOnlyOutputHandler(handler);
+            if (! metaPlugIn.runPostOutputHandlerFlushPlugIn(ro))
                 cfgHandler.disable();
         }
 
-        metaPlugIn.runPostOutputPlugIn (outputHandlers);
+        metaPlugIn.runPostOutputPlugIn(outputHandlers);
         outputHandlers.clear();
         outputHandlers = null;
     }
@@ -561,7 +576,7 @@ public class Curn
      */
     private void logEnvironmentInfo()
     {
-        log.info (Version.getFullVersion());
+        log.info(Version.getFullVersion());
 
         Properties properties = System.getProperties();
         TreeSet<String> sortedNames = new TreeSet<String>();

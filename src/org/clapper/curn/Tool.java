@@ -60,13 +60,15 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.naming.ConfigurationException;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.cmdline.CommandLineUtility;
 import org.clapper.util.cmdline.CommandLineException;
 import org.clapper.util.cmdline.CommandLineUsageException;
+import org.clapper.util.cmdline.CommandLineUserException;
 import org.clapper.util.cmdline.UsageInfo;
-import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.misc.BuildInfo;
 
@@ -141,13 +143,14 @@ public class Tool
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private String  configPath       = null;
-    private boolean useCache         = true;
-    private Date    currentTime      = new Date();
-    private boolean optShowBuildInfo = false;
-    private boolean optShowPlugIns   = false;
-    private boolean optShowVersion   = false;
-    private Boolean optUpdateCache   = null;
+    private String  configPath                   = null;
+    private boolean useCache                     = true;
+    private Date    currentTime                  = new Date();
+    private boolean optShowBuildInfo             = false;
+    private boolean optShowPlugIns               = false;
+    private boolean optShowVersion               = false;
+    private Boolean optUpdateCache               = null;
+    private boolean optAbortOnUndefinedConfigVar = true;
 
     /**
      * For log messages
@@ -172,6 +175,13 @@ public class Tool
             // Already reported
 
             System.exit (1);
+        }
+
+        catch (CommandLineUserException ex)
+        {
+            // Don't dump a stack trace.
+
+            new WordWrapWriter(System.err).println(ex.getMessage());
         }
 
         catch (CommandLineException ex)
@@ -246,7 +256,7 @@ public class Tool
      *
      * @throws CommandLineUsageException  on error
      * @throws NoSuchElementException     overran the iterator (i.e., missing
-     *                                    parameter) 
+     *                                    parameter)
      */
     protected void parseCustomOption (final char             shortOption,
                                       final String           longOption,
@@ -302,6 +312,10 @@ public class Tool
 
             case 'u':           // --no-update
                 optUpdateCache = Boolean.FALSE;
+                break;
+
+            case 'U':          // --allow-undefined-cfg-vars
+                optAbortOnUndefinedConfigVar = false;
                 break;
 
             case 'v':
@@ -395,73 +409,76 @@ public class Tool
         // the usage output. Here, those options are deprecated, but
         // retained for backward compatibility.
 
-        info.addOption ('a', "show-authors", null);
-        info.addOption ('A', "no-authors", null);
-        info.addOption ('B', "build-info",
-                        "Show full build information, then exit. " +
-                        "This option shows a bit more information than the " +
-                        UsageInfo.LONG_OPTION_PREFIX +
-                        "version option. This option can be combined with " +
-                        "the " +
-                        UsageInfo.LONG_OPTION_PREFIX +
-                        "plug-ins option to show the loaded plug-ins.");
-        info.addOption ('C', "no-cache", "Don't use a cache file at all.");
-        info.addOption ('d', "show-dates", null);
-        info.addOption ('D', "no-dates", null);
-        info.addOption ('p', "plug-ins",
-                        "Show the list of located plug-ins and output " +
-                        "handlers, then exit. This option can be combined " +
-                        "with either " +
-                        UsageInfo.LONG_OPTION_PREFIX +
-                        "build-info or " +
-                        UsageInfo.LONG_OPTION_PREFIX +
-                        "version to show version information, as well.");
-        info.addOption ('r', "rss-version", null);
-        info.addOption ('R', "no-rss-version", null);
-        info.addOption ('T', "threads", "<n>", null);
-        info.addOption ('u', "no-update",
-                        "Read the cache, but don't update it.");
-        info.addOption ('v', "version",
-                        "Show version information, then exit. " +
-                        "This option can be combined with the " +
-                        UsageInfo.LONG_OPTION_PREFIX +
-                        "plug-ins option to show the loaded plug-ins.");
-        info.addOption ('z', "gzip", null);
-        info.addOption ('Z', "no-gzip", null);
+        info.addOption('a', "show-authors", null);
+        info.addOption('A', "no-authors", null);
+        info.addOption('B', "build-info",
+                       "Show full build information, then exit. " +
+                       "This option shows a bit more information than the " +
+                       UsageInfo.LONG_OPTION_PREFIX +
+                       "version option. This option can be combined with " +
+                       "the " +
+                       UsageInfo.LONG_OPTION_PREFIX +
+                       "plug-ins option to show the loaded plug-ins.");
+        info.addOption('C', "no-cache", "Don't use a cache file at all.");
+        info.addOption('d', "show-dates", null);
+        info.addOption('D', "no-dates", null);
+        info.addOption('p', "plug-ins",
+                       "Show the list of located plug-ins and output " +
+                       "handlers, then exit. This option can be combined " +
+                       "with either " +
+                       UsageInfo.LONG_OPTION_PREFIX +
+                       "build-info or " +
+                       UsageInfo.LONG_OPTION_PREFIX +
+                       "version to show version information, as well.");
+        info.addOption('r', "rss-version", null);
+        info.addOption('R', "no-rss-version", null);
+        info.addOption('T', "threads", "<n>", null);
+        info.addOption('u', "no-update",
+                       "Read the cache, but don't update it.");
+        info.addOption('U', "allow-undefined-cfg-vars",
+                       "Don't abort when an undefined variable is " +
+                       "encountered in the configuration file; substitute " +
+                       "an empty string, instead. Normally, an undefined " +
+                       "configuration variable will cause curn to abort.");
+        info.addOption('v', "version",
+                      "Show version information, then exit. " +
+                       "This option can be combined with the " +
+                       UsageInfo.LONG_OPTION_PREFIX +
+                       "plug-ins option to show the loaded plug-ins.");
+        info.addOption('z', "gzip", null);
+        info.addOption('Z', "no-gzip", null);
 
         StringWriter      sw  = new StringWriter();
-        PrintWriter       pw  = new PrintWriter (sw);
+        PrintWriter       pw  = new PrintWriter(sw);
         Date              sampleDate;
-        BuildInfo         buildInfo = Version.getBuildInfo(); 
+        BuildInfo         buildInfo = Version.getBuildInfo();
         SimpleDateFormat  dateFormat;
         String            dateString = buildInfo.getBuildDate();
 
         try
         {
-            dateFormat = new SimpleDateFormat (BuildInfo.DATE_FORMAT_STRING);
-            sampleDate = dateFormat.parse (dateString);
+            dateFormat = new SimpleDateFormat(BuildInfo.DATE_FORMAT_STRING);
+            sampleDate = dateFormat.parse(dateString);
         }
 
         catch (Exception ex)
         {
-            log.error ("Can't parse build date string \"" +
-                       dateString +
-                       "\" using format \"" +
-                       BuildInfo.DATE_FORMAT_STRING +
-                       "\"",
-                       ex);
+            log.error("Can't parse build date string \"" + dateString +
+                      "\" using format \"" + BuildInfo.DATE_FORMAT_STRING +
+                      "\"",
+                      ex);
             sampleDate = new Date();
         }
 
         Set<String> printed = new HashSet<String>();
         for (DateParseInfo dpi : DATE_FORMATS)
         {
-            String s = dpi.formatDate (sampleDate);
-            if (! printed.contains (s))
+            String s = dpi.formatDate(sampleDate);
+            if (! printed.contains(s))
             {
                 pw.println();
-                pw.print (s);
-                printed.add (s);
+                pw.print(s);
+                printed.add(s);
             }
         }
 
@@ -522,8 +539,15 @@ public class Tool
                 // Fire it up.
 
                 curn.setCurrentTime (currentTime);
+                curn.setAbortOnUndefinedConfigVariable
+                    (optAbortOnUndefinedConfigVar);
                 curn.run (configPath, this.useCache);
             }
+        }
+
+        catch (CurnUsageException ex)
+        {
+            throw new CommandLineUserException(ex);
         }
 
         catch (CurnException ex)
@@ -620,7 +644,7 @@ public class Tool
         }
     }
 
-    private void deprecatedOption (final char   shortOption, 
+    private void deprecatedOption (final char   shortOption,
                                    final String longOption)
     {
         CurnUtil.getErrorOut().println ("WARNING: Ignoring deprecated " +

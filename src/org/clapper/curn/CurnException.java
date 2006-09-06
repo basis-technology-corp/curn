@@ -70,7 +70,7 @@ public class CurnException extends NestedException
      */
     public CurnException()
     {
-	super();
+        super();
     }
 
     /**
@@ -81,7 +81,7 @@ public class CurnException extends NestedException
      */
     public CurnException (Throwable exception)
     {
-	super (exception);
+        super (exception);
     }
 
     /**
@@ -103,7 +103,7 @@ public class CurnException extends NestedException
      */
     public CurnException (String message, Throwable exception)
     {
-	super (message, exception);
+        super (message, exception);
     }
 
     /**
