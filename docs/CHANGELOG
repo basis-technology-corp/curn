@@ -33,6 +33,12 @@ Version 3.1 (...)
   necessarily improve performance for small numbers of feeds and threads,
   it should permit curn to scale better to large numbers of feeds.
 
+- By default, curn now aborts if it encounters a reference to an undefined
+  configuration file variable. Previously, it would simply substitute an
+  empty string, but that behavior can lead to some hard-to-debug runtime
+  errors. A new -U (--allow-undefined-cfg-vars) command-line option
+  restores the original behavior.
+
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
