@@ -39,6 +39,9 @@ Version 3.1 (...)
   errors. A new -U (--allow-undefined-cfg-vars) command-line option
   restores the original behavior.
 
+- The configuration file parser now supports "${var?default value}" syntax.
+  In that example, if "${var}" does not have a value, or has an empty
+  value, the string "default value" will be substituted.
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
