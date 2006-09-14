@@ -226,7 +226,8 @@ public class AtomParser extends ParserCommon
                                 final Element  channelElement)
         throws RSSParserException
     {
-        channel.setTitle(getText(getRequiredElement(channelElement, "title")));
+        String title = getText(getRequiredElement(channelElement, "title"));
+        channel.setTitle(title);
 
         // Link(s)
 
@@ -242,7 +243,7 @@ public class AtomParser extends ParserCommon
         if (channel.getLinks().size() == 0)
         {
             throw new RSSParserException
-                ("Missing required <link> element in <entry>");
+                ("Missing required <link> in <feed> \"" + title + "\"");
         }
 
         channel.setUniqueID(getText(getRequiredElement(channelElement, "id")));
@@ -326,7 +327,8 @@ public class AtomParser extends ParserCommon
 
         // Title
 
-        item.setTitle(getText(getRequiredElement(itemElement, "title")));
+        String title = getText(getRequiredElement(itemElement, "title"));
+        item.setTitle(title);
 
         // Link(s)
 
@@ -342,7 +344,7 @@ public class AtomParser extends ParserCommon
         if (item.getLinks().size() == 0)
         {
             throw new RSSParserException
-                ("Missing required <link> element in <entry>");
+                ("Missing required <link> in <entry> \"" + title + "\"");
         }
 
         // Description (optional);
@@ -442,9 +444,20 @@ public class AtomParser extends ParserCommon
             mimeType = mimeType.trim();
             if (mimeType.length() == 0)
                 mimeType = null;
+        }
 
-            if ((mimeType == null) && (linkType == RSSLink.Type.SELF))
-                mimeType = ParserUtil.RSS_MIME_TYPE;
+        if (mimeType == null)
+        {
+            switch (linkType)
+            {
+                case SELF:
+                case ALTERNATE:
+                    mimeType = ParserUtil.RSS_MIME_TYPE;
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         RSSLink result = null;
