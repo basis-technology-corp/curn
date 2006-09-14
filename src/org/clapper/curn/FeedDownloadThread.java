@@ -473,7 +473,7 @@ class FeedDownloadThread
                     {
                         log.debug ("Using RSS parser " +
                                    parser.getClass().getName() +
-                                   " to parse the feed.");
+                                   " to parse \"" + feedInfo.getURL() + "\"");
 
                         InputStream is = new FileInputStream (tempFile.file);
                         channel = parser.parseRSSFeed (feedInfo.getURL(),
