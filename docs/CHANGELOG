@@ -91,7 +91,9 @@ Version 3.1 (...)
   Firefox browser on Unix or FreeBSD. These annoying characters include the
   Windows 1252 character set's "smart" quotes, trademark symbol, em dash,
   and other characters that don't display properly in non-Windows character
-  sets.
+  sets. Previously, demoronization was done in the MiniRSSParser logic, but
+  doing it in a plug-in makes more sense (especially since it can be used
+  regardless of the underlying RSS parser).
 
 - Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
 
