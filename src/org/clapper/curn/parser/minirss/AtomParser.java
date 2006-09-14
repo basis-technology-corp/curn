@@ -228,11 +228,22 @@ public class AtomParser extends ParserCommon
     {
         channel.setTitle(getText(getRequiredElement(channelElement, "title")));
 
-        RSSLink link = parseLink(getRequiredElement(channelElement, "link"),
-                                 channel,
-                                 url);
-        if (link != null)
-            channel.addLink(link);
+        // Link(s)
+
+        for (Iterator itLink = channelElement.elementIterator("link");
+             itLink.hasNext(); )
+        {
+            Element linkElement = (Element) itLink.next();
+            RSSLink link = parseLink(linkElement, channel, url);
+            if (link != null)
+                channel.addLink(link);
+        }
+
+        if (channel.getLinks().size() == 0)
+        {
+            throw new RSSParserException
+                ("Missing required <link> element in <entry>");
+        }
 
         channel.setUniqueID(getText(getRequiredElement(channelElement, "id")));
 
@@ -308,6 +319,8 @@ public class AtomParser extends ParserCommon
                              final Channel channel)
         throws RSSParserException
     {
+        String text;
+
         Item item = new Item(channel);
         channel.addItem(item);
 
@@ -315,13 +328,22 @@ public class AtomParser extends ParserCommon
 
         item.setTitle(getText(getRequiredElement(itemElement, "title")));
 
-        // Link
+        // Link(s)
 
-        RSSLink link = parseLink(getRequiredElement(itemElement, "link"),
-                                 channel,
-                                 url);
-        if (link != null)
-            item.addLink(link);
+        for (Iterator itLink = itemElement.elementIterator("link");
+             itLink.hasNext(); )
+        {
+            Element linkElement = (Element) itLink.next();
+            RSSLink link = parseLink(linkElement, channel, url);
+            if (link != null)
+                item.addLink(link);
+        }
+
+        if (item.getLinks().size() == 0)
+        {
+            throw new RSSParserException
+                ("Missing required <link> element in <entry>");
+        }
 
         // Description (optional);
 
@@ -333,7 +355,6 @@ public class AtomParser extends ParserCommon
 
         // Author.
 
-        String text;
         for (Iterator itAuthor = itemElement.elementIterator("author");
              itAuthor.hasNext(); )
         {
