@@ -568,7 +568,7 @@ public class MetaPlugIn
      */
     private void logPlugInInvocation (final String    methodName,
                                       final PlugIn    plugIn,
-                                      final Object... args)
+                                      final Object... args)   // NOPMD
     {
         if (log.isDebugEnabled())
         {
