@@ -5356,14 +5356,7 @@ object contains the following fields and methods, all of which are
 available to the script. The <span class="code">curn</span> object is
 exposed via <span class="code">BSFManager.declareBean()</span>, which
 means it is a global variable that is automatically accessible to the
-script, without the need for the script to call any methods to find it.
-For backward compatibility with previous versions of <i>curn</i>, the
-<span class="code">ScriptOutputHandler</span> object also exposes the same
-data as individual beans that must be retrieved, within the script, via calls
-to <span class="code">bsf.lookupBean()</span>. (These separate objects
-are exposed via calls to <span class="code">BSFManager.registerBean()</span>).
-New scripts should use the <span class="code">curn</span> object, rather than
-the BSF beans.</p>
+script, without the need for the script to call any methods to find it.</p>
 
 <table summary="" border="outlined striped" align="center" width="90%">
   <tr valign="top" class="col-headers">
