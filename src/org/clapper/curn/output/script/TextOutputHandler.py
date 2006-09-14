@@ -110,7 +110,6 @@ def process_channels():
         indentation = 0
         for channel_wrapper in curn.channels:
             channel = channel_wrapper.getChannel()
-            channel = channel_wrapper.getChannel()
             feed_info = channel_wrapper.getFeedInfo()
             process_channel (out, channel, feed_info, indentation)
 
