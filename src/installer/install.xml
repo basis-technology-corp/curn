@@ -59,7 +59,7 @@
   </info>
 
   <guiprefs height="600" resizable="yes" width="800">
-    <laf name="looks">
+   <laf name="looks">
         <os family="windows"/>
         <param name="variant" value="extwin"/>
     </laf>
@@ -127,7 +127,9 @@
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/mail.jar"
             targetdir="$INSTALL_PATH/lib"/>
-      <file src="@THIRD_PARTY_JAR_DIR@/xerces.jar"
+      <file src="@THIRD_PARTY_JAR_DIR@/mail.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/dom4j.jar"
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/asm-@ASM_VERSION@.jar"
             targetdir="$INSTALL_PATH/lib"/>
