@@ -393,7 +393,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     private Collection<ChannelWrapper> channels           = new ChannelList();
     private String                     scriptPath         = null;
     private String                     scriptString       = null;
-    private StringWriter               mimeTypeBuffer     = null;
+    private String                     mimeType           = null;
     private String                     language           = null;
     private Logger                     scriptLogger       = null;     // NOPMD
     private CurnScriptObjects          scriptObjects      = null;
@@ -524,6 +524,8 @@ public class ScriptOutputHandler extends FileOutputHandler
             throw new CurnException(ex);
         }
 
+        log.info("Using " + scriptManager.getType() + " scripting API");
+
         // Next, get the scripting engine itself.
 
         try
@@ -626,9 +628,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
             // Handle the MIME type.
 
-            String mimeType = scriptObjects.mimeType;
-            if (mimeType != null)
-                mimeTypeBuffer.write (mimeType);
+            mimeType = scriptObjects.mimeType;
         }
 
         catch (UnifiedScriptException ex)
@@ -655,7 +655,7 @@ public class ScriptOutputHandler extends FileOutputHandler
      */
     public final String getContentType()
     {
-        return mimeTypeBuffer.toString().trim();
+        return mimeType;
     }
 
     /**
