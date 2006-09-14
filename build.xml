@@ -140,8 +140,14 @@ source and documentation packages.
     <pathelement location="${third.party.jar.dir}/xerces.jar"/>
     <pathelement location="${third.party.jar.dir}/bsf.jar"/>
     <pathelement location="${third.party.jar.dir}/rome.jar"/>
-    <pathelement location="${third.party.jar.dir}/informa.jar"/>
+    <pathelement location="${third.party.jar.dir}/dom4j.jar"/>
+
+    <!--
+        JDOM is necessary for the Informa RSS parser. curn does not use
+        it directly.
+    -->
     <pathelement location="${third.party.jar.dir}/jdom.jar"/>
+    <pathelement location="${third.party.jar.dir}/informa.jar"/>
   </path>
 
   <path id="installer.class.path">
