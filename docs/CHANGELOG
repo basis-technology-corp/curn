@@ -43,6 +43,48 @@ Version 3.1 (...)
   In that example, if "${var}" does not have a value, or has an empty
   value, the string "default value" will be substituted.
 
+- curn's ScriptOutputHandler now supports both the Apache Jakarta Bean
+  Scripting Framework and the Java 6 (JSR 223) javax.script scripting
+  framework. The Java 6 scripting framework requires Java 6, obviously.
+  By default, the ScriptOutputHandler first tries to use the javax.script
+  infrastructure; if that doesn't work, it tries to the BSF infrastructure.
+  You can force it to try just one of them with the (new) optional
+  "ScriptingAPI" configuration directive. That directive takes two possible
+  values:
+
+           javax.script - use the Java 6 scripting framework, and abort
+                          if it's not available
+           bsf          - use the Bean Scripting Framework, and abort if
+                          it's not available
+
+  e.g.:
+
+          [OutputHandlerMyScript]
+          Class: org.clapper.curn.output.script.ScriptOutputHandler
+          Script: ${system:user.home}/curn/my_output_handler.py
+          Language: jython
+          ScriptingAPI: bsf
+
+  Notes:
+
+  a) The Bean Scripting Framework API is shipped with curn. If you use
+     the curn.bat or curn.sh script installed by the curn graphical
+     installer, you will automatically have access to the BSF API and
+     the language bindings that are shipped with it.
+
+  b) To use the Java 6 javax.script API, you must be running under Java 6.
+     Additionally, to use any languages other than Rhino Javascript (which
+     comes with Java 6), you must have the add-on JSR 223 scripting engines
+     jar file. The latest version of that software is available at
+     "https://scripting.dev.java.net/". A version of that jar file is
+     shipped with curn.
+
+- The ScriptOutputHandler no longer supports the BSF objects that had
+  to be retrieved via "bsf.lookupBean()". Instead, only the global
+  "curn" object is exposed, and it's exposed automatically as a script
+  global. For more information, see the "Writing a Script Output Handler"
+  section in the "curn User's Guide".
+
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
 
