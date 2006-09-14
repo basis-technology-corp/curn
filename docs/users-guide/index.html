@@ -75,7 +75,7 @@ h5
     font-family: serif;
     text-decoration: underline;
     margin-top: 3em;
-    font-size: 12pt;
+    font-size: 9pt;
 }
 
 h6
@@ -519,15 +519,20 @@ function init()
 	      </ul>
 	    </ul>
 
-        <li><a href="#NewOutputHandler">Writing Your Own Output Handler</a>
-            <ul class="toc">
-              <li><a href="#NewJavaOutputHandler">Writing a Java Output Handler</a></li>
-              <li><a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>
-                  <ul class="toc">
-                    <li><a href="#SupportedScriptingLanguages">Supported Scripting Languages</a>
-                    <li><a href="#AdditionalScriptingLanguages">Supporting Additional Scripting Languages</a>
-                    <li><a href="#WritingScriptOutputHandler">Writing a Script Output Handler</a>
-                    <li><a href="#ConfigScriptOutputHandler">Configuring the Script Output Handler</a>
+        <li><a href="#CustomizingOutput">Customizing <i>curn</i>'s Output</a>
+
+	    <ul>
+	      <li><a href="#WriteFreeMarkerTemplate">Writing Your Own FreeMarker Template</a>
+	      <li><a href="#NewOutputHandler">Writing Your Own Output Handler</a>
+	          <ul class="toc">
+		    <li><a href="#NewJavaOutputHandler">Writing a Java Output Handler</a></li>
+		    <li><a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>
+  		        <ul class="toc">
+			  <li><a href="#SupportedScriptingLanguages">Supported Scripting Languages</a>
+			  <li><a href="#AdditionalScriptingLanguages">Supporting Additional Scripting Languages</a>
+			  <li><a href="#WritingScript">Writing the Script</a>
+			  <li><a href="#ConfigScriptOutputHandler">Configuring the Script Output Handler</a>
+			</ul>
                   </ul>
                 </li>
             </ul>
@@ -3001,256 +3006,11 @@ TemplateFile: url "${program:cwd.url}/curn/bin/html.ftl"</pre></blockquote>
 </table>
 <br clear="all"/>
 
-<a name="WriteFreeMarkerTemplate"></a><h5>Writing your own FreeMarker template</h5>
+<p>You can also write your own FreeMarker template, to change the output
+format. See the subsection entitled
+<a href="#WriteFreeMarkerTemplate">Writing Your Own FreeMarker template</a>,
+in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
 
-<p>Because FreeMarker relies on external templates to create the final
-document, and because <i>curn</i> makes it easy to use custom-crafted
-templates, you easily create your own custom documents, or your own branded
-HTML output, without having to write your own output handler. To create your
-own <i>curn</i> FreeMarker template, you must understand two things:</p>
-
-<ul>
-  <li>How to create a FreeMarker template
-  <li><i>curn</i>'s specific FreeMarker data model
-</ul>
-
-<p>A tutorial on FreeMarker is beyond the scope of this document. The remainder
-of this section assumes you have some familiarity with FreeMarker. If you
-don't know how FreeMarker works, please consult the on-line
-<a href="http://freemarker.sourceforge.net/docs/index.html">FreeMarker documentation</a>
-before reading this section.</p>
-
-<p>A FreeMarker template relies on the presence of a tree of data, supplied by
-the program. FreeMarker calls this data tree a "data model". The
-<span class="code">FreeMarkerOutputHandler</span> creates a
-<i>curn</i>-specific
-FreeMarker data model for use within a template. The
-<span class="code">FreeMarkerOutputHandler</span> is as much as data-mapper
-as an output handler: It maps <i>curn</i>'s internal RSS data structures
-into a FreeMarker data model, then invokes the FreeMarker template engine
-to transform the template and data-model into a document.</p>
-
-<p>The <i>curn</i> FreeMarker data model is described below. The data model
-notation used here is similar to the notation used within the FreeMarker
-documentation.</p>
-
-<table summary="" class="bordered colored" align="center">
-<tr>
-<td>
-<pre>
-<b>Tree</b>                                         <b>Description</b>
-
-(root)
- |
- +-- curn
- |    |
- |    +-- showToolInfo ....................... [boolean] whether or not
- |    |                                        to display curn information
- |    |                                        in the output
- |    |
- |    +-- version ............................ [String] version of curn
- |    |
- |    +-- buildID ............................ [String] curn's build ID
- |
- +-- totalItems .............................. [int] total items for all channels
- |
- +-- dateGenerated ........................... [Date] date generated
- |
- +-- extraText ............................... [String] extra text, from the config
- |
- +-- encoding ................................ [String] encoding, from the config
- |
- +-- tableOfContents ......................... hash of table-of-contents data
- |    |
- |    +-- needed ............................. [boolean] whether a table of contents is needed
- |    |
- |    +-- (channels) ......................... sequence of channel table of contents items
- |          |
- |          +-- channel ...................... table of contents entry for one channel
- |          |     |
- |          |     +-- title .................. [String] channel title
- |          |     |
- |          |     +-- totalItems ............. [int] total items in channel
- |          |     |
- |          |     +-- channelAnchor .......... [String] HTML anchor name for channel
- |          |
- |          +-- channel
- .....       ...
- |
- +-- (channels) .............................. sequence of channel data
- |      |
- |      +-- channel .......................... hash for a single channel
- |      |       |
- |      |       +-- index .................... [int] channel's index in list
- |      |       |
- |      |       +-- totalItems ............... [int] total items in channel
- |      |       |
- |      |       +-- title .................... [String] channel title
- |      |       |
- |      |       +-- anchorName ............... [String] HTML anchor name for channel
- |      |       |
- |      |       +-- url ...................... [String] channel's URL
- |      |       |
- |      |       +-- date ..................... [Date] channel's last-modified date (might be missing)
- |      |       |
- |      |       +-- (items) .................. sequence of channel items
- |      |             |
- |      |             +-- item ............... entry for one item
- |      |             |     |
- |      |             |     +-- index ........ [int] item's index in channel
- |      |             |     |
- |      |             |     +-- title ........ [String] item's title
- |      |             |     |
- |      |             |     +-- url .......... [String] item's unique URL
- |      |             |     |
- |      |             |     +-- date ......... [Date] the date (might be missing)
- |      |             |     |
- |      |             |     +-- author ....... [String] the author, or ""
- |      |             |     |
- |      |             |     +-- description .. [String] description/summary
- |      |             |
- |      |             +-- item
- |      |             |
-...    ...           ...
- |      |
- |      +-- channel
- |      |
-...    ...
-</pre>
-</td>
-</tr>
-</table>
-
-<p>The <span class="code">FreeMarkerOutputHandler</span> also places three
-FreeMarker methods in the data model, as well:</p>
-
-<table summary="" class="outlined striped cell-outlined" align="center" width="80%">
-  <tr class="title">
-    <th colspan="4">Methods in the Data Model</th>
-  </tr>
-
-  <tr valign="bottom" class="col-headers">
-    <th align="left">Method Name</th>
-    <th align="left">Explanation</th>
-    <th align="left">Arguments</th>
-    <th align="left">Examples</th>
-  </tr>
-
-  <tbody>
-
-  <tr valign="top">
-    <td align="left" class="code">wrapText</td>
-    <td align="left">Wraps text at the end of the line, on word boundaries.
-       Uses the <i>org.clapper.util</i> Java Utility Library's
-       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/io/WordWrapWriter.html" class="code">WordWrapWriter</a>
-       class.
-    </td>
-    <td align="left">
-      <ul class="nobullet">
-	<li><span class="code">stringToWrap</span>: Required. Specifies the
-	    string to wrap.
-	<li><span class="code">indentation</span>: Optional. How many blanks
-	    to indent the string from the left margin. Each wrapped line,
-	    including the first, is indented by this much. Defaults to 0.
-	<li><span class="code">lineLength</span>: Optional. The length of the
-	    line. Defaults to 79.
-      </ul>
-    </td>
-    <td class="code" nowrap>
-      ${wrapText (item.title, 4)}<br/>
-      ${wrapText (item.description, 4, 50)}
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">indentText</td>
-    <td align="left">Indents the specified string.</td>
-    <td align="left">
-      <ul class="nobullet">
-	<li><span class="code">string</span>: Required. Specifies the
-	    string to indent.
-	<li><span class="code">indentation</span>: Required. How many blanks
-	    to indent the string from the left margin.
-      </ul>
-    </td>
-    <td class="code" nowrap>
-      ${indentText (item.url, 4)}<br/>
-      ${indentText (channel.url, 8)}
-    </td>
-  </tr>
-
-  <tr valign="top">
-    <td align="left" class="code">stripHTML</td>
-    <td align="left">Strips all HTML tags from the specified string. Especially
-      useful for plain text templates.</td>
-    <td align="left">
-      <ul class="nobullet">
-	<li><span class="code">string</span>: Required. Specifies the
-	    string to strip.
-      </ul>
-    </td>
-    <td class="code" nowrap>
-      ${stripHTML (item.description)}
-    </td>
-  </tr>
-
-  </tbody>
-</table>
-
-<p>Below is a sample template, which is largely identical to the
-<a href="#builtin-templates">built-in text template</a>. This template
-illustrates the use of the data model. You can a version of
-the text template, as well as the HTML template and the simple summary
-template, by following these links:</p>
-
-<a name="builtin-templates"></a>
-<ul>
-  <li><a href="HTML.txt">HTML</a>
-  <li><a href="Text.txt">Text</a>
-  <li><a href="Summary.txt">Simple Summary</a>
-</ul>
-
-<table summary="" class="bordered" align="center">
-  <tr>
-    <th class="title">Sample FreeMarker template</th>
-  </tr>
-  <tr>
-    <td>
-<pre>
-${title}
-&lt;#if extraText != ""&gt;
-${wrapText (extraText)}
-&lt;/#if&gt;
-
-&lt;#list channels as channel&gt;
----------------------------------------------------------------------------
-${wrapText (channel.title, 0)}
-${channel.url}
-&lt;#if channel.date?exists&gt;
-${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
-&lt;/#if&gt;
-
-&lt;#list channel.items as item&gt;
-${wrapText (item.title, 4)}
-${indentText (item.url, 4)}
-&lt;#assign desc = stripHTML(item.description)&gt;
-&lt;#if desc != ""&gt;
-
-${wrapText (desc, 8)}
-&lt;/#if&gt;
-
-&lt;/#list&gt;
-&lt;/#list&gt;
-
----------------------------------------------------------------------------
-&lt;#if (curn.showToolInfo)&gt;
-curn, ${curn.version}
-Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
-&lt;/#if&gt;
-</pre>
-    </td>
-  </tr>
-</table>
 <h4><a name="HTMLOutputHandler" class="code">HTMLOutputHandler</a></h4>
 
 <dl class="dlSummary">
@@ -4729,8 +4489,260 @@ ZipOutputTo: /tmp/curn.zip
 <p>For more examples, please see the source code for the
 <a href="#StockPlugIns">stock plug-ins</a> delivered with <i>curn</i>.</p>
 
+<a name="CustomizingOutput"></a><h2>Customizing <i>curn</i>'s Output</h2>
 
-<h2><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h2>
+<a name="WriteFreeMarkerTemplate"></a><h3>Writing Your Own FreeMarker Template</h3>
+
+<p>Because FreeMarker relies on external templates to create the final
+document, and because <i>curn</i> makes it easy to use custom-crafted
+templates, you easily create your own custom documents, or your own branded
+HTML output, without having to write your own output handler. To create your
+own <i>curn</i> FreeMarker template, you must understand two things:</p>
+
+<ul>
+  <li>How to create a FreeMarker template
+  <li><i>curn</i>'s specific FreeMarker data model
+</ul>
+
+<p>A tutorial on FreeMarker is beyond the scope of this document. The remainder
+of this section assumes you have some familiarity with FreeMarker. If you
+don't know how FreeMarker works, please consult the on-line
+<a href="http://freemarker.sourceforge.net/docs/index.html">FreeMarker documentation</a>
+before reading this section.</p>
+
+<p>A FreeMarker template relies on the presence of a tree of data, supplied by
+the program. FreeMarker calls this data tree a "data model". The
+<span class="code">FreeMarkerOutputHandler</span> creates a
+<i>curn</i>-specific
+FreeMarker data model for use within a template. The
+<span class="code">FreeMarkerOutputHandler</span> is as much as data-mapper
+as an output handler: It maps <i>curn</i>'s internal RSS data structures
+into a FreeMarker data model, then invokes the FreeMarker template engine
+to transform the template and data-model into a document.</p>
+
+<p>The <i>curn</i> FreeMarker data model is described below. The data model
+notation used here is similar to the notation used within the FreeMarker
+documentation.</p>
+
+<table summary="" class="bordered colored" align="center">
+<tr>
+<td>
+<pre>
+<b>Tree</b>                                         <b>Description</b>
+
+(root)
+ |
+ +-- curn
+ |    |
+ |    +-- showToolInfo ....................... [boolean] whether or not
+ |    |                                        to display curn information
+ |    |                                        in the output
+ |    |
+ |    +-- version ............................ [String] version of curn
+ |    |
+ |    +-- buildID ............................ [String] curn's build ID
+ |
+ +-- totalItems .............................. [int] total items for all channels
+ |
+ +-- dateGenerated ........................... [Date] date generated
+ |
+ +-- extraText ............................... [String] extra text, from the config
+ |
+ +-- encoding ................................ [String] encoding, from the config
+ |
+ +-- tableOfContents ......................... hash of table-of-contents data
+ |    |
+ |    +-- needed ............................. [boolean] whether a table of contents is needed
+ |    |
+ |    +-- (channels) ......................... sequence of channel table of contents items
+ |          |
+ |          +-- channel ...................... table of contents entry for one channel
+ |          |     |
+ |          |     +-- title .................. [String] channel title
+ |          |     |
+ |          |     +-- totalItems ............. [int] total items in channel
+ |          |     |
+ |          |     +-- channelAnchor .......... [String] HTML anchor name for channel
+ |          |
+ |          +-- channel
+ .....       ...
+ |
+ +-- (channels) .............................. sequence of channel data
+ |      |
+ |      +-- channel .......................... hash for a single channel
+ |      |       |
+ |      |       +-- index .................... [int] channel's index in list
+ |      |       |
+ |      |       +-- totalItems ............... [int] total items in channel
+ |      |       |
+ |      |       +-- title .................... [String] channel title
+ |      |       |
+ |      |       +-- anchorName ............... [String] HTML anchor name for channel
+ |      |       |
+ |      |       +-- url ...................... [String] channel's URL
+ |      |       |
+ |      |       +-- date ..................... [Date] channel's last-modified date (might be missing)
+ |      |       |
+ |      |       +-- (items) .................. sequence of channel items
+ |      |             |
+ |      |             +-- item ............... entry for one item
+ |      |             |     |
+ |      |             |     +-- index ........ [int] item's index in channel
+ |      |             |     |
+ |      |             |     +-- title ........ [String] item's title
+ |      |             |     |
+ |      |             |     +-- url .......... [String] item's unique URL
+ |      |             |     |
+ |      |             |     +-- date ......... [Date] the date (might be missing)
+ |      |             |     |
+ |      |             |     +-- author ....... [String] the author, or ""
+ |      |             |     |
+ |      |             |     +-- description .. [String] description/summary
+ |      |             |
+ |      |             +-- item
+ |      |             |
+...    ...           ...
+ |      |
+ |      +-- channel
+ |      |
+...    ...
+</pre>
+</td>
+</tr>
+</table>
+
+<p>The <span class="code">FreeMarkerOutputHandler</span> also places three
+FreeMarker methods in the data model, as well:</p>
+
+<table summary="" class="outlined striped cell-outlined" align="center" width="80%">
+  <tr class="title">
+    <th colspan="4">Methods in the Data Model</th>
+  </tr>
+
+  <tr valign="bottom" class="col-headers">
+    <th align="left">Method Name</th>
+    <th align="left">Explanation</th>
+    <th align="left">Arguments</th>
+    <th align="left">Examples</th>
+  </tr>
+
+  <tbody>
+
+  <tr valign="top">
+    <td align="left" class="code">wrapText</td>
+    <td align="left">Wraps text at the end of the line, on word boundaries.
+       Uses the <i>org.clapper.util</i> Java Utility Library's
+       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/io/WordWrapWriter.html" class="code">WordWrapWriter</a>
+       class.
+    </td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">stringToWrap</span>: Required. Specifies the
+	    string to wrap.
+	<li><span class="code">indentation</span>: Optional. How many blanks
+	    to indent the string from the left margin. Each wrapped line,
+	    including the first, is indented by this much. Defaults to 0.
+	<li><span class="code">lineLength</span>: Optional. The length of the
+	    line. Defaults to 79.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${wrapText (item.title, 4)}<br/>
+      ${wrapText (item.description, 4, 50)}
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code">indentText</td>
+    <td align="left">Indents the specified string.</td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">string</span>: Required. Specifies the
+	    string to indent.
+	<li><span class="code">indentation</span>: Required. How many blanks
+	    to indent the string from the left margin.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${indentText (item.url, 4)}<br/>
+      ${indentText (channel.url, 8)}
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code">stripHTML</td>
+    <td align="left">Strips all HTML tags from the specified string. Especially
+      useful for plain text templates.</td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">string</span>: Required. Specifies the
+	    string to strip.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${stripHTML (item.description)}
+    </td>
+  </tr>
+
+  </tbody>
+</table>
+
+<p>Below is a sample template, which is largely identical to the
+<a href="#builtin-templates">built-in text template</a>. This template
+illustrates the use of the data model. You can a version of
+the text template, as well as the HTML template and the simple summary
+template, by following these links:</p>
+
+<a name="builtin-templates"></a>
+<ul>
+  <li><a href="HTML.txt">HTML</a>
+  <li><a href="Text.txt">Text</a>
+  <li><a href="Summary.txt">Simple Summary</a>
+</ul>
+
+<table summary="" class="bordered" align="center">
+  <tr>
+    <th class="title">Sample FreeMarker template</th>
+  </tr>
+  <tr>
+    <td>
+<pre>
+${title}
+&lt;#if extraText != ""&gt;
+${wrapText (extraText)}
+&lt;/#if&gt;
+
+&lt;#list channels as channel&gt;
+---------------------------------------------------------------------------
+${wrapText (channel.title, 0)}
+${channel.url}
+&lt;#if channel.date?exists&gt;
+${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}
+&lt;/#if&gt;
+
+&lt;#list channel.items as item&gt;
+${wrapText (item.title, 4)}
+${indentText (item.url, 4)}
+&lt;#assign desc = stripHTML(item.description)&gt;
+&lt;#if desc != ""&gt;
+
+${wrapText (desc, 8)}
+&lt;/#if&gt;
+
+&lt;/#list&gt;
+&lt;/#list&gt;
+
+---------------------------------------------------------------------------
+&lt;#if (curn.showToolInfo)&gt;
+curn, ${curn.version}
+Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
+&lt;/#if&gt;
+</pre>
+    </td>
+  </tr>
+</table>
+
+<h3><a name="NewOutputHandler"></a>Writing Your Own Output Handler</h3>
 
 <p>There are two ways to write your own output handler: You can write a
 Java class that implements the output handler, or you can write a script
@@ -4748,7 +4760,7 @@ file format (as opposed to writing an output handler to send data over
 a network connection or to a database), then there's a good chance that
 writing a FreeMarker template will be simpler and faster.</p>
 
-<h3><a name="NewJavaOutputHandler"></a>Writing a Java Output Handler</h3>
+<h4><a name="NewJavaOutputHandler"></a>Writing a Java Output Handler</h4>
 
 <p>Writing a new output handler is reasonably straightforward:</p>
 
@@ -5272,7 +5284,7 @@ all kinds of output, including (for instance):</p>
   <li>etc.
 </ul>
 
-<h3><a name="NewScriptOutputHandler"></a>Writing a Script Output Handler</h3>
+<h4><a name="NewScriptOutputHandler"></a>Writing a Script Output Handler</h4>
 
 <p>Writing a script output handler is even simpler, in a way, than writing
 a Java output handler. You simply write a script in a supported language,
@@ -5280,7 +5292,7 @@ then configure an instance of the
 <a href="#CfgScriptOutputHandler" class="code">ScriptOutputHandler</a> class
 to point to your script.</p>
 
-<h4><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h4>
+<h5><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h5>
 
 <p>The
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
@@ -5294,7 +5306,7 @@ for the list of languages supported by default.</p>
 <p class="alert" align="center">Note: <i>curn</i> comes bundled with a compatible version of the
 BSF <span class="filename">bsf.jar</span> file.</p>
 
-<h4><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h4>
+<h5><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h5>
 
 <p>If you want to use a BSF scripting language engine that isn't one of the
 above, simply write a Java class that extends the
@@ -5339,7 +5351,7 @@ public class JStoogeScriptOutputHandler extends ScriptOutputHandler
   </tr>
 </table>
 
-<h4><a name="WritingScriptOutputHandler"></a>Writing a Script Output Handler</h4>
+<h5><a name="WritingScript"></a>Writing the Script</h5>
 
 <p>The <span class="code">ScriptOutputHandler</span> class's
 
@@ -5609,7 +5621,7 @@ process_channels()
   </tr>
 </table>
 
-<h4><a name="ConfigScriptOutputHandler"></a>Configuring the Script Output Handler</h4>
+<h5><a name="ConfigScriptOutputHandler"></a>Configuring the Script Output Handler</h5>
 
 <p>The <a href="#CfgScriptOutputHandler">configuration section for the
 <span class="code">ScriptOutputHandler</span> class</a> provides a detailed
