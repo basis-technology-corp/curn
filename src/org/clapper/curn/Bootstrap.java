@@ -294,7 +294,7 @@ public class Bootstrap
                                     final ClassLoader classLoader)
         throws BootstrapException
     {
-        Class cls;
+        Class<?> cls;
         try
         {
             cls = classLoader.loadClass(commandClassName);

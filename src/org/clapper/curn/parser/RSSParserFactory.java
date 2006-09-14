@@ -93,7 +93,7 @@ public class RSSParserFactory
     {
         try
         {
-            Class parserClass = Class.forName (className);
+            Class<?> parserClass = Class.forName (className);
             Constructor constructor = parserClass.getConstructor();
             return (RSSParser) constructor.newInstance();
         }

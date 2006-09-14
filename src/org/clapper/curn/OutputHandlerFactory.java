@@ -96,7 +96,7 @@ public class OutputHandlerFactory
      * @throws CurnException Error instantiating class. The exception will
      *                       contain the real underlying exception.
      */
-    public static OutputHandler getOutputHandler (final Class cls)
+    public static OutputHandler getOutputHandler (final Class<?> cls)
         throws CurnException
     {
         try

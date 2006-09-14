@@ -94,7 +94,7 @@ public class ParseTest
             System.exit (1);
         }
 
-        Class parserClass = Class.forName (args[0]);
+        Class<?> parserClass = Class.forName (args[0]);
         Constructor constructor = parserClass.getConstructor();
         RSSParser parser = (RSSParser) constructor.newInstance();
 
