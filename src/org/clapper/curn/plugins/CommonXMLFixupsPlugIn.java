@@ -71,6 +71,14 @@ import java.util.Map;
  *   <li>Using a "naked" ampersand (&amp;) without escaping it.
  *   <li>Use of nonexistent entities (e.g., &amp;ouml;, &amp;nbsp;)
  *   <li>Improperly formatted entity escapes
+ *   <li>"Demoronizing" (with apologies to John Walker and his
+ *       <a href="http://www.fourmilab.ch/webtools/demoroniser"><i>demoroniser</i></a>
+ *       tool). Demoronizing is the act of replacing Microsoft Windows-specific
+ *       characters with more reasonable, universal values--values that will
+ *       actually display properly in my Firefox browser on Unix or FreeBSD.
+ *       These annoying characters include the Windows 1252 character set's
+ *       "smart" quotes, trademark symbol, em dash, and other characters
+ *       that don't display properly in non-Windows character sets.
  * </ul>
  *
  * <p>This plug-in attempts to fix those problems.</p>
@@ -145,7 +153,38 @@ public class CommonXMLFixupsPlugIn
 
         // For some reason, no one seems to escape "AT&T" properly...
 
-        "s/AT&T/AT\\&amp;T/g"
+        "s/AT&T/AT\\&amp;T/g",
+
+        // Demoronization
+                                    // CP-1252  What it is
+                                    // --------------------------------------
+        "s/&#128;/\\&#8364;/g",     // 0x80     Euro sign
+        "s/&#130;/\\&#8218;/g",     // 0x82     Single low-9 quote mark
+        "s/&#131;/\\&#0402;/g",     // 0x83     Latin small letter "f" w/ hook
+        "s/&#132;/\\&#8222;/g",     // 0x84     Double low-9 quote mark
+        "s/&#133;/\\&#8230;/g",     // 0x85     Horizontal ellipsis
+        "s/&#134;/\\&#8224;/g",     // 0x86     Dagger
+        "s/&#135;/\\&#8225;/g",     // 0x87     Double dagger
+        "s/&#136;/\\&#0710;/g",     // 0x88     Circumflex accent
+        "s/&#137;/\\&#8240;/g",     // 0x89     Per mille sign
+        "s/&#138;/\\&#352;/g",      // 0x8A     Latin capital "S" with caron
+        "s/&#139;/\\&#8249;/g",     // 0x8B     Single left angle quote
+        "s/&#140;/\\&#338;/g",      // 0x8C     Latin capital ligature "OE"
+        "s/&#142;/\\&#381;/g",      // 0x8E     Latin capital "Z" with caron
+        "s/&#145;/\\&#8216;/g",     // 0x91     Left single quote mark
+        "s/&#146;/\\&#8217;/g",     // 0x92     Right single quote mark
+        "s/&#147;/\\&#8220;/g",     // 0x93     Left double quote mark
+        "s/&#148;/\\&#8221;/g",     // 0x94     Right double quote mark
+        "s/&#149;/\\&#8226;/g",     // 0x95     Bullet
+        "s/&#150;/\\&#8211;/g",     // 0x96     En dash
+        "s/&#151;/\\&#8212;/g",     // 0x97     Em dash
+        "s/&#152;/\\&#732;/g",      // 0x98     Small tilde
+        "s/&#153;/\\&#8482;/g",     // 0x99     Trademark sign
+        "s/&#154;/\\&#353;/g",      // 0x9A     Latin small "s" with caron
+        "s/&#155;/\\&#8250;/g",     // 0x9B     Single right angle quote
+        "s/&#156;/\\&#339;/g",      // 0x9C     Latin small ligature "oe"
+        "s/&#158;/\\&#382;/g",      // 0x9E     Latin small "z" with caron
+        "s/&#159;/\\&#376;/g"       // 0x9F     Latin capital "Y" with diaeresis
     };
 
     /*----------------------------------------------------------------------*\

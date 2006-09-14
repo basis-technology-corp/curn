@@ -67,10 +67,9 @@ Version 3.1 (...)
 
   b) To use the Java 6 javax.script API, you must be running under Java 6.
      Additionally, to use any languages other than Rhino Javascript (which
-     comes with Java 6), you must have the add-on JSR 223 scripting engines
-     jar file. The latest version of that software is available at
-     "https://scripting.dev.java.net/". A version of that jar file is
-     shipped with curn.
+     comes with Java 6), you must have the add-on JSR 223 scripting engine
+     jar file for the scripting language you're using. JSR 223 scripting
+     engines are available  "https://scripting.dev.java.net/".
 
 - The ScriptOutputHandler no longer supports the BSF objects that had
   to be retrieved via "bsf.lookupBean()". Instead, only the global
@@ -84,6 +83,15 @@ Version 3.1 (...)
   and harder to maintain. It now uses DOM4J to load the XML document into
   an in-memory DOM, which it then processes. This change is entirely
   internal.
+
+- The Common XML Fixups plug-in now does "demoronization" (with apologies
+  to John Walker's "demoroniser" tool). Demoronizing is the act of
+  replacing Microsoft Windows-specific characters with more reasonable,
+  universal values--values that will actually display properly in my
+  Firefox browser on Unix or FreeBSD. These annoying characters include the
+  Windows 1252 character set's "smart" quotes, trademark symbol, em dash,
+  and other characters that don't display properly in non-Windows character
+  sets.
 
 - Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
 
