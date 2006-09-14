@@ -57,15 +57,12 @@ import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
-
-import org.xml.sax.Attributes;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * <p><tt>MiniRSSParser</tt> is a stripped down RSS parser. It handles
@@ -95,7 +92,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * <b>Warning:</b> This class is NOT thread safe. Because of the nature of
  * XML SAX event-driven (i.e., callback-driven) parsing, an instance of this
- * object must maintain parser state as instance data. 
+ * object must maintain parser state as instance data.
  *
  * @version <tt>$Revision$</tt>
  */
@@ -107,17 +104,13 @@ public class MiniRSSParser
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String DEFAULT_XML_PARSER_CLASS_NAME =
-                                      "org.apache.xerces.parsers.SAXParser";
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private URL       url             = null;
-    private Channel   channel         = null;
-    private String    parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
-    private XMLReader xmlReader       = null;
+    private V2Parser v2Parser     = new V2Parser();                 // NOPMD
+    private V1Parser v1Parser     = new V1Parser();                 // NOPMD
+    private AtomParser atomParser = new AtomParser();               // NOPMD
 
     /**
      * For logging
@@ -134,26 +127,8 @@ public class MiniRSSParser
      */
     public MiniRSSParser()
     {
-        this (null);
     }
 
-    /**
-     * Allocate a new <tt>MiniRSSParser</tt> object that uses the specified
-     * XML parser. The parser class must implement the SAX
-     * <tt>XMLReader</tt> interface. The class is not actually loaded and
-     * verified until the {@link #parseRSSFeed} method is called.
-     *
-     * @param parserClassName  the fully-qualified parser class name
-     *
-     * @see #parseRSSFeed
-     */
-    public MiniRSSParser (String parserClassName)
-    {
-        if (parserClassName == null)
-            parserClassName = DEFAULT_XML_PARSER_CLASS_NAME;
-
-        this.parserClassName = parserClassName;
-    }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
@@ -179,9 +154,9 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    public final RSSChannel parseRSSFeed (URL         url,
-                                          InputStream stream,
-                                          String      encoding)
+    public final RSSChannel parseRSSFeed(URL         url,
+                                         InputStream stream,
+                                         String      encoding)
         throws IOException,
                RSSParserException
     {
@@ -192,136 +167,7 @@ public class MiniRSSParser
         else
             r = new InputStreamReader (stream, encoding);
 
-        return parse (url, r);
-    }
-
-    /*----------------------------------------------------------------------*\
-                              Public Methods
-                    Implementing ErrorHandler Interface
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Handle a recoverable error from the SAX XML parser.
-     *
-     * @param ex  the parser exception
-     *
-     * @throws SAXException on error
-     */
-    public void error (SAXParseException ex)
-        throws SAXException
-    {
-        log.error ("Recoverable SAX parser error", ex);
-    }
-
-    /**
-     * Handle a non-recoverable error from the SAX XML parser.
-     *
-     * @param ex  the parser exception
-     *
-     * @throws SAXException on error
-     */
-    public void fatalError (SAXParseException ex)
-        throws SAXException
-    {
-        throw new SAXException ("Fatal SAX parser error: " + ex.toString());
-    }
-
-    /**
-     * Handle a warning from the SAX XML parser.
-     *
-     * @param ex  the parser exception
-     *
-     * @throws SAXException on error
-     */
-    public void warning (SAXParseException ex)
-        throws SAXException
-    {
-        log.error ("SAX parser warning", ex);
-    }
-
-    /*----------------------------------------------------------------------*\
-                              Public Methods
-                        Overriding XMLReaderAdapter
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Handle the start of an XML element. This method assumes that it's
-     * getting the first element in the RSS file. It examines that element,
-     * and hands off control to either a <tt>V1Parser</tt> or
-     * <tt>V2Parser</tt> object for version-specific parsing.
-     *
-     * @param namespaceURI       the Namespace URI, or the empty string if the
-     *                           element has no Namespace URI or if Namespace
-     *                           processing is not being performed
-     * @param namespaceLocalName the local name (without prefix), or the empty
-     *                           string if Namespace processing is not being
-     *                           performed.
-     * @param elementName        the qualified element name (with prefix), or
-     *                           the empty string if qualified names are not
-     *                           available
-     * @param attributes         the attributes attached to the element.
-     *
-     * @throws SAXException parsing error
-     */
-    public void startElement (String     namespaceURI,
-                              String     namespaceLocalName,
-                              String     elementName,
-                              Attributes attributes)
-        throws SAXException
-    {
-        // We're at the top of the document.
-
-        channel = new Channel();
-
-        if (elementName.equals ("rdf:RDF"))
-        {
-            channel.setRSSFormat ("RSS 1.0");
-            xmlReader.setContentHandler (new V1Parser (channel,
-                                                       url,
-                                                       elementName));
-        }
-
-        else if (elementName.equals ("feed"))
-        {
-            String version = attributes.getValue ("version");
-            if (version == null)
-                channel.setRSSFormat ("Atom");
-            else
-                channel.setRSSFormat ("Atom " + version);
-            xmlReader.setContentHandler (new AtomParser (channel,
-                                                         url,
-                                                         elementName));
-        }
-
-        else if (elementName.equals ("rss"))
-        {
-            String version = attributes.getValue ("version");
-            channel.setRSSFormat ("RSS " + version);
-
-            // For curn's purposes, there's considerable similarity between
-            // RSS version 0.91 and RSS version 2--so much so that the same
-            // parser logic will work for both.
-
-            if (version.startsWith ("0.9") || version.startsWith ("2."))
-            {
-                xmlReader.setContentHandler (new V2Parser (channel,
-                                                           url,
-                                                           elementName));
-            }
-
-            else
-            {
-                throw new SAXException ("Unknown RSS version: " + version);
-            }
-        }
-
-        else
-        {
-            throw new SAXException ("Unknown or unsupported RSS type. " +
-                                    "First XML element is <" +
-                                    elementName +
-                                    ">");
-        }
+        return parse(url, r);
     }
 
     /*----------------------------------------------------------------------*\
@@ -343,29 +189,78 @@ public class MiniRSSParser
      * @see Channel
      * @see RSSChannel
      */
-    private RSSChannel parse (URL url, Reader r)
+    private RSSChannel parse(URL url, Reader r)
         throws IOException,
                RSSParserException
     {
+        Channel channel = null;
+
         try
         {
-            xmlReader = XMLReaderFactory.createXMLReader (parserClassName);
-            xmlReader.setContentHandler (this);
-            xmlReader.setErrorHandler (this);
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(r);
 
-            this.url = url;
-            xmlReader.parse (new InputSource (r));
+            // Allocate a new Channel.
+
+            channel = new Channel();
+
+            // Now, figure out what kind of document we have.
+
+            Element rootElement = document.getRootElement();
+            String rootName = rootElement.getName();
+
+            if (rootName.equals("RDF") || rootName.equals("rdf:RDF"))
+            {
+                channel.setRSSFormat("RSS 1.0");
+                v1Parser.process(channel, url, document);
+            }
+
+            else if (rootName.equals("rss"))
+            {
+                String version = rootElement.attributeValue("version");
+                channel.setRSSFormat("RSS " + version);
+
+                // For curn's purposes, there's considerable similarity
+                // between RSS version 0.91 and RSS version 2--so much so
+                // that the same parser logic will work for both.
+
+                if (version.startsWith("0.9") || version.startsWith("2."))
+                {
+                    v2Parser.process(channel, url, document);
+                }
+
+                else
+                {
+                    throw new RSSParserException
+                        ("Unknown RSS version: " + version);
+                }
+            }
+
+            else if (rootName.equals("feed"))
+            {
+                // Atom.
+
+                String version = rootElement.attributeValue("version");
+                if (version == null)
+                    channel.setRSSFormat("Atom");
+                else
+                    channel.setRSSFormat("Atom " + version);
+
+                atomParser.process(channel, url, document);
+            }
+
+            else
+            {
+                throw new RSSParserException("Unknown or unsupported RSS " +
+                                             "type. First XML element is <" +
+                                             rootName + ">");
+            }
         }
 
-        catch (SAXException ex)
+        catch (DocumentException ex)
         {
             log.error ("XML parse error", ex);
             throw new RSSParserException (ex);
-        }
-
-        finally
-        {
-            this.url = null;
         }
 
         return channel;

@@ -52,14 +52,12 @@ import org.clapper.curn.parser.RSSLink;
 import org.clapper.util.logging.Logger;
 
 import java.util.Date;
-import java.util.Stack;
 import java.util.Collection;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import org.clapper.curn.parser.RSSParserException;
+import org.dom4j.Element;
 
 /**
  * <p>Common logic and data shared between <tt>V1Parser</tt> and
@@ -67,7 +65,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @version <tt>$Revision$</tt>
  */
-class ParserCommon extends DefaultHandler
+class ParserCommon
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -87,12 +85,6 @@ class ParserCommon extends DefaultHandler
      */
     protected URL url = null;
 
-    /**
-     * Element stack. Contains ElementStackEntry objects.
-     */
-    protected Stack<ElementStackEntry> elementStack =
-          new Stack<ElementStackEntry>();
-
     /*----------------------------------------------------------------------*\
                            Private Instance Data
     \*----------------------------------------------------------------------*/
@@ -110,52 +102,85 @@ class ParserCommon extends DefaultHandler
      * Constructor. Saves the <tt>Channel</tt> object and creates a new
      * element stack.
      *
-     * @param channel  the {@link Channel} object
-     * @param url      the URL for the feed
-     * @param log      logger to use
+     * @param log  logger to use
      */
-    protected ParserCommon (Channel channel, URL url, Logger log)
+    protected ParserCommon(Logger log)
     {
-        this.channel = channel;
-        this.url     = url;
-        this.log     = log;
-    }
-
-    /*----------------------------------------------------------------------*\
-                              Public Methods
-                        Overriding XMLReaderAdapter
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Handle character data parsed from the XML file.
-     *
-     * @param ch      characters from the XML document
-     * @param start   the start position in the array
-     * @param length  the number of characters to read from the array
-     *
-     * @throws SAXException parsing error
-     */
-    public void characters (char[] ch, int start, int length)
-        throws SAXException
-    {
-        if (! elementStack.empty())
-        {
-            // Get the top-most entry on the stack, and put the characters
-            // in that entry's character buffer. This strategy allows this
-            // method to work even if it's called multiple times for the
-            // same XML element--which is permitted by the SAX parser
-            // interface.
-
-            ElementStackEntry entry = elementStack.peek();
-            StringBuffer      buf   = entry.getCharBuffer();
-            ParserUtil.normalizeCharacterData (ch, start, length, buf);
-        }
+        this.log = log;
     }
 
     /*----------------------------------------------------------------------*\
                              Protected Methods
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Get a required element within another element, throwing an exception
+     * if not found.
+     *
+     * @param parentElement  the parent element
+     * @param childName      name of the required child element
+     *
+     * @return the child element
+     *
+     * @throws RSSParserException on error
+     */
+    protected Element getRequiredElement(Element parentElement,
+                                         String  childName)
+        throws RSSParserException
+    {
+        Element result = parentElement.element(childName);
+        if (result == null)
+        {
+            throw new RSSParserException
+                ("<" + parentElement.getName() + "> element is missing " +
+                 "required child <" + childName + "> element.");
+        }
+
+        return result;
+    }
+
+    /**
+     * Get the text from an element, trimming it.
+     *
+     * @param element  the element
+     *
+     * @return the text, or null if there is none
+     */
+    protected String getText(Element element)
+    {
+        String result = element.getText();
+
+        if (result != null)
+        {
+            result = result.trim();
+            if (result.length() == 0)
+                result = null;
+        }
+
+        return result;
+    }
+
+    /**
+     * Get an optional element and, if it's there, get its text.
+     *
+     * @param parentElement  parent element
+     * @param childName      child element name
+     *
+     * @return the trimmed text, or null
+     *
+     * @throws RSSParserException on error
+     */
+    protected String getOptionalChildText(Element parentElement, String childName)
+        throws RSSParserException
+    {
+        String result = null;
+        Element child = parentElement.element(childName);
+
+        if (child != null)
+            result = getText(child);
+
+        return result;
+    }
     /**
      * Parse an RFC 822-style date string.
      *
@@ -194,7 +219,7 @@ class ParserCommon extends DefaultHandler
         throws MalformedURLException
     {
         Collection<RSSLink> channelLinks = channel.getLinks();
-        URL                 parentURL    = null; 
+        URL                 parentURL    = null;
 
         if (channelLinks.size() > 0)
         {

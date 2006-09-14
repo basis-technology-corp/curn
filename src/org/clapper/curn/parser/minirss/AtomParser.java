@@ -46,18 +46,17 @@
 
 package org.clapper.curn.parser.minirss;
 
-import org.clapper.curn.parser.ParserUtil;
-import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.parser.RSSLink;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Iterator;
 
 import org.clapper.util.logging.Logger;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import org.clapper.util.text.TextUtil;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.Attributes;
+import org.clapper.curn.parser.ParserUtil;
+import org.clapper.curn.parser.RSSLink;
+import org.clapper.curn.parser.RSSParserException;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 /**
  * <p><tt>AtomParser</tt> is a stripped down parser for an
@@ -74,19 +73,10 @@ import org.xml.sax.Attributes;
  * @version <tt>$Revision$</tt>
  *
  * @see MiniRSSParser
- * @see V2Parser
  * @see V1Parser
  */
 public class AtomParser extends ParserCommon
 {
-    /*----------------------------------------------------------------------*\
-                            Private Data Items
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * For logging
-     */
-    private static final Logger log = new Logger (AtomParser.class);
 
     /*----------------------------------------------------------------------*\
                                Inner Classes
@@ -163,135 +153,59 @@ public class AtomParser extends ParserCommon
     }
 
     /*----------------------------------------------------------------------*\
+                            Private Data Items
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * For logging
+     */
+    private static final Logger log = new Logger (AtomParser.class);
+
+    /*----------------------------------------------------------------------*\
                                 Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Creates a new <tt>AtomParser</tt> to parse the remainder of an RSS
-     * XML file, filling the specified <tt>Channel</tt> object with the
-     * parsed contents.
-     *
-     * @param channel      the <tt>Channel</tt> to be filled
-     * @param URL          URL for the feed
-     * @param firstElement the first element in the file, which was already
-     *                     parsed by a <tt>MiniRSSParser</tt> object, before
-     *                     it handed control to this object
+     * Creates a new <tt>V2Parser</tt>.
      */
-    AtomParser (Channel channel, URL url, String elementName)
-        throws SAXException
+    AtomParser()
     {
-        super (channel, url, log);
-        startChannel (elementName, null);
+        super(log);
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
-                        Overriding XMLReaderAdapter
     \*----------------------------------------------------------------------*/
 
     /**
-     * Handle the start of an XML element.
+     * Parse a loaded document.
      *
-     * @param namespaceURI       the Namespace URI, or the empty string if the
-     *                           element has no Namespace URI or if Namespace
-     *                           processing is not being performed
-     * @param namespaceLocalName the local name (without prefix), or the empty
-     *                           string if Namespace processing is not being
-     *                           performed.
-     * @param elementName        the qualified element name (with prefix), or
-     *                           the empty string if qualified names are not
-     *                           available
-     * @param attributes         the attributes attached to the element.
+     * @param channel  the <tt>Channel</tt> to be filled
+     * @param url      the URL for the feed
+     * @param document the DOM4J document
      *
-     * @throws SAXException parsing error
+     * @throws RSSParserException on error
      */
-    public void startElement (String     namespaceURI,
-                              String     namespaceLocalName,
-                              String     elementName,
-                              Attributes attributes)
-        throws SAXException
+    public void process(Channel channel, URL url, Document document)
+        throws RSSParserException
     {
-        ElementStackEntry entry = elementStack.peek();
-        Object container = entry.getContainer();
+        Element rootElement = document.getRootElement();
 
-        if (elementName.equals ("feed"))
-            startChannel (elementName, attributes);
+        // Get and process the channel.
 
-        else if (container instanceof Channel)
-            startChannelSubelement (elementName, attributes, entry);
-
-        else if (container instanceof Item)
-            startItemSubelement (elementName, attributes, entry);
-
-        else if (container instanceof Author)
-            startAuthorSubelement (elementName, attributes, entry);
-
-        else if ((container instanceof ItemContent) ||
-                 (container instanceof ItemContentSubelement))
-            startItemContentSubelement (elementName, attributes, entry);
-    }
-
-    /**
-     * Handle the end of an XML element.
-     *
-     * @param namespaceURI       the Namespace URI, or the empty string if the
-     *                           element has no Namespace URI or if Namespace
-     *                           processing is not being performed
-     * @param namespaceLocalName the local name (without prefix), or the empty
-     *                           string if Namespace processing is not being
-     *                           performed.
-     * @param elementName        the qualified element name (with prefix), or
-     *                           the empty string if qualified names are not
-     *                           available
-     *
-     * @throws SAXException parsing error
-     */
-    public void endElement (String namespaceURI,
-                            String namespaceLocalName,
-                            String elementName)
-        throws SAXException
-    {
-        if (elementStack.empty())
-            throw new SAXException ("(BUG) Empty stack at end of element.");
-
-        ElementStackEntry entry = (ElementStackEntry) elementStack.pop();
-        String entryElementName = entry.getElementName();
-
-        if (! entryElementName.equals (elementName))
+        if (! rootElement.getName().equals("feed"))
         {
-            String msg = "Element \""
-                       + elementName
-                       + "\" doesn't match element on stack (\""
-                       + entryElementName
-                       + "\")";
-
-            log.error (msg);
-            log.error ("", entry.getAllocationPoint());
-            throw new SAXException (msg);
+            throw new RSSParserException
+                ("Feed \"" + url.toString() + "\": Found <" +
+                 rootElement.getName() + "> element where <feed> " +
+                 "element was expected.");
         }
 
-        Object container = entry.getContainer();
+        processChannel(url, channel, rootElement);
 
-        if (container != null)
-        {
-            if (container instanceof Channel)
-                endChannelElement (elementName, entry);
+        // Now process the items.
 
-            else if (container instanceof Item)
-                endItemElement (elementName, entry);
-
-            else if (container instanceof Author)
-                endAuthorElement (elementName, entry);
-
-            else if (container instanceof ItemContent)
-                endItemContentElement (elementName, entry);
-
-            else if (container instanceof ItemContentSubelement)
-                endItemContentSubelement (elementName, entry);
-
-            else if (container instanceof ItemCategory)
-                endItemCategoryElement (elementName, entry);
-        }
+        processItems(url, channel, rootElement);
     }
 
     /*----------------------------------------------------------------------*\
@@ -299,472 +213,165 @@ public class AtomParser extends ParserCommon
     \*----------------------------------------------------------------------*/
 
     /**
-     * Handle the start of the channel element.
+     * Process the data in a channel, not including the items.
      *
-     * @param elementName  the element name, which is pushed onto the stack
-     *                     along with the <tt>Channel</tt> object
-     * @param attributes   the attributes (currently not used)
+     * @param channel        the Channel object to file
+     * @param url            the URL of the document
+     * @param channelElement the <channel> element
      *
-     * @throws SAXException on error
+     * @throws RSSParserException on error
      */
-    private void startChannel (String     elementName,
-                               Attributes attributes)
-        throws SAXException
+    private void processChannel(final URL      url,
+                                final Channel  channel,
+                                final Element  channelElement)
+        throws RSSParserException
     {
-        elementStack.push (new ElementStackEntry (elementName, channel));
-    }
+        channel.setTitle(getText(getRequiredElement(channelElement, "title")));
 
-    /**
-     * Handle the start of an XML element that's nested within a "channel"
-     * element.
-     *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Channel</tt> object
-     * @param attributes        the attributes (currently not used)
-     * @param parentStackEntry  the stack entry for the parent channel element
-     *
-     * @throws SAXException on error
-     */
-    private void startChannelSubelement (String            elementName,
-                                         Attributes        attributes,
-                                         ElementStackEntry parentStackEntry)
-        throws SAXException
-    {
-        Channel theChannel = (Channel) parentStackEntry.getContainer();
+        RSSLink link = parseLink(getRequiredElement(channelElement, "link"),
+                                 channel,
+                                 url);
+        if (link != null)
+            channel.addLink(link);
 
-        if (elementName.equals ("entry"))
+        channel.setUniqueID(getText(getRequiredElement(channelElement, "id")));
+
+        // Process the channel's optional elements.
+
+        // There are four possible places to get the publication date. NOTE:
+        // The "created" element was dropped in Atom 1.0 but is supported here
+        // for backward compatibility.
+
+        String text;
+        if (((text = getOptionalChildText(channelElement, "issued")) != null)
+                                       ||
+            ((text = getOptionalChildText(channelElement, "modified")) != null)
+                                       ||
+            ((text = getOptionalChildText(channelElement, "created")) != null)
+                                       ||
+            ((text = getOptionalChildText(channelElement, "published")) != null))
         {
-            Item item = new Item (channel);
-
-            theChannel.addItem (item);
-            elementStack.push (new ElementStackEntry (elementName, item));
+            channel.setPublicationDate(parseW3CDate(text));
         }
 
-        else if (elementName.equals ("author"))
-        {
-            Author author = new ChannelAuthor (channel);
+        channel.setCopyright(getOptionalChildText(channelElement, "rights"));
+        channel.setUniqueID(getOptionalChildText(channelElement, "id"));
 
-            elementStack.push (new ElementStackEntry (elementName, author));
+        // Author. Multiple are supported. Also count contributors, which Atom
+        // summarizes separately.
+
+        Iterator itAuthor;
+
+         for (itAuthor = channelElement.elementIterator("author");
+              itAuthor.hasNext(); )
+        {
+            Element authorElement = (Element) itAuthor.next();
+            text = getText(authorElement);
+            if (text != null)
+                channel.addAuthor(text);
         }
 
-        else if (elementName.equals ("link"))
+        for (itAuthor = channelElement.elementIterator("contributor");
+              itAuthor.hasNext(); )
         {
-            RSSLink link = parseLink (attributes);
-            if (link != null)
-                theChannel.addLink (link);
-
-            // Push it regardless, or the endElement() call will puke when
-            // it pops off the wrong thing.
-
-            elementStack.push (new ElementStackEntry (elementName,
-                                                      theChannel));
-        }
-
-        else
-        {
-            elementStack.push (new ElementStackEntry (elementName,
-                                                      theChannel));
-        }
-    }
-
-    /**
-     * Handles the end of a channel element. This includes the channel
-     * element itself and any nested channel elements. This method should
-     * only be called with the popped stack entry is known to have
-     * a <tt>Channel</tt> object in its <tt>container</tt> data field.
-     *
-     * @param elementName the name of the XML element being ended
-     * @param stackEntry  the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endChannelElement (String            elementName,
-                                    ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        Channel theChannel = (Channel) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharacters().trim();
-
-        if (chars.length() == 0)
-            chars = null;
-
-        if (chars != null)
-        {
-            if (elementName.equals ("title"))
-                theChannel.setTitle (chars);
-
-            else if (elementName.equals ("issued"))
-                theChannel.setPublicationDate (parseW3CDate (chars));
-
-            else if (elementName.equals ("modified"))
-                theChannel.setPublicationDate (parseW3CDate (chars));
-
-            // The <created> element was dropped in Atom 1.0, but is
-            // supported here for backward compatibility.
-
-            else if (elementName.equals ("created"))
-                theChannel.setPublicationDate (parseW3CDate (chars));
-
-            else if (elementName.equals ("published"))
-                theChannel.setPublicationDate (parseW3CDate (chars));
-
-            else if (elementName.equals ("id"))
-                theChannel.setUniqueID (chars);
+            Element authorElement = (Element) itAuthor.next();
+            text = getText(authorElement);
+            if (text != null)
+                channel.addAuthor(text);
         }
     }
 
     /**
-     * Handle the start of an XML element that's nested within an "author"
-     * element.
+     * Process the channel's items.
      *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Item</tt> object
-     * @param attributes        the attributes (currently not used)
-     * @param parentStackEntry  the stack entry for the parent item element
+     * @param url             URL of the feed being processed
+     * @param channel         the channel being filled.
+     * @param channelElement  the <channel> element
      *
-     * @throws SAXException on error
+     * @throws RSSParserException on error
      */
-    private void startAuthorSubelement (String            elementName,
-                                        Attributes        attributes,
-                                        ElementStackEntry parentStackEntry)
-        throws SAXException
+    private void processItems(URL      url,
+                              Channel  channel,
+                              Element  channelElement)
+        throws RSSParserException
     {
-        Author author = (Author) parentStackEntry.getContainer();
-        elementStack.push (new ElementStackEntry (elementName, author));
-    }
-
-    /**
-     * Handles the end of an author element. This includes the author
-     * element itself and any nested elements. This method should
-     * only be called with the popped stack entry is known to have
-     * a <tt>Author</tt> object in its <tt>container</tt> data field.
-     *
-     * @param elementName the name of the XML element being ended
-     * @param stackEntry  the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endAuthorElement (String            elementName,
-                                   ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        Author  author  = (Author) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharacters().trim();
-
-        if (chars.length() == 0)
-            chars = null;
-
-        if ((chars != null) && (elementName.equals ("name")))
-            author.setAuthorName(chars);
-    }
-
-    /**
-     * Handle the start of an XML element that's nested within an "item"
-     * element.
-     *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Item</tt> object
-     * @param attributes        the attributes (currently not used)
-     * @param parentStackEntry  the stack entry for the parent item element
-     *
-     * @throws SAXException on error
-     */
-    private void startItemSubelement (String            elementName,
-                                      Attributes        attributes,
-                                      ElementStackEntry parentStackEntry)
-        throws SAXException
-    {
-        Item item = (Item) parentStackEntry.getContainer();
-
-        if (elementName.equals ("link"))
+        for (Iterator itItem = channelElement.elementIterator("entry");
+             itItem.hasNext(); )
         {
-            RSSLink link = parseLink (attributes);
-            if (link != null)
-                item.addLink (link);
-
-            // Push it regardless, or the endElement() call will puke when
-            // it pops off the wrong thing.
-
-            elementStack.push (new ElementStackEntry (elementName, channel));
-        }
-
-        else if (elementName.equals ("content"))
-        {
-            startItemContentElement (elementName, attributes, item);
-        }
-
-        else if (elementName.equals ("category"))
-        {
-            startItemCategoryElement (elementName, attributes, item);
-        }
-
-        else if (elementName.equals ("author"))
-        {
-            Author author = new ItemAuthor (item);
-
-            elementStack.push (new ElementStackEntry (elementName, author));
-        }
-
-        else
-        {
-            elementStack.push (new ElementStackEntry (elementName, item));
+            Element itemElement = (Element) itItem.next();
+            processItem(url, itemElement, channel);
         }
     }
 
-    /**
-     * Handles the end of an item element. This includes the item
-     * element itself and any nested item elements. This method should
-     * only be called with the popped stack entry is known to have
-     * a <tt>Item</tt> object in its <tt>container</tt> data field.
-     *
-     * @param elementName the name of the XML element being ended
-     * @param stackEntry  the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endItemElement (String            elementName,
-                                 ElementStackEntry stackEntry)
-        throws SAXException
+    private void processItem(final URL     url,
+                             final Element itemElement,
+                             final Channel channel)
+        throws RSSParserException
     {
-        Item    item  = (Item) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharacters().trim();
+        Item item = new Item(channel);
+        channel.addItem(item);
 
-        if (chars.length() == 0)
-            chars = null;
+        // Title
 
-        if (chars != null)
+        item.setTitle(getText(getRequiredElement(itemElement, "title")));
+
+        // Link
+
+        RSSLink link = parseLink(getRequiredElement(itemElement, "link"),
+                                 channel,
+                                 url);
+        if (link != null)
+            item.addLink(link);
+
+        // Description (optional);
+
+        item.setSummary(getOptionalChildText(itemElement, "summary"));
+
+        // ID.
+
+        item.setID(getOptionalChildText(itemElement, "id"));
+
+        // Author.
+
+        String text;
+        for (Iterator itAuthor = itemElement.elementIterator("author");
+             itAuthor.hasNext(); )
         {
-            if (elementName.equals ("title"))
-                item.setTitle (chars);
-
-            else if (elementName.equals ("summary"))
-                item.setSummary (chars);
-
-            // NOTE: The <issued> element is replaced by <published> in
-            // Atom 1.0. <issued> is supported here for backward
-            // compatibility.
-
-            else if (elementName.equals ("issued") ||
-                     elementName.equals ("published"))
-                item.setPublicationDate (parseW3CDate (chars));
-
-            else if (elementName.equals ("id"))
-                item.setID (chars);
-
-            else if (elementName.equals ("entry"))
-            {
-                // End of item. Any cleanup goes here.
-            }
-        }
-    }
-
-    /**
-     * Handles the start of an item's nested content element.
-     *
-     * @param elementName  the element name, which is pushed onto the
-     *                     stack along with the <tt>Item</tt> object
-     * @param attributes   the attributes
-     * @param item         the parent Item
-     *
-     * @throws SAXException on error
-     */
-    private void startItemContentElement (String     elementName,
-                                          Attributes attributes,
-                                          Item       item)
-        throws SAXException
-    {
-        String      mimeType = attributes.getValue ("type");
-        ItemContent content;
-
-        if (TextUtil.stringIsEmpty (mimeType))
-            mimeType = null;
-
-        if (mimeType == null)
-            mimeType = "text/plain";
-
-        content = new ItemContent (mimeType, item);
-        elementStack.push (new ElementStackEntry (elementName, content));
-    }
-
-    /**
-     * Handles the end of an item's nested content element.
-     *
-     * @param elementName  the name of the element being ended
-     * @param stackEntry   the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endItemContentElement (String            elementName,
-                                        ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        ItemContent content   = (ItemContent) stackEntry.getContainer();
-        String      chars     = stackEntry.getCharacters().trim();
-        boolean     isDefault = false;
-
-        content.parentItem.setContent (chars, content.mimeType);
-
-        if (content.mimeType.equals ("text/plain"))
-        {
-            // text/plain is the default
-
-            content.parentItem.setContent (chars,
-                                           RSSItem.DEFAULT_CONTENT_TYPE);
-        }
-    }
-
-    /**
-     * Handles the start of an element within a content element.
-     *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Item</tt> object
-     * @param attributes        the attributes
-     * @param parentStackEntry  the stack entry for the parent content element
-     *
-     * @throws SAXException on error
-     */
-    private void startItemContentSubelement (String            elementName,
-                                             Attributes        attributes,
-                                             ElementStackEntry parentStackEntry)
-    {
-        Object container = parentStackEntry.getContainer();
-        ItemContent content;
-
-        if (container instanceof ItemContent)
-        {
-            // First subelement within <content>.
-
-            content = (ItemContent) container;
+            Element authorElement = (Element) itAuthor.next();
+            text = getText(authorElement);
+            if (text != null)
+                channel.addAuthor(text);
         }
 
-        else if (container instanceof ItemContentSubelement)
+        // Date. Note: The <issued> element is replaced by <published> in
+        // Atom 1.0. <issued> is supported here for backward compatibility.
+
+        if (((text = getOptionalChildText(itemElement, "published")) != null)
+                                       ||
+            ((text = getOptionalChildText(itemElement, "issued")) != null))
         {
-            // More deeply nested subelements within <content>
-
-            content = ((ItemContentSubelement) container).parentContent;
+            channel.setPublicationDate(parseW3CDate(text));
         }
-
-        else
-        {
-            assert (false);
-            throw new IllegalStateException();
-        }
-
-        // Nested <content> elements are treated verbatim. They might be
-        // unescaped HTML markup.
-
-        content.buf.append ("<");
-        content.buf.append (elementName);
-
-        // Loop over the attributes and add them to the output.
-
-        for (int i = 0; i < attributes.getLength(); i++)
-        {
-            content.buf.append (" ");
-            content.buf.append (attributes.getLocalName (i));
-            content.buf.append ("=");
-            content.buf.append (attributes.getValue (i));
-        }
-
-        content.buf.append (">");
-
-        // Push subelement on the stack.
-
-        ItemContentSubelement subelement = new ItemContentSubelement (content);
-        elementStack.push (new ElementStackEntry (elementName, subelement));
-    }
-
-    /**
-     * Handles the end of an element nested within an item's content
-     * element.
-     *
-     * @param elementName  the name of the element being ended
-     * @param stackEntry   the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endItemContentSubelement (String            elementName,
-                                           ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        ItemContentSubelement subelement =
-            (ItemContentSubelement) stackEntry.getContainer();
-
-        String chars  = stackEntry.getCharacters().trim();
-
-        if (chars.length() == 0)
-            chars = null;
-
-        // Nested <content> elements are treated verbatim. They might be
-        // unescaped HTML markup.
-
-        if (chars != null)
-            subelement.parentContent.buf.append (chars);
-
-        subelement.parentContent.buf.append ("</");
-        subelement.parentContent.buf.append (elementName);
-        subelement.parentContent.buf.append (">");
-    }
-
-    /**
-     * Handles the start of an item's nested category element.
-     *
-     * @param elementName  the element name, which is pushed onto the
-     *                     stack along with the <tt>Item</tt> object
-     * @param attributes   the attributes
-     * @param item         the parent Item
-     *
-     * @throws SAXException on error
-     */
-    private void startItemCategoryElement (String     elementName,
-                                           Attributes attributes,
-                                           Item       item)
-        throws SAXException
-    {
-        String        term = attributes.getValue ("term");
-        ItemCategory  category;
-
-        if ((term != null) && (term.trim().length() == 0))
-            term = null;
-
-        category = new ItemCategory (term, item);
-        elementStack.push (new ElementStackEntry (elementName, category));
-    }
-
-    /**
-     * Handles the end of an item's nested category element.
-     *
-     * @param elementName  the name of the element being ended
-     * @param stackEntry   the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endItemCategoryElement (String            elementName,
-                                         ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        ItemCategory category  = (ItemCategory) stackEntry.getContainer();
-
-        if (category.term != null)
-            category.parentItem.addCategory (category.term);
     }
 
     /**
      * Parse a "link" element.
      *
-     * @param attributes  the element's attributes
+     * @param linkElement the element
+     * @param channel     the channel, for resolving relative links
+     * @param linkURL     the feed's URL, for error messages
      *
      * @return the RSSLink item, or null on error or unsupported link type
      */
-    private RSSLink parseLink (Attributes attributes)
+    private RSSLink parseLink(Element linkElement, Channel channel, URL url)
     {
-        String sURL = attributes.getValue ("href");
-        URL url = null;
-        if (sURL != null)
+        String sLinkURL = linkElement.attributeValue("href");
+        URL linkURL = null;
+        if (sLinkURL != null)
         {
-            sURL = sURL.trim();
-            if (sURL.length() == 0)
-                sURL = null;
+            sLinkURL = sLinkURL.trim();
+            if (sLinkURL.length() == 0)
+                sLinkURL = null;
 
             else
             {
@@ -773,7 +380,7 @@ public class AtomParser extends ParserCommon
 
                 try
                 {
-                    url = resolveLink (sURL, channel);
+                    linkURL = resolveLink(sLinkURL, channel);
                 }
 
                 catch (MalformedURLException ex)
@@ -781,16 +388,14 @@ public class AtomParser extends ParserCommon
                     // Swallow the exception. No sense aborting the whole
                     // feed for a bad <link> element.
 
-                    log.error ("Feed \"" +
-                               url.toString() +
-                               "\": Bad <link> element \"" +
-                               sURL +
-                               "\"", ex);
+                    log.error("Feed \"" + url.toString() +
+                              "\": Bad <link> element \"" + sLinkURL + "\"",
+                              ex);
                 }
             }
         }
 
-        String sType = attributes.getValue ("rel");
+        String sType = linkElement.attributeValue("rel");
         RSSLink.Type linkType = RSSLink.Type.SELF;
         if (sType != null)
         {
@@ -800,33 +405,31 @@ public class AtomParser extends ParserCommon
             if (sType.length() == 0)
                 sType = null;
 
-            else if (sType.equals ("self"))
+            else if (sType.equals("self"))
                 linkType = RSSLink.Type.SELF;
 
-            else if (sType.equals ("alternate"))
+            else if (sType.equals("alternate"))
                 linkType = RSSLink.Type.ALTERNATE;
 
             else
                 sType = null;
         }
 
-        String mimeType = attributes.getValue ("type");
+        String mimeType = linkElement.attributeValue("type");
         if (mimeType != null)
         {
             mimeType = mimeType.trim();
             if (mimeType.length() == 0)
                 mimeType = null;
 
-            if (mimeType == null)
-            {
-                if (linkType == RSSLink.Type.SELF)
-                    mimeType = ParserUtil.RSS_MIME_TYPE;
-            }
+            if ((mimeType == null) && (linkType == RSSLink.Type.SELF))
+                mimeType = ParserUtil.RSS_MIME_TYPE;
         }
 
-        if ((url != null) && (sType != null) && (mimeType != null))
-            return new RSSLink (url, mimeType, linkType);
-        else
-            return null;
+        RSSLink result = null;
+        if ((linkURL != null) && (sType != null) && (mimeType != null))
+            result = new RSSLink(linkURL, mimeType, linkType);
+
+        return result;
     }
 }

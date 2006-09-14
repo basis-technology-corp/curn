@@ -48,33 +48,28 @@ package org.clapper.curn.parser.minirss;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.Attributes;
+import java.util.Iterator;
 
 import org.clapper.util.logging.Logger;
 
 import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSLink;
-import org.clapper.util.text.TextUtil;
+import org.clapper.curn.parser.RSSParserException;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 /**
  * <p><tt>V2Parser</tt> is a stripped down RSS parser for RSS versions
- * {@link <a href="http://backend.userland.com/rss091">0.91</a>}, 0.92, and
- * {@link <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.
+ * {@link <a href="http://web.resource.org/rss/1.0/">RSS, version 1.0</a>}.
  * It's intended to be invoked once a <tt>MiniRSSParser</tt> has determined
- * whether the XML feed represents version 1 RSS or not. For
- * <i>curn</i>'s purposes, there's considerable similarity between RSS
- * version 0.91 and RSS version 2--so much so that the same parser logic
- * will work for both. (The same cannot be said for RSS version 1, which
- * uses a different enough syntax to require a separate parser.)</p>
+ * whether the XML feed represents version 1 RSS or not.</p>
  *
  * <p>This parser doesn't store all the possible RSS items. It stores those
  * items that the <i>curn</i> utility requires (plus a few more), but
  * lacks support for others. For instance, it ignores <tt>image</tt>,
  * <tt>cloud</tt>, <tt>textinput</tt> and other elements that <i>curn</i>
  * has no interest in displaying. Thus, it is unsuitable for use as a
- * general-purpose Atom parser (though it's perfectly suited for use in
+ * general-purpose RSS 2 parser (though it's perfectly suited for use in
  * <i>curn</i>).</p>
  *
  * @version <tt>$Revision$</tt>
@@ -98,107 +93,39 @@ public class V2Parser extends ParserCommon
     \*----------------------------------------------------------------------*/
 
     /**
-     * Creates a new <tt>V2Parser</tt> to parse the remainder of an RSS
-     * XML file, filling the specified <tt>Channel</tt> object with the
-     * parsed contents.
-     *
-     * @param channel      the <tt>Channel</tt> to be filled
-     * @param url          the URL for the feed
-     * @param firstElement the first element in the file, which was already
-     *                     parsed by a <tt>MiniRSSParser</tt> object, before
-     *                     it handed control to this object
+     * Creates a new <tt>V2Parser</tt>.
      */
-    V2Parser (Channel channel, URL url, String elementName)
+    V2Parser()
     {
-        super (channel, url, log);
-        elementStack.push (new ElementStackEntry (elementName, elementName));
+        super(log);
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
-                        Overriding XMLReaderAdapter
     \*----------------------------------------------------------------------*/
 
     /**
-     * Handle the start of an XML element.
+     * Parse a loaded document.
      *
-     * @param namespaceURI       the Namespace URI, or the empty string if the
-     *                           element has no Namespace URI or if Namespace
-     *                           processing is not being performed
-     * @param namespaceLocalName the local name (without prefix), or the empty
-     *                           string if Namespace processing is not being
-     *                           performed.
-     * @param elementName        the qualified element name (with prefix), or
-     *                           the empty string if qualified names are not
-     *                           available
-     * @param attributes         the attributes attached to the element.
+     * @param channel  the <tt>Channel</tt> to be filled
+     * @param url      the URL for the feed
+     * @param document the DOM4J document
      *
-     * @throws SAXException parsing error
+     * @throws RSSParserException on error
      */
-    public void startElement (String     namespaceURI,
-                              String     namespaceLocalName,
-                              String     elementName,
-                              Attributes attributes)
-        throws SAXException
+    public void process(Channel channel, URL url, Document document)
+        throws RSSParserException
     {
-        ElementStackEntry entry = (ElementStackEntry) elementStack.peek();
-        Object container = entry.getContainer();
+        Element rootElement = document.getRootElement();
 
-        if (elementName.equals ("channel"))
-            startChannel (elementName, attributes);
+        // Get and process the channel.
 
-        else if (container instanceof Channel)
-            startChannelSubelement (elementName, attributes, entry);
+        Element channelElement = getRequiredElement(rootElement, "channel");
+        processChannel(url, channel, channelElement);
 
-        else if (container instanceof Item)
-            startItemSubelement (elementName, attributes, entry);
-    }
+        // Now process the items.
 
-    /**
-     * Handle the end of an XML element.
-     *
-     * @param namespaceURI       the Namespace URI, or the empty string if the
-     *                           element has no Namespace URI or if Namespace
-     *                           processing is not being performed
-     * @param namespaceLocalName the local name (without prefix), or the empty
-     *                           string if Namespace processing is not being
-     *                           performed.
-     * @param elementName        the qualified element name (with prefix), or
-     *                           the empty string if qualified names are not
-     *                           available
-     *
-     * @throws SAXException parsing error
-     */
-    public void endElement (String namespaceURI,
-                            String namespaceLocalName,
-                            String elementName)
-        throws SAXException
-    {
-        if (elementStack.empty())
-            throw new SAXException ("(BUG) Empty stack at end of element.");
-
-        ElementStackEntry entry = (ElementStackEntry) elementStack.pop();
-        String entryElementName = entry.getElementName();
-
-        if (! entryElementName.equals (elementName))
-        {
-            throw new SAXException ("Element \"" +
-                                    elementName +
-                                    "\" doesn't match element on stack (\"" +
-                                    entry.getElementName() +
-                                    "\")");
-        }
-
-        Object container = entry.getContainer();
-
-        if (container != null)
-        {
-            if (container instanceof Channel)
-                endChannelElement (elementName, entry);
-
-            else if (container instanceof Item)
-                endItemElement (elementName, entry);
-        }
+        processItems(url, channel, channelElement);
     }
 
     /*----------------------------------------------------------------------*\
@@ -206,220 +133,152 @@ public class V2Parser extends ParserCommon
     \*----------------------------------------------------------------------*/
 
     /**
-     * Handle the start of the channel element.
+     * Process the data in a channel, not including the items.
      *
-     * @param elementName  the element name, which is pushed onto the stack
-     *                     along with the <tt>Channel</tt> object
-     * @param attributes   the attributes (currently not used)
+     * @param channel        the Channel object to file
+     * @param url            the URL of the document
+     * @param channelElement the <channel> element
      *
-     * @throws SAXException on error
+     * @throws RSSParserException on error
      */
-    private void startChannel (String     elementName,
-                               Attributes attributes)
-        throws SAXException
+    private void processChannel(final URL      url,
+                                final Channel  channel,
+                                final Element  channelElement)
+        throws RSSParserException
     {
-        elementStack.push (new ElementStackEntry (elementName, channel));
-    }
+        channel.setTitle(getText(getRequiredElement(channelElement, "title")));
 
-    /**
-     * Handle the start of an XML element that's nested within a "channel"
-     * element.
-     *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Channel</tt> object
-     * @param attributes        the attributes (currently not used)
-     * @param parentStackEntry  the stack entry for the parent channel element
-     *
-     * @throws SAXException on error
-     */
-    private void startChannelSubelement (String            elementName,
-                                         Attributes        attributes,
-                                         ElementStackEntry parentStackEntry)
-        throws SAXException
-    {
-        Channel theChannel = (Channel) parentStackEntry.getContainer();
-
-        if (elementName.equals ("item"))
+        String text = getText(getRequiredElement(channelElement, "link"));
+        if (text != null)
         {
-            Item item = new Item (channel);
+            // Some sites use relative URLs in the links. Handle that.
 
-            theChannel.addItem (item);
-            elementStack.push (new ElementStackEntry (elementName, item));
-        }
-
-        else
-        {
-            elementStack.push (new ElementStackEntry (elementName,
-                                                      theChannel));
-        }
-    }
-
-    /**
-     * Handles the end of a channel element. This includes the channel
-     * element itself and any nested channel elements. This method should
-     * only be called with the popped stack entry is known to have
-     * a <tt>Channel</tt> object in its <tt>container</tt> data field.
-     *
-     * @param elementName the name of the XML element being ended
-     * @param stackEntry  the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endChannelElement (String            elementName,
-                                    ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        Channel theChannel = (Channel) stackEntry.getContainer();
-        String  chars      = stackEntry.getCharacters().trim();
-
-        if (TextUtil.stringIsEmpty (chars))
-            chars = null;
-
-        if (chars != null)
-        {
-            if (elementName.equals ("title"))
-                theChannel.setTitle (chars);
-
-            else if (elementName.equals ("link"))
+            try
             {
-                // Some sites use relative URLs in the links. Handle
-                // that, too.
+                // RSS version 2 doesn't support multiple links per channel.
+                // Assume this link is the link for the feed. Try to figure
+                // out the MIME type, and default to the MIME type for an
+                // RSS feed. Mark the feed as type "self".
 
-                try
-                {
-                    // RSS version 2 doesn't support multiple links per
-                    // channel. Assume this link is the link for the feed.
-                    // Try to figure out the MIME type, and default to the
-                    // MIME type for an RSS feed. Mark the feed as type
-                    // "self".
-
-                    URL url = resolveLink (chars, channel);
-                    theChannel.addLink (new RSSLink
-                                            (url,
-                                             ParserUtil.getLinkMIMEType (url),
-                                             RSSLink.Type.SELF));
-                }
-
-                catch (MalformedURLException ex)
-                {
-                    // Swallow the exception. No sense aborting the whole
-                    // feed for a bad <link> element.
-
-                    log.error ("Feed \"" +
-                               url.toString() +
-                               "\": Bad <link> element \"" +
-                               chars +
-                               "\"", ex);
-                }
+                URL channelUrl = resolveLink(text, channel);
+                channel.addLink
+                    (new RSSLink (channelUrl,
+                                  ParserUtil.getLinkMIMEType (channelUrl),
+                                  RSSLink.Type.SELF));
             }
 
-            else if (elementName.equals ("description"))
-                theChannel.setDescription (chars);
+            catch (MalformedURLException ex)
+            {
+                // Swallow the exception. No sense aborting the whole
+                // feed for a bad <link> element.
 
-            else if (elementName.equals ("pubDate"))
-                theChannel.setPublicationDate (parseRFC822Date (chars));
+                log.error("Feed \"" + url.toString() +
+                          "\": Bad <link> element \"" + text + "\"",
+                          ex);
+            }
+        }
 
-            else if (elementName.equals ("copyright"))
-                theChannel.setCopyright (chars);
+        channel.setDescription(getText(getRequiredElement(channelElement,
+                                                          "description")));
 
-            else if (elementName.equals ("author"))
-                theChannel.addAuthor (chars);
+        // Process the channel's optional elements.
+
+        channel.setCopyright(getOptionalChildText(channelElement, "copyright"));
+
+        text = getOptionalChildText(channelElement, "author");
+        if (text != null)
+            channel.addAuthor(text);
+
+        text = getOptionalChildText(channelElement, "pubDate");
+        if (text != null)
+            channel.setPublicationDate(parseRFC822Date(text));
+
+        channel.setUniqueID(getOptionalChildText(channelElement, "guid"));
+    }
+
+    /**
+     * Process the channel's items.
+     *
+     * @param url             URL of the feed being processed
+     * @param channel         the channel being filled.
+     * @param channelElement  the <channel> element
+     *
+     * @throws RSSParserException on error
+     */
+    private void processItems(URL      url,
+                              Channel  channel,
+                              Element  channelElement)
+        throws RSSParserException
+    {
+        for (Iterator itItem = channelElement.elementIterator("item");
+             itItem.hasNext(); )
+        {
+            Element itemElement = (Element) itItem.next();
+            processItem(url, itemElement, channel);
         }
     }
 
-    /**
-     * Handle the start of an XML element that's nested within an "item"
-     * element.
-     *
-     * @param elementName       the element name, which is pushed onto the
-     *                          stack along with the <tt>Item</tt> object
-     * @param attributes        the attributes (currently not used)
-     * @param parentStackEntry  the stack entry for the parent item element
-     *
-     * @throws SAXException on error
-     */
-    private void startItemSubelement (String            elementName,
-                                      Attributes        attributes,
-                                      ElementStackEntry parentStackEntry)
-        throws SAXException
+    private void processItem(final URL     url,
+                             final Element itemElement,
+                             final Channel channel)
+        throws RSSParserException
     {
-        Item item = (Item) parentStackEntry.getContainer();
-        elementStack.push (new ElementStackEntry (elementName, item));
-    }
+        Item item = new Item(channel);
+        channel.addItem(item);
 
-    /**
-     * Handles the end of an item element. This includes the item
-     * element itself and any nested item elements. This method should
-     * only be called with the popped stack entry is known to have
-     * a <tt>Item</tt> object in its <tt>container</tt> data field.
-     *
-     * @param elementName the name of the XML element being ended
-     * @param stackEntry  the associated (popped) stack entry
-     *
-     * @throws SAXException on error
-     */
-    private void endItemElement (String            elementName,
-                                 ElementStackEntry stackEntry)
-        throws SAXException
-    {
-        Item    item  = (Item) stackEntry.getContainer();
-        String  chars   = stackEntry.getCharacters().trim();
+        // Title
 
-        if (TextUtil.stringIsEmpty (chars))
-            chars = null;
+        item.setTitle(getText(getRequiredElement(itemElement, "title")));
 
-        if (chars != null)
+        // Link
+
+        String text = getText(getRequiredElement(itemElement, "link"));
+        if (text != null)
         {
-            if (elementName.equals ("title"))
-                item.setTitle (chars);
+            // Some sites use relative URLs in the links. Handle that.
 
-            else if (elementName.equals ("link"))
+            try
             {
-                // Some sites use relative URLs in the links. Handle
-                // that, too.
+                // RSS version 2 doesn't support multiple links per channel.
+                // Assume this link is the link for the feed. Try to figure
+                // out the MIME type, and default to the MIME type for an
+                // RSS feed. Mark the feed as type "self".
 
-                try
-                {
-                    // RSS version 2 doesn't support multiple links per
-                    // item. Assume this link is the link for the item's
-                    // XML. Try to figure out the MIME type, and default to
-                    // the MIME type for an RSS feed. Mark the feed as type
-                    // "self".
-
-                    URL url = resolveLink (chars, channel);
-                    item.addLink (new RSSLink
-                                            (url,
-                                             ParserUtil.getLinkMIMEType (url),
-                                             RSSLink.Type.SELF));
-                }
-
-                catch (MalformedURLException ex)
-                {
-                    // Swallow the exception. No sense aborting the whole
-                    // feed for a bad <link> element.
-
-                    log.error ("Feed \"" +
-                               url.toString() +
-                               "\": Bad <link> element \"" +
-                               chars +
-                               "\"", ex);
-                }
+                URL itemUrl = resolveLink(text, channel);
+                item.addLink
+                    (new RSSLink(itemUrl,
+                                 ParserUtil.getLinkMIMEType (itemUrl),
+                                 RSSLink.Type.SELF));
             }
 
-            else if (elementName.equals ("description"))
-                item.setSummary (chars);
+            catch (MalformedURLException ex)
+            {
+                // Swallow the exception. No sense aborting the whole
+                // feed for a bad <link> element.
 
-            else if (elementName.equals ("pubDate"))
-                item.setPublicationDate (parseRFC822Date (chars));
-
-            else if (elementName.equals ("category"))
-                item.addCategory (chars);
-
-            else if (elementName.equals ("author"))
-                item.addAuthor (chars);
-
-            else if (elementName.equals ("guid"))
-                item.setID (chars);
+                log.error("Feed \"" + url.toString() +
+                          "\": Bad <item> <link> element \"" + text + "\"",
+                          ex);
+            }
         }
+
+        // Description (optional);
+
+        item.setSummary(getOptionalChildText(itemElement, "description"));
+
+        // Author.
+
+        for (Iterator itAuthor = itemElement.elementIterator("dc:creator");
+             itAuthor.hasNext(); )
+        {
+            Element authorElement = (Element) itAuthor.next();
+            text = getText(authorElement);
+            if (text != null)
+                item.addAuthor(text);
+        }
+
+        text = getOptionalChildText(itemElement, "dc:date");
+        if (text != null)
+            item.setPublicationDate(parseW3CDate(text));
     }
 }
