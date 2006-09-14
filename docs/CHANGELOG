@@ -8,11 +8,6 @@ Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 
 Version 3.1 (...)
 
-- The graphical installer now renders the license in a more readable,
-  proportional font.
-
-- Propagated modified license (from version 3.0) into source files.
-
 - The org.clapper.curn.CurnConfig class no longer provides constructors
   that parse the configuration; Such constructors are unsafe, since they
   invoke methods in the parent class that, in turn, call methods that could
@@ -25,8 +20,6 @@ Version 3.1 (...)
 - Fixed an editing bug in the CommonsXMLFixups plug-in. The plug-in would
   convert the sequence "&amp;nbsp;" in the XML to "&amp;", leaving a stray
   "&" in the XML.
-
-- Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
 
 - curn's multithreaded download logic now uses the java.util.concurrent
   library, instead of native Java synchronization. While this change won't
@@ -84,6 +77,20 @@ Version 3.1 (...)
   "curn" object is exposed, and it's exposed automatically as a script
   global. For more information, see the "Writing a Script Output Handler"
   section in the "curn User's Guide".
+
+- curn's MiniRSSParser is now implemented in terms of DOM4J
+  (http://www.dom4j.org). Previously, it was implemented using the SAX
+  callback-based XML parsing model, but that approach is harder to follow
+  and harder to maintain. It now uses DOM4J to load the XML document into
+  an in-memory DOM, which it then processes. This change is entirely
+  internal.
+
+- Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
+
+- The graphical installer now renders the license in a more readable,
+  proportional font.
+
+- Propagated modified license (from version 3.0) into source files.
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
