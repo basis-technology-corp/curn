@@ -64,17 +64,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFEngine;
-import org.apache.bsf.BSFManager;
-
 import org.clapper.curn.CurnUtil;
+import org.clapper.util.scripting.ScriptFrameworkType;
+import org.clapper.util.scripting.UnifiedScriptEngine;
+import org.clapper.util.scripting.UnifiedScriptEngineManager;
+import org.clapper.util.scripting.UnifiedScriptException;
 
 /**
  * Provides an output handler calls a script via the Apache Jakarta
@@ -327,7 +326,7 @@ public class ScriptOutputHandler extends FileOutputHandler
         private RSSChannel channel;
         private FeedInfo   feedInfo;
 
-        ChannelWrapper (RSSChannel channel, FeedInfo feedInfo)
+        ChannelWrapper(RSSChannel channel, FeedInfo feedInfo)
         {
             this.channel  = channel;
             this.feedInfo = feedInfo;
@@ -373,7 +372,7 @@ public class ScriptOutputHandler extends FileOutputHandler
             // Nothing to do
         }
 
-        public void setMIMEType (String mimeType)
+        public void setMIMEType(String mimeType)
         {
             this.mimeType = mimeType;
         }
@@ -388,8 +387,9 @@ public class ScriptOutputHandler extends FileOutputHandler
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private BSFManager                 bsfManager         = null;
-    private CurnConfig                 config             = null;
+    private UnifiedScriptEngineManager scriptManager      = null;
+    private UnifiedScriptEngine        scriptEngine       = null;
+    private ScriptFrameworkType        type               = null;
     private Collection<ChannelWrapper> channels           = new ChannelList();
     private String                     scriptPath         = null;
     private String                     scriptString       = null;
@@ -402,7 +402,7 @@ public class ScriptOutputHandler extends FileOutputHandler
     /**
      * For logging
      */
-    private static final Logger log = new Logger (ScriptOutputHandler.class);
+    private static final Logger log = new Logger(ScriptOutputHandler.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -432,13 +432,11 @@ public class ScriptOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public final void initOutputHandler (CurnConfig              config,
-                                         ConfiguredOutputHandler cfgHandler)
+    public final void initOutputHandler(CurnConfig              config,
+                                        ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
-        this.config = config;
-
         // Parse handler-specific configuration variables
 
         String section = cfgHandler.getSectionName();
@@ -447,13 +445,28 @@ public class ScriptOutputHandler extends FileOutputHandler
         {
             if (section != null)
             {
-                scriptPath = config.getConfigurationValue (section, "Script");
-                language  = config.getConfigurationValue (section, "Language");
+                scriptPath = config.getConfigurationValue(section, "Script");
+                language  = config.getConfigurationValue(section, "Language");
                 allowEmbeddedHTML =
                     config.getOptionalBooleanValue
                         (section,
                          CurnConfig.CFG_ALLOW_EMBEDDED_HTML,
                          false);
+
+                String s = config.getOptionalStringValue(section,
+                                                         "ScriptingAPI",
+                                                         null);
+                if (s != null)
+                {
+                    type = ScriptFrameworkType.getTypeFromString(s);
+                    if (type == null)
+                    {
+                        throw new ConfigurationException
+                            ("Section \"" + section + "\": Unknown value \"" +
+                             s + "\" for " + "\"ScriptingAPI\" configuration" +
+                             "parameter");
+                    }
+                }
             }
         }
 
@@ -468,43 +481,62 @@ public class ScriptOutputHandler extends FileOutputHandler
         if (! scriptFile.exists())
         {
             scriptPath = null;
-            throw new ConfigurationException (section,
-                                              "Script file \"" +
-                                              scriptFile.getPath() +
-                                              "\" does not exist.");
+            throw new ConfigurationException(section,
+                                             "Script file \"" +
+                                             scriptFile.getPath() +
+                                             "\" does not exist.");
         }
 
         if (! scriptFile.isFile())
         {
             scriptPath = null;
-            throw new ConfigurationException (section,
-                                              "Script file \"" +
-                                              scriptFile.getPath() +
-                                              "\" is not a regular file.");
+            throw new ConfigurationException(section,
+                                             "Script file \"" +
+                                             scriptFile.getPath() +
+                                             "\" is not a regular file.");
         }
 
-        // Call the registerAdditionalScriptingEngines() method, which
-        // subclasses can override to provide their own bindings.
+        // Allocate the script engine manager.
 
-        registerAdditionalScriptingEngines();
+        try
+        {
+            if (type == null)
+            {
+                // No type. First, try to get JSR 223, then BSF.
 
-        // Allocate a new BSFManager. This must happen after all the extra
-        // scripting engines are registered.
+                scriptManager =
+                    UnifiedScriptEngineManager.getManager
+                       (new ScriptFrameworkType[]
+                       {
+                           ScriptFrameworkType.JAVAX_SCRIPT,
+                           ScriptFrameworkType.BSF
+                       });
+            }
 
-        bsfManager = new BSFManager();
+            else
+            {
+                scriptManager = UnifiedScriptEngineManager.getManager(type);
+            }
+        }
 
-        // Register some additional scripting languages.
+        catch (UnifiedScriptException ex)
+        {
+            throw new CurnException(ex);
+        }
 
-        BSFManager.registerScriptingEngine ("ObjectScript",
-                                            "oscript.bsf.ObjectScriptEngine",
-                                            new String[] {"os"});
-        BSFManager.registerScriptingEngine ("groovy",
-                                            "org.codehaus.groovy.bsf.GroovyEngine",
-                                            new String[] {"groovy", "gy"});
+        // Next, get the scripting engine itself.
 
-        BSFManager.registerScriptingEngine ("beanshell",
-                                            "bsh.util.BeanShellBSFEngine",
-                                            new String[] {"bsh"});
+        try
+        {
+            scriptEngine = scriptManager.getEngineByName(language);
+        }
+
+        catch (UnifiedScriptException ex)
+        {
+            throw new CurnException("Unable to load scripting engine for \"" +
+                                    language + "\" language",
+                                    ex);
+        }
 
         // Set up a logger for the script. The logger name can't have dots
         // in it, because the underlying logging API strips them out,
@@ -513,26 +545,24 @@ public class ScriptOutputHandler extends FileOutputHandler
         // extension conveys information (i.e., the language), we just
         // convert it to an underscore.
 
-        StringBuffer scriptLoggerName = new StringBuffer();
+        StringBuilder scriptLoggerName = new StringBuilder(128);
         String scriptName = scriptFile.getName();
-        scriptLoggerName.append (FileUtil.getFileNameNoExtension (scriptName));
-        scriptLoggerName.append ('_');
-        scriptLoggerName.append (FileUtil.getFileNameExtension (scriptName));
-        scriptLogger = new Logger (scriptLoggerName.toString());
+        scriptLoggerName.append(FileUtil.getFileNameNoExtension(scriptName));
+        scriptLoggerName.append('_');
+        scriptLoggerName.append(FileUtil.getFileNameExtension(scriptName));
+        scriptLogger = new Logger(scriptLoggerName.toString());
 
         // Declare the script object. We'll fill it partially now; the rest
         // will be filled later. Also, for backward compatibility, register
-        // BSF beans.
+        // individual BSF beans.
 
         this.scriptObjects = new CurnScriptObjects();
         try
         {
-            bsfManager.declareBean ("curn",
-                                    scriptObjects,
-                                    CurnScriptObjects.class);
+            scriptManager.put("curn", scriptObjects);
         }
 
-        catch (BSFException ex)
+        catch (UnifiedScriptException ex)
         {
             throw new CurnException ("Can't register script 'curn' object",
                                      ex);
@@ -542,16 +572,9 @@ public class ScriptOutputHandler extends FileOutputHandler
         scriptObjects.configSection = section;
         scriptObjects.logger = scriptLogger;
 
-        mimeTypeBuffer = new StringWriter();
-        bsfManager.registerBean ("mimeType", new PrintWriter (mimeTypeBuffer));
-        bsfManager.registerBean ("config", scriptObjects.config);
-        bsfManager.registerBean ("configSection", scriptObjects.configSection);
-        bsfManager.registerBean ("logger", scriptObjects.logger);
-        bsfManager.registerBean ("version", scriptObjects.getVersion());
-
         // Load the contents of the script into an in-memory buffer.
 
-        scriptString = loadScript (scriptFile);
+        scriptString = loadScript(scriptFile);
 
         channels.clear();
     }
@@ -591,40 +614,34 @@ public class ScriptOutputHandler extends FileOutputHandler
     {
         try
         {
-            // Load the scripting engine
-
-            BSFEngine scriptEngine = bsfManager.loadScriptingEngine (language);
-
-            // Register the remaining bean (backward compatibility), and set
-            // the remaining exported object fields.
+            // Put the channels and output path in the global object.
 
             scriptObjects.channels = channels;
             scriptObjects.outputPath = getOutputFile().getPath();
 
-            bsfManager.registerBean ("channels", scriptObjects.channels);
-            bsfManager.registerBean ("outputPath", scriptObjects.outputPath);
-
             // Run the script
 
             log.debug ("Invoking " + scriptPath);
-            scriptEngine.exec (scriptPath, 0, 0, scriptString);
+            scriptEngine.exec(scriptString);
 
-            // Handle the MIME type, backward-compatibly.
+            // Handle the MIME type.
 
             String mimeType = scriptObjects.mimeType;
             if (mimeType != null)
                 mimeTypeBuffer.write (mimeType);
         }
 
-        catch (BSFException ex)
+        catch (UnifiedScriptException ex)
         {
-            Throwable realException = ex.getTargetException();
-            log.error ("Error interacting with Bean Scripting Framework",
+            Throwable realException = ex.getCause();
+            if (ex == null)
+                realException = ex;
+            log.error ("Error interacting with scripting framework",
                        realException);
             throw new CurnException (Constants.BUNDLE_NAME,
                                      "ScriptOutputHandler.bsfError",
-                                     "Error interacting with Bean Scripting " +
-                                     "Framework: {0}",
+                                     "Error interacting with scripting " +
+                                     "framework: {0}",
                                      new Object[] {ex.getMessage()},
                                      realException);
         }
@@ -650,6 +667,8 @@ public class ScriptOutputHandler extends FileOutputHandler
      * engined. See the class documentation, above, for additional details.
      *
      * @throws CurnException on error
+     *
+     * @deprecated as of <i>curn</i> 3.1.
      */
     public void registerAdditionalScriptingEngines()
         throws CurnException
