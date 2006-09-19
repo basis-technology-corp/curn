@@ -581,19 +581,13 @@ network bandwidth and ensure that <i>curn</i> is as kind as possible to the
 remote RSS servers. (There are some <a href="#Bandwidth">additional steps</a>
 you can take to be more bandwidth-friendly.)</p>
 
-<p><i>curn</i>
-can be extended to use any RSS parser; its built-in RSS parser, the
-http://wwwtest/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/package-frame.html
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a>
-class, can handle files in
-<a target="_top" href="http://www.atomenabled.org/developers/">Atom</a>
-format (0.3) and RSS formats
-<a href="http://backend.userland.com/rss091">0.91</a>, 0.92,
-<a href="http://web.resource.org/rss/1.0/">1.0</a> and
-<a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>. <i>curn</i>
-also comes with built-in adapters for the
-<a href="https://rome.dev.java.net/">Rome</a>, and
-<a href="http://informa.sourceforge.net/">Informa</a> RSS parsers.
+<i>curn</i> comes with built-in adapters for the
+<a href="https://rome.dev.java.net/">ROME</a> and
+<a href="http://informa.sourceforge.net/">Informa</a> feed parsers, but
+it can easily be extended to use any RSS parser.
+By default, <i>curn</i> uses the
+<a href="https://rome.dev.java.net/">ROME</a> parser, which
+handles all known RSS feed formats.
 See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
 item for information on how to specify which parser <i>curn</i> should use.
 See the section entitled
@@ -926,7 +920,7 @@ For example:</p>
 [curn]
 CacheFile: /home/bmc/.curn/cache
 DaysToCache: NoLimit
-ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
+ParserClass: org.clapper.curn.parser.rome.RSSParserAdapter
 ...
 </pre></blockquote>
     </td>
@@ -1631,23 +1625,9 @@ detail, below. (Parameters marked with
       it can be nothing more than an adapter for a third party
       RSS parser class.
       <br/><br/>
-      Three parsers are bundled with <i>curn</i>:
+      Two parsers are bundled with <i>curn</i>:
 
       <dl>
-        <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">org.clapper.curn.parser.minirss.MiniRSSParser</a>
-
-        <dd>A minimal SAX-based RSS parser that handles files in
-            <a href="http://www.atomenabled.org/developers/">Atom</a>
-            format (0.3) and RSS formats
-            <a href="http://backend.userland.com/rss091">0.91</a>, 0.92,
-            <a href="http://web.resource.org/rss/1.0/">1.0</a> and
-            <a href="http://blogs.law.harvard.edu/tech/rss">2.0</a>.
-            This parser doesn't store all the  the possible RSS items;
-            it stores just items that <i>curn</i> requires (plus a few
-            more). Thus, it is unsuitable for use as a general-purpose
-            RSS parser (though it's perfectly suited for use in
-            <i>curn</i>).
-
         <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
 
         <dd>An adapter class that makes the
@@ -1681,7 +1661,7 @@ detail, below. (Parameters marked with
       may be used as a value for <span class="code">ParserClass</span>.
     </td>
     <td align="left">No</td>
-    <td align="left" class="code"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/minirss/MiniRSSParser.html" class="code">MiniRSSParser</a></td>
+    <td align="left" class="code"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a></td>
     <td align="left">&nbsp;</td>
   </tr>
 
@@ -3663,7 +3643,7 @@ curnDir: /usr/local/etc/curn
 
 CacheFile: ${var:curnDir}/common.cache
 MaxThreads: 15
-ParserClass: org.clapper.curn.parser.minirss.MiniRSSParser
+ParserClass: org.clapper.curn.parser.rome.RSSParserAdapter
 GzipDownload: true
 
 #####################################
@@ -3755,11 +3735,11 @@ various phases of <i>curn</i> processing.</p>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
 instead of
-<a href="https://rome.dev.java.net/">Rome</a>,
-<a href="http://informa.sourceforge.net/">Informa</a>, or
-<i>curn</i>'s built-in <span class="code">MiniRSSParser</span> class.
-(Perhaps it's faster than <i>curn</i>'s built-in parser, or perhaps it
-supports some new RSS syntax that <i>curn</i>'s parser does not support.)
+<a href="https://rome.dev.java.net/">ROME</a> or
+<a href="http://informa.sourceforge.net/">Informa</a>.
+(Perhaps it's faster than one of those, or perhaps it
+supports some new RSS syntax that neither ROME nor Informa support. Or,
+perhaps you're just playing around.)
 Integrating that parser with <i>curn</i> requires writing some adapter classes
 that implement some interfaces and extend some classes provided with the
 <i>curn</i> software. Those classes are:</p>
