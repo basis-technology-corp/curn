@@ -129,7 +129,9 @@
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/mail.jar"
             targetdir="$INSTALL_PATH/lib"/>
-      <file src="@THIRD_PARTY_JAR_DIR@/dom4j.jar"
+      <file src="@THIRD_PARTY_JAR_DIR@/jdom.jar"
+            targetdir="$INSTALL_PATH/lib"/>
+      <file src="@THIRD_PARTY_JAR_DIR@/rome.jar"
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/asm-@ASM_VERSION@.jar"
             targetdir="$INSTALL_PATH/lib"/>
