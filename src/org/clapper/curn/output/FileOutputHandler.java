@@ -298,7 +298,7 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws CurnException  unable to write output
      */
     public abstract void flush() throws CurnException;
-    
+
     /**
      * Get the content (i.e., MIME) type for output produced by this output
      * handler.
