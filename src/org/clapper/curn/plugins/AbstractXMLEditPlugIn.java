@@ -123,10 +123,10 @@ public abstract class AbstractXMLEditPlugIn
      *
      * @throws CurnException on error
      */
-    protected void editXML (FeedInfo     feedInfo,
-                            File         feedDataFile,
-                            String       encoding,
-                            List<String> editCommands)
+    protected void editXML(FeedInfo     feedInfo,
+                           File         feedDataFile,
+                           String       encoding,
+                           List<String> editCommands)
         throws CurnException
     {
         String         feedURL = feedInfo.getURL().toString();
@@ -165,12 +165,12 @@ public abstract class AbstractXMLEditPlugIn
                 {
                     if (log.isDebugEnabled() && (lineNumber == 1))
                     {
-                        log.debug ("Applying edit command \"" +
-                                   editCommand +
-                                   "\" to downloaded XML for feed \"" +
-                                   feedURL +
-                                   ", line " +
-                                   lineNumber);
+                        log.debug("Applying edit command \"" +
+                                  editCommand +
+                                  "\" to downloaded XML for feed \"" +
+                                  feedURL +
+                                  ", line " +
+                                  lineNumber);
                     }
 
                     line = regexUtil.substitute (editCommand, line);
@@ -186,15 +186,15 @@ public abstract class AbstractXMLEditPlugIn
             out.close();
             out = null;
 
-            log.debug ("Copying temporary (edited) file \"" +
-                       tempOutputFile.getPath() +
-                       "\" back over top of file \"" +
-                       feedDataFile.getPath() +
-                       "\".");
-            FileUtil.copyTextFile (tempOutputFile,
-                                   encoding,
-                                   feedDataFile,
-                                   encoding);
+            log.debug("Copying temporary (edited) file \"" +
+                      tempOutputFile.getPath() +
+                      "\" back over top of file \"" +
+                      feedDataFile.getPath() +
+                      "\".");
+            FileUtil.copyTextFile(tempOutputFile,
+                                  encoding,
+                                  feedDataFile,
+                                  encoding);
 
             tempOutputFile.delete();
         }
