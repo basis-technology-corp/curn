@@ -140,7 +140,6 @@ source and documentation packages.
     <pathelement location="${third.party.jar.dir}/xerces.jar"/>
     <pathelement location="${third.party.jar.dir}/bsf.jar"/>
     <pathelement location="${third.party.jar.dir}/rome.jar"/>
-    <pathelement location="${third.party.jar.dir}/dom4j.jar"/>
 
     <!--
         JDOM is necessary for the Informa RSS parser. curn does not use
@@ -324,7 +323,7 @@ source and documentation packages.
           unless="rome.exists">
     <echo>
 *** The Rome parser is not currently available in the build environment.
-*** Because Informa is missing, all targets that require it will be skipped.
+*** Because Rome is missing, all targets that require it will be skipped.
 *** To enable these targets, download Rome from  https://rome.dev.java.net/
 *** and install it according to the instructions.
     </echo>
