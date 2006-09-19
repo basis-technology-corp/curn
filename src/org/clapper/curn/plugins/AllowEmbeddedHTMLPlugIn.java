@@ -182,7 +182,7 @@ public class AllowEmbeddedHTMLPlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -230,7 +230,7 @@ public class AllowEmbeddedHTMLPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -278,7 +278,7 @@ public class AllowEmbeddedHTMLPlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         Boolean allowBoxed = perFeedHTMLFlag.get (feedInfo);
         boolean allow = allowHTMLDefault;
