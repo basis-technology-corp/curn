@@ -63,6 +63,7 @@ import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -415,13 +416,14 @@ class FeedDownloadThread
      * @throws FeedException  feed download error
      * @throws CurnException  some other error (e.g., plug-in error)
      */
-    private RSSChannel downloadAndProcessFeed (final FeedInfo      feedInfo,
-                                               final RSSParser     parser,
-                                               final URLConnection urlConn)
+    private RSSChannel downloadAndProcessFeed(final FeedInfo      feedInfo,
+                                              final RSSParser     parser,
+                                              final URLConnection urlConn)
         throws FeedException,
                CurnException
     {
         RSSChannel  channel = null;
+        URL feedURL = feedInfo.getURL();
 
         try
         {
@@ -434,54 +436,64 @@ class FeedDownloadThread
             // newer, we don't bother to parse and process the returned
             // XML.
 
-            setIfModifiedSinceHeader (urlConn, feedInfo, cache);
+            setIfModifiedSinceHeader(urlConn, feedInfo, cache);
 
             // If the feed has actually changed, process it.
 
-            if (! feedHasChanged (urlConn, feedInfo, cache))
+            if (! feedHasChanged(urlConn, feedInfo, cache))
             {
                 log.info ("Feed has not changed. Skipping it.");
             }
 
             else
             {
-                log.debug ("Feed may have changed. " +
-                           "Downloading and processing it.");
+                log.debug("Feed may have changed. " +
+                          "Downloading and processing it.");
 
                 // Download the feed to a file. We'll parse the file.
 
-                DownloadedTempFile tempFile = downloadFeed (urlConn, feedInfo);
+                DownloadedTempFile tempFile = downloadFeed(urlConn, feedInfo);
 
                 if (tempFile.bytesDownloaded == 0)
                 {
-                    log.debug ("Feed \"" + feedInfo.getURL() +
-                               "\" returned no data.");
+                    log.debug ("Feed \"" + feedURL + "\" returned no data.");
                 }
 
                 else
                 {
-                    metaPlugIn.runPostFeedDownloadPlugIn (feedInfo,
-                                                          tempFile.file,
-                                                          tempFile.encoding);
+                    metaPlugIn.runPostFeedDownloadPlugIn(feedInfo,
+                                                         tempFile.file,
+                                                         tempFile.encoding);
 
                     if (parser == null)
                     {
-                        log.debug ("No RSS parser. Skipping XML parse phase.");
+                        log.debug("No RSS parser. Skipping XML parse phase.");
                     }
 
                     else
                     {
-                        log.debug ("Using RSS parser " +
-                                   parser.getClass().getName() +
-                                   " to parse \"" + feedInfo.getURL() + "\"");
+                        log.debug("Using RSS parser " +
+                                  parser.getClass().getName() +
+                                  " to parse \"" + feedURL + "\"");
 
-                        InputStream is = new FileInputStream (tempFile.file);
-                        channel = parser.parseRSSFeed (feedInfo.getURL(),
-                                                       is,
-                                                       tempFile.encoding);
+                        InputStream is = new FileInputStream(tempFile.file);
+                        channel = parser.parseRSSFeed(feedURL,
+                                                      is,
+                                                      tempFile.encoding);
                         is.close();
 
-                        processChannelItems (channel, feedInfo);
+                        // Make sure the channel has a link.
+
+                        Collection<RSSLink> links = channel.getLinks();
+                        if ((links == null) || (links.size() == 0))
+                        {
+                            RSSLink link = new RSSLink(feedURL,
+                                                       "text/xml",
+                                                       RSSLink.Type.SELF);
+                            channel.setLinks(Collections.singleton(link));
+                        }
+
+                        processChannelItems(channel, feedInfo);
                         if (channel.getItems().size() == 0)
                             channel = null;
                     }
@@ -490,22 +502,22 @@ class FeedDownloadThread
                 tempFile.file.delete();
                 if (cache != null)
                 {
-                    cache.addToCache (null,
-                                      feedInfo.getURL(),
-                                      new Date (urlConn.getLastModified()),
-                                      feedInfo);
+                    cache.addToCache(null,
+                                     feedURL,
+                                     new Date(urlConn.getLastModified()),
+                                     feedInfo);
                 }
             }
         }
 
         catch (IOException ex)
         {
-            throw new FeedException (feedInfo, ex);
+            throw new FeedException(feedInfo, ex);
         }
 
         catch (RSSParserException ex)
         {
-            throw new FeedException (feedInfo, ex);
+            throw new FeedException(feedInfo, ex);
         }
 
         log.debug ("downloadAndProcessFeed(): Feed=" +
