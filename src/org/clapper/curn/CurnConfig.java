@@ -114,7 +114,7 @@ public class CurnConfig extends Configuration
     public static final boolean DEF_SHOW_RSS_VERSION  = false;
     public static final boolean DEF_SAVE_ONLY         = false;
     public static final String  DEF_PARSER_CLASS_NAME =
-                             "org.clapper.curn.parser.rome.RSSParserAdapter";
+        "org.clapper.curn.parser.rome.RSSParserAdapter";
     public static final int     DEF_MAX_THREADS       = 5;
     public static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
 
@@ -141,6 +141,13 @@ public class CurnConfig extends Configuration
      * Prefix for output handler sections.
      */
     private static final String OUTPUT_HANDLER_PREFIX = "OutputHandler";
+
+    /**
+     * Original default parser; mapped to new default, for backward
+     * compatibility.
+     */
+    private static final String OLD_DEF_PARSER_CLASS_NAME =
+        "org.clapper.curn.parser.minirss.MiniRSSParser";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -202,7 +209,7 @@ public class CurnConfig extends Configuration
      */
     public Collection<ConfiguredOutputHandler> getOutputHandlers()
     {
-        return Collections.unmodifiableList (outputHandlers);
+        return Collections.unmodifiableList(outputHandlers);
     }
 
     /**
@@ -289,22 +296,22 @@ public class CurnConfig extends Configuration
      *
      * @see #getMaxThreads
      */
-    public void setMaxThreads (final int newValue)
+    public void setMaxThreads(final int newValue)
         throws ConfigurationException
     {
         if (newValue <= 0)
         {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "CurnConfig.badPositiveInteger",
-                                              "The \"{0}\" configuration " +
-                                              "parameter cannot be set to " +
-                                              "{1}. It must have a positive " +
-                                              "integer value.",
-                                              new Object[]
-                                              {
-                                                  VAR_MAX_THREADS,
-                                                  String.valueOf (newValue)
-                                              });
+            throw new ConfigurationException(Constants.BUNDLE_NAME,
+                                             "CurnConfig.badPositiveInteger",
+                                             "The \"{0}\" configuration " +
+                                             "parameter cannot be set to " +
+                                             "{1}. It must have a positive " +
+                                             "integer value.",
+                                             new Object[]
+                                             {
+                                                 VAR_MAX_THREADS,
+                                                 String.valueOf (newValue)
+                                             });
         }
 
         this.maxThreads = newValue;
@@ -319,7 +326,7 @@ public class CurnConfig extends Configuration
      * @see #mustUpdateCache
      * @see #getCacheFile
      */
-    public void setMustUpdateCacheFlag (final boolean val)
+    public void setMustUpdateCacheFlag(final boolean val)
     {
         updateCache = val;
     }
@@ -344,7 +351,7 @@ public class CurnConfig extends Configuration
      *
      * @see #showRSSVersion
      */
-    public void setShowRSSVersionFlag (final boolean val)
+    public void setShowRSSVersionFlag(final boolean val)
     {
         this.showRSSFormat = val;
     }
@@ -361,7 +368,7 @@ public class CurnConfig extends Configuration
      */
     public Collection<FeedInfo> getFeeds()
     {
-        return Collections.unmodifiableCollection (feeds);
+        return Collections.unmodifiableCollection(feeds);
     }
 
     /**
@@ -376,9 +383,9 @@ public class CurnConfig extends Configuration
      * @see #getFeedInfoFor(String)
      * @see #getFeedInfoFor(URL)
      */
-    public boolean hasFeed (final URL url)
+    public boolean hasFeed(final URL url)
     {
-        return feedMap.containsKey (url.toString());
+        return feedMap.containsKey(url.toString());
     }
 
     /**
@@ -394,9 +401,9 @@ public class CurnConfig extends Configuration
      * @see #getFeedInfoFor(String)
      * @see FeedInfo
      */
-    public FeedInfo getFeedInfoFor (final URL url)
+    public FeedInfo getFeedInfoFor(final URL url)
     {
-        return (FeedInfo) feedMap.get (url.toString());
+        return (FeedInfo) feedMap.get(url.toString());
     }
 
     /**
@@ -412,9 +419,9 @@ public class CurnConfig extends Configuration
      * @see #getFeedInfoFor(URL)
      * @see FeedInfo
      */
-    public FeedInfo getFeedInfoFor (final String urlString)
+    public FeedInfo getFeedInfoFor(final String urlString)
     {
-        return (FeedInfo) feedMap.get (urlString);
+        return (FeedInfo) feedMap.get(urlString);
     }
 
     /**
@@ -425,8 +432,8 @@ public class CurnConfig extends Configuration
      *
      * @return the message
      */
-    public String getDeprecatedParamMessage (final String badParam,
-                                             final String goodParam)
+    public String getDeprecatedParamMessage(final String badParam,
+                                            final String goodParam)
     {
         StringBuilder buf = new StringBuilder();
 
@@ -435,23 +442,23 @@ public class CurnConfig extends Configuration
         URL configURL = getConfigurationFileURL();
         if (configURL != null)
         {
-            buf.append ('"');
-            buf.append (configURL.toString());
-            buf.append ('"');
+            buf.append('"');
+            buf.append(configURL.toString());
+            buf.append('"');
         }
 
-        buf.append (" uses deprecated \"");
-        buf.append (badParam);
-        buf.append ("\" parameter");
+        buf.append(" uses deprecated \"");
+        buf.append(badParam);
+        buf.append("\" parameter");
 
         if (goodParam == null)
-            buf.append (".");
+            buf.append(".");
 
         else
         {
-            buf.append (", instead of new \"");
-            buf.append (goodParam);
-            buf.append ("\" parameter.");
+            buf.append(", instead of new \"");
+            buf.append(goodParam);
+            buf.append("\" parameter.");
         }
 
         return buf.toString();
@@ -576,14 +583,14 @@ public class CurnConfig extends Configuration
 
         for (String sectionName : getSectionNames())
         {
-            if (sectionName.startsWith (FEED_SECTION_PREFIX))
-                processFeedSection (sectionName);
+            if (sectionName.startsWith(FEED_SECTION_PREFIX))
+                processFeedSection(sectionName);
 
-            else if (sectionName.startsWith (OUTPUT_HANDLER_PREFIX))
-                processOutputHandlerSection (sectionName);
+            else if (sectionName.startsWith(OUTPUT_HANDLER_PREFIX))
+                processOutputHandlerSection(sectionName);
 
             else
-                processUnknownSection (sectionName);
+                processUnknownSection(sectionName);
         }
     }
 
@@ -599,19 +606,19 @@ public class CurnConfig extends Configuration
     {
         if (! this.containsSection (MAIN_SECTION))
         {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "CurnConfig.missingReqSection",
-                                              "The configuration file is " +
-                                              "missing the required \"{0}\" " +
-                                              "section.",
-                                              new Object[] {MAIN_SECTION});
+            throw new ConfigurationException(Constants.BUNDLE_NAME,
+                                             "CurnConfig.missingReqSection",
+                                             "The configuration file is " +
+                                             "missing the required \"{0}\" " +
+                                             "section.",
+                                             new Object[] {MAIN_SECTION});
         }
 
-        for (String varName : getVariableNames (MAIN_SECTION))
+        for (String varName : getVariableNames(MAIN_SECTION))
         {
             try
             {
-                processMainSectionVariable (varName);
+                processMainSectionVariable(varName);
             }
 
             catch (NoSuchVariableException ex)
@@ -638,18 +645,18 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processMainSectionVariable (final String varName)
+    private void processMainSectionVariable(final String varName)
         throws ConfigurationException,
                CurnException
     {
         String val = null;
 
-        if (varName.equals (VAR_CACHE_FILE))
+        if (varName.equals(VAR_CACHE_FILE))
         {
-            val = getOptionalStringValue (MAIN_SECTION, VAR_CACHE_FILE, null);
+            val = getOptionalStringValue(MAIN_SECTION, VAR_CACHE_FILE, null);
             if (val != null)
             {
-                cacheFile = CurnUtil.mapConfiguredPathName (val);
+                cacheFile = CurnUtil.mapConfiguredPathName(val);
                 if (cacheFile.isDirectory())
                 {
                     throw new ConfigurationException
@@ -661,66 +668,66 @@ public class CurnConfig extends Configuration
             }
         }
 
-        else if (varName.equals (VAR_DAYS_TO_CACHE))
+        else if (varName.equals(VAR_DAYS_TO_CACHE))
         {
-            defaultCacheDays = parseMaxDaysParameter (MAIN_SECTION,
-                                                      varName,
-                                                      DEF_DAYS_TO_CACHE);
-            val = String.valueOf (defaultCacheDays);
+            defaultCacheDays = parseMaxDaysParameter(MAIN_SECTION,
+                                                     varName,
+                                                     DEF_DAYS_TO_CACHE);
+            val = String.valueOf(defaultCacheDays);
         }
 
-        else if (varName.equals (VAR_TOTAL_CACHE_BACKUPS))
+        else if (varName.equals(VAR_TOTAL_CACHE_BACKUPS))
         {
             totalCacheBackups =
-                getOptionalCardinalValue (MAIN_SECTION,
-                                          varName,
-                                          DEF_TOTAL_CACHE_BACKUPS);
-            val = String.valueOf (totalCacheBackups);
+                getOptionalCardinalValue(MAIN_SECTION,
+                                         varName,
+                                         DEF_TOTAL_CACHE_BACKUPS);
+            val = String.valueOf(totalCacheBackups);
         }
 
-        else if (varName.equals (VAR_NO_CACHE_UPDATE))
+        else if (varName.equals(VAR_NO_CACHE_UPDATE))
         {
-            updateCache = (!getOptionalBooleanValue (MAIN_SECTION,
+            updateCache = (!getOptionalBooleanValue(MAIN_SECTION,
+                                                    varName,
+                                                    DEF_NO_CACHE_UPDATE));
+            val = String.valueOf(updateCache);
+        }
+
+        else if (varName.equals(VAR_SHOW_RSS_VERSION))
+        {
+            showRSSFormat = getOptionalBooleanValue(MAIN_SECTION,
+                                                    varName,
+                                                    DEF_SHOW_RSS_VERSION);
+            val = String.valueOf(showRSSFormat);
+        }
+
+        else if (varName.equals(VAR_PARSER_CLASS_NAME))
+        {
+            parserClassName = getOptionalStringValue(MAIN_SECTION,
                                                      varName,
-                                                     DEF_NO_CACHE_UPDATE));
-            val = String.valueOf (updateCache);
+                                                     DEF_PARSER_CLASS_NAME);
+            val = String.valueOf(parserClassName);
         }
 
-        else if (varName.equals (VAR_SHOW_RSS_VERSION))
+        else if (varName.equals(VAR_MAX_THREADS))
         {
-            showRSSFormat = getOptionalBooleanValue (MAIN_SECTION,
-                                                     varName,
-                                                     DEF_SHOW_RSS_VERSION);
-            val = String.valueOf (showRSSFormat);
-        }
-
-        else if (varName.equals (VAR_PARSER_CLASS_NAME))
-        {
-            parserClassName = getOptionalStringValue (MAIN_SECTION,
+            int maxThreads = getOptionalCardinalValue(MAIN_SECTION,
                                                       varName,
-                                                      DEF_PARSER_CLASS_NAME);
-            val = String.valueOf (parserClassName);
-        }
-
-        else if (varName.equals (VAR_MAX_THREADS))
-        {
-            int maxThreads = getOptionalCardinalValue (MAIN_SECTION,
-                                                       varName,
-                                                       DEF_MAX_THREADS);
-            setMaxThreads (maxThreads);
-            val = String.valueOf (maxThreads);
+                                                      DEF_MAX_THREADS);
+            setMaxThreads(maxThreads);
+            val = String.valueOf(maxThreads);
         }
 
         else
         {
-            val = getOptionalStringValue (MAIN_SECTION, varName, null);
+            val = getOptionalStringValue(MAIN_SECTION, varName, null);
         }
 
         if (val != null)
         {
-            MetaPlugIn.getMetaPlugIn().runMainConfigItemPlugIn (MAIN_SECTION,
-                                                                varName,
-                                                                this);
+            MetaPlugIn.getMetaPlugIn().runMainConfigItemPlugIn(MAIN_SECTION,
+                                                               varName,
+                                                               this);
         }
     }
 
@@ -732,7 +739,7 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processFeedSection (final String sectionName)
+    private void processFeedSection(final String sectionName)
         throws ConfigurationException,
                CurnException
     {
@@ -742,28 +749,28 @@ public class CurnConfig extends Configuration
         MetaPlugIn metaPlugIn = MetaPlugIn.getMetaPlugIn();
         boolean    keepFeed = false;
 
-        feedURLString = getConfigurationValue (sectionName, VAR_FEED_URL);
+        feedURLString = getConfigurationValue(sectionName, VAR_FEED_URL);
 
         try
         {
-            url = CurnUtil.normalizeURL (feedURLString);
+            url = CurnUtil.normalizeURL(feedURLString);
             String urlString = url.toString();
-            log.debug ("Configured feed: URL=\"" + urlString + "\"");
-            feedInfo = new FeedInfo (url);
-            metaPlugIn.runFeedConfigItemPlugIn (sectionName,
-                                                VAR_FEED_URL,
-                                                this,
-                                                feedInfo);
+            log.debug("Configured feed: URL=\"" + urlString + "\"");
+            feedInfo = new FeedInfo(url);
+            metaPlugIn.runFeedConfigItemPlugIn(sectionName,
+                                               VAR_FEED_URL,
+                                               this,
+                                               feedInfo);
         }
 
         catch (MalformedURLException ex)
         {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "CurnConfig.badFeedURL",
-                                              "Configuration file section " +
-                                              "\"{0}\" specifies a bad RSS " +
-                                              "feed URL \"{1}\"",
-                                              new Object[]
+            throw new ConfigurationException(Constants.BUNDLE_NAME,
+                                             "CurnConfig.badFeedURL",
+                                             "Configuration file section " +
+                                             "\"{0}\" specifies a bad RSS " +
+                                             "feed URL \"{1}\"",
+                                             new Object[]
                                               {
                                                   sectionName,
                                                   feedURLString
@@ -771,43 +778,43 @@ public class CurnConfig extends Configuration
         }
 
 
-        feedInfo.setDaysToCache (defaultCacheDays);
+        feedInfo.setDaysToCache(defaultCacheDays);
 
-        for (String varName : getVariableNames (sectionName))
+        for (String varName : getVariableNames(sectionName))
         {
             String value   = null;
 
-            if (varName.equals (VAR_DAYS_TO_CACHE))
+            if (varName.equals(VAR_DAYS_TO_CACHE))
             {
-                int maxDays = parseMaxDaysParameter (sectionName,
-                                                     varName,
-                                                     defaultCacheDays);
-                feedInfo.setDaysToCache (maxDays);
-                value = String.valueOf (maxDays);
+                int maxDays = parseMaxDaysParameter(sectionName,
+                                                    varName,
+                                                    defaultCacheDays);
+                feedInfo.setDaysToCache(maxDays);
+                value = String.valueOf(maxDays);
             }
 
-            else if (varName.equals (VAR_FORCE_ENCODING) ||
-                     varName.equals (VAR_FORCE_CHAR_ENCODING))
+            else if (varName.equals(VAR_FORCE_ENCODING) ||
+                     varName.equals(VAR_FORCE_CHAR_ENCODING))
             {
-                value = getConfigurationValue (sectionName, varName);
-                feedInfo.setForcedCharacterEncoding (value);
+                value = getConfigurationValue(sectionName, varName);
+                feedInfo.setForcedCharacterEncoding(value);
             }
 
             else
             {
-                value = getConfigurationValue (sectionName, varName);
+                value = getConfigurationValue(sectionName, varName);
             }
 
             if (value != null)
             {
-                keepFeed = metaPlugIn.runFeedConfigItemPlugIn (sectionName,
-                                                               varName,
-                                                               this,
-                                                               feedInfo);
+                keepFeed = metaPlugIn.runFeedConfigItemPlugIn(sectionName,
+                                                              varName,
+                                                              this,
+                                                              feedInfo);
                 if (! keepFeed)
                 {
-                    log.debug ("A plug-in said to skip feed [" +
-                               sectionName + "\"");
+                    log.debug("A plug-in said to skip feed [" +
+                              sectionName + "\"");
                 }
             }
 
@@ -817,22 +824,22 @@ public class CurnConfig extends Configuration
 
         if (url == null)
         {
-            throw new ConfigurationException (Constants.BUNDLE_NAME,
-                                              "CurnConfig.missingReqVar",
-                                              "The configuration file is " +
-                                              "missing required variable " +
-                                              "\"{0}\" in section \"{1}\"",
-                                              new Object[]
-                                              {
-                                                  VAR_FEED_URL,
-                                                  sectionName
-                                              });
+            throw new ConfigurationException(Constants.BUNDLE_NAME,
+                                             "CurnConfig.missingReqVar",
+                                             "The configuration file is " +
+                                             "missing required variable " +
+                                             "\"{0}\" in section \"{1}\"",
+                                             new Object[]
+                                             {
+                                                 VAR_FEED_URL,
+                                                 sectionName
+                                             });
         }
 
         if (keepFeed)
         {
-            feeds.add (feedInfo);
-            feedMap.put (url.toString(), feedInfo);
+            feeds.add(feedInfo);
+            feedMap.put(url.toString(), feedInfo);
         }
     }
 
@@ -844,7 +851,7 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processOutputHandlerSection (final String sectionName)
+    private void processOutputHandlerSection(final String sectionName)
         throws ConfigurationException,
                CurnException
     {
@@ -855,48 +862,47 @@ public class CurnConfig extends Configuration
         MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
         boolean                 keep = true;
 
-        className = getConfigurationValue (sectionName, VAR_CLASS);
-        handlerWrapper = new ConfiguredOutputHandler (sectionName,
-                                                      sectionName,
-                                                      className);
+        className = getConfigurationValue(sectionName, VAR_CLASS);
+        handlerWrapper = new ConfiguredOutputHandler(sectionName,
+                                                     sectionName,
+                                                     className);
 
-        keep = metaPlugIn.runOutputHandlerConfigItemPlugIn (sectionName,
-                                                            VAR_CLASS,
-                                                            this,
-                                                            handlerWrapper);
+        keep = metaPlugIn.runOutputHandlerConfigItemPlugIn(sectionName,
+                                                           VAR_CLASS,
+                                                           this,
+                                                           handlerWrapper);
         if (keep)
         {
-            for (String variableName : getVariableNames (sectionName))
+            for (String variableName : getVariableNames(sectionName))
             {
                 // Skip the ones we've already processed.
 
-                if (variableName.equals (VAR_CLASS))
+                if (variableName.equals(VAR_CLASS))
                     continue;
 
-                String value = getConfigurationValue (sectionName,
-                                                      variableName);
-                handlerWrapper.addExtraVariable (variableName, value);
+                String value = getConfigurationValue(sectionName,
+                                                     variableName);
+                handlerWrapper.addExtraVariable(variableName, value);
 
-                keep = metaPlugIn.runOutputHandlerConfigItemPlugIn
-                                                             (sectionName,
-                                                              variableName,
-                                                              this,
-                                                              handlerWrapper);
+                keep =
+                    metaPlugIn.runOutputHandlerConfigItemPlugIn
+                        (sectionName, variableName, this, handlerWrapper);
+
                 if (! keep)
                 {
-                    log.debug ("A plug-in has disabled output handler [" +
-                               sectionName + "]");
+                    log.debug("A plug-in has disabled output handler [" +
+                              sectionName + "]");
                     break;
                 }
             }
 
             if (keep)
             {
-                log.debug ("Saving output handler \"" +
-                           handlerWrapper.getName() +
-                           "\" of type " +
+                log.debug("Saving output handler \"" +
+                          handlerWrapper.getName() +
+                          "\" of type " +
                            handlerWrapper.getClassName());
-                outputHandlers.add (handlerWrapper);
+                outputHandlers.add(handlerWrapper);
             }
         }
     }
@@ -909,13 +915,13 @@ public class CurnConfig extends Configuration
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other error
      */
-    private void processUnknownSection (final String sectionName)
+    private void processUnknownSection(final String sectionName)
         throws ConfigurationException,
                CurnException
     {
-        for (String varName : getVariableNames (sectionName))
+        for (String varName : getVariableNames(sectionName))
         {
-            String value = getConfigurationValue (sectionName, varName);
+            String value = getConfigurationValue(sectionName, varName);
             if (value != null)
             {
                 MetaPlugIn.getMetaPlugIn().runUnknownSectionConfigItemPlugIn
@@ -936,26 +942,26 @@ public class CurnConfig extends Configuration
      * @throws NoSuchSectionException no such section
      * @throws ConfigurationException bad numeric value
      */
-    private int parseMaxDaysParameter (final String sectionName,
-                                       final String variableName,
-                                       final int    def)
+    private int parseMaxDaysParameter(final String sectionName,
+                                      final String variableName,
+                                      final int    def)
         throws NoSuchSectionException,
                ConfigurationException
     {
         int result = def;
-        String value = getOptionalStringValue (sectionName,
-                                               variableName,
-                                               null);
+        String value = getOptionalStringValue(sectionName,
+                                              variableName,
+                                              null);
         if (value != null)
         {
-            if (value.equalsIgnoreCase (NO_LIMIT_VALUE))
+            if (value.equalsIgnoreCase(NO_LIMIT_VALUE))
                 result = Integer.MAX_VALUE;
 
             else
             {
                 try
                 {
-                    result = Integer.parseInt (value);
+                    result = Integer.parseInt(value);
                 }
 
                 catch (NumberFormatException ex)
