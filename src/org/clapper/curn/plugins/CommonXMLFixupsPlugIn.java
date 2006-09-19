@@ -184,7 +184,23 @@ public class CommonXMLFixupsPlugIn
         "s/&#155;/\\&#8250;/g",     // 0x9B     Single right angle quote
         "s/&#156;/\\&#339;/g",      // 0x9C     Latin small ligature "oe"
         "s/&#158;/\\&#382;/g",      // 0x9E     Latin small "z" with caron
-        "s/&#159;/\\&#376;/g"       // 0x9F     Latin capital "Y" with diaeresis
+        "s/&#159;/\\&#376;/g",      // 0x9F     Latin capital "Y" with diaeresis
+
+        // Try to handle XML with references to illegal character entities.
+        //     First, translate any legal entities to something else.
+
+        "s/&(amp|quot|apos|lt|gt);/@@AMP@@$1;/g",
+        "s/&(#[0-9]{1,4});/@@AMP@@$1;/g",
+        "s/&(#x[0-9A-Fa-f]{1,4});/@@AMP@@$1;/g",
+
+        //     Next, find anything else, and escape it.
+
+        "s/&/\\&amp;/g",
+
+        //     Finally, restore the escaped stuff.
+
+        "s/@@AMP@@/\\&/g"
+
     };
 
     /*----------------------------------------------------------------------*\
