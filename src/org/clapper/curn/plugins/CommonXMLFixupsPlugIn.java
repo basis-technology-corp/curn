@@ -240,7 +240,7 @@ public class CommonXMLFixupsPlugIn
      */
     public String getSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -262,23 +262,23 @@ public class CommonXMLFixupsPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_COMMON_XML_FIXUPS))
+            if (paramName.equals(VAR_COMMON_XML_FIXUPS))
             {
-                globallyEnabled = config.getRequiredBooleanValue (sectionName,
-                                                                  paramName);
+                globallyEnabled = config.getRequiredBooleanValue(sectionName,
+                                                                 paramName);
             }
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -309,21 +309,20 @@ public class CommonXMLFixupsPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_COMMON_XML_FIXUPS))
+            if (paramName.equals(VAR_COMMON_XML_FIXUPS))
             {
-                boolean flag = config.getRequiredBooleanValue (sectionName,
-                                                               paramName);
-                perFeedEnabledFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: " + paramName + "=" +
-                           flag);
+                boolean flag = config.getRequiredBooleanValue(sectionName,
+                                                              paramName);
+                perFeedEnabledFlag.put(feedInfo, flag);
+                log.debug("[" + sectionName + "]: " + paramName + "=" + flag);
             }
 
             return true;
@@ -331,7 +330,7 @@ public class CommonXMLFixupsPlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -361,19 +360,19 @@ public class CommonXMLFixupsPlugIn
      *
      * @see FeedInfo
      */
-    public boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
-                                              File     feedDataFile,
-                                              String   encoding)
+    public boolean runPostFeedDownloadPlugIn(FeedInfo feedInfo,
+                                             File     feedDataFile,
+                                             String   encoding)
         throws CurnException
     {
-        Boolean enabledBoxed = perFeedEnabledFlag.get (feedInfo);
+        Boolean enabledBoxed = perFeedEnabledFlag.get(feedInfo);
         boolean enabled = globallyEnabled;
 
         if (enabledBoxed != null)
             enabled = enabledBoxed;
 
         if (enabled)
-            editXML (feedInfo, feedDataFile, encoding, Arrays.asList (EDITS));
+            editXML(feedInfo, feedDataFile, encoding, Arrays.asList(EDITS));
 
         return true;
     }
