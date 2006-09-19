@@ -114,7 +114,7 @@ public class CurnConfig extends Configuration
     public static final boolean DEF_SHOW_RSS_VERSION  = false;
     public static final boolean DEF_SAVE_ONLY         = false;
     public static final String  DEF_PARSER_CLASS_NAME =
-                             "org.clapper.curn.parser.minirss.MiniRSSParser";
+                             "org.clapper.curn.parser.rome.RSSParserAdapter";
     public static final int     DEF_MAX_THREADS       = 5;
     public static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
 

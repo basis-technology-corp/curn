@@ -80,16 +80,8 @@ import org.clapper.util.misc.BuildInfo;
  * easy-to-read text format. <i>curn</i> keeps track of URLs it's seen
  * before, using an on-disk cache; when using the cache, it will suppress
  * displaying URLs it has already reported (though that behavior can be
- * disabled). <i>curn</i> can be extended to use any RSS parser; its
- * built-in RSS parser, the
- * {@link org.clapper.curn.parser.minirss.MiniRSSParser MiniRSSParser}
- * class, can handle files in
- * {@link <a href="http://www.atomenabled.org/developers/">Atom</a>}
- * format (0.3) and RSS formats
- * {@link <a target="_top" href="http://backend.userland.com/rss091">0.91</a>},
- * 0.92,
- * {@link <a target="_top" href="http://web.resource.org/rss/1.0/">1.0</a>} and
- * {@link <a target="_top" href="http://blogs.law.harvard.edu/tech/rss">2.0</a>}.</p>
+ * disabled). <i>curn</i> can be extended to use any RSS parser; by
+ * default, it uses the ROME parser.</p>
  *
  * <p>This class is a command-line wrapper for <i>curn</i>. Run it with
  * no parameters for a usage summary.</p>
