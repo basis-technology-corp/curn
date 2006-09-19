@@ -82,7 +82,7 @@ public final class ParserUtil
     public static final String RSS_MIME_TYPE = "text/xml";
 
     /*----------------------------------------------------------------------*\
-			     Private Constants
+                             Private Constants
     \*----------------------------------------------------------------------*/
 
     /**
@@ -261,7 +261,10 @@ public final class ParserUtil
      */
     public static String normalizeCharacterData (String s)
     {
-        return normalizeCharacterData (s.toCharArray(), 0, s.length());
+        if (s != null)
+            s = normalizeCharacterData(s.toCharArray(), 0, s.length());
+
+        return s;
     }
 
     /**
