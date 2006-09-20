@@ -120,25 +120,25 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
     {
         RSSChannel newChannel = newInstance();
 
-        newChannel.setTitle (this.getTitle());
-        newChannel.setDescription (this.getDescription());
-        newChannel.setLinks (this.getLinks());
-        newChannel.setPublicationDate (this.getPublicationDate());
-        newChannel.setCopyright (this.getCopyright());
-        newChannel.setNativeRSSFormat (this.getNativeRSSFormat());
+        newChannel.setTitle(this.getTitle());
+        newChannel.setDescription(this.getDescription());
+        newChannel.setLinks(this.getLinks());
+        newChannel.setPublicationDate(this.getPublicationDate());
+        newChannel.setCopyright(this.getCopyright());
+        newChannel.setNativeRSSFormat(this.getNativeRSSFormat());
 
         Collection<String> authors = this.getAuthors();
         if (authors != null)
         {
             for (String author : authors)
-                newChannel.addAuthor (author);
+                newChannel.addAuthor(author);
         }
 
         Collection<RSSItem> itemCopies = new ArrayList<RSSItem>();
 
         for (RSSItem item : this.getItems())
-            itemCopies.add (item.makeCopy (newChannel));
-        newChannel.setItems (itemCopies);
+            itemCopies.add(item.makeCopy(newChannel));
+        newChannel.setItems(itemCopies);
 
         return newChannel;
     }
@@ -158,22 +158,25 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
             {
                 Collection<String> newAuthors = new ArrayList<String>();
                 for (String author : authors)
-                    newAuthors.add (HTMLUtil.textFromHTML (author));
+                {
+                    if (author != null)
+                        newAuthors.add(HTMLUtil.textFromHTML(author));
+                }
 
-                setAuthors (newAuthors);
+                setAuthors(newAuthors);
             }
 
             String title = getTitle();
             if (title != null)
-                setTitle (HTMLUtil.textFromHTML (title));
+                setTitle(HTMLUtil.textFromHTML(title));
 
             String desc = getDescription();
             if (desc != null)
-                setDescription (HTMLUtil.textFromHTML (desc));
+                setDescription(HTMLUtil.textFromHTML(desc));
 
             String copyright = getCopyright();
             if (copyright != null)
-                setCopyright (HTMLUtil.textFromHTML (copyright));
+                setCopyright(HTMLUtil.textFromHTML(copyright));
 
             Collection<RSSItem> items = getItems();
             if ((items != null) && (items.size() > 0))
@@ -193,25 +196,25 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      */
     public String toString()
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder(32);
 
-        buf.append ("Channel ");
+        buf.append("Channel ");
 
         Collection<RSSLink> links = getLinks();
         String title;
 
         if (links.size() > 0)
-            buf.append (links.iterator().next().getURL().toString());
+            buf.append(links.iterator().next().getURL().toString());
         else if ((title = getTitle()) != null)
-            buf.append (title);
+            buf.append(title);
         else
-            buf.append ("???");
+            buf.append("???");
 
-        buf.append (", ");
+        buf.append(", ");
         Collection<RSSItem> items = getItems();
         int total = (items == null) ? 0 : items.size();
-        buf.append (String.valueOf (total));
-        buf.append (" item(s)");
+        buf.append(String.valueOf(total));
+        buf.append(" item(s)");
 
         return buf.toString();
     }
@@ -253,7 +256,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @param newItems  new collection of <tt>RSSItem</tt> items.
      */
-    public abstract void setItems (Collection<? extends RSSItem> newItems);
+    public abstract void setItems(Collection<? extends RSSItem> newItems);
 
     /**
      * Remove an item from the set of items.
@@ -262,7 +265,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @return <tt>true</tt> if removed, <tt>false</tt> if not found
      */
-    public abstract boolean removeItem (RSSItem item);
+    public abstract boolean removeItem(RSSItem item);
 
     /**
      * Get the channel's title
@@ -280,7 +283,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @see #getTitle()
      */
-    public abstract void setTitle (String newTitle);
+    public abstract void setTitle(String newTitle);
 
     /**
      * Get the channel's description
@@ -298,7 +301,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @see #getDescription
      */
-    public abstract void setDescription (String desc);
+    public abstract void setDescription(String desc);
 
     /**
      * Get the channel's list of published links (its URLs). Each
@@ -321,7 +324,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      * @see #getLink
      * @see #getLinks
      */
-    public abstract void setLinks (Collection<RSSLink> links);
+    public abstract void setLinks(Collection<RSSLink> links);
 
     /**
      * Get the channel's publication date.
@@ -339,7 +342,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @see #getPublicationDate
      */
-    public abstract void setPublicationDate (Date date);
+    public abstract void setPublicationDate(Date date);
 
     /**
      * Get the channel's copyright string
@@ -357,7 +360,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @see #getCopyright
      */
-    public abstract void setCopyright (String copyright);
+    public abstract void setCopyright(String copyright);
 
     /**
      * Get the RSS format the channel is using, as a string
@@ -395,7 +398,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      * @see #getRSSFormat
      * @see #getNativeRSSFormat
      */
-    public abstract void setNativeRSSFormat (Object format);
+    public abstract void setNativeRSSFormat(Object format);
 
     /**
      * Get the channel's author list.
@@ -418,7 +421,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      * @see #clearAuthors
      * @see #setAuthor
      */
-    public abstract void addAuthor (String author);
+    public abstract void addAuthor(String author);
 
     /**
      * Clear the authors list.
@@ -438,7 +441,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
      *
      * @param item  the item
      */
-    private void stripItemHTML(final RSSItem item) 
+    private void stripItemHTML(final RSSItem item)
     {
         String title = item.getTitle();
         if (title != null)
@@ -450,13 +453,13 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
             Collection<String> newAuthors =
                 new ArrayList<String>();
             for (String author : authors)
-                newAuthors.add (HTMLUtil.textFromHTML (author));
+                newAuthors.add(HTMLUtil.textFromHTML(author));
 
-            setAuthors (newAuthors);
+            setAuthors(newAuthors);
         }
 
         String summary = item.getSummary();
         if (summary != null)
-            item.setSummary (HTMLUtil.textFromHTML (summary));
+            item.setSummary(HTMLUtil.textFromHTML(summary));
     }
 }
