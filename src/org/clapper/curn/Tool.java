@@ -102,33 +102,33 @@ public class Tool
     {
         DATE_FORMATS = new ArrayList<DateParseInfo>();
 
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm:ss a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm:ss", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh:mm", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h:mm", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd hh a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd h a", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd HH:mm:ss", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd HH:mm", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd H:mm", false));
-        DATE_FORMATS.add (new DateParseInfo ("yyyy/MM/dd", false));
-        DATE_FORMATS.add (new DateParseInfo ("yy/MM/dd", false));
-        DATE_FORMATS.add (new DateParseInfo ("hh:mm:ss a", true));
-        DATE_FORMATS.add (new DateParseInfo ("hh:mm:ss", true));
-        DATE_FORMATS.add (new DateParseInfo ("hh:mm a", true));
-        DATE_FORMATS.add (new DateParseInfo ("hh:mm", true));
-        DATE_FORMATS.add (new DateParseInfo ("h:mm a", true));
-        DATE_FORMATS.add (new DateParseInfo ("h:mm", true));
-        DATE_FORMATS.add (new DateParseInfo ("hh a", true));
-        DATE_FORMATS.add (new DateParseInfo ("h a", true));
-        DATE_FORMATS.add (new DateParseInfo ("HH:mm:ss a", true));
-        DATE_FORMATS.add (new DateParseInfo ("HH:mm:ss", true));
-        DATE_FORMATS.add (new DateParseInfo ("HH:mm a", true));
-        DATE_FORMATS.add (new DateParseInfo ("HH:mm", true));
-        DATE_FORMATS.add (new DateParseInfo ("H:mm a", true));
-        DATE_FORMATS.add (new DateParseInfo ("H:mm", true));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd hh:mm:ss a", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd hh:mm:ss", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd hh:mm a", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd hh:mm", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd h:mm a", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd h:mm", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd hh a", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd h a", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd HH:mm:ss", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd HH:mm", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd H:mm", false));
+        DATE_FORMATS.add(new DateParseInfo("yyyy/MM/dd", false));
+        DATE_FORMATS.add(new DateParseInfo("yy/MM/dd", false));
+        DATE_FORMATS.add(new DateParseInfo("hh:mm:ss a", true));
+        DATE_FORMATS.add(new DateParseInfo("hh:mm:ss", true));
+        DATE_FORMATS.add(new DateParseInfo("hh:mm a", true));
+        DATE_FORMATS.add(new DateParseInfo("hh:mm", true));
+        DATE_FORMATS.add(new DateParseInfo("h:mm a", true));
+        DATE_FORMATS.add(new DateParseInfo("h:mm", true));
+        DATE_FORMATS.add(new DateParseInfo("hh a", true));
+        DATE_FORMATS.add(new DateParseInfo("h a", true));
+        DATE_FORMATS.add(new DateParseInfo("HH:mm:ss a", true));
+        DATE_FORMATS.add(new DateParseInfo("HH:mm:ss", true));
+        DATE_FORMATS.add(new DateParseInfo("HH:mm a", true));
+        DATE_FORMATS.add(new DateParseInfo("HH:mm", true));
+        DATE_FORMATS.add(new DateParseInfo("H:mm a", true));
+        DATE_FORMATS.add(new DateParseInfo("H:mm", true));
     };
 
     /*----------------------------------------------------------------------*\
@@ -147,7 +147,7 @@ public class Tool
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (Tool.class);
+    private static final Logger log = new Logger(Tool.class);
 
     /**
      * For error messages
@@ -164,7 +164,7 @@ public class Tool
 
         try
         {
-            tool.execute (args);
+            tool.execute(args);
         }
 
         catch (CommandLineUsageException ex)
@@ -180,17 +180,17 @@ public class Tool
 
             err.println(ex.getMessage());
         }
-
+        
         catch (CommandLineException ex)
         {
-            ex.printStackTrace (System.err);
-            System.exit (1);
+            ex.printStackTrace(System.err);
+            System.exit(1);
         }
-
+        
         catch (Exception ex)
         {
-            ex.printStackTrace (System.err);
-            System.exit (1);
+            ex.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
@@ -214,20 +214,20 @@ public class Tool
 
     public String getSortKey()
     {
-        return ClassUtil.getShortClassName (this.getClass());
+        return ClassUtil.getShortClassName(this.getClass());
     }
 
-    public void runPostConfigPlugIn (final CurnConfig config)
+    public void runPostConfigPlugIn(final CurnConfig config)
         throws CurnException
     {
         try
         {
-            adjustConfiguration (config);
+            adjustConfiguration(config);
         }
-
+        
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -255,82 +255,82 @@ public class Tool
      * @throws NoSuchElementException     overran the iterator (i.e., missing
      *                                    parameter)
      */
-    protected void parseCustomOption (final char             shortOption,
-                                      final String           longOption,
-                                      final Iterator<String> it)
+    protected void parseCustomOption(final char             shortOption,
+                                     final String           longOption,
+                                     final Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
         switch (shortOption)
         {
             case 'a':           // --authors
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'A':           // --no-authors
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'B':           // --build-info
                 optShowBuildInfo = true;
                 break;
-
+                
             case 'C':           // --no-cache
                 useCache = false;
                 break;
-
+                
             case 'd':           // --show-dates
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'D':           // --no-dates
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'p':           // --plug-ins
                 optShowPlugIns = true;
                 break;
-
+                
             case 'r':           // --rss-version
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'R':           // --no-rss-version
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 't':           // --time
-                currentTime = parseDateTime (it.next());
+                currentTime = parseDateTime(it.next());
                 break;
-
+                
             case 'T':           // --threads
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'u':           // --no-update
                 optUpdateCache = Boolean.FALSE;
                 break;
-
+                
             case 'U':          // --allow-undefined-cfg-vars
                 optAbortOnUndefinedConfigVar = false;
                 break;
-
+                
             case 'v':
                 optShowVersion = true;
                 break;
-
+                
             case 'z':           // --gzip
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
-
+                
             case 'Z':           // --no-gzip
-                deprecatedOption (shortOption, longOption);
+                deprecatedOption(shortOption, longOption);
                 break;
 
             default:
                 // Should not happen.
-                throw new IllegalStateException ("(BUG) Unknown option. " +
-                                                 "Why am I here?");
+                throw new IllegalStateException("(BUG) Unknown option. " +
+                                                "Why am I here?");
         }
     }
 
@@ -360,7 +360,7 @@ public class Tool
      *                                    safe for subclass implementations of
      *                                    this method not to handle it
      */
-    protected void processPostOptionCommandLine (final Iterator<String> it)
+    protected void processPostOptionCommandLine(final Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
     {
@@ -398,9 +398,9 @@ public class Tool
      *
      * @param info   The <tt>UsageInfo</tt> object to fill.
      */
-    protected void getCustomUsageInfo (final UsageInfo info)
+    protected void getCustomUsageInfo(final UsageInfo info)
     {
-        info.setCommandName ("curn");
+        info.setCommandName("curn");
 
         // Note: A null explanation denotes a "hidden" option not shown in
         // the usage output. Here, those options are deprecated, but
@@ -479,15 +479,15 @@ public class Tool
             }
         }
 
-        info.addOption ('t', "time", "<time>",
-                        "For the purposes of cache expiration, pretend the " +
-                        "current time is <time>. <time> may be in one of " +
-                        "the following formats." +
-                        sw.toString());
+       info.addOption('t', "time", "<time>",
+                      "For the purposes of cache expiration, pretend the " +
+                      "current time is <time>. <time> may be in one of " +
+                      "the following formats." +
+                      sw.toString());
 
-        info.addParameter ("config",
-                           "Path to configuration file",
-                           true);
+       info.addParameter("config",
+                         "Path to configuration file",
+                         true);
     }
 
     /**
@@ -531,14 +531,14 @@ public class Tool
 
                 // Add this object as a plug-in.
 
-                MetaPlugIn.getMetaPlugIn().addPlugIn (this);
+                MetaPlugIn.getMetaPlugIn().addPlugIn(this);
 
                 // Fire it up.
 
-                curn.setCurrentTime (currentTime);
+                curn.setCurrentTime(currentTime);
                 curn.setAbortOnUndefinedConfigVariable
                     (optAbortOnUndefinedConfigVar);
-                curn.run (configPath, this.useCache);
+                curn.run(configPath, this.useCache);
             }
         }
 
@@ -549,13 +549,13 @@ public class Tool
 
         catch (CurnException ex)
         {
-            throw new CommandLineException (ex);
+            throw new CommandLineException(ex);
         }
 
         catch (Exception ex)
         {
-            ex.printStackTrace (System.err);
-            throw new CommandLineException (ex);
+            ex.printStackTrace(System.err);
+            throw new CommandLineException(ex);
         }
     }
 
@@ -563,19 +563,19 @@ public class Tool
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void adjustConfiguration (final CurnConfig config)
+    private void adjustConfiguration(final CurnConfig config)
         throws ConfigurationException
     {
-        log.debug ("adjustConfiguration() called.");
+        log.debug("adjustConfiguration() called.");
 
         // Adjust the configuration, if necessary, based on the command-line
         // parameters.
 
         if (optUpdateCache != null)
-            config.setMustUpdateCacheFlag (optUpdateCache.booleanValue());
+            config.setMustUpdateCacheFlag(optUpdateCache.booleanValue());
     }
 
-    private Date parseDateTime (final String s)
+    private Date parseDateTime(final String s)
         throws CommandLineUsageException
     {
         Date date = null;
@@ -598,9 +598,9 @@ public class Tool
 
                         calNow.setTime (new Date());
                         cal.setTime (date);
-                        cal.set (calNow.get (Calendar.YEAR),
-                                 calNow.get (Calendar.MONTH),
-                                 calNow.get (Calendar.DAY_OF_MONTH));
+                        cal.set(calNow.get(Calendar.YEAR),
+                                calNow.get(Calendar.MONTH),
+                                calNow.get(Calendar.DAY_OF_MONTH));
                         date = cal.getTime();
                     }
 
@@ -615,10 +615,10 @@ public class Tool
 
         if (date == null)
         {
-            throw new CommandLineUsageException (Constants.BUNDLE_NAME,
-                                                 "Tool.badDateTime",
-                                                 "Bad date/time: \"{0}\"",
-                                                 new Object[] {s});
+            throw new CommandLineUsageException(Constants.BUNDLE_NAME,
+                                                "Tool.badDateTime",
+                                                "Bad date/time: \"{0}\"",
+                                                new Object[] {s});
         }
 
         return date;
@@ -629,27 +629,27 @@ public class Tool
     {
         Map<String,Class> plugIns = new TreeMap<String,Class>();
 
-        PlugInManager.listPlugIns (plugIns);
+        PlugInManager.listPlugIns(plugIns);
 
         System.out.println();
-        System.out.println ("Plug-ins:");
+        System.out.println("Plug-ins:");
         System.out.println();
         for (String name : plugIns.keySet())
         {
-            System.out.println (name + " (" + plugIns.get (name).getName() +
-                                ")");
+            System.out.println(name + " (" + plugIns.get(name).getName() +
+                               ")");
         }
     }
 
     private void deprecatedOption (final char   shortOption,
                                    final String longOption)
     {
-        CurnUtil.getErrorOut().println ("WARNING: Ignoring deprecated " +
-                                    UsageInfo.SHORT_OPTION_PREFIX +
-                                    shortOption +
-                                    " (" +
-                                    UsageInfo.LONG_OPTION_PREFIX +
-                                    longOption +
-                                    ") command-line option.");
+        CurnUtil.getErrorOut().println("WARNING: Ignoring deprecated " +
+                                       UsageInfo.SHORT_OPTION_PREFIX +
+                                       shortOption +
+                                       " (" +
+                                       UsageInfo.LONG_OPTION_PREFIX +
+                                       longOption +
+                                       ") command-line option.");
     }
 }
