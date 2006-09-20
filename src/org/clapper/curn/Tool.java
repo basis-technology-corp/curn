@@ -149,6 +149,11 @@ public class Tool
      */
     private static final Logger log = new Logger (Tool.class);
 
+    /**
+     * For error messages
+     */
+    private static WordWrapWriter err = new WordWrapWriter(System.err);
+
     /*----------------------------------------------------------------------*\
                                Main Program
     \*----------------------------------------------------------------------*/
@@ -173,7 +178,7 @@ public class Tool
         {
             // Don't dump a stack trace.
 
-            new WordWrapWriter(System.err).println(ex.getMessage());
+            err.println(ex.getMessage());
         }
 
         catch (CommandLineException ex)

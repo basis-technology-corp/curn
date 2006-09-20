@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -164,6 +165,7 @@ public class CurnConfig extends Configuration
                                  = new ArrayList<ConfiguredOutputHandler>();
     private int maxThreads = DEF_MAX_THREADS;
     private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
+    private PrintWriter err;
 
     /**
      * For log messages
@@ -177,10 +179,13 @@ public class CurnConfig extends Configuration
     /**
      * Construct an <tt>CurnConfig</tt> object. You must call one of the
      * {@link #load(File)} methods to load the configuration.
+     *
+     * @param err where to write errors
      */
-    CurnConfig()
+    CurnConfig(PrintWriter err)
     {
         super();
+        this.err = err;
     }
 
     /*----------------------------------------------------------------------*\
@@ -706,6 +711,24 @@ public class CurnConfig extends Configuration
             parserClassName = getOptionalStringValue(MAIN_SECTION,
                                                      varName,
                                                      DEF_PARSER_CLASS_NAME);
+
+            // Backward compatibility hack.
+
+            if (parserClassName.equals(OLD_DEF_PARSER_CLASS_NAME))
+            {
+                StringBuilder buf = new StringBuilder();
+                buf.append("Warning: The \"");
+                buf.append(parserClassName);
+                buf.append("\" RSS parser class is deprecated. Using \"");
+                buf.append(DEF_PARSER_CLASS_NAME);
+                buf.append("\" instead.");
+                parserClassName = DEF_PARSER_CLASS_NAME;
+
+                String msg = buf.toString();
+                err.println(msg);
+                log.warn(msg);
+            }
+
             val = String.valueOf(parserClassName);
         }
 

@@ -49,6 +49,7 @@ package org.clapper.curn;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,6 +73,7 @@ import org.clapper.curn.parser.RSSParserException;
 import org.clapper.curn.parser.RSSChannel;
 
 import org.clapper.util.config.ConfigurationException;
+import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.logging.Logger;
 
 /**
@@ -107,6 +109,7 @@ public class Curn
     private Date currentTime = new Date();
     private MetaPlugIn metaPlugIn = null;            // NOPMD
     private boolean abortOnUndefinedVariable = true;
+    private PrintWriter err;
 
     private final Collection<ConfiguredOutputHandler> configuredOutputHandlers =
         new ArrayList<ConfiguredOutputHandler>();
@@ -121,13 +124,29 @@ public class Curn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Instantiate a new <tt>Curn</tt> object and loads its plugins.
+     * Instantiate a new <tt>Curn</tt> object and load its plug-ins.
      *
      * @throws CurnException on error
+     *
+     * @deprecated Use {@link #Curn(PrintWriter)}
      */
     public Curn()
         throws CurnException
     {
+        this(new WordWrapWriter(System.err));
+    }
+
+    /**
+     * Instantiate a new <tt>Curn</tt> object and loads its plug-ins.
+     *
+     * @param err  Where to write error messages the user should see
+     *
+     * @throws CurnException on error
+     */
+    public Curn(PrintWriter err)
+        throws CurnException
+    {
+        this.err = err;
         metaPlugIn = MetaPlugIn.getMetaPlugIn();
         logEnvironmentInfo();
     }
@@ -278,7 +297,7 @@ public class Curn
     {
         try
         {
-            config = new CurnConfig();
+            config = new CurnConfig(err);
             config.setAbortOnUndefinedVariable(abortOnUndefinedVariable);
             config.load(configPath);
             MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn(config);
