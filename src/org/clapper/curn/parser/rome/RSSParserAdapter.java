@@ -111,9 +111,9 @@ public class RSSParserAdapter implements RSSParser
      * @throws IOException        unable to read from URL
      * @throws RSSParserException unable to parse RSS XML
      */
-    public RSSChannel parseRSSFeed (URL         url,
-                                    InputStream stream,
-                                    String      encoding)
+    public RSSChannel parseRSSFeed(URL         url,
+                                   InputStream stream,
+                                   String      encoding)
         throws IOException,
                RSSParserException
     {
@@ -122,19 +122,20 @@ public class RSSParserAdapter implements RSSParser
             InputStreamReader r;
 
             if (encoding == null)
-                r = new InputStreamReader (stream);
+                r = new InputStreamReader(stream);
             else
-                r = new InputStreamReader (stream, encoding);
+                r = new InputStreamReader(stream, encoding);
 
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed      feed  = input.build (new InputSource (r));
+            SyndFeed      feed  = input.build(new InputSource(r));
+            feed.setUri(url.toString());
 
-            return new RSSChannelAdapter (feed);
+            return new RSSChannelAdapter(feed);
         }
 
         catch (FeedException ex)
         {
-            throw new RSSParserException (ex);
+            throw new RSSParserException(ex);
         }
     }
 
