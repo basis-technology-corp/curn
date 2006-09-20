@@ -156,7 +156,10 @@ public abstract class RSSItem
         if (authors != null)
         {
             for (String author : authors)
-                copy.addAuthor (author);
+            {
+                if (author != null)
+                    copy.addAuthor(author);
+            }
         }
 
         return copy;
