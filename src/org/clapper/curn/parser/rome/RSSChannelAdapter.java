@@ -61,6 +61,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -103,7 +104,7 @@ public class RSSChannelAdapter extends RSSChannel
      *
      * @param syndFeed  the <tt>SyndFeedI</tt> object
      */
-    RSSChannelAdapter (SyndFeed syndFeed)
+    RSSChannelAdapter(SyndFeed syndFeed)
     {
         this.syndFeed = syndFeed;
     }
@@ -120,7 +121,7 @@ public class RSSChannelAdapter extends RSSChannel
      */
     public RSSChannel newInstance()
     {
-        return new RSSChannelAdapter (new SyndFeedImpl());
+        return new RSSChannelAdapter(new SyndFeedImpl());
     }
 
     /**
@@ -136,7 +137,7 @@ public class RSSChannelAdapter extends RSSChannel
         Collection<RSSItem> result = new ArrayList<RSSItem>();
 
         for (Iterator it = syndFeed.getEntries().iterator(); it.hasNext(); )
-            result.add (new RSSItemAdapter ((SyndEntry) it.next(), this));
+            result.add(new RSSItemAdapter((SyndEntry) it.next(), this));
 
         return result;
     }
@@ -156,7 +157,7 @@ public class RSSChannelAdapter extends RSSChannel
         for (RSSItem ourItem : newItems)
         {
             RSSItemAdapter itemAdapter = (RSSItemAdapter) ourItem;
-            syndItems.add (itemAdapter.getSyndEntry());
+            syndItems.add(itemAdapter.getSyndEntry());
         }
 
         // We're storing values from a genericized collection into a
@@ -164,7 +165,7 @@ public class RSSChannelAdapter extends RSSChannel
         // collection. Use of a Collection<Object> avoids a compiler
         // "unchecked cast" warning.
 
-        syndFeed.setEntries (new ArrayList<Object> (syndItems));
+        syndFeed.setEntries(new ArrayList<Object> (syndItems));
     }
 
     /**
@@ -177,8 +178,8 @@ public class RSSChannelAdapter extends RSSChannel
     public boolean removeItem (RSSItem item)
     {
         Collection<RSSItem> items = getItems();
-        boolean removed = items.remove (item);
-        setItems (items);
+        boolean removed = items.remove(item);
+        setItems(items);
         return removed;
     }
 
@@ -197,7 +198,7 @@ public class RSSChannelAdapter extends RSSChannel
         // leading and trailing newlines, and converts embedded newlines to
         // spaces.
 
-        return ParserUtil.normalizeCharacterData (syndFeed.getTitle());
+        return ParserUtil.normalizeCharacterData(syndFeed.getTitle());
     }
 
     /**
@@ -207,9 +208,9 @@ public class RSSChannelAdapter extends RSSChannel
      *
      * @see #getTitle()
      */
-    public void setTitle (String newTitle)
+    public void setTitle(String newTitle)
     {
-        syndFeed.setTitle (newTitle);
+        syndFeed.setTitle(newTitle);
     }
 
     /**
@@ -225,7 +226,7 @@ public class RSSChannelAdapter extends RSSChannel
         // leading and trailing newlines, and converts embedded newlines to
         // spaces.
 
-        return ParserUtil.normalizeCharacterData (syndFeed.getDescription());
+        return ParserUtil.normalizeCharacterData(syndFeed.getDescription());
     }
 
     /**
@@ -237,7 +238,7 @@ public class RSSChannelAdapter extends RSSChannel
      */
     public void setDescription (String desc)
     {
-        syndFeed.setDescription (desc);
+        syndFeed.setDescription(desc);
     }
 
     /**
@@ -258,16 +259,16 @@ public class RSSChannelAdapter extends RSSChannel
 
         try
         {
-            URL url = new URL (syndFeed.getLink());
-            results.add (new RSSLink (url,
-                                      ParserUtil.getLinkMIMEType (url),
-                                      RSSLink.Type.SELF));
+            URL url = new URL(syndFeed.getLink());
+            results.add(new RSSLink(url,
+                                    ParserUtil.getLinkMIMEType (url),
+                                    RSSLink.Type.SELF));
         }
 
         catch (MalformedURLException ex)
         {
-            log.error ("Bad channel URL \"" + syndFeed.getLink() +
-                       "\" from underlying parser: " + ex.toString());
+            log.error("Bad channel URL \"" + syndFeed.getLink() +
+                      "\" from underlying parser: " + ex.toString());
         }
 
         return results;
@@ -280,7 +281,7 @@ public class RSSChannelAdapter extends RSSChannel
      * @see #getLink
      * @see #getLinks
      */
-    public void setLinks (Collection<RSSLink> links)
+    public void setLinks(Collection<RSSLink> links)
     {
         // Since ROME doesn't support multiple links per feed, we have
         // to assume that the first link is the link for the feed.
@@ -288,7 +289,7 @@ public class RSSChannelAdapter extends RSSChannel
         if ((links != null) && (links.size() > 0))
         {
             RSSLink link = links.iterator().next();
-            this.syndFeed.setLink (link.getURL().toExternalForm());
+            this.syndFeed.setLink(link.getURL().toExternalForm());
         }
     }
 
@@ -308,9 +309,9 @@ public class RSSChannelAdapter extends RSSChannel
      *
      * @param date  the publication date, or null if not available
      */
-    public void setPublicationDate (Date date)
+    public void setPublicationDate(Date date)
     {
-        this.syndFeed.setPublishedDate (date);
+        this.syndFeed.setPublishedDate(date);
     }
 
     /**
@@ -330,9 +331,9 @@ public class RSSChannelAdapter extends RSSChannel
      *
      * @see #getCopyright
      */
-    public void setCopyright (String copyright)
+    public void setCopyright(String copyright)
     {
-        this.syndFeed.setCopyright (copyright);
+        this.syndFeed.setCopyright(copyright);
     }
 
     /**
@@ -350,7 +351,7 @@ public class RSSChannelAdapter extends RSSChannel
      * method exists for underlying implementations that store the RSS
      * format as something other than a string; the method allows the
      * {@link #makeCopy} method to copy the RSS format without knowing
-     * how it's stored. The default implementation of this method 
+     * how it's stored. The default implementation of this method
      * simply calls {@link #getRSSFormat}.
      *
      * @return the format, or null if not available
@@ -371,9 +372,9 @@ public class RSSChannelAdapter extends RSSChannel
      * @see #getRSSFormat
      * @see #getNativeRSSFormat
      */
-    public void setNativeRSSFormat (Object format)
+    public void setNativeRSSFormat(Object format)
     {
-        ((SyndFeedImpl) this.syndFeed).setFeedType ((String) format);
+        ((SyndFeedImpl) this.syndFeed).setFeedType((String) format);
     }
 
     /**
@@ -387,9 +388,13 @@ public class RSSChannelAdapter extends RSSChannel
      */
     public Collection<String> getAuthors()
     {
-        // Rome does not support this field
+        // ROME supports only one author per feed.
 
-        return null;
+        Collection<String> result = null;
+        String author = syndFeed.getAuthor();
+        if (author != null)
+            result = Collections.singleton(syndFeed.getAuthor());
+        return result;
     }
 
     /**
@@ -400,9 +405,14 @@ public class RSSChannelAdapter extends RSSChannel
      * @see #getAuthors
      * @see #clearAuthors
      */
-    public void addAuthor (String author)
+    public void addAuthor(String author)
     {
-        // Rome does not support this field
+        // ROME supports only one author per feed. So, if the author field
+        // is already set, don't overwrite it. (Assumes the first author is
+        // the primary author.)
+
+        if (syndFeed.getAuthor() == null)
+            syndFeed.setAuthor(author);
     }
 
     /**

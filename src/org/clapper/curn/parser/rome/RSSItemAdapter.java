@@ -59,6 +59,7 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndPerson;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -69,6 +70,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This class implements the <tt>RSSItem</tt> interface and defines an
@@ -114,7 +117,7 @@ public class RSSItemAdapter extends RSSItem
      * @param entry         the <tt>SyndEntry</tt> object
      * @param parentChannel parent <tt>RSSChannel</tt>
      */
-    RSSItemAdapter (SyndEntry entry, RSSChannel parentChannel)
+    RSSItemAdapter(SyndEntry entry, RSSChannel parentChannel)
     {
         super();
 
@@ -134,9 +137,9 @@ public class RSSItemAdapter extends RSSItem
      *
      * @return the new instance
      */
-    public RSSItem newInstance (RSSChannel channel)
+    public RSSItem newInstance(RSSChannel channel)
     {
-        return new RSSItemAdapter (new SyndEntryImpl(), channel);
+        return new RSSItemAdapter(new SyndEntryImpl(), channel);
     }
 
     /**
@@ -146,7 +149,7 @@ public class RSSItemAdapter extends RSSItem
      */
     public RSSChannel getParentChannel()
     {
-        return this.channel;        
+        return this.channel;
     }
 
 
@@ -165,7 +168,7 @@ public class RSSItemAdapter extends RSSItem
         // leading and trailing newlines, and converts embedded newlines to
         // spaces.
 
-        return ParserUtil.normalizeCharacterData (entry.getTitle());
+        return ParserUtil.normalizeCharacterData(entry.getTitle());
     }
 
     /**
@@ -175,9 +178,9 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getTitle
      */
-    public void setTitle (String newTitle)
+    public void setTitle(String newTitle)
     {
-        entry.setTitle (newTitle);
+        entry.setTitle(newTitle);
     }
 
     /**
@@ -198,16 +201,16 @@ public class RSSItemAdapter extends RSSItem
 
         try
         {
-            URL url = new URL (entry.getLink());
-            results.add (new RSSLink (url,
-                                      ParserUtil.getLinkMIMEType (url),
-                                      RSSLink.Type.SELF));
+            URL url = new URL(entry.getLink());
+            results.add(new RSSLink(url,
+                                    ParserUtil.getLinkMIMEType (url),
+                                    RSSLink.Type.SELF));
         }
 
         catch (MalformedURLException ex)
         {
-            log.error ("Bad channel URL \"" + entry.getLink() +
-                       "\" from underlying parser: " + ex.toString());
+            log.error("Bad channel URL \"" + entry.getLink() +
+                      "\" from underlying parser: " + ex.toString());
         }
 
         return results;
@@ -220,7 +223,7 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getLinks
      */
-    public void setLinks (Collection<RSSLink> links)
+    public void setLinks(Collection<RSSLink> links)
     {
         // Since ROME doesn't support multiple links per item, we have
         // to assume that the first link is the link for the item.
@@ -228,7 +231,7 @@ public class RSSItemAdapter extends RSSItem
         if ((links != null) && (links.size() > 0))
         {
             RSSLink link = links.iterator().next();
-            entry.setLink (link.getURL().toExternalForm());
+            entry.setLink(link.getURL().toExternalForm());
         }
     }
 
@@ -254,7 +257,7 @@ public class RSSItemAdapter extends RSSItem
 
             result = content.getValue();
             if (result != null)
-                result = ParserUtil.normalizeCharacterData (result);
+                result = ParserUtil.normalizeCharacterData(result);
         }
 
         return result;
@@ -268,7 +271,7 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getSummary
      */
-    public void setSummary (String newSummary)
+    public void setSummary(String newSummary)
     {
         SyndContent  content = entry.getDescription();
 
@@ -292,9 +295,51 @@ public class RSSItemAdapter extends RSSItem
      */
     public Collection<String> getAuthors()
     {
-        // Rome doesn't support this field.
+        Set<String> result = null;
+        List authors = entry.getAuthors();
+        List contributors = entry.getContributors();
+        if ((authors != null) || (contributors != null))
+            result = new TreeSet<String>();
 
-        return null;
+        if (authors != null)
+        {
+            for (Object author : authors)
+            {
+                if (author != null)
+                {
+                    String name;
+
+                    if (author instanceof SyndPerson)
+                        name = ((SyndPerson) author).getName();
+                    else
+                        name = author.toString();
+
+                    if ((name != null) && (! TextUtil.stringIsEmpty(name)))
+                        result.add(name.trim());
+                }
+            }
+        }
+
+        if (contributors != null)
+        {
+            for (Object contributor : contributors)
+            {
+                if (contributor != null)
+                {
+                    String name;
+
+                    if (contributor instanceof SyndPerson)
+                        name = ((SyndPerson) contributor).getName();
+                    else
+                        name = contributor.toString();
+
+                    if (name != null)
+                        result.add(name);
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -307,7 +352,13 @@ public class RSSItemAdapter extends RSSItem
      */
     public void addAuthor (String author)
     {
-        // Rome doesn't support this field.
+        Collection<String> authors = getAuthors();
+        List<String> newAuthors = new ArrayList<String>();
+        if (authors != null)
+            newAuthors.addAll(authors);
+
+        newAuthors.add(author);
+        entry.setAuthors(newAuthors);
     }
 
     /**
@@ -340,7 +391,7 @@ public class RSSItemAdapter extends RSSItem
             {
                 String s = ((SyndCategory) it.next()).getName();
                 if ((s != null) && (s.trim().length() > 0))
-                    result.add (s);
+                    result.add(s);
             }
         }
 
@@ -355,7 +406,7 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getCategories
      */
-    public void setCategories (Collection<String> categories)
+    public void setCategories(Collection<String> categories)
     {
         if (categories == null)
             categories = Collections.emptyList();
@@ -365,11 +416,11 @@ public class RSSItemAdapter extends RSSItem
         for (String category : categories)
         {
             SyndCategoryImpl nativeCategory = new SyndCategoryImpl();
-            nativeCategory.setName (category);
-            nativeCategories.add (nativeCategory);
+            nativeCategory.setName(category);
+            nativeCategories.add(nativeCategory);
         }
 
-        entry.setCategories (nativeCategories);
+        entry.setCategories(nativeCategories);
     }
 
     /**
@@ -387,9 +438,9 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getPublicationDate
      */
-    public void setPublicationDate (Date date)
+    public void setPublicationDate(Date date)
     {
-        this.entry.setPublishedDate (date);
+        this.entry.setPublishedDate(date);
     }
 
     /**
@@ -407,7 +458,7 @@ public class RSSItemAdapter extends RSSItem
      *
      * @param id the ID field, or null
      */
-    public void setID (String id)
+    public void setID(String id)
     {
         // Nothing to do here.
     }
