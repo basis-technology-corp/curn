@@ -178,7 +178,7 @@ public class ShowAuthorsPlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -226,7 +226,7 @@ public class ShowAuthorsPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -274,7 +274,7 @@ public class ShowAuthorsPlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         Boolean showBoxed = perFeedShowAuthorsFlag.get (feedInfo);
         boolean show = showAuthorsDefault;
