@@ -49,6 +49,7 @@ package org.clapper.curn.plugins;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
+import org.clapper.curn.FeedMetaDataRegistry;
 import org.clapper.curn.OutputHandlerConfigItemPlugIn;
 
 import org.clapper.util.classutil.ClassUtil;
@@ -122,6 +123,23 @@ public class DisableOutputHandlerPlugIn
     }
 
     /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+    }
+
+    /**
      * Called immediately after <i>curn</i> has read and processed a
      * configuration item in an output handler configuration section. All
      * configuration items are passed, one by one, to each loaded plug-in.
@@ -152,7 +170,7 @@ public class DisableOutputHandlerPlugIn
                                       String                  paramName,
                                       CurnConfig              config,
                                       ConfiguredOutputHandler handler)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
 

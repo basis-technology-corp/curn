@@ -68,6 +68,7 @@ import java.net.URLConnection;
 import java.util.Map;
 import java.util.HashMap;
 import org.clapper.curn.CurnUtil;
+import org.clapper.curn.FeedMetaDataRegistry;
 
 /**
  * The <tt>RawFeedSaveAsPlugIn</tt> handles saving a feed to a known location.
@@ -184,6 +185,23 @@ public class RawFeedSaveAsPlugIn
     }
 
     /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+    }
+
+    /**
      * Called immediately after <i>curn</i> has read and processed a
      * configuration item in a "feed" configuration section. All
      * configuration items are passed, one by one, to each loaded plug-in.
@@ -214,7 +232,7 @@ public class RawFeedSaveAsPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -274,7 +292,7 @@ public class RawFeedSaveAsPlugIn
      * @see CurnConfig
      */
     public void runPostConfigPlugIn (CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         this.config = config;
 
@@ -331,7 +349,7 @@ public class RawFeedSaveAsPlugIn
      */
     public boolean runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
                                              URLConnection urlConn)
-	throws CurnException
+        throws CurnException
     {
         boolean processFeed = true;
 
@@ -383,7 +401,7 @@ public class RawFeedSaveAsPlugIn
     public boolean runPostFeedDownloadPlugIn (FeedInfo feedInfo,
                                               File     feedDataFile,
                                               String   encoding)
-	throws CurnException
+        throws CurnException
     {
         boolean keepGoing = true;
         FeedSaveInfo saveInfo = perFeedSaveAsMap.get (feedInfo);

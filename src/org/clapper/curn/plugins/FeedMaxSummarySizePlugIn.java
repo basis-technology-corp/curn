@@ -62,6 +62,7 @@ import org.clapper.util.text.HTMLUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedMetaDataRegistry;
 
 /**
  * The <tt>FeedMaxSummarySizePlugIn</tt> optionally truncates a feed's
@@ -162,6 +163,23 @@ public class FeedMaxSummarySizePlugIn
     }
 
     /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+    }
+    
+    /**
      * Called immediately after <i>curn</i> has read and processed a
      * configuration item in the main [curn] configuration section. All
      * configuration items are passed, one by one, to each loaded plug-in.
@@ -183,7 +201,7 @@ public class FeedMaxSummarySizePlugIn
     public void runMainConfigItemPlugIn (String     sectionName,
                                          String     paramName,
                                          CurnConfig config)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -233,7 +251,7 @@ public class FeedMaxSummarySizePlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -284,7 +302,7 @@ public class FeedMaxSummarySizePlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         Integer maxBoxed = perFeedMaxSummarySize.get (feedInfo);
         int     max      = maxSummarySizeDefault;

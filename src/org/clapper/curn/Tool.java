@@ -180,13 +180,13 @@ public class Tool
 
             err.println(ex.getMessage());
         }
-        
+
         catch (CommandLineException ex)
         {
             ex.printStackTrace(System.err);
             System.exit(1);
         }
-        
+
         catch (Exception ex)
         {
             ex.printStackTrace(System.err);
@@ -217,6 +217,11 @@ public class Tool
         return ClassUtil.getShortClassName(this.getClass());
     }
 
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+    }
+
     public void runPostConfigPlugIn(final CurnConfig config)
         throws CurnException
     {
@@ -224,7 +229,7 @@ public class Tool
         {
             adjustConfiguration(config);
         }
-        
+
         catch (ConfigurationException ex)
         {
             throw new CurnException(ex);
@@ -266,63 +271,63 @@ public class Tool
             case 'a':           // --authors
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'A':           // --no-authors
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'B':           // --build-info
                 optShowBuildInfo = true;
                 break;
-                
+
             case 'C':           // --no-cache
                 useCache = false;
                 break;
-                
+
             case 'd':           // --show-dates
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'D':           // --no-dates
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'p':           // --plug-ins
                 optShowPlugIns = true;
                 break;
-                
+
             case 'r':           // --rss-version
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'R':           // --no-rss-version
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 't':           // --time
                 currentTime = parseDateTime(it.next());
                 break;
-                
+
             case 'T':           // --threads
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'u':           // --no-update
                 optUpdateCache = Boolean.FALSE;
                 break;
-                
+
             case 'U':          // --allow-undefined-cfg-vars
                 optAbortOnUndefinedConfigVar = false;
                 break;
-                
+
             case 'v':
                 optShowVersion = true;
                 break;
-                
+
             case 'z':           // --gzip
                 deprecatedOption(shortOption, longOption);
                 break;
-                
+
             case 'Z':           // --no-gzip
                 deprecatedOption(shortOption, longOption);
                 break;
@@ -572,7 +577,7 @@ public class Tool
         // parameters.
 
         if (optUpdateCache != null)
-            config.setMustUpdateCacheFlag(optUpdateCache.booleanValue());
+            config.setMustUpdateFeedMetaData(optUpdateCache.booleanValue());
     }
 
     private Date parseDateTime(final String s)

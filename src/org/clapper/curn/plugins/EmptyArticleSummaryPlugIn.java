@@ -62,6 +62,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedMetaDataRegistry;
 
 /**
  * The <tt>EmptyArticleSummaryPlugIn</tt> provides a way to handle an empty
@@ -188,6 +189,23 @@ public class EmptyArticleSummaryPlugIn
     public String getSortKey()
     {
         return ClassUtil.getShortClassName (getClass().getName());
+    }
+
+    /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
     }
 
     /**

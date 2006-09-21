@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.clapper.curn.FeedMetaDataRegistry;
 
 /**
  * The <tt>ParsedFeedURLEditPlugIn</tt> edits a feed after it has been
@@ -147,7 +148,7 @@ public class ParsedFeedURLEditPlugIn
     /**
      * For log messages
      */
-    private static final Logger log = 
+    private static final Logger log =
         new Logger (ParsedFeedURLEditPlugIn.class);
 
     /**
@@ -191,6 +192,23 @@ public class ParsedFeedURLEditPlugIn
         return ClassUtil.getShortClassName (getClass().getName());
     }
 
+    /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+    }
+
     /*----------------------------------------------------------------------*\
                Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
@@ -212,7 +230,7 @@ public class ParsedFeedURLEditPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -226,7 +244,7 @@ public class ParsedFeedURLEditPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -294,7 +312,7 @@ public class ParsedFeedURLEditPlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         FeedEditInfo editInfo = perFeedEditInfoMap.get (feedInfo);
 

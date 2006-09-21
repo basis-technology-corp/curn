@@ -241,14 +241,13 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Get the configured cache file.
-     *
+     * Get the configured feed metadata file (formerly called the cache file).
+     * 
      * @return the cache file
-     *
-     * @see #mustUpdateCache
-     * @see #setMustUpdateCacheFlag
+     * @see #mustUpdateFeedMetaData
+     * @see #setMustUpdateFeedMetaData
      */
-    public File getCacheFile()
+    public File getFeedMetaDataFile()
     {
         return cacheFile;
     }
@@ -266,14 +265,13 @@ public class CurnConfig extends Configuration
 
     /**
      * Determine whether the cache should be updated.
-     *
+     * 
      * @return <tt>true</tt> if the cache should be updated, <tt>false</tt>
      *         if it should not.
-     *
-     * @see #getCacheFile
-     * @see #setMustUpdateCacheFlag
+     * @see #getFeedMetaDataFile
+     * @see #setMustUpdateFeedMetaData
      */
-    public boolean mustUpdateCache()
+    public boolean mustUpdateFeedMetaData()
     {
         return updateCache;
     }
@@ -324,14 +322,13 @@ public class CurnConfig extends Configuration
 
     /**
      * Change the "update cache" flag.
-     *
+     * 
      * @param val <tt>true</tt> if the cache should be updated, <tt>false</tt>
      *            if it should not
-     *
-     * @see #mustUpdateCache
-     * @see #getCacheFile
+     * @see #mustUpdateFeedMetaData
+     * @see #getFeedMetaDataFile
      */
-    public void setMustUpdateCacheFlag(final boolean val)
+    public void setMustUpdateFeedMetaData(final boolean val)
     {
         updateCache = val;
     }

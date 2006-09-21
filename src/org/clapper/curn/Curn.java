@@ -242,15 +242,16 @@ public class Curn
     {
         Map<FeedInfo,RSSChannel> channels;
         boolean                  parsingEnabled = true;
-        File                     cacheFile = config.getCacheFile();
-        FeedCache                cache = null;
+        File                     cacheFile = config.getFeedMetaDataFile();
+        FeedMetaData             cache = null;
 
         loadOutputHandlers(config);
 
         if (useCache && (cacheFile != null))
         {
-            cache = new FeedCache(config);
+            cache = new FeedMetaData(config);
             cache.setCurrentTime(currentTime);
+            metaPlugIn.init(cache);
             cache.loadCache();
             metaPlugIn.runCacheLoadedPlugIn(cache);
         }
@@ -281,9 +282,9 @@ public class Curn
 
         log.debug("cacheFile=" +
                   ((cacheFile == null) ? "null" : cacheFile.getPath()) +
-                  ", mustUpdateCache=" + config.mustUpdateCache());
+                  ", mustUpdateCache=" + config.mustUpdateFeedMetaData());
 
-        if ((cache != null) && config.mustUpdateCache())
+        if ((cache != null) && config.mustUpdateFeedMetaData())
         {
             int totalCacheBackups = config.totalCacheBackups();
             metaPlugIn.runPreCacheSavePlugIn(cache);
@@ -374,7 +375,7 @@ public class Curn
      */
     private Map<FeedInfo,RSSChannel>
     downloadFeeds (final boolean    parsingEnabled,
-                   final FeedCache  feedCache,
+                   final FeedMetaData  feedCache,
                    final CurnConfig configuration)
         throws RSSParserException,
                CurnException

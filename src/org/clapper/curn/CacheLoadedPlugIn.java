@@ -66,13 +66,11 @@ public interface CacheLoadedPlugIn extends PlugIn
     /**
      * Called after the <i>curn</i> cache has been read (and after any
      * expired entries have been purged), but before any feeds are processed.
-     *
-     * @param cache  the loaded {@link FeedCache} object
      * 
-     * @throws CurnException on error
-     *
+     * @param cache  the loaded {@link FFeedMetaData object
      * @see FeedCache
+     * @throws CurnException on erFeedMetaData
      */
-    public void runCacheLoadedPlugIn (FeedCache cache)
+    public void runCacheLoadedPlugIn (FeedMetaData cache)
         throws CurnException;
 }

@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.clapper.curn.FeedMetaDataRegistry;
 
 /**
  * The <tt>ArticleFilterPlugIn</tt> provides per-feed filtering capabilities.
@@ -196,7 +197,7 @@ public class ArticleFilterPlugIn
     private static final char   COMMAND_DELIM     = ';';
     private static final String STR_COMMAND_DELIM = "" + COMMAND_DELIM;
 
-    private static Map<String,Field> FIELD_NAME_MAP
+    private static Map<String,Field> FIELD_NAME_MAP              // NOPMD
         = new HashMap<String,Field>();
     static
     {
@@ -204,7 +205,7 @@ public class ArticleFilterPlugIn
             FIELD_NAME_MAP.put (field.toString().toLowerCase(), field);
     }
 
-    private static Map<String,Command> COMMAND_MAP
+    private static Map<String,Command> COMMAND_MAP               // NOPMD
         = new HashMap<String,Command>();
     static
     {
@@ -394,6 +395,23 @@ public class ArticleFilterPlugIn
     }
 
     /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+    }
+
+    /**
      * Called immediately after <i>curn</i> has read and processed a
      * configuration item in a "feed" configuration section. All
      * configuration items are passed, one by one, to each loaded plug-in.
@@ -424,7 +442,7 @@ public class ArticleFilterPlugIn
                                             String     paramName,
                                             CurnConfig config,
                                             FeedInfo   feedInfo)
-	throws CurnException
+        throws CurnException
     {
         try
         {
@@ -472,7 +490,7 @@ public class ArticleFilterPlugIn
      */
     public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
                                            RSSChannel channel)
-	throws CurnException
+        throws CurnException
     {
         FeedFilterRules rules = perFeedMatchRules.get (feedInfo);
         if (rules != null)

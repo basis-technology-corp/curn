@@ -97,7 +97,7 @@ class FeedDownloadThread
     private final String                  id;
     private final CurnConfig              configuration;
     private final RSSParser               rssParser;
-    private final FeedCache               cache;
+    private final FeedMetaData               cache;
     private final Queue<FeedInfo>         feedQueue;
     private       FeedException           exception = null;
     private final MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
@@ -151,7 +151,7 @@ class FeedDownloadThread
      *                        null if no latch is to be used.
      */
     FeedDownloadThread (RSSParser               parser,
-                        FeedCache               feedCache,
+                        FeedMetaData               feedCache,
                         CurnConfig              configFile,
                         Queue<FeedInfo>         feedQueue,
                         FeedDownloadDoneHandler feedDownloadDoneHandler,
@@ -709,7 +709,7 @@ class FeedDownloadThread
      */
     private void setIfModifiedSinceHeader (final URLConnection conn,
                                            final FeedInfo      feedInfo,
-                                           final FeedCache     cache)
+                                           final FeedMetaData     cache)
     {
         long     lastSeen = 0;
         URL      feedURL = feedInfo.getURL();
@@ -756,7 +756,7 @@ class FeedDownloadThread
      */
     private boolean feedHasChanged (final URLConnection conn,
                                     final FeedInfo      feedInfo,
-                                    final FeedCache     cache)
+                                    final FeedMetaData     cache)
         throws IOException
     {
         long     lastSeen = 0;

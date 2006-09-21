@@ -161,6 +161,8 @@ public class MetaPlugIn
         unknownSectionConfigItemPlugIns =
             new ArrayList<UnknownSectionConfigItemPlugIn>();
 
+    private final Collection<PlugIn> allPlugIns = new ArrayList<PlugIn>();
+
     /**
      * The singleton
      */
@@ -211,55 +213,57 @@ public class MetaPlugIn
         synchronized (MetaPlugIn.class)
         {
             if (plugIn instanceof CacheLoadedPlugIn)
-                cacheLoadedPlugIns.add ((CacheLoadedPlugIn) plugIn);
+                cacheLoadedPlugIns.add((CacheLoadedPlugIn) plugIn);
 
             if (plugIn instanceof FeedConfigItemPlugIn)
-                feedConfigItemPlugIns.add ((FeedConfigItemPlugIn) plugIn);
+                feedConfigItemPlugIns.add((FeedConfigItemPlugIn) plugIn);
 
             if (plugIn instanceof MainConfigItemPlugIn)
-                mainConfigItemPlugIns.add ((MainConfigItemPlugIn) plugIn);
+                mainConfigItemPlugIns.add((MainConfigItemPlugIn) plugIn);
 
             if (plugIn instanceof OutputHandlerConfigItemPlugIn)
                 outputHandlerConfigItemPlugIns.add
                     ((OutputHandlerConfigItemPlugIn) plugIn);
 
             if (plugIn instanceof PostConfigPlugIn)
-                postConfigPlugIns.add ((PostConfigPlugIn) plugIn);
+                postConfigPlugIns.add((PostConfigPlugIn) plugIn);
 
             if (plugIn instanceof PostFeedDownloadPlugIn)
-                postFeedDownloadPlugIns.add ((PostFeedDownloadPlugIn) plugIn);
+                postFeedDownloadPlugIns.add((PostFeedDownloadPlugIn) plugIn);
 
             if (plugIn instanceof PostFeedOutputPlugIn)
-                postFeedOutputPlugIns.add ((PostFeedOutputPlugIn) plugIn);
+                postFeedOutputPlugIns.add((PostFeedOutputPlugIn) plugIn);
 
             if (plugIn instanceof PostFeedParsePlugIn)
-                postFeedParsePlugIns.add ((PostFeedParsePlugIn) plugIn);
+                postFeedParsePlugIns.add((PostFeedParsePlugIn) plugIn);
 
             if (plugIn instanceof PostOutputHandlerFlushPlugIn)
                 postOutputHandlerFlushPlugIns.add
                     ((PostOutputHandlerFlushPlugIn) plugIn);
 
             if (plugIn instanceof PreCacheSavePlugIn)
-                preCacheSavePlugIns.add ((PreCacheSavePlugIn) plugIn);
+                preCacheSavePlugIns.add((PreCacheSavePlugIn) plugIn);
 
             if (plugIn instanceof PreFeedDownloadPlugIn)
-                preFeedDownloadPlugIns.add ((PreFeedDownloadPlugIn) plugIn);
+                preFeedDownloadPlugIns.add((PreFeedDownloadPlugIn) plugIn);
 
             if (plugIn instanceof PreFeedOutputPlugIn)
-                preFeedOutputPlugIns.add ((PreFeedOutputPlugIn) plugIn);
+                preFeedOutputPlugIns.add((PreFeedOutputPlugIn) plugIn);
 
             if (plugIn instanceof PostOutputPlugIn)
-                postOutputPlugIns.add ((PostOutputPlugIn) plugIn);
+                postOutputPlugIns.add((PostOutputPlugIn) plugIn);
 
             if (plugIn instanceof ShutdownPlugIn)
-                shutdownPlugIns.add ((ShutdownPlugIn) plugIn);
+                shutdownPlugIns.add((ShutdownPlugIn) plugIn);
 
             if (plugIn instanceof StartupPlugIn)
-                startupPlugIns.add ((StartupPlugIn) plugIn);
+                startupPlugIns.add((StartupPlugIn) plugIn);
 
             if (plugIn instanceof UnknownSectionConfigItemPlugIn)
                 unknownSectionConfigItemPlugIns.add
                     ((UnknownSectionConfigItemPlugIn) plugIn);
+
+            allPlugIns.add(plugIn);
         }
     }
 
@@ -277,6 +281,25 @@ public class MetaPlugIn
         return getName();
     }
 
+    /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException
+    {
+        for (PlugIn plugIn : allPlugIns)
+            plugIn.init(metaDataRegistry);
+    }
+
     public synchronized void runStartupPlugIn()
         throws CurnException
     {
@@ -287,41 +310,41 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void 
-    runMainConfigItemPlugIn (final String     sectionName,
-                             final String     paramName,
-                             final CurnConfig config)
+    public synchronized void
+    runMainConfigItemPlugIn(final String     sectionName,
+                            final String     paramName,
+                            final CurnConfig config)
         throws CurnException
     {
         for (MainConfigItemPlugIn plugIn : mainConfigItemPlugIns)
         {
-            logPlugInInvocation ("runMainConfigItemPlugIn",
-                                 plugIn,
-                                 sectionName,
-                                 paramName);
-            plugIn.runMainConfigItemPlugIn (sectionName, paramName, config);
+            logPlugInInvocation("runMainConfigItemPlugIn",
+                                plugIn,
+                                sectionName,
+                                paramName);
+            plugIn.runMainConfigItemPlugIn(sectionName, paramName, config);
         }
     }
 
     public synchronized boolean
-    runFeedConfigItemPlugIn (final String     sectionName,
-                             final String     paramName,
-                             final CurnConfig config,
-                             final FeedInfo   feedInfo)
+    runFeedConfigItemPlugIn(final String     sectionName,
+                            final String     paramName,
+                            final CurnConfig config,
+                            final FeedInfo   feedInfo)
         throws CurnException
     {
         boolean keepGoing = true;
 
         for (FeedConfigItemPlugIn plugIn : feedConfigItemPlugIns)
         {
-            logPlugInInvocation ("runFeedConfigItemPlugIn",
-                                 plugIn,
-                                 sectionName,
-                                 paramName);
-            keepGoing = plugIn.runFeedConfigItemPlugIn (sectionName,
-                                                        paramName,
-                                                        config,
-                                                        feedInfo);
+            logPlugInInvocation("runFeedConfigItemPlugIn",
+                                plugIn,
+                                sectionName,
+                                paramName);
+            keepGoing = plugIn.runFeedConfigItemPlugIn(sectionName,
+                                                       paramName,
+                                                       config,
+                                                       feedInfo);
             if (! keepGoing)
                 break;
         }
@@ -330,25 +353,25 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
-    runOutputHandlerConfigItemPlugIn (final String                  sectionName,
-                                      final String                  paramName,
-                                      final CurnConfig              config,
-                                      final ConfiguredOutputHandler handler)
+    runOutputHandlerConfigItemPlugIn(final String                  sectionName,
+                                     final String                  paramName,
+                                     final CurnConfig              config,
+                                     final ConfiguredOutputHandler handler)
         throws CurnException
     {
         boolean keepGoing = true;
 
         for (OutputHandlerConfigItemPlugIn plugIn :
-                 outputHandlerConfigItemPlugIns)
+               outputHandlerConfigItemPlugIns)
         {
-            logPlugInInvocation ("runOutputHandlerConfigItemPlugIn",
-                                 plugIn,
-                                 sectionName,
-                                 paramName);
-            keepGoing = plugIn.runOutputHandlerConfigItemPlugIn (sectionName,
-                                                                 paramName,
-                                                                 config,
-                                                                 handler);
+            logPlugInInvocation("runOutputHandlerConfigItemPlugIn",
+                                plugIn,
+                                sectionName,
+                                paramName);
+            keepGoing = plugIn.runOutputHandlerConfigItemPlugIn(sectionName,
+                                                                paramName,
+                                                                config,
+                                                                handler);
             if (! keepGoing)
                 break;
         }
@@ -357,35 +380,35 @@ public class MetaPlugIn
     }
 
     public synchronized void
-    runUnknownSectionConfigItemPlugIn (final String     sectionName,
-                                       final String     paramName,
-                                       final CurnConfig config)
+    runUnknownSectionConfigItemPlugIn(final String     sectionName,
+                                      final String     paramName,
+                                      final CurnConfig config)
         throws CurnException
     {
         for (UnknownSectionConfigItemPlugIn plugIn :
                  unknownSectionConfigItemPlugIns)
         {
-            logPlugInInvocation ("runUnknownSectionConfigItemPlugIn",
-                                 plugIn,
-                                 sectionName,
-                                 paramName);
-            plugIn.runUnknownSectionConfigItemPlugIn (sectionName,
-                                                      paramName,
-                                                      config);
+            logPlugInInvocation("runUnknownSectionConfigItemPlugIn",
+                                plugIn,
+                                sectionName,
+                                paramName);
+            plugIn.runUnknownSectionConfigItemPlugIn(sectionName,
+                                                     paramName,
+                                                     config);
         }
     }
 
-    public synchronized void runPostConfigPlugIn (final CurnConfig config)
+    public synchronized void runPostConfigPlugIn(final CurnConfig config)
         throws CurnException
     {
         for (PostConfigPlugIn plugIn : postConfigPlugIns)
         {
-            logPlugInInvocation ("runPostConfigPlugIn", plugIn);
-            plugIn.runPostConfigPlugIn (config);
+            logPlugInInvocation("runPostConfigPlugIn", plugIn);
+            plugIn.runPostConfigPlugIn(config);
         }
     }
 
-    public synchronized void runCacheLoadedPlugIn (final FeedCache cache)
+    public synchronized void runCacheLoadedPlugIn (final FeedMetaData cache)
         throws CurnException
     {
         for (CacheLoadedPlugIn plugIn : cacheLoadedPlugIns)
@@ -396,16 +419,16 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
-    runPreFeedDownloadPlugIn (final FeedInfo      feedInfo,
-                              final URLConnection urlConn)
+    runPreFeedDownloadPlugIn(final FeedInfo      feedInfo,
+                             final URLConnection urlConn)
         throws CurnException
     {
         boolean keepGoing = true;
 
         for (PreFeedDownloadPlugIn plugIn : preFeedDownloadPlugIns)
         {
-            logPlugInInvocation ("runPreFeedDownloadPlugIn", plugIn);
-            keepGoing = plugIn.runPreFeedDownloadPlugIn (feedInfo, urlConn);
+            logPlugInInvocation("runPreFeedDownloadPlugIn", plugIn);
+            keepGoing = plugIn.runPreFeedDownloadPlugIn(feedInfo, urlConn);
 
             if (! keepGoing)
                 break;
@@ -414,20 +437,20 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized boolean 
-    runPostFeedDownloadPlugIn (final FeedInfo feedInfo,
-                               final File     feedDataFile,
-                               final String   encoding)
+    public synchronized boolean
+    runPostFeedDownloadPlugIn(final FeedInfo feedInfo,
+                              final File     feedDataFile,
+                              final String   encoding)
         throws CurnException
     {
         boolean keepGoing = true;
 
         for (PostFeedDownloadPlugIn plugIn : postFeedDownloadPlugIns)
         {
-            logPlugInInvocation ("runPostFeedDownloadPlugIn", plugIn);
-            keepGoing = plugIn.runPostFeedDownloadPlugIn (feedInfo,
-                                                          feedDataFile,
-                                                          encoding);
+            logPlugInInvocation("runPostFeedDownloadPlugIn", plugIn);
+            keepGoing = plugIn.runPostFeedDownloadPlugIn(feedInfo,
+                                                         feedDataFile,
+                                                         encoding);
             if (! keepGoing)
                 break;
         }
@@ -435,17 +458,17 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized boolean 
-    runPostFeedParsePlugIn (final FeedInfo   feedInfo,
-                            final RSSChannel channel)
+    public synchronized boolean
+    runPostFeedParsePlugIn(final FeedInfo   feedInfo,
+                           final RSSChannel channel)
         throws CurnException
     {
         boolean keepGoing = true;
 
         for (PostFeedParsePlugIn plugIn : postFeedParsePlugIns)
         {
-            logPlugInInvocation ("runPostFeedParsePlugIn", plugIn);
-            keepGoing = plugIn.runPostFeedParsePlugIn (feedInfo, channel);
+            logPlugInInvocation("runPostFeedParsePlugIn", plugIn);
+            keepGoing = plugIn.runPostFeedParsePlugIn(feedInfo, channel);
             if (! keepGoing)
                 break;
         }
@@ -453,33 +476,33 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public synchronized void 
-    runPreFeedOutputPlugIn (final FeedInfo      feedInfo,
-                            final RSSChannel    channel,
-                            final OutputHandler outputHandler)
+    public synchronized void
+    runPreFeedOutputPlugIn(final FeedInfo      feedInfo,
+                           final RSSChannel    channel,
+                           final OutputHandler outputHandler)
         throws CurnException
     {
         for (PreFeedOutputPlugIn plugIn : preFeedOutputPlugIns)
         {
-            logPlugInInvocation ("runPreFeedOutputPlugIn", plugIn);
-            plugIn.runPreFeedOutputPlugIn (feedInfo, channel, outputHandler);
+            logPlugInInvocation("runPreFeedOutputPlugIn", plugIn);
+            plugIn.runPreFeedOutputPlugIn(feedInfo, channel, outputHandler);
         }
     }
 
-    public synchronized void 
-    runPostFeedOutputPlugIn (final FeedInfo      feedInfo,
-                             final OutputHandler outputHandler)
+    public synchronized void
+    runPostFeedOutputPlugIn(final FeedInfo      feedInfo,
+                            final OutputHandler outputHandler)
         throws CurnException
     {
         for (PostFeedOutputPlugIn plugIn : postFeedOutputPlugIns)
         {
-            logPlugInInvocation ("runPostFeedOutputPlugIn", plugIn);
-            plugIn.runPostFeedOutputPlugIn (feedInfo, outputHandler);
+            logPlugInInvocation("runPostFeedOutputPlugIn", plugIn);
+            plugIn.runPostFeedOutputPlugIn(feedInfo, outputHandler);
         }
     }
 
     public synchronized boolean
-    runPostOutputHandlerFlushPlugIn (final OutputHandler outputHandler)
+    runPostOutputHandlerFlushPlugIn(final OutputHandler outputHandler)
         throws CurnException
     {
         boolean keepGoing = true;
@@ -487,8 +510,8 @@ public class MetaPlugIn
         for (PostOutputHandlerFlushPlugIn plugIn :
                  postOutputHandlerFlushPlugIns)
         {
-            logPlugInInvocation ("runPostOutputHandlerFlushPlugIn", plugIn);
-            keepGoing = plugIn.runPostOutputHandlerFlushPlugIn (outputHandler);
+            logPlugInInvocation("runPostOutputHandlerFlushPlugIn", plugIn);
+            keepGoing = plugIn.runPostOutputHandlerFlushPlugIn(outputHandler);
 
             if (! keepGoing)
                 break;
@@ -497,24 +520,24 @@ public class MetaPlugIn
         return keepGoing;
     }
 
-    public void 
-    runPostOutputPlugIn (final Collection<OutputHandler> outputHandlers)
+    public void
+    runPostOutputPlugIn(final Collection<OutputHandler> outputHandlers)
         throws CurnException
     {
         for (PostOutputPlugIn plugIn : postOutputPlugIns)
         {
-            logPlugInInvocation ("runPostOutputPlugIn", plugIn);
-            plugIn.runPostOutputPlugIn (outputHandlers);
+            logPlugInInvocation("runPostOutputPlugIn", plugIn);
+            plugIn.runPostOutputPlugIn(outputHandlers);
         }
     }
 
-    public synchronized void runPreCacheSavePlugIn (final FeedCache cache)
+    public synchronized void runPreCacheSavePlugIn(final FeedMetaData cache)
         throws CurnException
     {
         for (PreCacheSavePlugIn plugIn : preCacheSavePlugIns)
         {
-            logPlugInInvocation ("runPreCacheSavePlugIn", plugIn);
-            plugIn.runPreCacheSavePlugIn (cache);
+            logPlugInInvocation("runPreCacheSavePlugIn", plugIn);
+            plugIn.runPreCacheSavePlugIn(cache);
         }
     }
 
@@ -523,7 +546,7 @@ public class MetaPlugIn
     {
         for (ShutdownPlugIn plugIn : shutdownPlugIns)
         {
-            logPlugInInvocation ("runShutdownPlugIn", plugIn);
+            logPlugInInvocation("runShutdownPlugIn", plugIn);
             plugIn.runShutdownPlugIn();
         }
     }
@@ -566,37 +589,37 @@ public class MetaPlugIn
      * @param plugIn      plug-in class
      * @param args        method args, if any
      */
-    private void logPlugInInvocation (final String    methodName,
-                                      final PlugIn    plugIn,
-                                      final Object... args)   // NOPMD
+    private void logPlugInInvocation(final String    methodName,
+                                     final PlugIn    plugIn,
+                                     final Object... args)   // NOPMD
     {
         if (log.isDebugEnabled())
         {
             StringBuilder buf = new StringBuilder();
 
-            buf.append ("invoking ");
-            buf.append (methodName);
+            buf.append("invoking ");
+            buf.append(methodName);
             String sep = "(";
 
             for (Object arg : args)
             {
-                buf.append (sep);
+                buf.append(sep);
                 sep = ", ";
 
                 if (arg instanceof Number)
-                    buf.append (arg.toString());
+                    buf.append(arg.toString());
 
                 else
                 {
-                    buf.append ('"');
-                    buf.append (arg.toString());
-                    buf.append ('"');
+                    buf.append('"');
+                    buf.append(arg.toString());
+                    buf.append('"');
                 }
             }
 
-            buf.append (") for plug-in ");
-            buf.append (plugIn.getClass().getName());
-            log.debug (buf.toString());
+            buf.append(") for plug-in ");
+            buf.append(plugIn.getClass().getName());
+            log.debug(buf.toString());
         }
     }
 }

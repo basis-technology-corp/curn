@@ -65,7 +65,7 @@ import org.clapper.curn.parser.RSSChannel;
  *     <th align="left">Plug-in method</th>
  *     <th align="left">Description</th>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link StartupPlugIn}</td>
  *     <td align="left">{@link StartupPlugIn#runStartupPlugIn runStartupPlugIn()}</td>
@@ -73,7 +73,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         loaded its configuration file or its cache. Intercepting this phase
  *         is useful if a plug-in needs to perform initialization.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link MainConfigItemPlugIn}</td>
  *     <td align="left">{@link MainConfigItemPlugIn#runMainConfigItemPlugIn runMainConfigItemPlugIn()}</td>
@@ -86,9 +86,9 @@ import org.clapper.curn.parser.RSSChannel;
  *         without doing anything. Note that some configuration items may
  *         simply be variable assignment; there's no real way to distinguish a
  *         variable assignment from a blessed configuration item.</td>
- * 
+ *
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link FeedConfigItemPlugIn}</td>
  *     <td align="left">{@link FeedConfigItemPlugIn#runFeedConfigItemPlugIn runFeedConfigItemPlugIn()}</td>
@@ -102,7 +102,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         distinguish a variable assignment from a blessed configuration
  *         item.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link OutputHandlerConfigItemPlugIn}</td>
  *     <td align="left">{@link OutputHandlerConfigItemPlugIn#runOutputHandlerConfigItemPlugIn runOutputHandlerConfigItemPlugIn()}</td>
@@ -116,7 +116,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         distinguish a variable assignment from a blessed configuration
  *         item.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link UnknownSectionConfigItemPlugIn}</td>
  *     <td align="left">{@link UnknownSectionConfigItemPlugIn#runUnknownSectionConfigItemPlugIn runUnknownSectionConfigItemPlugIn()}</td>
@@ -130,7 +130,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         distinguish a variable assignment from a blessed configuration
  *         item.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PostConfigPlugIn}</td>
  *     <td align="left">{@link PostConfigPlugIn#runPostConfigPlugIn runPostConfigPlugIn()}</td>
@@ -141,7 +141,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         so it can adjust the configuration to account for command line
  *         options.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link CacheLoadedPlugIn}</td>
  *     <td align="left">{@link CacheLoadedPlugIn#runCacheLoadedPlugIn runCacheLoadedPlugIn()}</td>
@@ -149,7 +149,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         expired entries have been purged), but before any feeds are processed.
  *       </td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PreFeedDownloadPlugIn}</td>
  *     <td align="left">{@link PreFeedDownloadPlugIn#runPreFeedDownloadPlugIn runPreFeedDownloadPlugIn()}</td>
@@ -161,9 +161,9 @@ import org.clapper.curn.parser.RSSChannel;
  *         <tt>file:</tt> URLs, are passed into this method. Setting a request
  *         property on the <tt>URLConnection</tt> object for a <tt>file:</tt>
  *         URL will have no effect--though it isn't specifically harmful.)</p>
- * 
+ *
  *         <p>Possible uses for a pre-feed download plug-in include:</p>
- * 
+ *
  *         <ul>
  *           <li>filtering on feed URL to prevent downloading non-matching feeds
  *           <li>changing the default User-Agent value
@@ -171,7 +171,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         </ul>
  *       </td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PostFeedDownloadPlugIn}</td>
  *     <td align="left">{@link PostFeedDownloadPlugIn#runPostFeedDownloadPlugIn runPostFeedDownloadPlugIn()}</td>
@@ -182,7 +182,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         before they are downloaded.
  *       </td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PostFeedParsePlugIn}</td>
  *     <td align="left">{@link PostFeedParsePlugIn#runPostFeedParsePlugIn runPostFeedParsePlugIn()}</td>
@@ -196,7 +196,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         the parsed data (removing or editing individual items, for
  *         instance) could use method to do so.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PreFeedOutputPlugIn}</td>
  *     <td align="left">{@link PreFeedOutputPlugIn#runPreFeedOutputPlugIn runPreFeedOutputPlugIn()}</td>
@@ -206,7 +206,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         the other, preceding phases.) This method will be called multiple
  *         times for each feed if there are multiple output handlers.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PostFeedOutputPlugIn}</td>
  *     <td align="left">{@link PostFeedOutputPlugIn#runPostFeedOutputPlugIn runPostFeedOutputPlugIn()}</td>
@@ -216,7 +216,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         the other, preceding phases.) This method will be called multiple
  *         times for each feed if there are multiple output handlers.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PostOutputHandlerFlushPlugIn}</td>
  *     <td align="left">{@link PostOutputHandlerFlushPlugIn#runPostOutputHandlerFlushPlugIn runPostOutputHandlerFlushPlugIn()}</td>
@@ -226,7 +226,7 @@ import org.clapper.curn.parser.RSSChannel;
  *         displayed, emailed, etc.
  *       </td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PostOutputPlugIn}</td>
  *     <td align="left">{@link PostOutputPlugIn#runPostOutputPlugIn runPostOutputPlugIn()}</td>
@@ -236,14 +236,14 @@ import org.clapper.curn.parser.RSSChannel;
  *         output into a zip file, or email it.</td>
  *       </td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link PreCacheSavePlugIn}</td>
  *     <td align="left">{@link PreCacheSavePlugIn#runPreCacheSavePlugIn runPreCacheSavePlugIn()}</td>
  *     <td>Called right before the <i>curn</i> cache is to be saved. A plug-in
  *         might choose to edit the cache at this point.</td>
  *   </tr>
- * 
+ *
  *   <tr valign="top">
  *     <td align="left">{@link ShutdownPlugIn}</td>
  *     <td align="left">{@link ShutdownPlugIn#runShutdownPlugIn runShutdownPlugIn()}</td>
@@ -256,10 +256,6 @@ import org.clapper.curn.parser.RSSChannel;
  */
 public interface PlugIn
 {
-    /*----------------------------------------------------------------------*\
-                                 Constants
-    \*----------------------------------------------------------------------*/
-
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
@@ -277,4 +273,19 @@ public interface PlugIn
      * @return the sort key string.
      */
     public String getSortKey();
+
+    /**
+     * Initialize the plug-in. This method is called before any of the
+     * plug-in methods are called; it gives the plug-in the chance to register
+     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
+     * save and restore its own feed-related metadata from the persistent feed
+     * metadata store. A plug-in that isn't interested in saving and restoring
+     * data can simply ignore the registry.
+     *
+     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     *
+     * @throws CurnException on error
+     */
+    public void init(FeedMetaDataRegistry metaDataRegistry)
+        throws CurnException;
 }
