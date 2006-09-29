@@ -169,7 +169,7 @@ public class CurnTemplateLoader implements TemplateLoader
                 File file = new File (tl.getLocation());
                 try
                 {
-                    url = file.toURL();
+                    url = file.toURI().toURL();
                 }
 
                 catch (MalformedURLException ex)
@@ -249,7 +249,7 @@ public class CurnTemplateLoader implements TemplateLoader
                 File file = new File (tl.getLocation());
                 try
                 {
-                    url = file.toURL();
+                    url = file.toURI().toURL();
                 }
 
                 catch (MalformedURLException ex)
