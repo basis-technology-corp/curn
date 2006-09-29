@@ -58,7 +58,7 @@ import java.util.Date;
  *
  * @version <tt>$Revision$</tt>
  */
-class FeedCacheEntry
+public class FeedCacheEntry
 {
     /*----------------------------------------------------------------------*\
                          Private Static Variables
@@ -79,7 +79,7 @@ class FeedCacheEntry
     \*----------------------------------------------------------------------*/
 
     /**
-     * Default constructor. Only accessible within this package.
+     * Construct a new <tt>FeedCacheEntry</tt>.
      *
      * @param entryID     the entry's unique ID.
      * @param channelURL  the main URL for the site's RSS feed
@@ -88,11 +88,11 @@ class FeedCacheEntry
      * @param pubDate     the publication date of the item, or null if unknown
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
-    FeedCacheEntry (String entryID,
-                    URL    channelURL,
-                    URL    entryURL,
-                    Date   pubDate,
-                    long   timestamp)
+    public FeedCacheEntry(String entryID,
+                          URL    channelURL,
+                          URL    entryURL,
+                          Date   pubDate,
+                          long   timestamp)
     {
         this.entryID         = entryID;
         this.channelURL      = channelURL;
@@ -127,11 +127,28 @@ class FeedCacheEntry
     }
 
     /**
+     * Determine whether this entry is a channel entry or not. A channel
+     * entry has the same entry URL and channel URL. This method is really
+     * just convenient shorthand for:
+     *
+     * <blockquote>
+     * <pre>entry.getChannelURL().sameFile(entry.getEntryURL())</pre>
+     * </blockquote>
+     *
+     * @return <tt>true</tt> if this entry is a channel (a.k.a., feed) entry,
+     *         <tt>false</tt> if it is an item entry
+     */
+    public boolean isChannelEntry()
+    {
+        return channelURL.sameFile(entryURL);
+    }
+
+    /**
      * Get the URL for this entry.
      *
      * @return the entry URL
      */
-    URL getEntryURL()
+    public URL getEntryURL()
     {
         return entryURL;
     }
@@ -142,7 +159,7 @@ class FeedCacheEntry
      *
      * @return the publication date, or null if not known
      */
-    Date getPublicationDate()
+    public Date getPublicationDate()
     {
         return publicationDate;
     }
@@ -153,7 +170,7 @@ class FeedCacheEntry
      *
      * @return the timestamp
      */
-    long getTimestamp()
+    public long getTimestamp()
     {
         return timestamp;
     }
@@ -164,7 +181,7 @@ class FeedCacheEntry
      *
      * @param timestamp the timestamp
      */
-    void setTimestamp (final long timestamp)
+    public void setTimestamp (final long timestamp)
     {
         this.timestamp = timestamp;
     }

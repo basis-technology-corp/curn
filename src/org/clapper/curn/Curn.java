@@ -46,7 +46,6 @@
 
 package org.clapper.curn;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -107,7 +106,8 @@ public class Curn
 
     private CurnConfig config = null;
     private Date currentTime = new Date();
-    private MetaPlugIn metaPlugIn = null;            // NOPMD
+    private MetaPlugIn metaPlugIn = null;
+    private DataPersister dataPersister = null;
     private boolean abortOnUndefinedVariable = true;
     private PrintWriter err;
 
@@ -172,6 +172,9 @@ public class Curn
         try
         {
             this.config = loadConfig(configPath);
+            this.dataPersister = DataPersisterFactory.getInstance();
+            loadOutputHandlers(config);
+            metaPlugIn.registerPersistentDataClientPlugIns(dataPersister);
             processRSSFeeds(useCache);
         }
 
@@ -241,18 +244,16 @@ public class Curn
                CurnException
     {
         Map<FeedInfo,RSSChannel> channels;
-        boolean                  parsingEnabled = true;
-        File                     cacheFile = config.getFeedMetaDataFile();
-        FeedMetaData             cache = null;
+        boolean parsingEnabled = true;
+        FeedCache cache = null;
 
-        loadOutputHandlers(config);
 
-        if (useCache && (cacheFile != null))
+        if (useCache)
         {
-            cache = new FeedMetaData(config);
+            cache = new FeedCache(config);
             cache.setCurrentTime(currentTime);
-            metaPlugIn.init(cache);
-            cache.loadCache();
+            metaPlugIn.initPlugIn();
+            dataPersister.loadData(cache);
             metaPlugIn.runCacheLoadedPlugIn(cache);
         }
 
@@ -280,15 +281,10 @@ public class Curn
         if (channels.size() > 0)
             outputChannels(channels);
 
-        log.debug("cacheFile=" +
-                  ((cacheFile == null) ? "null" : cacheFile.getPath()) +
-                  ", mustUpdateCache=" + config.mustUpdateFeedMetaData());
-
-        if ((cache != null) && config.mustUpdateFeedMetaData())
+        if ((cache != null) && config.mustUpdateFeedMetadata())
         {
-            int totalCacheBackups = config.totalCacheBackups();
             metaPlugIn.runPreCacheSavePlugIn(cache);
-            cache.saveCache(totalCacheBackups);
+            dataPersister.saveData(cache);
         }
     }
 
@@ -375,7 +371,7 @@ public class Curn
      */
     private Map<FeedInfo,RSSChannel>
     downloadFeeds (final boolean    parsingEnabled,
-                   final FeedMetaData  feedCache,
+                   final FeedCache  feedCache,
                    final CurnConfig configuration)
         throws RSSParserException,
                CurnException

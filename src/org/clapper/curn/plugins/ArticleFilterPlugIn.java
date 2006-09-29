@@ -74,7 +74,6 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.clapper.curn.FeedMetaDataRegistry;
 
 /**
  * The <tt>ArticleFilterPlugIn</tt> provides per-feed filtering capabilities.
@@ -379,7 +378,7 @@ public class ArticleFilterPlugIn
      *
      * @return the name
      */
-    public String getName()
+    public String getPlugInName()
     {
         return "Article Filter";
     }
@@ -389,24 +388,18 @@ public class ArticleFilterPlugIn
      *
      * @return the sort key string.
      */
-    public String getSortKey()
+    public String getPlugInSortKey()
     {
         return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /**
      * Initialize the plug-in. This method is called before any of the
-     * plug-in methods are called; it gives the plug-in the chance to register
-     * itself as a <tt>FeedMetaDataClient}</tt>, which allows the plug-in to
-     * save and restore its own feed-related metadata from the persistent feed
-     * metadata store. A plug-in that isn't interested in saving and restoring
-     * data can simply ignore the registry.
+     * plug-in methods are called.
      *
-     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
-     *
-     * @throws CurnException on error
+      * @throws CurnException on error
      */
-    public void init(FeedMetaDataRegistry metaDataRegistry)
+    public void initPlugIn()
         throws CurnException
     {
     }

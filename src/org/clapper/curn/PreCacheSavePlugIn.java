@@ -67,10 +67,11 @@ public interface PreCacheSavePlugIn extends PlugIn
      * Called right before the <i>curn</i> cache is to be saved. A plug-in
      * might choose to edit the cache at this point.
      * 
-     * @param cache  the {@link FFeedMetaData object
-     * @see FeedCache
-     * @throws CurnException on erFeedMetaData
+     * 
+     * 
+     * @param cache  the {@link FeedCache} object
+     * @throws CurnException on error
      */
-    public void runPreCacheSavePlugIn (FeedMetaData cache)
+    public void runPreCacheSavePlugIn (FeedCache cache)
         throws CurnException;
 }

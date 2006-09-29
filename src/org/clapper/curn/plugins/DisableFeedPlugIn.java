@@ -50,7 +50,6 @@ import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
-import org.clapper.curn.FeedMetaDataRegistry;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
@@ -107,7 +106,7 @@ public class DisableFeedPlugIn
      *
      * @return the name
      */
-    public String getName()
+    public String getPlugInName()
     {
         return "Disable Feed";
     }
@@ -117,24 +116,18 @@ public class DisableFeedPlugIn
      *
      * @return the sort key string.
      */
-    public String getSortKey()
+    public String getPlugInSortKey()
     {
         return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /**
      * Initialize the plug-in. This method is called before any of the
-     * plug-in methods are called; it gives the plug-in the chance to register
-     * itself as a <tt>FeedMetaDataClient}</tt>, which allows the plug-in to
-     * save and restore its own feed-related metadata from the persistent feed
-     * metadata store. A plug-in that isn't interested in saving and restoring
-     * data can simply ignore the registry.
-     *
-     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     * plug-in methods are called.
      *
      * @throws CurnException on error
      */
-    public void init(FeedMetaDataRegistry metaDataRegistry)
+    public void initPlugIn()
         throws CurnException
     {
     }

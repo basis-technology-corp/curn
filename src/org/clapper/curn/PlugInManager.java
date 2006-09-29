@@ -77,6 +77,8 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import java.util.regex.PatternSyntaxException;
+import org.clapper.util.classutil.ClassUtil;
+import org.clapper.util.classutil.ClassUtilException;
 
 /**
  * Responsible for loading the plug-ins and creating the {@link MetaPlugIn}
@@ -110,7 +112,7 @@ public class PlugInManager
 
         public int compare (final PlugIn pl1, final PlugIn pl2)
         {
-            return pl1.getSortKey().compareToIgnoreCase (pl2.getSortKey());
+            return pl1.getPlugInSortKey().compareToIgnoreCase (pl2.getPlugInSortKey());
         }
 
         public boolean equals (final Object o)
@@ -217,7 +219,11 @@ public class PlugInManager
         loadPlugIns();
 
         for (PlugIn plugIn : plugIns)
-            plugInMap.put (plugIn.getName(), plugIn.getClass());
+        {
+            String plugInName = plugIn.getPlugInName();
+            if (plugInName != null)
+                plugInMap.put(plugInName, plugIn.getClass());
+        }
     }
 
     /**
@@ -332,50 +338,43 @@ public class PlugInManager
             String className = classInfo.getClassName();
             try
             {
-                Class cls = Class.forName (className);
-
                 // Instantite the plug-in via the default constructor and
                 // add it to the meta-plug-in.
 
-                PlugIn plugIn = (PlugIn) cls.newInstance();
-                log.info("Loaded \"" + plugIn.getName() + "\" plug-in");
-                metaPlugIn.addPlugIn(plugIn);
-                plugIns.add(plugIn);
-                totalPlugInsLoaded++;
+                Object obj = ClassUtil.instantiateClass(className);
+                if (obj instanceof PlugIn)
+                {
+                    PlugIn plugIn = (PlugIn) obj;
+                    String plugInName = plugIn.getPlugInName();
+                    if (plugInName == null)
+                        plugInName = className;
+                    log.info("Loaded \"" + plugInName + "\" plug-in");
+                    metaPlugIn.addPlugIn(plugIn);
+                    plugIns.add(plugIn);
+                    totalPlugInsLoaded++;
+                }
             }
 
-            catch (ClassNotFoundException ex)
+            catch (ClassUtilException ex)
             {
-                log.error ("Can't load " +
-                           classInfo.getClassLocation().getPath() +
-                           "(" + className + "): " +
-                           ex.toString());
-            }
+                Throwable cause = ex.getCause();
+                if (cause instanceof IllegalAccessException)
+                {
+                    // Not a big deal. Might be one of ours (e.g., MetaPlugIn).
 
-            catch (ClassCastException ex)
-            {
-                log.error ("Can't load plug-in \"" +
-                           classInfo.getClassLocation().getPath() +
-                           "(" + className + "): " +
-                           ex.toString());
-            }
+                    log.info("Plug-in " +
+                             classInfo.getClassLocation().getPath() +
+                             "(" + className +
+                             ") has no accessible default constructor.");
+                }
 
-            catch (IllegalAccessException ex)
-            {
-                // Not a big deal. Might be one of ours (e.g., MetaPlugIn).
-
-                log.info ("Plug-in " +
-                          classInfo.getClassLocation().getPath() +
-                          "(" + className +
-                          ") has no accessible default constructor.");
-            }
-
-            catch (InstantiationException ex)
-            {
-                log.error ("Can't instantiate plug-in \"" +
-                           classInfo.getClassLocation().getPath() +
-                           "(" + className + "): " +
-                           ex.toString());
+                else
+                {
+                    log.error("Cannot instantiate plug-in \"" +
+                              classInfo.getClassLocation().getPath() +
+                              "(" + className + ")",
+                              ex);
+                }
             }
 
             catch (ExceptionInInitializerError ex)

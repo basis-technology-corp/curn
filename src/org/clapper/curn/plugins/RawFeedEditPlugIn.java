@@ -62,7 +62,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.clapper.curn.FeedMetaDataRegistry;
 import org.clapper.util.io.FileUtil;
 
 /**
@@ -148,7 +147,7 @@ public class RawFeedEditPlugIn
      *
      * @return the name
      */
-    public String getName()
+    public String getPlugInName()
     {
         return "Raw Feed Edit";
     }
@@ -158,24 +157,18 @@ public class RawFeedEditPlugIn
      *
      * @return the sort key string.
      */
-    public String getSortKey()
+    public String getPlugInSortKey()
     {
         return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /**
      * Initialize the plug-in. This method is called before any of the
-     * plug-in methods are called; it gives the plug-in the chance to register
-     * itself as a <tt>FeedMetaDataClient}</tt>, which allows the plug-in to
-     * save and restore its own feed-related metadata from the persistent feed
-     * metadata store. A plug-in that isn't interested in saving and restoring
-     * data can simply ignore the registry.
-     *
-     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     * plug-in methods are called.
      *
      * @throws CurnException on error
      */
-    public void init(FeedMetaDataRegistry metaDataRegistry)
+    public void initPlugIn()
         throws CurnException
     {
     }

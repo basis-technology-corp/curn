@@ -106,7 +106,7 @@ public class ParseTest
 
             File f = new File (args[i]);
             FileInputStream is = new FileInputStream (f);
-            RSSChannel channel = parser.parseRSSFeed (f.toURL(),
+            RSSChannel channel = parser.parseRSSFeed (f.toURI().toURL(),
                                                       is,
                                                       null);
             if (channel != null)

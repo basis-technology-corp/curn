@@ -46,6 +46,7 @@
 
 package org.clapper.curn.plugins;
 
+import org.clapper.curn.AbstractPersistentDataClient;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -63,7 +64,7 @@ import java.net.URLConnection;
 
 import java.util.Map;
 import java.util.HashMap;
-import org.clapper.curn.FeedMetaDataRegistry;
+import org.clapper.curn.FeedCacheEntry;
 
 /**
  * The <tt>UserAgentPlugIn</tt> handles setting the global and per-feed
@@ -144,7 +145,7 @@ public class UserAgentPlugIn
      *
      * @return the name
      */
-    public String getName()
+    public String getPlugInName()
     {
         return "User Agent";
     }
@@ -154,24 +155,18 @@ public class UserAgentPlugIn
      *
      * @return the sort key string.
      */
-    public String getSortKey()
+    public String getPlugInSortKey()
     {
         return ClassUtil.getShortClassName (getClass().getName());
     }
 
     /**
      * Initialize the plug-in. This method is called before any of the
-     * plug-in methods are called; it gives the plug-in the chance to register
-     * itself as a <tt>FeedMetaDataClient}</tt>, which allows the plug-in to
-     * save and restore its own feed-related metadata from the persistent feed
-     * metadata store. A plug-in that isn't interested in saving and restoring
-     * data can simply ignore the registry.
-     *
-     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
+     * plug-in methods are called.
      *
      * @throws CurnException on error
      */
-    public void init(FeedMetaDataRegistry metaDataRegistry)
+    public void initPlugIn()
         throws CurnException
     {
     }
@@ -190,7 +185,7 @@ public class UserAgentPlugIn
      *                     the item was found
      * @param paramName    the name of the parameter
      * @param config       the {@link CurnConfig} object
-     * 
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
@@ -232,7 +227,7 @@ public class UserAgentPlugIn
      * @param feedInfo     partially complete <tt>FeedInfo</tt> object
      *                     for the feed. The URL is guaranteed to be
      *                     present, but no other fields are.
-     * 
+     *
      * @return <tt>true</tt> to continue processing the feed,
      *         <tt>false</tt> to skip it
      *
@@ -276,7 +271,7 @@ public class UserAgentPlugIn
      * options.
      *
      * @param config  the parsed {@link CurnConfig} object
-     * 
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
@@ -338,7 +333,7 @@ public class UserAgentPlugIn
                                              URLConnection urlConn)
         throws CurnException
     {
-        String userAgent = perFeedUserAgentMap.get (feedInfo);
+        String userAgent = perFeedUserAgentMap.get(feedInfo);
         if (userAgent == null)
             userAgent = defaultUserAgent;
 

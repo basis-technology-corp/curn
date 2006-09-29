@@ -166,7 +166,7 @@ public class CurnUtil
      *
      * @throws MalformedURLException bad URL string
      */
-    public static URL normalizeURL (final String url)
+    public static URL normalizeURL(final String url)
         throws MalformedURLException
     {
         return normalizeURL (new URL (url));
@@ -183,7 +183,7 @@ public class CurnUtil
      */
     public static String urlToLookupKey (final URL url)
     {
-        return CurnUtil.normalizeURL (url).toExternalForm();
+        return CurnUtil.normalizeURL(url).toExternalForm();
     }
 
     /**

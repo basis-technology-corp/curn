@@ -207,17 +207,17 @@ public class Tool
                 Public Methods Required by PlugIn Interface
     \*----------------------------------------------------------------------*/
 
-    public String getName()
+    public String getPlugInName()
     {
         return "curn command-line interface";
     }
 
-    public String getSortKey()
+    public String getPlugInSortKey()
     {
         return ClassUtil.getShortClassName(this.getClass());
     }
 
-    public void init(FeedMetaDataRegistry metaDataRegistry)
+    public void initPlugIn()
         throws CurnException
     {
     }
@@ -577,7 +577,7 @@ public class Tool
         // parameters.
 
         if (optUpdateCache != null)
-            config.setMustUpdateFeedMetaData(optUpdateCache.booleanValue());
+            config.setMustUpdateFeedMetadata(optUpdateCache.booleanValue());
     }
 
     private Date parseDateTime(final String s)

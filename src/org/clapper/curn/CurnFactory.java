@@ -46,6 +46,7 @@
 
 package org.clapper.curn;
 
+import org.clapper.util.io.WordWrapWriter;
 import org.clapper.util.logging.Logger;
 
 /**
@@ -99,6 +100,6 @@ public class CurnFactory
 
         PlugInManager.loadPlugIns();
 
-        return new Curn();
+        return new Curn(new WordWrapWriter(System.err));
     }
 }

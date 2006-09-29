@@ -48,8 +48,6 @@ package org.clapper.curn;
 
 import java.net.URL;
 
-import org.clapper.curn.parser.RSSChannel;
-
 /**
  * <p>Contains data for one feed (or site). The data about the feed
  * comes from the configuration file. The feed itself comes from parsing
@@ -78,10 +76,9 @@ public class FeedInfo
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private       int         daysToCache           = 0;
+    private       int         daysToCache = 0;
     private final URL         siteURL;
-    private       RSSChannel  parsedChannelData     = null;
-    private       String      forcedEncoding        = null;
+    private       String      forcedEncoding = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -94,7 +91,7 @@ public class FeedInfo
      *                 normalizes the URL.
      * @see CurnUtil#normalizeURL
      */
-    public FeedInfo (URL siteURL)
+    public FeedInfo(URL siteURL)
     {
         this.siteURL = CurnUtil.normalizeURL (siteURL);
     }
@@ -204,42 +201,9 @@ public class FeedInfo
         return forcedEncoding;
     }
 
-    /**
-     * Get the parsed channel data for this feed. This field is set by the
-     * main processing logic and does not come from the configuration.
-     *
-     * @return the <tt>RSSChannel</tt> object representing the current
-     *         parsed data from this feed, or null if the data has not been
-     *         parsed yet.
-     *
-     * @see #setParsedChannelData
-     * @see Curn
-     * @see RSSChannel
-     */
-    public RSSChannel getParsedChannelData()
-    {
-        return parsedChannelData;
-    }
-
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Set the parsed channel data for this feed. This field is set by the
-     * main processing logic and does not come from the configuration.
-     *
-     * @param channel the <tt>RSSChannel</tt> object representing the current
-     *                parsed data from this feed, or null if not set
-     *
-     * @see #getParsedChannelData
-     * @see Curn
-     * @see RSSChannel
-     */
-    void setParsedChannelData (final RSSChannel channel)
-    {
-        this.parsedChannelData = channel;
-    }
 
     /*
      * Set the forced character set encoding for this feed.
@@ -248,7 +212,7 @@ public class FeedInfo
      *
      * @see #getForcedCharacterEncoding
      */
-    public void setForcedCharacterEncoding (final String encoding)
+    void setForcedCharacterEncoding (final String encoding)
     {
         this.forcedEncoding = encoding;
     }

@@ -267,37 +267,45 @@ public class MetaPlugIn
         }
     }
 
+    /**
+     * Find all plug-ins that implement the {@link PersistentDataClient}
+     * interface and register them with the specified {@link DataPersister}.
+     *
+     * @param dataPersister the <tt>DataPersister</tt>
+     */
+    public void registerPersistentDataClientPlugIns(DataPersister dataPersister)
+    {
+        for (PlugIn plugIn : allPlugIns)
+        {
+            if (plugIn instanceof PersistentDataClient)
+            {
+                log.debug(plugIn.getPlugInName() + " plug-in is a " +
+                          "persistent data client. Registering it.");
+                dataPersister.addPersistentDataClient
+                    ((PersistentDataClient) plugIn);
+            }
+        }
+    }
+
     /*----------------------------------------------------------------------*\
                 Public Methods Required by PlugIn Interface
     \*----------------------------------------------------------------------*/
 
-    public String getName()
+    public String getPlugInName()
     {
         return getClass().getName();
     }
 
-    public String getSortKey()
+    public String getPlugInSortKey()
     {
-        return getName();
+        return null; // "invisible" plug-in
     }
 
-    /**
-     * Initialize the plug-in. This method is called before any of the
-     * plug-in methods are called; it gives the plug-in the chance to register
-     * itself as a {@link FeedMetaDataClient}, which allows the plug-in to
-     * save and restore its own feed-related metadata from the persistent feed
-     * metadata store. A plug-in that isn't interested in saving and restoring
-     * data can simply ignore the registry.
-     *
-     * @param metaDataRegistry  the {@link FeedMetaDataRegistry}
-     *
-     * @throws CurnException on error
-     */
-    public void init(FeedMetaDataRegistry metaDataRegistry)
+    public void initPlugIn()
         throws CurnException
     {
         for (PlugIn plugIn : allPlugIns)
-            plugIn.init(metaDataRegistry);
+            plugIn.initPlugIn();
     }
 
     public synchronized void runStartupPlugIn()
@@ -408,7 +416,7 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runCacheLoadedPlugIn (final FeedMetaData cache)
+    public synchronized void runCacheLoadedPlugIn (final FeedCache cache)
         throws CurnException
     {
         for (CacheLoadedPlugIn plugIn : cacheLoadedPlugIns)
@@ -531,7 +539,7 @@ public class MetaPlugIn
         }
     }
 
-    public synchronized void runPreCacheSavePlugIn(final FeedMetaData cache)
+    public synchronized void runPreCacheSavePlugIn(final FeedCache cache)
         throws CurnException
     {
         for (PreCacheSavePlugIn plugIn : preCacheSavePlugIns)

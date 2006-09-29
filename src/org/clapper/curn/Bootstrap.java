@@ -240,7 +240,7 @@ public class Bootstrap
                     f = new File (fileName + "/");
             }
 
-            urlList.add (f.toURL());
+            urlList.add (f.toURI().toURL());
         }
 
 /*

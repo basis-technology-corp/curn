@@ -97,7 +97,7 @@ class FeedDownloadThread
     private final String                  id;
     private final CurnConfig              configuration;
     private final RSSParser               rssParser;
-    private final FeedMetaData               cache;
+    private final FeedCache               cache;
     private final Queue<FeedInfo>         feedQueue;
     private       FeedException           exception = null;
     private final MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
@@ -151,7 +151,7 @@ class FeedDownloadThread
      *                        null if no latch is to be used.
      */
     FeedDownloadThread (RSSParser               parser,
-                        FeedMetaData               feedCache,
+                        FeedCache               feedCache,
                         CurnConfig              configFile,
                         Queue<FeedInfo>         feedQueue,
                         FeedDownloadDoneHandler feedDownloadDoneHandler,
@@ -709,14 +709,14 @@ class FeedDownloadThread
      */
     private void setIfModifiedSinceHeader (final URLConnection conn,
                                            final FeedInfo      feedInfo,
-                                           final FeedMetaData     cache)
+                                           final FeedCache     cache)
     {
         long     lastSeen = 0;
         URL      feedURL = feedInfo.getURL();
 
         if (cache != null)
         {
-            FeedCacheEntry entry = cache.getItemByURL (feedURL);
+            FeedCacheEntry entry = cache.getEntryByURL (feedURL);
 
             if (entry != null)
             {
@@ -756,7 +756,7 @@ class FeedDownloadThread
      */
     private boolean feedHasChanged (final URLConnection conn,
                                     final FeedInfo      feedInfo,
-                                    final FeedMetaData     cache)
+                                    final FeedCache     cache)
         throws IOException
     {
         long     lastSeen = 0;
@@ -766,7 +766,7 @@ class FeedDownloadThread
 
         if (cache != null)
         {
-            FeedCacheEntry entry = cache.getItemByURL (feedURL);
+            FeedCacheEntry entry = cache.getEntryByURL (feedURL);
 
             if (entry != null)
                 lastSeen = entry.getTimestamp();
@@ -941,7 +941,7 @@ class FeedDownloadThread
             log.debug ("Item URL \"" + itemURLString +
                        "\" has no unique ID. Checking cache for URL.");
 
-            FeedCacheEntry cacheEntry = cache.getItemByURL (itemURL);
+            FeedCacheEntry cacheEntry = cache.getEntryByURL (itemURL);
             if (cacheEntry == null)
             {
                 log.debug ("URL \"" + itemURLString +

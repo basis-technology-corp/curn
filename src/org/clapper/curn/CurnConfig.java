@@ -86,8 +86,6 @@ public class CurnConfig extends Configuration
     /**
      * Variable names
      */
-    public static final String VAR_CACHE_FILE        = "CacheFile";
-    public static final String VAR_TOTAL_CACHE_BACKUPS = "TotalCacheBackups";
     public static final String VAR_NO_CACHE_UPDATE   = "NoCacheUpdate";
     public static final String VAR_MAIL_SUBJECT      = "Subject";
     public static final String VAR_DAYS_TO_CACHE     = "DaysToCache";
@@ -117,26 +115,25 @@ public class CurnConfig extends Configuration
     public static final String  DEF_PARSER_CLASS_NAME =
         "org.clapper.curn.parser.rome.RSSParserAdapter";
     public static final int     DEF_MAX_THREADS       = 5;
-    public static final int     DEF_TOTAL_CACHE_BACKUPS = 0;
 
     /**
      * Others
      */
-    public static final String  NO_LIMIT_VALUE         = "NoLimit";
+    public static final String NO_LIMIT_VALUE = "NoLimit";
+
+    /**
+     * Main section name
+     */
+    public static final String MAIN_SECTION = "curn";
 
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
 
     /**
-     * Main section name
-     */
-    private static final String  MAIN_SECTION         = "curn";
-
-    /**
      * Prefix for sections that describing individual feeds.
      */
-    private static final String FEED_SECTION_PREFIX   = "Feed";
+    private static final String FEED_SECTION_PREFIX = "Feed";
 
     /**
      * Prefix for output handler sections.
@@ -154,17 +151,15 @@ public class CurnConfig extends Configuration
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private File cacheFile = null;
     private int defaultCacheDays = DEF_DAYS_TO_CACHE;
     private boolean updateCache = true;
     private boolean showRSSFormat = false;
     private Collection<FeedInfo> feeds = new ArrayList<FeedInfo>();
-    private Map<String, FeedInfo> feedMap = new HashMap<String, FeedInfo>();
+    private Map<URL,FeedInfo> feedMap = new HashMap<URL,FeedInfo>();
     private String parserClassName = DEF_PARSER_CLASS_NAME;
     private List<ConfiguredOutputHandler> outputHandlers
                                  = new ArrayList<ConfiguredOutputHandler>();
     private int maxThreads = DEF_MAX_THREADS;
-    private int totalCacheBackups = DEF_TOTAL_CACHE_BACKUPS;
     private PrintWriter err;
 
     /**
@@ -241,37 +236,13 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Get the configured feed metadata file (formerly called the cache file).
-     * 
-     * @return the cache file
-     * @see #mustUpdateFeedMetaData
-     * @see #setMustUpdateFeedMetaData
-     */
-    public File getFeedMetaDataFile()
-    {
-        return cacheFile;
-    }
-
-    /**
-     * Get the total number of cache backup files to keep.
-     *
-     * @return the total number of cache backup files to keep, or 0 for
-     *         none.
-     */
-    public int totalCacheBackups()
-    {
-        return totalCacheBackups;
-    }
-
-    /**
      * Determine whether the cache should be updated.
      * 
      * @return <tt>true</tt> if the cache should be updated, <tt>false</tt>
      *         if it should not.
-     * @see #getFeedMetaDataFile
-     * @see #setMustUpdateFeedMetaData
+     * @see #setMustUpdateFeedMetadata
      */
-    public boolean mustUpdateFeedMetaData()
+    public boolean mustUpdateFeedMetadata()
     {
         return updateCache;
     }
@@ -325,10 +296,9 @@ public class CurnConfig extends Configuration
      * 
      * @param val <tt>true</tt> if the cache should be updated, <tt>false</tt>
      *            if it should not
-     * @see #mustUpdateFeedMetaData
-     * @see #getFeedMetaDataFile
+     * @see #mustUpdateFeedMetadata
      */
-    public void setMustUpdateFeedMetaData(final boolean val)
+    public void setMustUpdateFeedMetadata(final boolean val)
     {
         updateCache = val;
     }
@@ -365,8 +335,7 @@ public class CurnConfig extends Configuration
      * @return a <tt>Collection</tt> of <tt>FeedInfo</tt> objects.
      *
      * @see #hasFeed
-     * @see #getFeedInfoFor(String)
-     * @see #getFeedInfoFor(URL)
+     * @see #getFeedInfoMap
      */
     public Collection<FeedInfo> getFeeds()
     {
@@ -382,8 +351,7 @@ public class CurnConfig extends Configuration
      * @return <tt>true</tt> if it's there, <tt>false</tt> if not
      *
      * @see #getFeeds
-     * @see #getFeedInfoFor(String)
-     * @see #getFeedInfoFor(URL)
+     * @see #getFeedInfoMap()
      */
     public boolean hasFeed(final URL url)
     {
@@ -391,39 +359,18 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Get the feed data for a given URL.
+     * Get the {@link FeedInfo} map.
      *
-     * @param url   the URL
-     *
-     * @return the corresponding <tt>RSSFeedInfo</tt> object, or null
-     *         if not found
+     * @return A <tt>Map</tt> of {@link FeedInfo} objects, indexed by
+     *         channel (or feed) URL.
      *
      * @see #getFeeds
      * @see #hasFeed
-     * @see #getFeedInfoFor(String)
      * @see FeedInfo
      */
-    public FeedInfo getFeedInfoFor(final URL url)
+    public Map<URL,FeedInfo> getFeedInfoMap()
     {
-        return (FeedInfo) feedMap.get(url.toString());
-    }
-
-    /**
-     * Get the feed data for a given URL.
-     *
-     * @param urlString   the URL, as a string
-     *
-     * @return the corresponding <tt>FeedInfo</tt> object, or null
-     *         if not found
-     *
-     * @see #getFeeds
-     * @see #hasFeed
-     * @see #getFeedInfoFor(URL)
-     * @see FeedInfo
-     */
-    public FeedInfo getFeedInfoFor(final String urlString)
-    {
-        return (FeedInfo) feedMap.get(urlString);
+        return feedMap;
     }
 
     /**
@@ -653,38 +600,12 @@ public class CurnConfig extends Configuration
     {
         String val = null;
 
-        if (varName.equals(VAR_CACHE_FILE))
-        {
-            val = getOptionalStringValue(MAIN_SECTION, VAR_CACHE_FILE, null);
-            if (val != null)
-            {
-                cacheFile = CurnUtil.mapConfiguredPathName(val);
-                if (cacheFile.isDirectory())
-                {
-                    throw new ConfigurationException
-                        (Constants.BUNDLE_NAME,
-                         "CurnConfig.cacheIsDir",
-                         "Configured cache file \"{0}\" is a directory.",
-                         new Object[] {cacheFile.getPath()});
-                }
-            }
-        }
-
-        else if (varName.equals(VAR_DAYS_TO_CACHE))
+        if (varName.equals(VAR_DAYS_TO_CACHE))
         {
             defaultCacheDays = parseMaxDaysParameter(MAIN_SECTION,
                                                      varName,
                                                      DEF_DAYS_TO_CACHE);
             val = String.valueOf(defaultCacheDays);
-        }
-
-        else if (varName.equals(VAR_TOTAL_CACHE_BACKUPS))
-        {
-            totalCacheBackups =
-                getOptionalCardinalValue(MAIN_SECTION,
-                                         varName,
-                                         DEF_TOTAL_CACHE_BACKUPS);
-            val = String.valueOf(totalCacheBackups);
         }
 
         else if (varName.equals(VAR_NO_CACHE_UPDATE))
@@ -859,7 +780,7 @@ public class CurnConfig extends Configuration
         if (keepFeed)
         {
             feeds.add(feedInfo);
-            feedMap.put(url.toString(), feedInfo);
+            feedMap.put(url, feedInfo);
         }
     }
 
