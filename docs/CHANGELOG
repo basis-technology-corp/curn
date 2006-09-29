@@ -77,10 +77,10 @@ Version 3.1 (...)
   global. For more information, see the "Writing a Script Output Handler"
   section in the "curn User's Guide".
 
-- curn's MiniRSSParser is no more. There's no sense in maintaining a
+- curn's MiniRSSParser has been removed. There's no sense in maintaining a
   stripped-down RSS parser, when fully functional parsers such as Informa
   and ROME exist and are constantly being updated. curn now uses ROME by
-  default (and ships with a rome.jar).
+  default (and ships with the necessary jars).
 
 - The Common XML Fixups plug-in:
 
@@ -107,6 +107,31 @@ Version 3.1 (...)
      will convert the URL to:
 
            http://rss.example.com/articles?id=100&amp;mode=print
+
+- curn's cache saving and loading logic has been refactored:
+
+  a) It's now layered so that the default XML data store can be replaced
+     with pretty much anything else (including, for instance, an RDBMS).
+     To do that, a programmer must extend the (new) DataPersister class,
+     implementing the appropriate methods, and then specify the 
+     new data persister class via the "DataPersisterClass" configuration
+     variable.
+
+  b) Plug-ins can now save data to and read data from the curn cache (which
+     is now formally called the "curn metadata repository"). A plug-in that
+     wishes to persist data must implement the PersistentDataClient
+     interface or extend the AbstractPersistentDataClient class. Plug-ins
+     that do one of those two things are automatically polled for data to
+     be written and invoke when their data is read.
+
+- The PlugIn interface has changed:
+
+  a) getName() is now getPlugInName().
+  b) getSortKey() is now getPlugInSortKey().
+  c) There's a new initPlutIn() method.
+
+- curn now uses JDOM (http://www.jdom.org) to parse and write its cache
+  (now called "feed metadata") XML file.
 
 - Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
 
