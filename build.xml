@@ -85,6 +85,7 @@ source and documentation packages.
   <property name="javac.target" value="1.5"/>
   <property name="javac.debug" value="true"/>
   <property name="javac.depend" value="false"/>
+  <property name="javac.deprecation" value="yes"/>
   <property name="javac.lint.unchecked.opt" value="-Xlint:unchecked"/>
   <property name="curn.jar.name" value="curn"/>
   <property name="curn.jar.file" value="${curn.jar.name}.jar"/>
@@ -198,6 +199,7 @@ source and documentation packages.
            target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
+           deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
            destdir="${compiled.classes.dir}">
 
@@ -282,6 +284,7 @@ source and documentation packages.
            target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
+           deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
            destdir="${compiled.classes.dir}">
 
@@ -338,6 +341,7 @@ source and documentation packages.
            target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
+           deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
            destdir="${compiled.classes.dir}">
 
@@ -376,6 +380,7 @@ source and documentation packages.
            target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
+           deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
            destdir="${compiled.classes.dir}">
 
@@ -417,6 +422,7 @@ source and documentation packages.
            target="${javac.target}"
            debug="${javac.debug}"
            depend="${javac.depend}"
+           deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
            destdir="${compiled.classes.dir}">
 
