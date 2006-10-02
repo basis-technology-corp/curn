@@ -47,14 +47,14 @@
 package org.clapper.curn;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import org.clapper.util.logging.Logger;
 
 /**
@@ -76,16 +76,6 @@ public class FeedCache
                               Private Classes
     \*----------------------------------------------------------------------*/
 
-    /*
-    private class FeedCacheEntryMap extends HashMap<String,FeedCacheEntry>
-    {
-        FeedCacheEntryMap()
-        {
-            super();
-        }
-    }
-     */
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -98,15 +88,19 @@ public class FeedCache
     /**
      * The actual cache, indexed by unique ID.
      */
-    private Map<String,FeedCacheEntry> cacheByID =
-        new ConcurrentHashMap<String,FeedCacheEntry>();
+    private Map<String,FeedCacheEntry> cacheByID = null;
 
     /**
      * Alternate cache (not saved, but regenerated on the fly), indexed
      * by URL.
      */
-    private Map<URL,FeedCacheEntry> cacheByURL =
-        new ConcurrentHashMap<URL,FeedCacheEntry>();
+    private Map<String,FeedCacheEntry> cacheByURL = null;
+
+    /**
+     * A list of feed entries, used only during load.
+     */
+    private List<FeedCacheEntry> loadedEntries =
+        new LinkedList<FeedCacheEntry>();
 
     /**
      * Current time
@@ -162,9 +156,15 @@ public class FeedCache
      */
     public boolean containsURL(final URL url)
     {
-        String  urlKey = CurnUtil.urlToLookupKey(url);
-        boolean hasURL = cacheByURL.containsKey(urlKey);
-        log.debug("Cache contains \"" + urlKey + "\"? " + hasURL);
+        boolean hasURL = false;
+
+        if (cacheByURL != null)
+        {
+            String  urlKey = CurnUtil.urlToLookupKey(url);
+            hasURL = cacheByURL.containsKey(urlKey);
+            log.debug("Cache contains \"" + urlKey + "\"? " + hasURL);
+        }
+
         return hasURL;
     }
 
@@ -178,7 +178,12 @@ public class FeedCache
      */
     public FeedCacheEntry getEntry(final String id)
     {
-        return (FeedCacheEntry) cacheByID.get(id);
+        FeedCacheEntry result = null;
+
+        if (cacheByID != null)
+            result = cacheByID.get(id);
+
+        return result;
     }
 
     /**
@@ -191,7 +196,12 @@ public class FeedCache
      */
     public FeedCacheEntry getEntryByURL(final URL url)
     {
-        return (FeedCacheEntry) cacheByURL.get(CurnUtil.urlToLookupKey(url));
+        FeedCacheEntry result = null;
+
+        if (cacheByURL != null)
+            result = cacheByURL.get(CurnUtil.urlToLookupKey(url));
+
+        return result;
     }
 
     /**
@@ -211,7 +221,14 @@ public class FeedCache
                            final Date     pubDate,
                            final FeedInfo parentFeed)
     {
-        URL normalizedURL = CurnUtil.normalizeURL(url);
+        synchronized (this)
+        {
+            if (cacheByID == null)
+            {
+                cacheByID = new HashMap<String,FeedCacheEntry>();
+                cacheByURL = new HashMap<String,FeedCacheEntry>();
+            }
+        }
 
         if (uniqueID == null)
             uniqueID = url.toExternalForm();
@@ -228,20 +245,9 @@ public class FeedCache
                    "\". ID=\"" + uniqueID + "\", channel URL: \"" +
                    entry.getChannelURL().toExternalForm() +
                    "\"");
-        cacheByID.put(uniqueID, entry);
-        cacheByURL.put(normalizedURL, entry);
-    }
 
-    /**
-     * Add a {@link FeedCacheEntry} to the cache. This method exists primarily
-     * for use during deserialization of the cache.
-     *
-     * @param entry  the entry
-     */
-    public void addFeedCacheEntry(FeedCacheEntry entry)
-    {
-        cacheByID.put(entry.getUniqueID(), entry);
-        cacheByURL.put(entry.getEntryURL(), entry);
+        cacheByID.put(uniqueID, entry);
+        cacheByURL.put(CurnUtil.urlToLookupKey(url), entry);
     }
 
     /**
@@ -251,7 +257,14 @@ public class FeedCache
      */
     public Collection<FeedCacheEntry> getAllEntries()
     {
-        return Collections.unmodifiableCollection(cacheByID.values());
+        Collection<FeedCacheEntry> result = null;
+
+        if (cacheByID != null)
+            result = Collections.unmodifiableCollection(cacheByID.values());
+        else
+            result = new ArrayList<FeedCacheEntry>();
+
+        return result;
     }
 
     /**
@@ -272,22 +285,63 @@ public class FeedCache
     \*----------------------------------------------------------------------*/
 
     /**
+     * Add a {@link FeedCacheEntry} to the cache. This method exists primarily
+     * for use during deserialization of the cache.
+     *
+     * @param entry  the entry
+     */
+    void loadFeedCacheEntry(FeedCacheEntry entry)
+    {
+        // Load onto the end of a list, for speed. pruneCache()
+        // will sift through the list when we're done.
+
+        loadedEntries.add(entry);
+   }
+
+    /**
+     * Signify that the cache is finished loading (i.e., that all calls to
+     * loadFeedCacheEntry are done).
+     */
+    void optimizeAfterLoad()
+    {
+        pruneCache();
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Private Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
      * Prune the loaded cache of out-of-date data.
      */
-    void pruneCache()
+    private void pruneCache()
     {
         log.debug ("PRUNING CACHE");
         log.debug ("Cache's notion of current time: " +
                    new Date (currentTime));
         Map<URL,FeedInfo> feedInfoMap = config.getFeedInfoMap();
 
-        for (Iterator itKeys = cacheByID.keySet().iterator();
-             itKeys.hasNext(); )
+        int maxEntries = loadedEntries.size();
+        if (maxEntries == 0)
+            maxEntries = 100;
+
+        // Use default load factor (0.75), and rely on the HashMap class's
+        // documented behavior: "If the initial capacity is greater than the
+        // maximum number of entries divided by the load factor, no rehash
+        // operations will ever occur."
+
+        int initialCapacity = (int) (((float) maxEntries) / 0.75f);
+
+        log.debug("HashMap sizing: Max entries=" + maxEntries + ", " +
+                  "initialCapacity=" +  initialCapacity);
+        cacheByID = new HashMap<String,FeedCacheEntry>(initialCapacity);
+        cacheByURL = new HashMap<String,FeedCacheEntry>(initialCapacity);
+
+        for (FeedCacheEntry entry : loadedEntries)
         {
-            String itemKey = (String) itKeys.next();
-            FeedCacheEntry entry = (FeedCacheEntry) cacheByID.get (itemKey);
-            URL channelURL = entry.getChannelURL();
             boolean removed = false;
+            URL channelURL = entry.getChannelURL();
+            String itemKey = entry.getUniqueID();
 
             if (log.isDebugEnabled())
                 dumpCacheEntry (itemKey, entry, "");
@@ -303,7 +357,6 @@ public class FeedCache
                            "\", with base URL \"" + channelURL.toString() +
                            "\" no longer corresponds to a configured feed. " +
                            "Tossing it.");
-                itKeys.remove();
                 removed = true;
             }
 
@@ -334,7 +387,6 @@ public class FeedCache
                 {
                     log.debug ("Cache time for item \"" + itemKey +
                                "\" has expired. Deleting cache entry.");
-                    itKeys.remove();
                     removed = true;
                 }
             }
@@ -344,30 +396,18 @@ public class FeedCache
                 // Add to URL cache.
 
                 URL url = CurnUtil.normalizeURL(entry.getEntryURL());
-                log.debug("Loading URL \"" + url.toString() +
-                          "\" into in-memory lookup cache.");
-                cacheByURL.put(url, entry);
+                String strURL = url.toString();
+                log.debug("Loading entry for URL \"" + strURL +
+                          "\" into in-memory URL lookup cache.");
+                cacheByURL.put(strURL, entry);
+                log.debug("Loading entry for URL \"" + strURL +
+                          "\" into in-memory ID lookup cache.");
+                cacheByID.put(itemKey, entry);
+                log.debug ("Insert complete.");
             }
         }
 
         log.debug ("DONE PRUNING CACHE");
-    }
-
-    /*----------------------------------------------------------------------*\
-                              Private Methods
-    \*----------------------------------------------------------------------*/
-
-    /**
-     * Dump the contents of the cache, via the "debug" log facility.
-     *
-     * @param label  a label, or initial message, to identify the dump
-     */
-    private void dumpCache (final String label)
-    {
-        log.debug ("CACHE DUMP: " + label);
-        Set<String> sortedKeys = new TreeSet<String> (cacheByID.keySet());
-        for (String itemKey : sortedKeys)
-            dumpCacheEntry (itemKey, (FeedCacheEntry) cacheByID.get (itemKey), "");
     }
 
     /**

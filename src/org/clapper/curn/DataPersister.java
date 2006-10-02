@@ -190,8 +190,7 @@ public abstract class DataPersister
             });
 
             endLoadOperation();
-
-            feedCache.pruneCache();
+            feedCache.optimizeAfterLoad();
         }
     }
 
@@ -390,7 +389,9 @@ public abstract class DataPersister
         // Add the feed cache entry to the feed cache.
 
         FeedCacheEntry feedCacheEntry = feedData.getFeedCacheEntry();
-        feedCache.addFeedCacheEntry(feedCacheEntry);
+        log.debug("processLoadedFeed: Processing loaded feed data for " +
+                  feedCacheEntry.getChannelURL());
+        feedCache.loadFeedCacheEntry(feedCacheEntry);
 
         // Dispatch the feed metadata to the appropriate places.
 
@@ -428,9 +429,13 @@ public abstract class DataPersister
             // Add the item's feed cache entry to the cache.
 
             FeedCacheEntry itemCacheEntry = itemData.getFeedCacheEntry();
-            feedCache.addFeedCacheEntry(itemCacheEntry);
+            log.debug("processLoadedFeed: adding item " + 
+                      itemData.getFeedCacheEntry().getEntryURL() +
+                      " to cache.");
+            feedCache.loadFeedCacheEntry(itemCacheEntry);
+            log.debug("processLoadedFeed: Processing item metadata");
 
-            // Now proess the metadata.
+            // Now process the metadata.
 
             for (PersistentMetadataGroup mg : feedData.getFeedMetadata())
             {

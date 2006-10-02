@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -306,6 +307,7 @@ public class XMLDataPersister extends DataPersister
         throws CurnException
     {
          assert(isEnabled());
+         log.debug("Starting load of XML curn data.");
    }
 
     /**
@@ -317,6 +319,7 @@ public class XMLDataPersister extends DataPersister
     protected void endLoadOperation()
         throws CurnException
     {
+         log.debug("Load of XML curn data complete.");
     }
 
     /**
@@ -448,6 +451,9 @@ public class XMLDataPersister extends DataPersister
         // Okay, it's a curn cache. Start traversing the child nodes,
         // parsing each cache entry.
 
+        Map<URL,PersistentFeedData> loadedData =
+            new HashMap<URL,PersistentFeedData>();
+
         List<?> childNodes = root.getChildren();
         for (Iterator<?> it = childNodes.iterator(); it.hasNext(); )
         {
@@ -467,7 +473,25 @@ public class XMLDataPersister extends DataPersister
             try
             {
                 FeedCacheEntry entry = parseOldXMLCacheEntry(childNode);
-                loadedDataHandler.feedLoaded(new PersistentFeedData(entry));
+                URL feedURL = entry.getChannelURL();
+                PersistentFeedData feedData = loadedData.get(feedURL);
+                log.debug("readOldXMLCache: read entry " + entry.getEntryURL());
+                if (feedData == null)
+                {
+                    feedData = new PersistentFeedData();
+                    loadedData.put(feedURL, feedData);
+                }
+
+                if (entry.isChannelEntry())
+                {
+                    feedData.setFeedCacheEntry(entry);
+                }
+
+                else
+                {
+                    feedData.addPersistentFeedItem
+                        (new PersistentFeedItemData(entry));
+                }
             }
 
             catch (CurnException ex)
@@ -477,6 +501,9 @@ public class XMLDataPersister extends DataPersister
                 log.error("Error parsing feed cache entry", ex);
             }
         }
+
+        for (PersistentFeedData feedData : loadedData.values())
+            loadedDataHandler.feedLoaded(feedData);
     }
 
     /**
@@ -523,7 +550,7 @@ public class XMLDataPersister extends DataPersister
 
             catch (NumberFormatException ex)
             {
-                throw new  CurnException
+                throw new CurnException
                     ("Bad timestamp value of \"" + sTimestamp +
                      "\" for <" + OLD_XML_ENTRY_ELEMENT +
                      "> with unique ID \"" + entryID + "\". Skipping entry.");
