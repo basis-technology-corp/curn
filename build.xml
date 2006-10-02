@@ -494,8 +494,7 @@ source and documentation packages.
       <arg value="--"/>
       <arg value="org.clapper.curn.Tool"/>
       <arg value="--logging"/>
-      <arg value="--no-cache"/>
-      <arg value="${user.home}/.curn/tst.cfg"/>
+      <arg value="${user.home}/.curn/bmc.cfg"/>
     </java>
   </target>
 
