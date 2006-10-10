@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.clapper.util.misc.MultiValueMap;
 
 /**
  * The <tt>ArticleFilterPlugIn</tt> provides per-feed filtering capabilities.
@@ -196,20 +197,20 @@ public class ArticleFilterPlugIn
     private static final char   COMMAND_DELIM     = ';';
     private static final String STR_COMMAND_DELIM = "" + COMMAND_DELIM;
 
-    private static Map<String,Field> FIELD_NAME_MAP              // NOPMD
-        = new HashMap<String,Field>();
+    private static Map<String,Field> FIELD_NAME_MAP =            // NOPMD
+        new HashMap<String,Field>();
     static
     {
         for (Field field : Field.values())
-            FIELD_NAME_MAP.put (field.toString().toLowerCase(), field);
+            FIELD_NAME_MAP.put(field.toString().toLowerCase(), field);
     }
 
-    private static Map<String,Command> COMMAND_MAP               // NOPMD
-        = new HashMap<String,Command>();
+    private static Map<String,Command> COMMAND_MAP =             // NOPMD
+        new HashMap<String,Command>();
     static
     {
         for (Command command : Command.values())
-            COMMAND_MAP.put (command.toString().toLowerCase(), command);
+            COMMAND_MAP.put(command.toString().toLowerCase(), command);
     }
 
     /*----------------------------------------------------------------------*\
@@ -229,7 +230,7 @@ public class ArticleFilterPlugIn
             // Nothing to do
         }
 
-        public FieldMatchRule addField (Field field)
+        public FieldMatchRule addField(Field field)
         {
             fields.add (field);
             return this;
@@ -245,7 +246,7 @@ public class ArticleFilterPlugIn
             return regex;
         }
 
-        public void setRegex (Pattern regex)
+        public void setRegex(Pattern regex)
         {
             this.regex = regex;
         }
@@ -256,14 +257,14 @@ public class ArticleFilterPlugIn
             String sep = "<";
             for (Field field : fields)
             {
-                buf.append (sep);
-                buf.append (field);
+                buf.append(sep);
+                buf.append(field);
                 sep = ",";
             }
 
-            buf.append ("> '");
-            buf.append (regex.toString());
-            buf.append ("'");
+            buf.append("> '");
+            buf.append(regex.toString());
+            buf.append("'");
 
             return buf.toString();
         }
@@ -276,15 +277,15 @@ public class ArticleFilterPlugIn
         private Collection<FieldMatchRule> matchRules =
             new ArrayList<FieldMatchRule>();
 
-        MatchRule (Command command, String unparsedFilter)
+        MatchRule(Command command, String unparsedFilter)
         {
             this.command = command;
             this.unparsedFilter = unparsedFilter;
         }
 
-        private void addFieldRule (FieldMatchRule rule)
+        private void addFieldRule(FieldMatchRule rule)
         {
-            matchRules.add (rule);
+            matchRules.add(rule);
         }
 
         private Collection<FieldMatchRule> getFieldRules()
@@ -306,27 +307,27 @@ public class ArticleFilterPlugIn
         {
             StringBuilder buf = new StringBuilder();
 
-            buf.append (command);
+            buf.append(command);
             for (FieldMatchRule fieldRule : matchRules)
             {
-                buf.append (" ");
-                buf.append (fieldRule.toString());
+                buf.append(" ");
+                buf.append(fieldRule.toString());
             }
 
             return buf.toString();
         }
     }
 
-    private class FeedFilterRules implements Iterable<MatchRule>
+    private class FeedFilterRuleset implements Iterable<MatchRule>
     {
         private Collection<MatchRule> filterRules = new ArrayList<MatchRule>();
 
-        FeedFilterRules()
+        FeedFilterRuleset()
         {
             // Nothing to do
         }
 
-        public void add (MatchRule rule)
+        public void add(MatchRule rule)
         {
             filterRules.add (rule);
         }
@@ -354,8 +355,8 @@ public class ArticleFilterPlugIn
     /**
      * Per-feed match rules
      */
-    private Map<FeedInfo,FeedFilterRules> perFeedMatchRules =
-        new HashMap<FeedInfo,FeedFilterRules>();
+    private MultiValueMap<FeedInfo, FeedFilterRuleset> perFeedMatchRules =
+        new MultiValueMap<FeedInfo,FeedFilterRuleset>();
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -390,7 +391,7 @@ public class ArticleFilterPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -431,21 +432,21 @@ public class ArticleFilterPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_ITEM_FILTER))
+            if (paramName.startsWith(VAR_ITEM_FILTER))
             {
-                String rawValue = config.getRawValue (sectionName, paramName);
-                perFeedMatchRules.put (feedInfo,
-                                       parseFilterSpec (sectionName,
-                                                        paramName,
-                                                        rawValue));
+                String rawValue = config.getRawValue(sectionName, paramName);
+                perFeedMatchRules.put(feedInfo,
+                                      parseFilterSpec(sectionName,
+                                                      paramName,
+                                                      rawValue));
             }
 
             return true;
@@ -453,7 +454,7 @@ public class ArticleFilterPlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -481,27 +482,29 @@ public class ArticleFilterPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          RSSChannel channel)
         throws CurnException
     {
-        FeedFilterRules rules = perFeedMatchRules.get (feedInfo);
-        if (rules != null)
+        Collection<FeedFilterRuleset> rules =
+            perFeedMatchRules.getCollection(feedInfo);
+
+        if ((rules != null) && (rules.size() > 0))
         {
             for (RSSItem item : channel.getItems())
             {
-                if (nukeItem (item, rules, feedInfo))
+                if (nukeItem(item, rules, feedInfo))
                 {
                     // Since getItems() returns a copy of the list of
                     // items, this call will not cause a
                     // ConcurrentModificationException to be thrown.
 
-                    log.debug ("Feed \"" +
-                               feedInfo.getURL() +
-                               "\": Filtering out item \"" +
-                               item.getTitle() +
-                               "\"");
-                    channel.removeItem (item);
+                    log.debug("Feed \"" +
+                              feedInfo.getURL() +
+                              "\": Filtering out item \"" +
+                              item.getTitle() +
+                              "\"");
+                    channel.removeItem(item);
                 }
             }
         }
@@ -513,13 +516,13 @@ public class ArticleFilterPlugIn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private FeedFilterRules parseFilterSpec (String sectionName,
-                                             String paramName,
-                                             String rawValue)
+    private FeedFilterRuleset parseFilterSpec(String sectionName,
+                                            String paramName,
+                                            String rawValue)
         throws CurnException
     {
-        FeedFilterRules result = new FeedFilterRules();
-        String[] tokens = parseFilterTokens (rawValue);
+        FeedFilterRuleset result = new FeedFilterRuleset();
+        String[] tokens = parseFilterTokens(rawValue);
 
         try
         {
@@ -529,7 +532,7 @@ public class ArticleFilterPlugIn
                 // Strip off the first token, which should be the command.
 
                 String sCommand = tokens[i++];
-                Command cmd = COMMAND_MAP.get (sCommand);
+                Command cmd = COMMAND_MAP.get(sCommand);
                 if (cmd == null)
                 {
                     throw new CurnException
@@ -541,23 +544,23 @@ public class ArticleFilterPlugIn
                          new Object[] {sectionName, paramName, sCommand});
                 }
 
-                MatchRule matchRule = new MatchRule (cmd, rawValue);
+                MatchRule matchRule = new MatchRule(cmd, rawValue);
 
                 // Check for a wildcard field.
 
-                if (tokens[i].equals (STR_COMMAND_DELIM))
+                if (tokens[i].equals(STR_COMMAND_DELIM))
                 {
                     // Wild card rule.
 
                     FieldMatchRule fieldRule = new FieldMatchRule();
-                    fieldRule.addField (Field.AUTHOR)
-                             .addField (Field.TITLE)
-                             .addField (Field.SUMMARY)
-                             .addField (Field.TEXT)
-                             .addField (Field.CATEGORY)
-                             .setRegex (compileRegex (".*"));
+                    fieldRule.addField(Field.AUTHOR)
+                             .addField(Field.TITLE)
+                             .addField(Field.SUMMARY)
+                             .addField(Field.TEXT)
+                             .addField(Field.CATEGORY)
+                             .setRegex(compileRegex (".*"));
                     i++;
-                    matchRule.addFieldRule (fieldRule);
+                    matchRule.addFieldRule(fieldRule);
                 }
 
                 else
@@ -567,14 +570,14 @@ public class ArticleFilterPlugIn
                     // line.
 
                     while ((i < tokens.length) &&
-                           (! tokens[i].equals (STR_COMMAND_DELIM)))
+                           (! tokens[i].equals(STR_COMMAND_DELIM)))
                     {
                         // Strip off field name.
 
                         String strField = tokens[i++];
                         String uncompiledRegex = tokens[i++];
                         FieldMatchRule fieldRule = new FieldMatchRule();
-                        Field field = FIELD_NAME_MAP.get (strField);
+                        Field field = FIELD_NAME_MAP.get(strField);
                         if (field == null)
                         {
                             throw new CurnException
@@ -593,26 +596,26 @@ public class ArticleFilterPlugIn
 
                         if (field == Field.ANY)
                         {
-                            fieldRule.addField (Field.AUTHOR)
-                                     .addField (Field.TITLE)
-                                     .addField (Field.SUMMARY)
-                                     .addField (Field.TEXT)
-                                     .addField (Field.CATEGORY);
+                            fieldRule.addField(Field.AUTHOR)
+                                     .addField(Field.TITLE)
+                                     .addField(Field.SUMMARY)
+                                     .addField(Field.TEXT)
+                                     .addField(Field.CATEGORY);
                         }
 
                         else
                         {
-                            fieldRule.addField (field);
+                            fieldRule.addField(field);
                         }
 
-                        fieldRule.setRegex (compileRegex (uncompiledRegex));
-                        matchRule.addFieldRule (fieldRule);
+                        fieldRule.setRegex(compileRegex(uncompiledRegex));
+                        matchRule.addFieldRule(fieldRule);
                     }
 
                     i++;
                 }
 
-                result.add (matchRule);
+                result.add(matchRule);
             }
         }
 
@@ -629,9 +632,25 @@ public class ArticleFilterPlugIn
         return result;
     }
 
-    private boolean nukeItem (RSSItem         item,
-                              FeedFilterRules rules,
-                              FeedInfo        feedInfo)
+    private boolean nukeItem(RSSItem                       item,
+                             Collection<FeedFilterRuleset> rulesets,
+                             FeedInfo                      feedInfo)
+    {
+        boolean match = false;
+
+        for (FeedFilterRuleset ruleset : rulesets)
+        {
+            match = nukeItem(item, ruleset, feedInfo);
+            if (match)
+                break;
+        }
+
+        return match;
+    }
+
+    private boolean nukeItem(RSSItem           item,
+                             FeedFilterRuleset ruleset,
+                             FeedInfo          feedInfo)
     {
         boolean killItem = false;
         String  itemId = feedInfo.getURL()
@@ -639,8 +658,8 @@ public class ArticleFilterPlugIn
                        + item.getTitle();
 
         log.debug ("item " + itemId + ": checking filter: " +
-                   rules.toString());
-        for (MatchRule rule : rules)
+                   ruleset.toString());
+        for (MatchRule rule : ruleset)
         {
             boolean match = true;
             boolean hide = (rule.getCommand() == Command.HIDE);
