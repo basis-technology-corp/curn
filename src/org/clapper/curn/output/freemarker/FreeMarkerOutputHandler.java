@@ -225,6 +225,11 @@ import freemarker.template.TemplateException;
  *  |                |
  *  |                +-- title                  channel title
  *  |                |
+ *  |                +-- url                    channel URL (from the XML)
+ *  |                |
+ *  |                +-- configuredURL          channel/feed URL from the
+ *  |                |                          config file
+ *  |                |
  *  |                +-- totalItems             total items in channel
  *  |                |
  *  |                +-- channelAnchor          HTML anchor for channel
@@ -606,10 +611,17 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         channelData.put ("anchorName", channelAnchorName);
         channelData.put ("title", channelTitle);
 
+        // Publish two URLs for the channel: The one from the configuration
+        // file (feedInfo.getURL()) and the one that's actually published in
+        // the downloaded RSS XML.
+
+        URL feedInfoURL = feedInfo.getURL();
+        channelData.put("configuredURL", feedInfoURL.toString());
+
         URL channelURL;
         link = channel.getLinkWithFallback ("text/html");
         if (link == null)
-            channelURL = feedInfo.getURL();
+            channelURL = feedInfoURL;
         else
             channelURL = link.getURL();
         channelData.put ("url", channelURL.toString());
