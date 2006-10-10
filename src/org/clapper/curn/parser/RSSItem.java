@@ -128,7 +128,7 @@ public abstract class RSSItem
     public Object clone()
         throws CloneNotSupportedException
     {
-        return makeCopy (getParentChannel());
+        return makeCopy(getParentChannel());
     }
 
     /**
@@ -143,14 +143,14 @@ public abstract class RSSItem
         RSSItem copy = newInstance (parentChannel);
 
         for (String key : this.contentMap.keySet())
-            copy.contentMap.put (key, this.contentMap.get (key));
+            copy.contentMap.put(key, this.contentMap.get(key));
 
-        copy.setTitle (this.getTitle());
-        copy.setSummary (this.getSummary());
-        copy.setLinks (this.getLinks());
-        copy.setCategories (this.getCategories());
-        copy.setPublicationDate (this.getPublicationDate());
-        copy.setID (this.getID());
+        copy.setTitle(this.getTitle());
+        copy.setSummary(this.getSummary());
+        copy.setLinks(this.getLinks());
+        copy.setCategories(this.getCategories());
+        copy.setPublicationDate(this.getPublicationDate());
+        copy.setID(this.getID());
 
         Collection<String> authors = this.getAuthors();
         if (authors != null)
@@ -308,6 +308,32 @@ public abstract class RSSItem
         return cmp;
     }
 
+    /**
+     * Generate a hash code for this item.
+     *
+     * @return the hash code
+     */
+    public int hashCode()
+    {
+        return getIdentifier().hashCode();
+    }
+
+    /**
+     * Compare this item to some other object for equality.
+     *
+     * @param o the object
+     *
+     * @return <tt>true</tt> if the objects are equal, <tt>false</tt> if not
+     */
+    public boolean equals(Object o)
+    {
+        boolean eq = false;
+
+        if (o instanceof RSSItem)
+            eq = getIdentifier().equals(((RSSItem) o).getIdentifier());
+
+        return eq;
+    }
     /**
      * Return the string value of the item (which, right now, is its
      * title).
@@ -481,4 +507,22 @@ public abstract class RSSItem
      * @param id the ID field, or null
      */
     public abstract void setID (String id);
+
+    /*----------------------------------------------------------------------*\
+                          Private Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get a unique identifier for this RSSItem. This method will return the
+     * ID (see getID()), if it's set; otherwise, it'll return the URL.
+     *
+     * @return a unique identifier
+     */
+    private String getIdentifier()
+    {
+        String id = getID();
+        if (id == null)
+            id = getURL().toString();
+        return id;
+    }
 }
