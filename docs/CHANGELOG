@@ -8,29 +8,14 @@ Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 
 Version 3.1 (...)
 
-- The org.clapper.curn.CurnConfig class no longer provides constructors
-  that parse the configuration; Such constructors are unsafe, since they
-  invoke methods in the parent class that, in turn, call methods that could
-  be overridden--and thus could be called on an incompletely constructed
-  object. CurnConfig now provides explicit load() methods, instead.
-
-- Fixed global default handling logic in EmptyArticleSummaryPlugin class.
-  Plug-in was parsing the global default setting, but not honoring it.
-
-- Fixed an editing bug in the CommonsXMLFixups plug-in. The plug-in would
-  convert the sequence "&amp;nbsp;" in the XML to "&amp;", leaving a stray
-  "&" in the XML.
+			       ------------
+			       Enhancements
+			       ------------
 
 - curn's multithreaded download logic now uses the java.util.concurrent
   library, instead of native Java synchronization. While this change won't
   necessarily improve performance for small numbers of feeds and threads,
   it should permit curn to scale better to large numbers of feeds.
-
-- By default, curn now aborts if it encounters a reference to an undefined
-  configuration file variable. Previously, it would simply substitute an
-  empty string, but that behavior can lead to some hard-to-debug runtime
-  errors. A new -U (--allow-undefined-cfg-vars) command-line option
-  restores the original behavior.
 
 - The configuration file parser now supports "${var?default value}" syntax.
   In that example, if "${var}" does not have a value, or has an empty
@@ -71,16 +56,28 @@ Version 3.1 (...)
      jar file for the scripting language you're using. JSR 223 scripting
      engines are available  "https://scripting.dev.java.net/".
 
+
+				  -------
+				  Changes
+				  -------
+
+- The org.clapper.curn.CurnConfig class no longer provides constructors
+  that parse the configuration; Such constructors are unsafe, since they
+  invoke methods in the parent class that, in turn, call methods that could
+  be overridden--and thus could be called on an incompletely constructed
+  object. CurnConfig now provides explicit load() methods, instead.
+
+- By default, curn now aborts if it encounters a reference to an undefined
+  configuration file variable. Previously, it would simply substitute an
+  empty string, but that behavior can lead to some hard-to-debug runtime
+  errors. A new -U (--allow-undefined-cfg-vars) command-line option
+  restores the original behavior.
+
 - The ScriptOutputHandler no longer supports the BSF objects that had
   to be retrieved via "bsf.lookupBean()". Instead, only the global
   "curn" object is exposed, and it's exposed automatically as a script
   global. For more information, see the "Writing a Script Output Handler"
   section in the "curn User's Guide".
-
-- curn's MiniRSSParser has been removed. There's no sense in maintaining a
-  stripped-down RSS parser, when fully functional parsers such as Informa
-  and ROME exist and are constantly being updated. curn now uses ROME by
-  default (and ships with the necessary jars).
 
 - The Common XML Fixups plug-in:
 
@@ -107,6 +104,11 @@ Version 3.1 (...)
      will convert the URL to:
 
            http://rss.example.com/articles?id=100&amp;mode=print
+
+- curn's MiniRSSParser has been removed. There's no sense in maintaining a
+  stripped-down RSS parser, when fully functional parsers such as Informa
+  and ROME exist and are constantly being updated. curn now uses ROME by
+  default (and ships with the necessary jars).
 
 - curn's cache saving and loading logic has been refactored:
 
@@ -139,6 +141,23 @@ Version 3.1 (...)
   proportional font.
 
 - Propagated modified license (from version 3.0) into source files.
+
+
+				 ---------
+				 Bug Fixes
+				 ---------
+
+- Fixed global default handling logic in EmptyArticleSummaryPlugin class.
+  Plug-in was parsing the global default setting, but not honoring it.
+
+- Fixed an editing bug in the CommonsXMLFixups plug-in. The plug-in would
+  convert the sequence "&amp;nbsp;" in the XML to "&amp;", leaving a stray
+  "&" in the XML.
+
+- ArticleFilterPlugIn was documented as supporting multiple "ArticleFilter"
+  configuration items per feed, but the code only supported one. The code
+  now supports multiple items, as indicated in the User's Guide.
+
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
