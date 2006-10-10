@@ -2445,9 +2445,12 @@ ArticleFilter: hide ; show author '^moe *howard$'
       <a href="#PlugIn_EditParsedFeedURL" class="plug-in-flag">plug-in</a></td>
 </td>
     <td align="left">Boolean</td>
-    <td align="left">Specifies a string to be used as the site's
-      title, instead of the title supplied in the RSS XML. Useful
-      when the real site-supplied title is not suitable.
+    <td align="left">Specifies that all URLs should be pruned of their
+      HTTP parameters. This action can also be accomplished with
+      <a href="#Feed_EditItemURL" class="code">EditItemURL</a> and
+      <a href="#Feed_EditFeedURL" class="code">EditFeedURL</a> directives;
+      <span class="code">PruneURLs</span> is convenient shorthand for a
+      common operation.
     </td>
     <td align="left">No</td>
     <td align="left">None</td>
