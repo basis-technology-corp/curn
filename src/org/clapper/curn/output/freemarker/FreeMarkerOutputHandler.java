@@ -402,6 +402,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     private int               tocThreshold        = DEFAULT_TOC_THRESHOLD;
     private int               totalChannels       = 0;
     private int               totalItems          = 0;
+    private CurnConfig        config              = null;
 
     private freemarker.template.Configuration freemarkerConfig;
     private SimpleHash                        freemarkerDataModel;
@@ -443,12 +444,13 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public void initOutputHandler (final CurnConfig              config,
-                                   final ConfiguredOutputHandler cfgHandler)
+    public void initOutputHandler(final CurnConfig              config,
+                                  final ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
         this.totalChannels = 0;
+        this.config = config;
 
         Date now = new Date();
 
@@ -464,7 +466,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             {
                 // Parse the TemplateFile parameter. Also gets the MIME type.
 
-                parseTemplateLocation (config, section);
+                parseTemplateLocation(config, section);
 
                 // Determine whether we should strip HTML tags.
 
@@ -476,15 +478,15 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
                 // Get the title.
 
-                title = config.getOptionalStringValue (section,
-                                                       CFG_TITLE,
-                                                       title);
+                title = config.getOptionalStringValue(section,
+                                                      CFG_TITLE,
+                                                      title);
 
                 // Get the extra text.
 
-                extraText = config.getOptionalStringValue (section,
-                                                           CFG_EXTRA_TEXT,
-                                                           extraText);
+                extraText = config.getOptionalStringValue(section,
+                                                          CFG_EXTRA_TEXT,
+                                                          extraText);
 
                 // Get the table of contents threshold
 
@@ -503,57 +505,57 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         // Create the FreeMarker configuration.
 
         freemarkerConfig = new freemarker.template.Configuration();
-        freemarkerConfig.setObjectWrapper (new DefaultObjectWrapper());
-        freemarkerConfig.setTemplateLoader (new CurnTemplateLoader());
-        freemarkerConfig.setLocalizedLookup (false);
+        freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+        freemarkerConfig.setTemplateLoader(new CurnTemplateLoader());
+        freemarkerConfig.setLocalizedLookup(false);
 
         // Create the FreeMarker data model and populate it with the
         // values that aren't channel-dependent.
 
         freemarkerDataModel = new SimpleHash();
-        freemarkerDataModel.put ("dateGenerated",
-                                 new SimpleDate (now, SimpleDate.DATETIME));
-        freemarkerDataModel.put ("title", title);
-        freemarkerDataModel.put ("extraText", extraText);
+        freemarkerDataModel.put("dateGenerated",
+                                new SimpleDate(now, SimpleDate.DATETIME));
+        freemarkerDataModel.put("title", title);
+        freemarkerDataModel.put("extraText", extraText);
 
         String encoding = super.getOutputEncoding();
         if (encoding == null)
             encoding = FileUtil.getDefaultEncoding();
 
-        freemarkerDataModel.put ("encoding", encoding);
+        freemarkerDataModel.put("encoding", encoding);
 
         SimpleHash map = new SimpleHash();
 
-        freemarkerDataModel.put ("configFile", map);
+        freemarkerDataModel.put("configFile", map);
         URL configFileURL = config.getConfigurationFileURL();
         if (configFileURL == null)
-            map.put ("url", "?");
+            map.put("url", "?");
         else
-            map.put ("url", configFileURL.toString());
+            map.put("url", configFileURL.toString());
 
         map = new SimpleHash();
-        freemarkerDataModel.put ("curn", map);
-        map.put ("version", Version.getVersionNumber());
-        map.put ("buildID", Version.getBuildID());
+        freemarkerDataModel.put("curn", map);
+        map.put("version", Version.getVersionNumber());
+        map.put("buildID", Version.getBuildID());
         if (super.displayToolInfo())
-            map.put ("showToolInfo", true);
+            map.put("showToolInfo", true);
         else
-            map.put ("showToolInfo", false);
+            map.put("showToolInfo", false);
 
         this.freemarkerTOCData = new SimpleHash();
-        freemarkerDataModel.put ("tableOfContents", this.freemarkerTOCData);
+        freemarkerDataModel.put("tableOfContents", this.freemarkerTOCData);
         freemarkerTOCItems = new SimpleSequence();
-        this.freemarkerTOCData.put ("channels", freemarkerTOCItems);
+        this.freemarkerTOCData.put("channels", freemarkerTOCItems);
 
         freemarkerChannelsData = new SimpleSequence();
-        freemarkerDataModel.put ("channels", freemarkerChannelsData);
+        freemarkerDataModel.put("channels", freemarkerChannelsData);
 
 
         // Methods accessible from the template
 
-        freemarkerDataModel.put ("wrapText", new WrapTextMethod());
-        freemarkerDataModel.put ("indentText", new IndentTextMethod());
-        freemarkerDataModel.put ("stripHTML", new StripHTMLMethod());
+        freemarkerDataModel.put("wrapText", new WrapTextMethod());
+        freemarkerDataModel.put("indentText", new IndentTextMethod());
+        freemarkerDataModel.put("stripHTML", new StripHTMLMethod());
 
         // Open the output file.
 
@@ -598,18 +600,21 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         totalChannels++;
 
         String channelAnchorName = CHANNEL_ANCHOR_PREFIX
-                                 + String.valueOf (totalChannels);
+                                 + String.valueOf(totalChannels);
         String channelTitle = channel.getTitle();
         RSSLink link;
 
         // Store the channel data.
 
         SimpleHash channelData = new SimpleHash();
-        freemarkerChannelsData.add (channelData);
-        channelData.put ("index", new SimpleNumber (totalChannels));
-        channelData.put ("totalItems", new SimpleNumber (totalItemsInChannel));
-        channelData.put ("anchorName", channelAnchorName);
-        channelData.put ("title", channelTitle);
+        freemarkerChannelsData.add(channelData);
+        channelData.put("index", new SimpleNumber(totalChannels));
+        channelData.put("totalItems", new SimpleNumber(totalItemsInChannel));
+        channelData.put("anchorName", channelAnchorName);
+        channelData.put("title", channelTitle);
+
+        if (config.showRSSVersion())
+            channelData.put("rssFormat", channel.getRSSFormat());
 
         // Publish two URLs for the channel: The one from the configuration
         // file (feedInfo.getURL()) and the one that's actually published in
@@ -619,34 +624,35 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         channelData.put("configuredURL", feedInfoURL.toString());
 
         URL channelURL;
-        link = channel.getLinkWithFallback ("text/html");
+        link = channel.getLinkWithFallback("text/html");
         if (link == null)
             channelURL = feedInfoURL;
         else
             channelURL = link.getURL();
-        channelData.put ("url", channelURL.toString());
+        channelData.put("url", channelURL.toString());
 
         Date channelDate = null;
-        channelData.put ("showDate", true);
+        channelData.put("showDate", true);
 
         if (channelDate != null)
         {
-            channelData.put ("date", new SimpleDate (channelDate,
-                                                     SimpleDate.DATETIME));
+            channelData.put("date", new SimpleDate(channelDate,
+                                                   SimpleDate.DATETIME));
         }
+
 
         // Store a table of contents entry for the channel.
 
         SimpleHash tocData = new SimpleHash();
-        tocData.put ("title", channelTitle);
-        tocData.put ("totalItems", new SimpleNumber (totalItemsInChannel));
-        tocData.put ("channelAnchor", channelAnchorName);
-        freemarkerTOCItems.add (tocData);
+        tocData.put("title", channelTitle);
+        tocData.put("totalItems", new SimpleNumber(totalItemsInChannel));
+        tocData.put("channelAnchor", channelAnchorName);
+        freemarkerTOCItems.add(tocData);
 
         // Create a collection for the channel items.
 
         SimpleSequence itemsData = new SimpleSequence();
-        channelData.put ("items", itemsData);
+        channelData.put("items", itemsData);
 
         // Now, put in the data for each item in the channel.
 
@@ -656,43 +662,43 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         for (RSSItem item : items)
         {
             SimpleHash itemData = new SimpleHash();
-            itemsData.add (itemData);
+            itemsData.add(itemData);
 
             i++;
-            itemData.put ("index", new SimpleNumber (i));
-            itemData.put ("showDate", true);
+            itemData.put("index", new SimpleNumber(i));
+            itemData.put("showDate", true);
             Date itemDate = item.getPublicationDate();
             if (itemDate != null)
             {
-                itemData.put ("date", new SimpleDate (itemDate,
-                                                      SimpleDate.DATETIME));
+                itemData.put("date", new SimpleDate(itemDate,
+                                                    SimpleDate.DATETIME));
             }
 
-            link = item.getLinkWithFallback ("text/html");
+            link = item.getLinkWithFallback("text/html");
             assert (link != null);
             URL itemURL = link.getURL();
-            itemData.put ("url", itemURL.toString());
+            itemData.put("url", itemURL.toString());
 
-            itemData.put ("showAuthor", true);
+            itemData.put("showAuthor", true);
             String authorString = null;
             Collection<String> authors = item.getAuthors();
             if ((authors != null) && (authors.size() > 0))
             {
-                authorString = TextUtil.join (authors, ", ");
-                itemData.put ("author", authorString);
+                authorString = TextUtil.join(authors, ", ");
+                itemData.put("author", authorString);
             }
 
             String itemTitle = item.getTitle();
             if (itemTitle == null)
                 itemTitle = "(No Title)";
-            itemData.put ("title", itemTitle);
+            itemData.put("title", itemTitle);
 
             String desc = item.getSummary();
 
             if (desc == null)
                 desc = "";
 
-            itemData.put ("description", desc);
+            itemData.put("description", desc);
         }
     }
 

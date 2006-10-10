@@ -56,6 +56,12 @@ Version 3.1 (...)
      jar file for the scripting language you're using. JSR 223 scripting
      engines are available  "https://scripting.dev.java.net/".
 
+- The FreeMarkerOutputHandler (org.clapper.curn.output.freemarker package)
+  now exports a "configuredURL" value for each channel, in addition to the
+  existing "url" parameter. "url" contains the channel's URL, as published
+  in the downloaded feed XML; "configuredURL" contains the URL as listed
+  in the curn configuration file. The two URLs might be the same, but they
+  can also be different (due to HTTP redirects, etc.).
 
 				  -------
 				  Changes
@@ -158,6 +164,10 @@ Version 3.1 (...)
   configuration items per feed, but the code only supported one. The code
   now supports multiple items, as indicated in the User's Guide.
 
+- When I converted output handlers to FreeMarker, in version 2.6, I
+  inadvertently dropped support for the global ShowRSSVersion configuration
+  item. That support has been restored. The built-in HTML and text FreeMarker
+  templates honor the configuration setting. See the User's Guide for details.
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
@@ -229,7 +239,7 @@ Version 3.0 (5 July, 2006)
 
 - curn's full version string now contains a build ID string. The build ID
   now appears in the version stamp field in all default
-  FreemarkerOutputHandler templates.
+  FreeMarkerOutputHandler templates.
 
 - Enhanced error reporting (exception handling) in some areas.
 

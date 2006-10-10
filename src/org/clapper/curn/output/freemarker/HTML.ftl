@@ -117,6 +117,7 @@
         <a name="${channel.anchorName}"></a>
         <a href="${channel.url}">${channel.title}</a>&nbsp;&nbsp;<br>
         <#if channel.date?exists>${channel.date?string("E, dd MMM, yyyy 'at' HH:mm:ss")}</#if>
+        <#if (channel.rssFormat?exists)>{channel.rssFormat}</#if>
     </td>
 
     </#if>
@@ -129,7 +130,6 @@
         <#if item.author?exists>
 	<tr><td>${item.author}</td></tr>
 	</#if>
-
       </table>
     </td>
     <td align="left" class="${evenOdd}ItemRow">${item.description}</td>

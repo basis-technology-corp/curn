@@ -4548,7 +4548,7 @@ documentation.</p>
  |          |     +-- channelAnchor .......... [String] HTML anchor name for channel
  |          |
  |          +-- channel
- .....       ...
+ ...        ...
  |
  +-- (channels) .............................. sequence of channel data
  |      |
@@ -4562,9 +4562,14 @@ documentation.</p>
  |      |       |
  |      |       +-- anchorName ............... [String] HTML anchor name for channel
  |      |       |
- |      |       +-- url ...................... [String] channel's URL
+ |      |       +-- url ...................... [String] channel's URL (as published in the feed's XML)
+ |      |       |
+ |      |       +-- configuredURL ............ [String] channel/feed URL (as listed in the <i>curn</i> configuration file)
  |      |       |
  |      |       +-- date ..................... [Date] channel's last-modified date (might be missing)
+ |      |       |
+ |      |       +-- rssFormat ................ [String] RSS format of channel (Atom, RSS 0.92, etc.).
+ |      |       |                              Empty if not to be shown.
  |      |       |
  |      |       +-- (items) .................. sequence of channel items
  |      |             |
@@ -4574,7 +4579,7 @@ documentation.</p>
  |      |             |     |
  |      |             |     +-- title ........ [String] item's title
  |      |             |     |
- |      |             |     +-- url .......... [String] item's unique URL
+ |      |             |     +-- url .......... [String] item's URL (as published in the feed's XML)
  |      |             |     |
  |      |             |     +-- date ......... [Date] the date (might be missing)
  |      |             |     |
