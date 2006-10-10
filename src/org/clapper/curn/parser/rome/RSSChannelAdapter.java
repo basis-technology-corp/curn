@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -134,7 +135,7 @@ public class RSSChannelAdapter extends RSSChannel
      */
     public Collection<RSSItem> getItems()
     {
-        Collection<RSSItem> result = new ArrayList<RSSItem>();
+        Collection<RSSItem> result = new HashSet<RSSItem>();
 
         for (Iterator it = syndFeed.getEntries().iterator(); it.hasNext(); )
             result.add(new RSSItemAdapter((SyndEntry) it.next(), this));
