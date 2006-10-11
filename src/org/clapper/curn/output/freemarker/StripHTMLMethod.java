@@ -48,7 +48,7 @@ package org.clapper.curn.output.freemarker;
 
 import java.util.List;
 
-import org.clapper.util.text.HTMLUtil;
+import org.clapper.util.html.HTMLUtil;
 
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateModel;

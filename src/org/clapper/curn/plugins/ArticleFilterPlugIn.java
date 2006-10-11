@@ -57,7 +57,7 @@ import org.clapper.curn.parser.RSSItem;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
-import org.clapper.util.text.HTMLUtil;
+import org.clapper.util.html.HTMLUtil;
 import org.clapper.util.text.TextUtil;
 import org.clapper.util.logging.Logger;
 

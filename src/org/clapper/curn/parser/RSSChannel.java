@@ -46,7 +46,7 @@
 
 package org.clapper.curn.parser;
 
-import org.clapper.util.text.HTMLUtil;
+import org.clapper.util.html.HTMLUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
