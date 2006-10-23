@@ -522,7 +522,21 @@ public abstract class RSSItem
     {
         String id = getID();
         if (id == null)
-            id = getURL().toString();
+        {
+            RSSLink url = getURL();
+            if (url != null)
+                id = url.toString();
+            else
+            {
+                // No URL. Use the hash code of the title, if present.
+
+                String title = getTitle();
+                if (title == null)
+                    title = "";
+                id = String.valueOf(title.hashCode());
+            }
+        }
+
         return id;
     }
 }
