@@ -104,7 +104,7 @@ public abstract class RSSItem
      */
     protected RSSItem()
     {
-        // nothing to do
+        super();
     }
 
     /*----------------------------------------------------------------------*\
@@ -315,7 +315,15 @@ public abstract class RSSItem
      */
     public int hashCode()
     {
-        return getIdentifier().hashCode();
+        int hc;
+        String id = getIdentifier();
+
+        if (id == null)
+            hc = super.hashCode();
+        else
+            hc = id.hashCode();
+
+        return hc;
     }
 
     /**
@@ -514,7 +522,9 @@ public abstract class RSSItem
 
     /**
      * Get a unique identifier for this RSSItem. This method will return the
-     * ID (see getID()), if it's set; otherwise, it'll return the URL.
+     * ID (see getID()), if it's set; otherwise, it'll return the URL. If
+     * there's no URL, it'll return the title. If there's no title, it returns
+     * null.
      *
      * @return a unique identifier
      */
@@ -530,10 +540,7 @@ public abstract class RSSItem
             {
                 // No URL. Use the hash code of the title, if present.
 
-                String title = getTitle();
-                if (title == null)
-                    title = "";
-                id = String.valueOf(title.hashCode());
+                id = getTitle();
             }
         }
 
