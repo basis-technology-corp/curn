@@ -58,7 +58,7 @@ if NOT "%CURN_JAVA_VM_ARGS%"=="" set JAVA_VM_ARGS=%JAVA_VM_ARGS% %CURN_JAVA_VM_A
 
 "$JAVA_HOME\bin\java" ^
 %JAVA_VM_ARGS% ^
--classpath $INSTALL_PATH\lib\curnboot.jar ^
+-classpath "$INSTALL_PATH\lib\curnboot.jar" ^
 -ea ^
 -client ^
 org.clapper.curn.Bootstrap ^
@@ -69,7 +69,7 @@ $INSTALL_PATH\plugins ^
 @user.home\curn\lib ^
 @user.home\.curn\lib ^
 -- ^
-org.clapper.curn.Tool %1 %2 %3 %4 %5 %6 %7 %8 %9
+org.clapper.curn.Tool "%1" "%2" "%3" "%4" "%5" "%6" "%7" "%8" "%9"
 
 :end
 
