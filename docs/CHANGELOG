@@ -148,6 +148,8 @@ Version 3.1 (...)
 
 - Propagated modified license (from version 3.0) into source files.
 
+- Updated bundled version of ASM from 2.2.1 to 2.2.3.
+
 
 				 ---------
 				 Bug Fixes
@@ -168,6 +170,14 @@ Version 3.1 (...)
   inadvertently dropped support for the global ShowRSSVersion configuration
   item. That support has been restored. The built-in HTML and text FreeMarker
   templates honor the configuration setting. See the User's Guide for details.
+
+- Modified default Windows installation path from
+  "%SYSTEMDRIVE%\Program Files\clapper.org\curn" to
+  "%SYSTEMDRIVE%\Program Files\ClapperOrg\curn". The "." in "clapper.org"
+  was causing problems on Windows 2000.
+
+- Fixed Windows curn.bat file to quote arguments that might contains
+  blanks.
 
 ---------------------------------------------------------------------------
 Version 3.0 (5 July, 2006)
