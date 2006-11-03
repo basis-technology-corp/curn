@@ -21,6 +21,9 @@ Version 3.1 (...)
   In that example, if "${var}" does not have a value, or has an empty
   value, the string "default value" will be substituted.
 
+- The configuration file specified on the curn command line can now be
+  a path or a URL. (Previously, curn only accepted a path.)
+
 - curn's ScriptOutputHandler now supports both the Apache Jakarta Bean
   Scripting Framework and the Java 6 (JSR 223) javax.script scripting
   framework. The Java 6 scripting framework requires Java 6, obviously.

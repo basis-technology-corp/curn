@@ -49,6 +49,7 @@ package org.clapper.curn;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -158,20 +159,20 @@ public class Curn
     /**
      * Run <i>curn</i> against a configuration file.
      *
-     * @param configPath      path to the configuration data
-     * @param useCache        whether or not to use the cache
+     * @param configURL   URL to the configuration data
+     * @param useCache    whether or not to use the cache
      *
      * @throws CurnUsageException user error (e.g., bad configuration)
      * @throws CurnException      some other error
      */
-    public void run (final String configPath, final boolean useCache)
+    public void run(final URL configURL, final boolean useCache)
         throws CurnException
     {
         metaPlugIn.runStartupPlugIn();
 
         try
         {
-            this.config = loadConfig(configPath);
+            this.config = loadConfig(configURL);
             this.dataPersister = DataPersisterFactory.getInstance();
             loadOutputHandlers(config);
             metaPlugIn.registerPersistentDataClientPlugIns(dataPersister);
@@ -288,7 +289,7 @@ public class Curn
         }
     }
 
-    private CurnConfig loadConfig(final String configPath)
+    private CurnConfig loadConfig(final URL configURL)
         throws CurnException,
                ConfigurationException
     {
@@ -296,7 +297,7 @@ public class Curn
         {
             config = new CurnConfig(err);
             config.setAbortOnUndefinedVariable(abortOnUndefinedVariable);
-            config.load(configPath);
+            config.load(configURL);
             MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn(config);
             return config;
         }
@@ -306,7 +307,7 @@ public class Curn
             throw new CurnException(Constants.BUNDLE_NAME,
                                     "Curn.cantFindConfig",
                                     "Cannot find configuration file \"{0}\"",
-                                    new Object[] {configPath},
+                                    new Object[] {configURL},
                                     ex);
         }
 
@@ -316,7 +317,7 @@ public class Curn
                                     "Curn.cantReadConfig",
                                     "I/O error reading configuration file " +
                                     "\"{0}\"",
-                                    new Object[] {configPath},
+                                    new Object[] {configURL},
                                     ex);
         }
     }

@@ -46,8 +46,11 @@
 
 package org.clapper.curn;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -491,7 +494,7 @@ public class Tool
                       sw.toString());
 
        info.addParameter("config",
-                         "Path to configuration file",
+                         "Path or URL to configuration file",
                          true);
     }
 
@@ -528,6 +531,33 @@ public class Tool
                 abort = true;
             }
 
+            // Is the configuration file a URL or a path?
+
+            URL configURL = null;
+            try
+            {
+                configURL = new URL(configPath);
+            }
+
+            catch (MalformedURLException ex)
+            {
+                // It's not a URL. Assume it's a path.
+
+                File f = new File(configPath);
+
+                if (! f.exists())
+                {
+                    throw new CommandLineUsageException
+                        (Constants.BUNDLE_NAME, "Tool.badConfigPath",
+                         "Configuration file argument \"{0}\" is not a " +
+                         "valid URL and does not specify the path to an " +
+                         "existing file.",
+                         new Object[] {configPath});
+                }
+
+                configURL = f.toURI().toURL();
+            }
+
             if (! abort)
             {
                 // Allocate Curn object, which loads plug-ins.
@@ -543,7 +573,7 @@ public class Tool
                 curn.setCurrentTime(currentTime);
                 curn.setAbortOnUndefinedConfigVariable
                     (optAbortOnUndefinedConfigVar);
-                curn.run(configPath, this.useCache);
+                curn.run(configURL, this.useCache);
             }
         }
 
