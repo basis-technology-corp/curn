@@ -11,8 +11,8 @@ import org.clapper.util.config.ConfigurationException;
 /**
  * Class that's used to create a {@link DataPersister}. This class is
  * implemented as a plug-in, so that <i>curn</i>'s plug-in discovery
- * mechanism will find it an automatically configure it. The factory
- * methods, though, are static, and the plug-in logic sets up the data
+ * mechanism will find it and automatically configure it. The factory
+ * methods, though, are static; the plug-in logic merely sets up the data
  * structures that are used by the static methods.
  *
  * @see PlugIn
