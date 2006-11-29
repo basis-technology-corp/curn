@@ -3,15 +3,10 @@ RSS Feeds
 ---------------------------------------------------------------------------
 The Daily Irrelevant
 http://irrelevant.clapper.org/
-
-    Fifteen Philadelphia motorists cited for stupidity
-    http://irrelevant.clapper.org/2004/06/13/stupidity.html
-
-        During rush hour this morning, on the city's busy Schuylkill Expressway,
-        Philadelphia police stopped fifteen motorists and cited them under
-        Philadelphia's new, controversial "stupid driver" ordinance.
+rss_2.0
 
     Joe Sixpack to retire
+
     http://irrelevant.clapper.org/2004/06/13/joe6.html
 
         Joe Sixpack, whose name is frequently used to represent an average guy,
@@ -19,7 +14,16 @@ http://irrelevant.clapper.org/
         use someone else's name," Sixpack said, grinning, "'less they wanna pay
         me royalties or somethin'."
 
+    Fifteen Philadelphia motorists cited for stupidity
+
+    http://irrelevant.clapper.org/2004/06/13/stupidity.html
+
+        During rush hour this morning, on the city's busy Schuylkill Expressway,
+        Philadelphia police stopped fifteen motorists and cited them under
+        Philadelphia's new, controversial "stupid driver" ordinance.
+
     Tripwell caught with pants down
+
     http://irrelevant.clapper.org/2004/06/13/televangelist.html
 
         Police, responding to neighbors' reports of disturbing sounds from
@@ -33,8 +37,10 @@ http://irrelevant.clapper.org/
 ---------------------------------------------------------------------------
 News Bites
 http://bites.clapper.org/
+rss_2.0
 
     Man Bites Dog
+
     http://bites.clapper.org/manbitesdog.html
 
         Repeatedly attacked by a small, but persistent, neighborhood Chihuahua
@@ -44,6 +50,7 @@ http://bites.clapper.org/
         of treatment for multiple bite wounds.
 
     President Falls
+
     http://bites.clapper.org/prezfall.html
 
         While stepping off Air Force One, the President tripped, fell onto the
@@ -52,18 +59,22 @@ http://bites.clapper.org/
 ---------------------------------------------------------------------------
 Simple News Summaries
 http://justthefactsmaam.clapper.org/
+rss_2.0
+
+    New study claims pollen makes people sneeze
+
+    http://justthefactsmaam.clapper.org/duh.html
 
     Political correctness organization claims that the word "person" is sexist,
     because it contains the word "son."
+
     http://justthefactsmaam.clapper.org/pcstupid.html
 
-    New study claims pollen makes people sneeze
-    http://justthefactsmaam.clapper.org/duh.html
-
     Researcher claims 13% of Americans can't spell their own names
+
     http://justthefactsmaam.clapper.org/names.html
 
 
 ---------------------------------------------------------------------------
-curn, 3.1 (build 20060919.195434.207)
-Generated Tuesday, 19 September, 2006 at 15:54:38 EDT
+curn, 3.1 (build 20061129.175124.450)
+Generated Wednesday, 29 November, 2006 at 14:30:02 EST
