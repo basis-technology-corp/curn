@@ -533,30 +533,6 @@ public class Tool
 
             // Is the configuration file a URL or a path?
 
-            URL configURL = null;
-            try
-            {
-                configURL = new URL(configPath);
-            }
-
-            catch (MalformedURLException ex)
-            {
-                // It's not a URL. Assume it's a path.
-
-                File f = new File(configPath);
-
-                if (! f.exists())
-                {
-                    throw new CommandLineUsageException
-                        (Constants.BUNDLE_NAME, "Tool.badConfigPath",
-                         "Configuration file argument \"{0}\" is not a " +
-                         "valid URL and does not specify the path to an " +
-                         "existing file.",
-                         new Object[] {configPath});
-                }
-
-                configURL = f.toURI().toURL();
-            }
 
             if (! abort)
             {
@@ -573,7 +549,7 @@ public class Tool
                 curn.setCurrentTime(currentTime);
                 curn.setAbortOnUndefinedConfigVariable
                     (optAbortOnUndefinedConfigVar);
-                curn.run(configURL, this.useCache);
+                curn.run(getConfigurationURL(), this.useCache);
             }
         }
 
@@ -609,6 +585,49 @@ public class Tool
         if (optUpdateCache != null)
             config.setMustUpdateFeedMetadata(optUpdateCache.booleanValue());
     }
+
+    private URL getConfigurationURL()
+        throws CommandLineUsageException
+    {
+        URL configURL = null;
+        try
+        {
+            configURL = new URL(configPath);
+        }
+
+        catch (MalformedURLException ex)
+        {
+            // It's not a URL. Assume it's a path.
+
+            File f = new File(configPath);
+
+            if (! f.exists())
+            {
+                throw new CommandLineUsageException
+                    (Constants.BUNDLE_NAME, "Tool.badConfigPath",
+                    "Configuration file argument \"{0}\" is not a " +
+                    "valid URL and does not specify the path to an " +
+                    "existing file.",
+                    new Object[] {configPath});
+            }
+
+            try
+            {
+                configURL = f.toURI().toURL();
+            }
+
+            catch (MalformedURLException ex2)
+            {
+                throw new CommandLineUsageException
+                    (Constants.BUNDLE_NAME, "Tool.badFileToURL",
+                     "Cannot convert file \"{0}\" to a URL",
+                     new Object[] {f},
+                     ex2);
+            }
+        }
+
+        return configURL;
+   }
 
     private Date parseDateTime(final String s)
         throws CommandLineUsageException
