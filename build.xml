@@ -120,7 +120,7 @@ source and documentation packages.
                             Paths and Patterns
   ***************************************************************************
   -->
-  <condition property="third.party.jar.dir" value="/usr/local/java/classes">
+  <condition property="third.party.jar.dir" value="${env.HOME}/java/classes">
     <not>
       <isset property="third.party.jar.dir"/>
     </not>
@@ -135,7 +135,7 @@ source and documentation packages.
         location="${third.party.jar.dir}/asm-commons-${asm.version}.jar"/>
     <pathelement
         location="${third.party.jar.dir}/asm-util-${asm.version}.jar"/>
-    <pathelement location="${third.party.jar.dir}/commons-logging.jar"/>
+    <pathelement location="${third.party.jar.dir}/commons-logging-1.1.jar"/>
     <pathelement location="${third.party.jar.dir}/freemarker.jar"/>
     <pathelement location="${third.party.jar.dir}/ocutil.jar"/>
     <pathelement location="${third.party.jar.dir}/xerces.jar"/>
@@ -657,15 +657,16 @@ source and documentation packages.
       -->
       <zipfileset id="source.fileset" dir="."
                   prefix="${zip.dir.prefix}" casesensitive="yes">
-        <exclude name="${build.dir}/**"/>
+        <include name="LICENSE"/>
+        <include name="*.html"/>
+        <include name="README*"/>
+        <include name="build.xml"/>
+        <include name="docs/**"/>
+        <include name="junit/**"/>
+        <include name="src/**"/>
         <exclude name="${compiled.classes.dir}"/>
-        <exclude name="**/CVS"/>
-        <include name="**/*.java"/>
-        <include name="**/package.html"/>
-        <include name="overview.html"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.ftl"/>
-        <include name="**/*.properties"/>
+        <exclude name="nbproject"/>
+        <exclude name="${build.dir}/**"/>
       </zipfileset>
     </zip>
   </target>
@@ -696,7 +697,7 @@ source and documentation packages.
       utility (http://www.izforge.com/izpack/), and you'll have to set
       this value to the location of the IzPack installation.
   -->
-  <property name="izpack.home" value="/usr/local/java/IzPack"/>
+  <property name="izpack.home" value="${env.HOME}/java/IzPack"/>
   <property name="src.install" value="${src.top}/installer"/>
 
   <target name="-installer.prep">

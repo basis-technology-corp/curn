@@ -80,6 +80,7 @@
     -->
     <res id="TargetPanel.dir.windows" src="@SRC_INSTALL@/path_windows.txt"/>
     <res id="TargetPanel.dir.unix" src="@SRC_INSTALL@/path_unix.txt"/>
+    <res id="TargetPanel.dir.macosx" src="@SRC_INSTALL@/path_darwin.txt"/>
 
     <res id="XInfoPanel.info" src="@SRC_INSTALL@/final_screen.txt"/>
     <res id="ProcessPanel.Spec.xml" src="@SRC_INSTALL@/cleanup.xml"/>
@@ -119,7 +120,7 @@
                  target="$INSTALL_PATH/lib/curnboot.jar"/>
       <singlefile src="@RELEASE_DIR@/@VERSIONED_PLUGINS_JAR_FILE@"
                  target="$INSTALL_PATH/plugins/curn-plugins.jar"/>
-      <file src="@THIRD_PARTY_JAR_DIR@/commons-logging.jar"
+      <file src="@THIRD_PARTY_JAR_DIR@/commons-logging-1.1.jar"
             targetdir="$INSTALL_PATH/lib"/>
       <file src="@THIRD_PARTY_JAR_DIR@/freemarker.jar"
             targetdir="$INSTALL_PATH/lib"/>
