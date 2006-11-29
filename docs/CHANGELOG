@@ -6,7 +6,7 @@ $Id$
 Copyright (c) 2004-2006 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.1 (...)
+Version 3.1 (29 November, 2006)
 
 			       ------------
 			       Enhancements
@@ -15,7 +15,9 @@ Version 3.1 (...)
 - curn's multithreaded download logic now uses the java.util.concurrent
   library, instead of native Java synchronization. While this change won't
   necessarily improve performance for small numbers of feeds and threads,
-  it should permit curn to scale better to large numbers of feeds.
+  it should permit curn to scale better to large numbers of feeds. Improving
+  concurrency and performance is an ongoing effort; expect more changes in
+  this area in subsequent releases.
 
 - The configuration file parser now supports "${var?default value}" syntax.
   In that example, if "${var}" does not have a value, or has an empty
