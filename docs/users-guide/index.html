@@ -516,6 +516,7 @@ function init()
 	      <ul class="toc">
 		<li><a href="#PlugInAPI">The <i>curn</i> Plug-in API</a>
 		<li><a href="#ExamplePlugIn">A Simple Example Plug-in</a>
+		<li><a href="#PlugInMetadata">Persisting Data from a Plug-in</a>
 	      </ul>
 	    </ul>
 
@@ -999,7 +1000,7 @@ Variable Substitution</a>, below, for more details.</p>
 <p>Within a variable's value, Java-style ASCII escape sequences
 <span class="code">\t</span>, <span class="code">\n</span>,
 <span class="code">\r</span>, <span class="code">\\</span>,
-<span class="code">\"</span>, <span class="code">\'</span>,
+<span class="code">\&#0034;</span>, <span class="code">\'</span>,
 <span class="code">\&nbsp;</span> (a backslash and a space), and
 <span class="code">\u</span><i>xxxx</i> are recognized and converted to
 single characters. Note that metacharacter expansion is performed
@@ -1198,6 +1199,18 @@ CacheFile = <b>${myCurnDir}</b>/cache</pre>
   </tbody>
 </table>
 <br clear="all"/>
+
+<p>The configuration file also supports a simple conditional-substitution
+logic, which allows you to specify a default value to be substituted if a
+variable is empty or does not have a value. The general form of a conditional
+substitution is:</p>
+
+<blockquote><pre>
+${var?some default value}
+</pre></blockquote>
+
+If ${var} does not have a value, or has an empty string as its value,
+the string "some default value" will be substituted.</p>
 
 <h4><a name="CfgRawValues"></a>Suppressing Metacharacter Expansion and Variable Substitution</h4>
 
@@ -2067,18 +2080,23 @@ ArticleFilter: hide ; show author '^moe *howard$'
     <td align="left">Boolean</td>
     <td align="left">
       Enables or disables the Common XML Fixups plug-in, which attempts
-      to fix common syntax problems in downloaded XML feeds. There is some
-      XML badness that is surprisingly common across feeds, including
-      (but not limited to):
+      to fix common syntax problems in downloaded XML feeds. Among the
+      corrections this plug-in makes:
 
-      <ul>
-	<li>Using a "naked" ampersand (&amp;) without escaping it.
-	<li>Use of nonexistent entities (e.g., &amp;ouml;, &amp;nbsp;)
-	<li>Improperly formatted entity escapes
-      </ul>
+    <ul>
+      <li>Conversion of unescaped ampersand ("&amp;") characters
+      <li>Conversion of certain commonly seen, but nonexistent, XML
+	  entities, such as <span class="code">&amp;mdash;</span> and
+	  <span class="code">&amp;ouml;</span>
+      <li>Conversion of illegal character entities (which are usually
+	  leaked unescaped from embedded HTML text)
+      <li>"<a href="http://www.fourmilab.ch/webtools/demoroniser/">Demoronizing</a>"
+	  text by converting Microsoft Windows-specific characters (such as
+	  smart quotes) to something that will display in any browser. (The
+	  term "demoronize" is borrowed from John Walker's <i>demoroniser</i>
+	  command-line Unix tool.)
+     </ul>
 
-      This plug-in attempts to fix those problems.
-      <br/><br/>
       This per-feed setting overrides the
       <a href="#Cfg_CommonXMLFixups">global default value</a>.
     </td>
@@ -3271,9 +3289,7 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
 
   <dt>Purpose
   <dd>Provides an output handler calls a script via the Apache Jakarta
-      <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a>.
-      This handler supports any scripting language supported by
-      BSF. For complete details on writing a script output handler,
+      <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a> or the Java 6 (JSR 223) <span class="code">javax.script</span> scripting framework. (The Java 6 scripting framework is only available if you're running <i>curn</i> via Java 6.) BBy default, the ScriptOutputHandler first tries to use the <span class="code">javax.script</span> infrastructure; if that doesn't work, it tries to the BSF infrastructure. This handler supports any scripting language supported by the underlying scripting infrastructure. For complete details on writing a script output handler,
       See <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>, below.
 </dl>
 <table summary="" class="outlined striped cell-outlined" align="center" width="90%">
@@ -3310,99 +3326,100 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
     available. (See the section entitled
     <a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details.)</p>
 
-    <p>The following values are initially legal for this
-    parameter. This set of values comes from the
+    <p>The following values represent some of the languages available for
+    this parameter. The BSF values comes from the
     <span class="filename">Languages.properties</span> file
-    distributed with BSF version 2.3.0; it represents the
-    default language bindings recognized by BSF, minus those
-    entries that are platform-specific (such as the ActiveScript
-    VBScript binding), and those that appear to be leftovers
-    without any real language to back them up any more (such as
-    the Bean Markup Language).</p>
+    distributed with BSF version 2.3.0. The JSR 223 languages are the set
+    of languages supported by the JSR 223 engines at
+    <a href="https://scripting.dev.java.net/" class="url">https://scripting.dev.java.net/</a>, as of the date this document was last updated. Consult that
+    web site for details on available JSR 223 languages.</p>
+
+    <p>NOTE: In all cases, except Rhino, the actual script language itself
+    does <i>not</i> come with the scripting infrastructure; you have to download
+    the language separately. The scripting infrastructure merely contains
+    bindings to (a.k.a., engines for) the various supported scripting languages.</p>
 
     <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="90%">
       <tr valign="top">
-        <th>Value&nbsp;&nbsp;&nbsp;&nbsp;</th>
-        <th>Corresponding Language</th>
-        <th>File Extensions</th>
-        <th>Engine supplied with BSF?</th>
+        <th>Language&nbsp;&nbsp;</th>
+	<th><i>curn</i> <span class="code">ScriptOutputHandler Language</span>
+	    parameter values for BSF&nbsp;&nbsp;</th>
+	<th><i>curn</i> <span class="code">ScriptOutputHandler Language</span>
+	    parameter values for JSR 223</th>
       </tr>
 
       <tr valign="top">
-        <td>jython</td>
-        <td><a href="http://www.jython.org/">Jython</a></td>
-        <td>py</td>
-        <td>Yes</td>
+        <td>AWK (via <a href="http://jawk.sourceforge.net/">Jawk</a>)</td>
+        <td>&nbsp;</td>
+        <td>jawk</td>
       </tr>
 
       <tr valign="top">
-        <td>javascript</td>
-        <td>JavaScript, via the Mozilla Rhino engine</td>
-        <td>js</td>
-        <td>Yes</td>
+        <td><a href="http://www.beanshell.org/">BeanShell</a></td>
+        <td>java</td>
+        <td>beanshell</td>
       </tr>
 
       <tr valign="top">
-        <td>jacl</td>
+        <td><a href="http://groovy.codehaus.org/">Groovy</a></td>
+        <td>groovy *</td>
+        <td>groovy</td>
+      </tr>
+
+      <tr valign="top">
         <td><a href="http://www.tcl.tk/software/java/">Jacl (Java TCL)</a></td>
         <td>jacl</td>
-        <td>Yes</td>
+        <td>jacl</td>
       </tr>
 
       <tr valign="top">
-        <td>netrexx</td>
+        <td>Javascript, via the <a href="http://www.mozilla.org/rhino/">Mozilla Rhino engine</a></td>
+        <td>javascript</td>
+        <td>javascript</td>
+      </tr>
+
+      <tr valign="top">
+        <td><a href="http://www.judoscript.com">JudoScript</a></td>
+        <td>judoscript</td>
+        <td>judoscript</td>
+      </tr>
+
+      <tr valign="top">
+        <td><a href="http://www.jython.org/">Jython</a></td>
+        <td>jython</td>
+        <td>jython</td>
+      </tr>
+
+      <tr valign="top">
         <td><a href="http://www2.hursley.ibm.com/netrexx/">NetRexx</a></td>
-        <td>nrx</td>
-        <td>Yes</td>
+        <td>netrexx</td>
+        <td>&nbsp;</td>
       </tr>
 
       <tr valign="top">
-        <td>java</td>
-        <td>Java (using <a href="http://www.beanshell.org/">BeanShell</a>)</td>
-        <td>java</td>
-        <td>Yes</td>
+        <td><a href="http://pnuts.org">Pnuts</a></td>
+        <td>pnuts *</td>
+        <td>pnuts</td>
       </tr>
 
       <tr valign="top">
-        <td>xslt</td>
+        <td>Ruby (via <a href="http://jruby.sourceforge.net/">JRuby</a>)</td>
+        <td>ruby</td>
+        <td>ruby</td>
+      </tr>
+
+      <tr valign="top">
         <td>XSLT Stylesheets (as a component of Apache
                 XML project's Xalan and Xerces)</td>
         <td>xslt</td>
-        <td>Yes</td>
+        <td>xslt</td>
       </tr>
 
-      <tr valign="top">
-        <td>pnuts</td>
-        <td><a href="http://pnuts.org">Pnuts</a></td>
-        <td>pnut</td>
-        <td>No</td>
-      </tr>
-
-      <tr valign="top">
-        <td>ruby</td>
-        <td><a href="http://jruby.sourceforge.net/">JRuby</a></td>
-        <td>rb</td>
-        <td>No</td>
-      </tr>
-
-      <tr valign="top">
-        <td>judoscript</td>
-        <td><a href="http://www.judoscript.com">JudoScript</a></td>
-        <td>judo, jud</td>
-        <td>No</td>
+      <tr valign="bottom" align="center">
+        <td colspan="3">* <i>Requires third-party engine implementation available
+        from the language web site.</i></td>
       </tr>
     </table>
-
-    <p>If you want to use a BSF scripting language engine that
-    isn't one of the above, you must extend the
-    <span class="code">ScriptOutputHandler</span> class and
-    override its
-    <span class="code">registerAdditionalScriptingEngines()</span>
-    method. See
-    <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>
-    for details on extending
-    <span class="code">ScriptOutputHandler</span>
-    in this way.</p>
     </td>
     <td align="left">Yes</td>
     <td align="left" class="code">false</td>
@@ -3426,6 +3443,29 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
     </td>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
+  </tr>
+  <tr valign="top">
+    <td align="left" class="code"><a name="#Cfg_ScriptingAPI">ScriptingAPI:</a></td>
+    <td align="left">String</td>
+    <td align="left">Specifies which scripting infrastructure to use. Legal values are:<br><br>
+        <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="50%">
+          <tr valign="top">
+	    <td align="top" class="code">bsf</td>
+	    <td align="top">Use Bean Scripting Framework, and abort if it's
+	                    not available.</td>
+	  </tr>
+          <tr valign="top">
+	    <td align="top" class="code">javax.script</td>
+	    <td align="top">Use JSR 223 Java 6 scripting framework, and abort if it's
+	                    not available.</td>
+	  </tr>
+	</table>
+    </td>
+    <td align="left">No</td>
+    <td align="left">Default behavior: <i>curn</i> first tries to use the JSR 223
+                     (<span class="code">javax.script</span>) infrastructure;
+                     if that doesn't work, it tries to use BSF. If neither framework
+                     is available, and a <span class="code">ScriptOutputHandler</span> is specified, <i>curn</i> aborts.</td>
   </tr>
   <tr valign="top">
     <td align="left" class="code">ShowCurnInfo</td>
@@ -3885,7 +3925,9 @@ stock plug-ins are in the
   <tr valign="top">
     <td align="left"><a name="PlugIn_CommonXMLFixups"></a>Common XML Fixups</td>
     <td align="left" class="code">CommonXMLFixupsPlugIn</td>
-    <td align="left">Fix some common syntax errors in downloaded XML.</td>
+    <td align="left">Fix some common syntax errors in downloaded XML. See
+       the configuration parameters for details on these fixups.
+    </td>
     <td align="left">
       <a href="#Feed_CommonXMLFixups" class="code">CommonXMLFixups</a>
     </td>
@@ -4063,10 +4105,10 @@ can be associated with multiple phases of execution. In fact, most
 configuration parameters.</p>
 
 <p>Each plug-in phase is represented by its own Java interface, and
-each interface has exactly one method. (Each plug-in interface, in turn,
+each interface has exactly one method. Each plug-in interface, in turn,
 extends the <i>curn</i> parent
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html" class="code">PlugIn</a> interface, which defines some
-additional methods that all plug-ins must provide.)</p>
+additional methods that all plug-ins must provide.</p>
 
 <p>A plug-in that intercepts multiple <i>curn</i> processing phases must
 implement the interfaces for each of the phases. Here are the plug-in
@@ -4313,7 +4355,7 @@ here's a simple plug-in that:</p>
 </ul>
 
 <p>It uses a convenience class,
-<a href="http://wwwtest/software/java/util/javadocs/util/api/org/clapper/util/io/Zipper.html" class="code">org.clapper.util.io.Zipper</a>,
+<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/io/Zipper.html" class="code">org.clapper.util.io.Zipper</a>,
 to simplify the chore of writing the zip file. Here's the source (with
 comments stripped out). Note that this is a stripped-down version of the
 actual <a href="#ZipOutputPlugIn" class="code">ZipOutputPlugIn</a>.</p>
@@ -4354,9 +4396,19 @@ public class ZipOutputPlugIn
     {
     }
 
-    public String getName()
+    public String getPlugInName()
     {
         return "Zip Output";
+    }
+
+    public String getPlugInSortKey()
+    {
+        return getPlugInName();
+    }
+
+    public void initPlugIn()
+	throws CurnException
+    {
     }
 
     public void runMainConfigItemPlugIn (String     sectionName,
@@ -4474,6 +4526,52 @@ ZipOutputTo: /tmp/curn.zip
 
 <p>For more examples, please see the source code for the
 <a href="#StockPlugIns">stock plug-ins</a> delivered with <i>curn</i>.</p>
+
+<h4><a name="PlugInMetadata"></a>Persisting Data from a Plug-in</h4>
+
+<p>Beginning with <i>curn</i> 3.1, plug-ins (and output handlers, for that matter)
+can save runtime metadata to the
+<i>curn</i> metadata store (formerly called the "cache") and restore that
+data in a subsequent <i>curn</i> run. To be able to save and restore metadata,
+a plug-in must:</p>
+
+<ul>
+  <li>implement the 
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PersistentDataClient.html" class="code">org.clapper.curn.PersistentDataClient</a> interface or extend the <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/AbstractPersistentDataClient.html" class="code">org.clapper.curn.AbstractPersistentDataClient</a> class
+  <li>register itself as a persistent data handler by calling <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/DataPersister.html" class="code">org.clapper.curn.DataPersister</a> class's <span class="code">addPersistentDataClient()</span> method, typically from the plug-in's
+      <span class="code">initPlugIn()</span> method
+</ul>
+
+<p>Once the plug-in is registered as a persistent data client, <i>curn</i> will:</p>
+
+<ul>
+  <li>Ask the plug-in for its name/value pairs to be saved, just before
+      <i>curn</i> exits
+  <li>Present the plug-in with name/value pairs to be parsed, just after
+      <i>curn</i> starts up and reads the metadata (cache) file.
+</ul>
+
+<p>The following code fragment shows how a plug-in might register itself.</p>
+
+<blockquote><pre>
+import org.clapper.curn.DataPersister;
+import org.clapper.curn.DataPersisterFactory;
+import org.clapper.curn.AbstractPersistentDataClient;
+
+...
+
+public class MyPlugIn implements AbstractPersistentDataClient, ...
+{
+    ...
+    public void initPlugIn() throws CurnException
+    {
+        DataPersister dataPersister = DataPersisterFactory.getInstance();
+        dataPersister.addPersistentDataClient(this);
+    }
+    ...
+}
+</pre>
+</blockquote>
 
 <a name="CustomizingOutput"></a><h2>Customizing <i>curn</i>'s Output</h2>
 
@@ -5288,59 +5386,18 @@ to point to your script.</p>
 <p>The
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
 uses the Apache Jakarta
-<a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a>
-to call scripts. It currently supports all the script language engines that
-come bundled with BSF; see the <a href="#CfgScriptOutputHandler">configuration
+<a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a> or
+the JSR 223 scripting engine 
+to call scripts. It currently supports any scripting language that has a binding
+to either scripting infrastructure. See
+the <a href="#CfgScriptOutputHandler">configuration
 section for the <span class="code">ScriptOutputHandler</span> class</a>
-for the list of languages supported by default.</p>
+for the list of sample languages.</p>
 
 <p class="alert" align="center">Note: <i>curn</i> comes bundled with a compatible version of the
-BSF <span class="filename">bsf.jar</span> file.</p>
-
-<h5><a name="AdditionalScriptingLanguages"></a>Supporting Additional Scripting Languages</h5>
-
-<p>If you want to use a BSF scripting language engine that isn't one of the
-above, simply write a Java class that extends the
-<span class="code">ScriptOutputHandler</span> class and overrides its
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#registerAdditionalScriptingEngines()" class="code">registerAdditionalScriptingEngines()</a>
-method. In that method, call
-<span class="code">BSFManager.registerScriptingEngine()</span> for each
-additional language you want to support. For example, a scripting
-output handler that supports (fictitious) scripting language <i>JStooge</i>
-might look like this:</p>
-
-<table summary="" class="bordered uncolored" align="center">
-  <tr valign="top">
-    <td align="left">
-<blockquote><pre>
-import org.clapper.curn.CurnException;
-import org.clapper.curn.output.script.ScriptOutputHandler;
-import org.apache.bsf.BSFManager;
-
-public class JStoogeScriptOutputHandler extends ScriptOutputHandler
-{
-    public MyOutputHandler()
-    {
-        super();
-    }
-
-    public void registerAdditionalScriptingEngines()
-        throws CurnException
-    {
-        BSFManager.registerScriptingLanguage ("jstooge",
-                                              "org.example.stooges.JStoogeBSFEngine",
-                                              new String[]
-                                              {
-                                                 "moe",
-                                                 "larry",
-                                                 "curley"
-                                              });
-    }
-}
-</pre></blockquote>
-    </td>
-  </tr>
-</table>
+BSF <span class="filename">bsf.jar</span> file. If you're running Java 6, and
+you want JSR 223 support for languages other than Javascript, please see
+<a href="https://scripting.dev.java.net/" class="url">https://scripting.dev.java.net/</a>.</p>
 
 <h5><a name="WritingScript"></a>Writing the Script</h5>
 
