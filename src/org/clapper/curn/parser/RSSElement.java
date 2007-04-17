@@ -94,7 +94,7 @@ public abstract class RSSElement
         String             result  = null;
 
         if ((authors != null) && (authors.size() > 0))
-            result = TextUtil.join (authors, ", ");
+            result = TextUtil.join(authors, ", ");
 
         return result;
     }
