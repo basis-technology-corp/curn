@@ -79,7 +79,7 @@ import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 import org.clapper.util.text.TextUtil;
 
-class FeedDownloadThread
+class FeedDownloadThread implements Runnable
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -103,7 +103,6 @@ class FeedDownloadThread
     private final MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
     private       RSSChannel              channel = null;
     private       CountDownLatch          doneLatch = null;
-    private       CountDownLatch          startLatch = null;
     private       FeedDownloadDoneHandler feedDownloadDoneHandler = null;
 
     private static AtomicInteger nextThreadID = new AtomicInteger(0);
@@ -145,8 +144,6 @@ class FeedDownloadThread
      *                        assumed to be shared across multiple threads,
      *                        and must be thread safe.
      * @param feedDoneHandler called when afeed is finished downloading
-     * @param startLatch      latch to wait on before starting, or null not
-     *                        to bother.
      * @param doneLatch       latch to notify when thread is finished, or
      *                        null if no latch is to be used.
      */
@@ -155,7 +152,6 @@ class FeedDownloadThread
                         CurnConfig              configFile,
                         Queue<FeedInfo>         feedQueue,
                         FeedDownloadDoneHandler feedDownloadDoneHandler,
-                        CountDownLatch          startLatch,
                         CountDownLatch          doneLatch)
     {
         this.id = String.valueOf(nextThreadID.getAndIncrement());
@@ -169,7 +165,6 @@ class FeedDownloadThread
         this.cache = feedCache;
         this.feedQueue = feedQueue;
         this.feedDownloadDoneHandler = feedDownloadDoneHandler;
-        this.startLatch = startLatch;
         this.doneLatch = doneLatch;
 
         //setPriority (getPriority() + 1);
@@ -191,21 +186,6 @@ class FeedDownloadThread
 
         log.info ("Thread is alive at priority " +
                   Thread.currentThread().getPriority());
-
-        if (startLatch != null)
-        {
-            log.info("Waiting for start signal.");
-            try
-            {
-                startLatch.await();
-            }
-
-            catch (InterruptedException ex)
-            {
-                log.error("Interrupted while waiting for start signal.", ex);
-                done = true;
-            }
-        }
 
         while (! done)
         {
@@ -643,7 +623,7 @@ class FeedDownloadThread
     private String contentTypeCharSet (final String contentType)
     {
         String result = null;
-        String[] fields = TextUtil.split (contentType, "; \t");
+        String[] fields = TextUtil.split(contentType, "; \t");
 
 
         for (int i = 0; i < fields.length; i++)

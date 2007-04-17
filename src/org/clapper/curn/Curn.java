@@ -407,13 +407,7 @@ public class Curn
         }
 
         // Create the thread objects in a concurrent thread pool. They'll pull
-        // feeds off the queue themselves. Note that the concurrent Executor
-        // model is to spawn multiple threads that run against a single
-        // object. FeedDownloadThread isn't organized that way; it assumes it
-        // can keep state in instance variables, which wouldn't work if
-        // multiple threads were executing against a single FeedDownloadThread
-        // object. So, we use a simple Runnable front-end whose run() method
-        // creates and invokes individual FeedDownloadThread objects.
+        // feeds off the queue themselves.
 
         ExecutorService threadPool;
         if (maxThreads == 1)
@@ -437,29 +431,23 @@ public class Curn
         final CountDownLatch startLatch =
             (maxThreads == 1) ? null : new CountDownLatch(1);
 
-        Runnable r = new Runnable()
-        {
-            public void run()
-            {
-                new FeedDownloadThread(parser,
-                                       feedCache,
-                                       configuration,
-                                       feedQueue,
-                                       feedDownloadDoneHandler,
-                                       startLatch,
-                                       doneLatch)
-                   .run();
-            }
-        };
-
         // Start the download threads.
 
         log.info("Starting " + maxThreads + " feed-download threads.");
         log.debug ("Main thread priority is " +
                    Thread.currentThread().getPriority());
 
+        // Fill the thread pool with threads.
+
         for (int i = 0; i < maxThreads; i++)
-            threadPool.execute(r);
+        {
+            threadPool.execute(new FeedDownloadThread(parser,
+                                                      feedCache,
+                                                      configuration,
+                                                      feedQueue,
+                                                      feedDownloadDoneHandler,
+                                                      doneLatch));
+        }
 
         // Open the starting gate.
 
