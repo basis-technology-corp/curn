@@ -102,7 +102,6 @@ class FeedDownloadThread implements Runnable
     private       FeedException           exception = null;
     private final MetaPlugIn              metaPlugIn = MetaPlugIn.getMetaPlugIn();
     private       RSSChannel              channel = null;
-    private       CountDownLatch          doneLatch = null;
     private       FeedDownloadDoneHandler feedDownloadDoneHandler = null;
 
     private static AtomicInteger nextThreadID = new AtomicInteger(0);
@@ -144,15 +143,12 @@ class FeedDownloadThread implements Runnable
      *                        assumed to be shared across multiple threads,
      *                        and must be thread safe.
      * @param feedDoneHandler called when afeed is finished downloading
-     * @param doneLatch       latch to notify when thread is finished, or
-     *                        null if no latch is to be used.
      */
     FeedDownloadThread (RSSParser               parser,
                         FeedCache               feedCache,
                         CurnConfig              configFile,
                         Queue<FeedInfo>         feedQueue,
-                        FeedDownloadDoneHandler feedDownloadDoneHandler,
-                        CountDownLatch          doneLatch)
+                        FeedDownloadDoneHandler feedDownloadDoneHandler)
     {
         this.id = String.valueOf(nextThreadID.getAndIncrement());
 
@@ -165,7 +161,6 @@ class FeedDownloadThread implements Runnable
         this.cache = feedCache;
         this.feedQueue = feedQueue;
         this.feedDownloadDoneHandler = feedDownloadDoneHandler;
-        this.doneLatch = doneLatch;
 
         //setPriority (getPriority() + 1);
     }
@@ -207,8 +202,6 @@ class FeedDownloadThread implements Runnable
         }
 
         log.debug ("Thread is finishing.");
-        if (doneLatch != null)
-            doneLatch.countDown();
     }
 
     /*----------------------------------------------------------------------*\

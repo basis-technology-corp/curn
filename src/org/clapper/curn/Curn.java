@@ -63,9 +63,9 @@ import java.util.Queue;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.clapper.curn.parser.RSSParserFactory;
 import org.clapper.curn.parser.RSSParser;
@@ -427,10 +427,6 @@ public class Curn
             }
         };
 
-        final CountDownLatch doneLatch = new CountDownLatch(maxThreads);
-        final CountDownLatch startLatch =
-            (maxThreads == 1) ? null : new CountDownLatch(1);
-
         // Start the download threads.
 
         log.info("Starting " + maxThreads + " feed-download threads.");
@@ -445,41 +441,32 @@ public class Curn
                                                       feedCache,
                                                       configuration,
                                                       feedQueue,
-                                                      feedDownloadDoneHandler,
-                                                      doneLatch));
-        }
-
-        // Open the starting gate.
-
-        if (startLatch != null)
-        {
-            log.info("Issuing the start signal.");
-            startLatch.countDown();
+                                                      feedDownloadDoneHandler));
         }
 
         log.info("All feeds have been parceled out to threads.");
 
-        boolean threadsLeft = true;
-        while (threadsLeft)
+        // Now, shut the thread pool down. According to the ExecutorService
+        // documentation, the shutdown() method "initiates an orderly shutdown
+        // in which previously submitted tasks are executed, but no new
+        // tasks will be accepted." We won't be submitting any more tasks
+        // to the thread pool, and calling shutdown() permits us to call
+        // the thread pool's awaitTermination() method which blocks until
+        // all tasks have completed execution after a shutdown request.
+
+        threadPool.shutdown();
+
+        try
         {
-            try
-            {
-                log.info("Waiting for threads to complete.");
-                doneLatch.await();
-                threadsLeft = false;
-            }
-            catch (InterruptedException ex)
-            {
-                log.error("Main thread interrupted while waiting on " +
-                          "CountDownLatch", ex);
-            }
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        }
+
+        catch (InterruptedException ex)
+        {
+            throw new CurnException("Unexpected interruption of main thread", ex);
         }
 
         log.info("Feed download threads are done.");
-
-        // Reap the threads.
-
-        threadPool.shutdown();
 
         // Finally, remove any entries that still have null channels. (This
         // can happen if there's no new data in a feed.)
