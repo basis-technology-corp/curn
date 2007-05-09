@@ -10,6 +10,13 @@ Version 3.2 (...)
 
 - Minor refinements to the use of concurrent download threads.
 
+- Moved FreeMarker transformation logic to new FreeMarkerFeedTransformer
+  class, and modified FreeMarkerOutputHandler to use that class. The
+  new transformer class can now be used by plug-ins.
+
+- Added new ${escapeHTML} method to FreeMarker data model, allowing
+  FreeMarker templates to escape special HTML/XML characters such as "&".
+
 
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)

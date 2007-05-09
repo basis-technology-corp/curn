@@ -4651,9 +4651,9 @@ documentation.</p>
  |          +-- channel
  ...        ...
  |
- +-- (channels) .............................. sequence of channel data
+ +-- (channels) .............................. sequence of channel (feed) data
  |      |
- |      +-- channel .......................... hash for a single channel
+ |      +-- channel .......................... hash for a single channel (feed)
  |      |       |
  |      |       +-- index .................... [int] channel's index in list
  |      |       |
@@ -4667,10 +4667,14 @@ documentation.</p>
  |      |       |
  |      |       +-- configuredURL ............ [String] channel/feed URL (as listed in the <i>curn</i> configuration file)
  |      |       |
+ |      |       +-- id ....................... [String] channel's unique ID (which might just be the URL)
+ |      |       |
  |      |       +-- date ..................... [Date] channel's last-modified date (might be missing)
  |      |       |
  |      |       +-- rssFormat ................ [String] RSS format of channel (Atom, RSS 0.92, etc.).
  |      |       |                              Empty if not to be shown.
+ |      |       |
+ |      |       +-- (authors) ................ sequence of (String) names of authors of the feed
  |      |       |
  |      |       +-- (items) .................. sequence of channel items
  |      |             |
@@ -4684,7 +4688,9 @@ documentation.</p>
  |      |             |     |
  |      |             |     +-- date ......... [Date] the date (might be missing)
  |      |             |     |
- |      |             |     +-- author ....... [String] the author, or ""
+ |      |             |     +-- author ....... [String] the author or authors of the item, combined in a single string, or ""
+ |      |             |     |
+ |      |             |     +-- authors ...... a sequence of individual (String) author names. Might be empty.
  |      |             |     |
  |      |             |     +-- description .. [String] description/summary
  |      |             |
@@ -4773,6 +4779,20 @@ FreeMarker methods in the data model, as well:</p>
     </td>
   </tr>
 
+  <tr valign="top">
+    <td align="left" class="code">escapeHTML</td>
+    <td align="left">Escape special HTML characters in the specified string. For instance,
+     "&amp;" is converted to "&amp;amp;", "&lt;" is converted to "&amp;lt;", etc.</td>
+    <td align="left">
+      <ul class="nobullet">
+	<li><span class="code">string</span>: Required. Specifies the
+	    string to convert.
+      </ul>
+    </td>
+    <td class="code" nowrap>
+      ${escapeHTML (item.description)}
+    </td>
+  </tr>
   </tbody>
 </table>
 
