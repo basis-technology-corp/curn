@@ -46,37 +46,17 @@
 
 package org.clapper.curn.output.freemarker;
 
-import org.clapper.curn.Constants;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.ConfiguredOutputHandler;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.Version;
 import org.clapper.curn.output.FileOutputHandler;
 import org.clapper.curn.parser.RSSChannel;
-import org.clapper.curn.parser.RSSItem;
-import org.clapper.curn.parser.RSSLink;
 
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.config.NoSuchSectionException;
-import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
-import org.clapper.util.text.TextUtil;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
-
-import java.util.Collection;
-import java.util.Date;
-
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.SimpleDate;
-import freemarker.template.SimpleHash;
-import freemarker.template.SimpleNumber;
-import freemarker.template.SimpleSequence;
-import freemarker.template.Template;
-import freemarker.template.TemplateBooleanModel;
-import freemarker.template.TemplateException;
 
 /**
  * Provides an output handler that uses the
@@ -234,9 +214,9 @@ import freemarker.template.TemplateException;
  *  |                |
  *  |                +-- channelAnchor          HTML anchor for channel
  *  |
- *  +-- channels                                sequence of channel data
+ *  +-- channels                                sequence of channel (feed) data
  *         |
- *         +-- (channel)                        hash for a single channel
+ *         +-- (channel)                        hash for a single channel (feed)
  *                 |
  *                 +-- index                    channel's index in list
  *                 |
@@ -246,10 +226,22 @@ import freemarker.template.TemplateException;
  *                 |
  *                 +-- anchorName               HTML anchor for channel
  *                 |
- *                 +-- url                      channel's URL
+ *                 +-- url                      channel's URL (as published in
+ *                 |                            the feed)
+ *                 |
+ *                 +-- configuredURL            channel's URL (as configured to
+ *                 |                            <i>curn</i>)
+ *                 |
+ *                 +-- id                       channel's unique ID
  *                 |
  *                 +-- date                     channel's last-modified date
  *                 |                            (might be missing)
+ *                 |
+ *                 |-- rssFormat                RSS format of channel (Atom,
+ *                 |                            RSS 0.92, etc.)
+ *                 |
+ *                 |-- authors                  sequence of strings, each one
+ *                 |                            denoting an author of the feed
  *                 |
  *                 +-- items                    sequence of channel items
  *                       |
@@ -261,10 +253,17 @@ import freemarker.template.TemplateException;
  *                             |
  *                             +-- url          item's unique URL
  *                             |
+ *                             +-- id           item's unique ID
+ *                             |
  *                             +-- date         the date
  *                             |                (might be missing)
  *                             |
- *                             +-- author       the author (might be missing)
+ *                             +-- author       the author or authors of the
+ *                             |                item, combined in a single
+ *                             |                string
+ *                             |
+ *                             +-- author       a sequence of individual
+ *                             |                author name strings
  *                             |
  *                             +-- description  description/summary
  * </pre>
@@ -306,6 +305,13 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     public static final String CFG_TITLE = "Title";
 
     /**
+     * Configuration variable: MIME type
+     *
+     * @deprecated MIME type is now specified as part of TemplateFile
+     */
+    public static final String CFG_MIME_TYPE = "MimeType";
+
+    /**
      * Configuration variable: table-of-contents item threshold
      */
     public static final String CFG_TOC_ITEM_THRESHOLD = "TOCItemThreshold";
@@ -314,62 +320,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      * Configuration variable: template file
      */
     public static final String CFG_TEMPLATE_FILE = "TemplateFile";
-
-    /**
-     * Configuration keyword for built-in template
-     */
-    public static final String CFG_TEMPLATE_LOAD_BUILTIN = "builtin";
-
-    /**
-     * Configuration keyword: Built-in HTML template
-     */
-    public static final String CFG_BUILTIN_HTML_TEMPLATE = "html";
-
-    /**
-     * Configuration keyword: Built-in text template
-     */
-    public static final String CFG_BUILTIN_TEXT_TEMPLATE = "text";
-
-    /**
-     * Configuration keyword: Built-in summary template
-     */
-    public static final String CFG_BUILTIN_SUMMARY_TEMPLATE = "summary";
-
-    /**
-     * Configuration keyword for template loading from classpath
-     */
-    public static final String CFG_TEMPLATE_LOAD_FROM_CLASSPATH = "classpath";
-
-    /**
-     * Configuration keyword for template loading from URL
-     */
-    public static final String CFG_TEMPLATE_LOAD_FROM_URL = "url";
-
-    /**
-     * Configuration keyword for template loading from file
-     */
-    public static final String CFG_TEMPLATE_LOAD_FROM_FILE = "file";
-
-    /**
-     * Built-in HTML template.
-     */
-    public final static TemplateLocation BUILTIN_HTML_TEMPLATE =
-        new TemplateLocation (TemplateType.CLASSPATH,
-                              "org/clapper/curn/output/freemarker/HTML.ftl");
-
-    /**
-     * Built-in text template
-     */
-    public final static TemplateLocation BUILTIN_TEXT_TEMPLATE =
-        new TemplateLocation (TemplateType.CLASSPATH,
-                              "org/clapper/curn/output/freemarker/Text.ftl");
-
-    /**
-     * Built-in summary template
-     */
-    public final static TemplateLocation BUILTIN_SUMMARY_TEMPLATE =
-        new TemplateLocation (TemplateType.CLASSPATH,
-                              "org/clapper/curn/output/freemarker/Summary.ftl");
 
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -382,11 +332,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     private static final int DEFAULT_TOC_THRESHOLD = Integer.MAX_VALUE;
 
     /**
-     * Prefix to use with generated channel anchors.
-     */
-    private static final String CHANNEL_ANCHOR_PREFIX = "feed";
-
-    /**
      * Default title
      */
     private static final String DEFAULT_TITLE = "RSS Feeds";
@@ -396,19 +341,10 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     \*----------------------------------------------------------------------*/
 
     private PrintWriter       out                 = null;
-    private TemplateLocation  templateLocation    = null;
-    private String            mimeType            = "text/html";
     private boolean           allowEmbeddedHTML   = false;
     private int               tocThreshold        = DEFAULT_TOC_THRESHOLD;
-    private int               totalChannels       = 0;
-    private int               totalItems          = 0;
-    private CurnConfig        config              = null;
 
-    private freemarker.template.Configuration freemarkerConfig;
-    private SimpleHash                        freemarkerDataModel;
-    private SimpleHash                        freemarkerTOCData;
-    private SimpleSequence                    freemarkerTOCItems;
-    private SimpleSequence                    freemarkerChannelsData;
+    private FreeMarkerFeedTransformer feedTransformer = null;
 
     /**
      * For logging
@@ -449,11 +385,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         throws ConfigurationException,
                CurnException
     {
-        this.totalChannels = 0;
-        this.config = config;
-
-        Date now = new Date();
-
         // Parse handler-specific configuration variables
 
         String section = cfgHandler.getSectionName();
@@ -464,10 +395,6 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
         {
             if (section != null)
             {
-                // Parse the TemplateFile parameter. Also gets the MIME type.
-
-                parseTemplateLocation(config, section);
-
                 // Determine whether we should strip HTML tags.
 
                 this.allowEmbeddedHTML =
@@ -494,6 +421,17 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                                (section,
                                                 CFG_TOC_ITEM_THRESHOLD,
                                                 DEFAULT_TOC_THRESHOLD);
+
+                // Warn about the deprecated MIME type parameter
+
+                if (config.getOptionalStringValue(section,
+                                                  CFG_MIME_TYPE,
+                                                  null) == null)
+                {
+                    log.error("Configuration section \"" + section +
+                              "\": Parameter " + CFG_MIME_TYPE + " is no " +
+                              "longer supported.");
+                }
             }
         }
 
@@ -502,60 +440,14 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
             throw new ConfigurationException (ex);
         }
 
-        // Create the FreeMarker configuration.
 
-        freemarkerConfig = new freemarker.template.Configuration();
-        freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-        freemarkerConfig.setTemplateLoader(new CurnTemplateLoader());
-        freemarkerConfig.setLocalizedLookup(false);
-
-        // Create the FreeMarker data model and populate it with the
-        // values that aren't channel-dependent.
-
-        freemarkerDataModel = new SimpleHash();
-        freemarkerDataModel.put("dateGenerated",
-                                new SimpleDate(now, SimpleDate.DATETIME));
-        freemarkerDataModel.put("title", title);
-        freemarkerDataModel.put("extraText", extraText);
-
-        String encoding = super.getOutputEncoding();
-        if (encoding == null)
-            encoding = FileUtil.getDefaultEncoding();
-
-        freemarkerDataModel.put("encoding", encoding);
-
-        SimpleHash map = new SimpleHash();
-
-        freemarkerDataModel.put("configFile", map);
-        URL configFileURL = config.getConfigurationFileURL();
-        if (configFileURL == null)
-            map.put("url", "?");
-        else
-            map.put("url", configFileURL.toString());
-
-        map = new SimpleHash();
-        freemarkerDataModel.put("curn", map);
-        map.put("version", Version.getVersionNumber());
-        map.put("buildID", Version.getBuildID());
-        if (super.displayToolInfo())
-            map.put("showToolInfo", true);
-        else
-            map.put("showToolInfo", false);
-
-        this.freemarkerTOCData = new SimpleHash();
-        freemarkerDataModel.put("tableOfContents", this.freemarkerTOCData);
-        freemarkerTOCItems = new SimpleSequence();
-        this.freemarkerTOCData.put("channels", freemarkerTOCItems);
-
-        freemarkerChannelsData = new SimpleSequence();
-        freemarkerDataModel.put("channels", freemarkerChannelsData);
-
-
-        // Methods accessible from the template
-
-        freemarkerDataModel.put("wrapText", new WrapTextMethod());
-        freemarkerDataModel.put("indentText", new IndentTextMethod());
-        freemarkerDataModel.put("stripHTML", new StripHTMLMethod());
+        feedTransformer = new FreeMarkerFeedTransformer(config,
+                                                        super.displayToolInfo(),
+                                                        tocThreshold);
+        feedTransformer.setTemplateFromConfig(section, CFG_TEMPLATE_FILE);
+        feedTransformer.setTitle(title);
+        feedTransformer.setEncoding(super.getOutputEncoding());
+        feedTransformer.setExtraText(extraText);
 
         // Open the output file.
 
@@ -578,128 +470,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (final RSSChannel channel,
-                                final FeedInfo   feedInfo)
+    public void displayChannel(final RSSChannel channel,
+                               final FeedInfo   feedInfo)
         throws CurnException
     {
-        // Both the feed AND the handler must enable HTML for it not to
-        // be stripped.
-
-        if (! allowEmbeddedHTML)
-            channel.stripHTML();
-
-        // Add the channel information to the data model.
-
-        Collection<RSSItem> items = channel.getItems();
-        int totalItemsInChannel = items.size();
-
-        if (totalItemsInChannel == 0)
-            return;
-
-        this.totalItems += totalItemsInChannel;
-        totalChannels++;
-
-        String channelAnchorName = CHANNEL_ANCHOR_PREFIX
-                                 + String.valueOf(totalChannels);
-        String channelTitle = channel.getTitle();
-        RSSLink link;
-
-        // Store the channel data.
-
-        SimpleHash channelData = new SimpleHash();
-        freemarkerChannelsData.add(channelData);
-        channelData.put("index", new SimpleNumber(totalChannels));
-        channelData.put("totalItems", new SimpleNumber(totalItemsInChannel));
-        channelData.put("anchorName", channelAnchorName);
-        channelData.put("title", channelTitle);
-
-        if (config.showRSSVersion())
-            channelData.put("rssFormat", channel.getRSSFormat());
-
-        // Publish two URLs for the channel: The one from the configuration
-        // file (feedInfo.getURL()) and the one that's actually published in
-        // the downloaded RSS XML.
-
-        URL feedInfoURL = feedInfo.getURL();
-        channelData.put("configuredURL", feedInfoURL.toString());
-
-        URL channelURL;
-        link = channel.getLinkWithFallback("text/html");
-        if (link == null)
-            channelURL = feedInfoURL;
-        else
-            channelURL = link.getURL();
-        channelData.put("url", channelURL.toString());
-
-        Date channelDate = null;
-        channelData.put("showDate", true);
-
-        if (channelDate != null)
-        {
-            channelData.put("date", new SimpleDate(channelDate,
-                                                   SimpleDate.DATETIME));
-        }
-
-
-        // Store a table of contents entry for the channel.
-
-        SimpleHash tocData = new SimpleHash();
-        tocData.put("title", channelTitle);
-        tocData.put("totalItems", new SimpleNumber(totalItemsInChannel));
-        tocData.put("channelAnchor", channelAnchorName);
-        freemarkerTOCItems.add(tocData);
-
-        // Create a collection for the channel items.
-
-        SimpleSequence itemsData = new SimpleSequence();
-        channelData.put("items", itemsData);
-
-        // Now, put in the data for each item in the channel.
-
-        String[] desiredItemDescTypes;
-
-        int i = 0;
-        for (RSSItem item : items)
-        {
-            SimpleHash itemData = new SimpleHash();
-            itemsData.add(itemData);
-
-            i++;
-            itemData.put("index", new SimpleNumber(i));
-            itemData.put("showDate", true);
-            Date itemDate = item.getPublicationDate();
-            if (itemDate != null)
-            {
-                itemData.put("date", new SimpleDate(itemDate,
-                                                    SimpleDate.DATETIME));
-            }
-
-            link = item.getLinkWithFallback("text/html");
-            assert (link != null);
-            URL itemURL = link.getURL();
-            itemData.put("url", itemURL.toString());
-
-            itemData.put("showAuthor", true);
-            String authorString = null;
-            Collection<String> authors = item.getAuthors();
-            if ((authors != null) && (authors.size() > 0))
-            {
-                authorString = TextUtil.join(authors, ", ");
-                itemData.put("author", authorString);
-            }
-
-            String itemTitle = item.getTitle();
-            if (itemTitle == null)
-                itemTitle = "(No Title)";
-            itemData.put("title", itemTitle);
-
-            String desc = item.getSummary();
-
-            if (desc == null)
-                desc = "";
-
-            itemData.put("description", desc);
-        }
+        feedTransformer.addChannel(channel, feedInfo, allowEmbeddedHTML);
     }
 
     /**
@@ -711,67 +486,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
     {
         log.debug ("Generating output.");
 
-        String templateName = templateLocation.getName();
-        Template template;
-
-        freemarkerDataModel.put ("totalItems", new SimpleNumber (totalItems));
-
-        if (totalItems >= tocThreshold)
-            freemarkerTOCData.put ("needed", TemplateBooleanModel.TRUE);
-        else
-            freemarkerTOCData.put ("needed", TemplateBooleanModel.FALSE);
-
-        try
-        {
-            // Create the FreeMarker template.
-
-            template = freemarkerConfig.getTemplate (templateName);
-        }
-
-        catch (IOException ex)
-        {
-            log.error ("Error creating FreeMarker template", ex);
-            throw new CurnException
-                         (Constants.BUNDLE_NAME,
-                          "FreeMarkerOutputHandler.cantGetFreeMarkerTemplate",
-                          "Cannot create FreeMarker template",
-                          ex);
-        }
-
-        try
-        {
-            template.process (freemarkerDataModel, out);
-        }
-
-        catch (TemplateException ex)
-        {
-            log.error ("Error processing FreeMarker template", ex);
-            throw new CurnException
-                          (Constants.BUNDLE_NAME,
-                           "FreeMarkerOutputHandler.cantProcessTemplate",
-                           "Error while processing FreeMarker template " +
-                           "\"{0}\"",
-                           new Object[] {templateLocation.getLocation()});
-        }
-
-        catch (IOException ex)
-        {
-            throw new CurnException
-                          (Constants.BUNDLE_NAME,
-                           "FreeMarkerOutputHandler.cantProcessTemplate",
-                           "Error while processing FreeMarker template " +
-                           "\"{0}\"",
-                           new Object[] {templateLocation.getLocation()});
-        }
+        feedTransformer.transform(out);
 
         out.flush();
         out.close();
         out = null;
-
-        // Kill the FreeMarker config and FreeMarker data model
-
-        freemarkerDataModel = null;
-        freemarkerConfig    = null;
     }
 
     /**
@@ -782,130 +501,11 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
      */
     public String getContentType()
     {
-        return this.mimeType;
+        return feedTransformer.getMIMEType();
     }
 
     /*----------------------------------------------------------------------*\
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    /**
-     * Parse and validate the template file configuration parameter. Sets
-     * the templateFile instance variable.
-     *
-     * @param config     the parsed <i>curn</i> configuration data
-     * @param section    the name of the section
-     *
-     * @throws ConfigurationException  configuration error
-     * @throws CurnException           any other error
-     */
-    private void parseTemplateLocation (final CurnConfig config,
-                                        final String     section)
-        throws ConfigurationException,
-               CurnException
-    {
-        // Get the template file configuration as explicit tokens from the
-        // config parser. Saves parsing them here, plus the config file has
-        // mechanisms for quoting white space within a token.
-
-        String[] templateTokens =
-            config.getConfigurationTokens (section, CFG_TEMPLATE_FILE);
-
-        if (templateTokens == null)
-        {
-            templateTokens = new String[]
-                             {
-                                 CFG_TEMPLATE_LOAD_BUILTIN,
-                                 CFG_BUILTIN_HTML_TEMPLATE
-                             };
-        }
-
-        else
-        {
-            // The configuration parser only breaks the line into tokens if
-            // there are quoted fields. So, it's possible for there to be
-            // one token (no quoted fields), two tokens (a single quoted
-            // field) or many tokens.
-
-            if (templateTokens.length == 1)
-            {
-                // Split it on white space.
-
-                templateTokens = templateTokens[0].split (" ");
-            }
-
-            if (templateTokens.length != 2)
-            {
-                throw new ConfigurationException
-                    (section,
-                     "\"TemplateFile\" value \"" +
-                     config.getConfigurationValue (section,
-                                                   CFG_TEMPLATE_FILE) +
-                     "\" (\"" +
-                     config.getRawValue (section, CFG_TEMPLATE_FILE) +
-                     "\") must have two fields.");
-            }
-        }
-
-        String templateType = templateTokens[0].trim();
-
-        if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_BUILTIN))
-        {
-            if (templateTokens[1].equals (CFG_BUILTIN_HTML_TEMPLATE))
-            {
-                this.templateLocation = BUILTIN_HTML_TEMPLATE;
-                this.mimeType = "text/html";
-            }
-
-            else if (templateTokens[1].equals (CFG_BUILTIN_TEXT_TEMPLATE))
-            {
-                this.templateLocation = BUILTIN_TEXT_TEMPLATE;
-                this.mimeType = "text/plain";
-            }
-
-            else if (templateTokens[1].equals (CFG_BUILTIN_SUMMARY_TEMPLATE))
-            {
-                this.templateLocation = BUILTIN_SUMMARY_TEMPLATE;
-                this.mimeType = "text/plain";
-            }
-
-            else
-            {
-                throw new ConfigurationException (section,
-                                                  "Unknown built-in " +
-                                                  "template file \"" +
-                                                  templateTokens[1] + "\"");
-            }
-        }
-
-        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_URL))
-        {
-            this.templateLocation = new TemplateLocation (TemplateType.URL,
-                                                          templateTokens[1]);
-            this.mimeType = config.getConfigurationValue (section, "MimeType");
-        }
-
-        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_FILE))
-        {
-            this.templateLocation = new TemplateLocation (TemplateType.FILE,
-                                                          templateTokens[1]);
-            this.mimeType = config.getConfigurationValue (section, "MimeType");
-        }
-
-        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_CLASSPATH))
-        {
-            this.templateLocation = new TemplateLocation (TemplateType.CLASSPATH,
-                                                          templateTokens[1]);
-            this.mimeType = config.getConfigurationValue (section, "MimeType");
-        }
-
-        else
-        {
-            throw new ConfigurationException
-                (section,
-                 "\"TemplateFile\" value \"" +
-                 config.getRawValue (section, CFG_TEMPLATE_FILE) +
-                 "\" has unknown type \"" + templateType + "\".");
-        }
-    }
 }
