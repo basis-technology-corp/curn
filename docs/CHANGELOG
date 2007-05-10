@@ -35,6 +35,12 @@ Version 3.2 (...)
 
    See the "SaveAsRSS" parameter in the User's Guide for details.
 
+- Updated bundled freemarker.jar from version 2.3.6 to version 2.3.10.
+  See http://freemarker.org/
+
+- Updated bundled rome.jar from version 0.8 to version 0.9.
+  See https://rome.dev.java.net/
+
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
 
