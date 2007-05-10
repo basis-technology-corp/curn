@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  $Id: RawFeedSaveAsPlugIn.java 6688 2007-04-17 22:52:19Z bmc $
+  $Id$
   ---------------------------------------------------------------------------
   This software is released under a BSD-style license:
 
@@ -111,7 +111,7 @@ import org.clapper.util.text.TextUtil;
  * class's <tt>SaveOnly</tt> parameter is specified, this plug-in will
  * <i>not</i> be invoked.</p>
  *
- * @version <tt>$Revision: 6688 $</tt>
+ * @version <tt>$Revision$</tt>
  */
 public class SaveAsRSSPlugIn
     implements FeedConfigItemPlugIn,
