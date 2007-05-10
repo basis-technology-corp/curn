@@ -65,7 +65,6 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 
