@@ -507,7 +507,12 @@ source and documentation packages.
   <!-- Load the API version from the appropriate resource bundle -->
 
   <target name="-get.version" description="Get the version stamp">
-    <property file="${compiled.classes.dir}/org/clapper/curn/Curn.properties"/>
+    <loadproperties
+        srcFile="${compiled.classes.dir}/org/clapper/curn/Curn.properties">
+      <filterchain>
+        <replaceregex pattern="[ \t]+" replace="-" flags="g"/>
+      </filterchain>
+    </loadproperties>
     <echo>Version: ${curn.version}</echo>
   </target>
 
