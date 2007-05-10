@@ -458,7 +458,7 @@ public class Curn
 
         try
         {
-            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         }
 
         catch (InterruptedException ex)
