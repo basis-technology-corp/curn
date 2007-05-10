@@ -47,7 +47,7 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -----------------------------------------------------------------------
-  $Id: Text.ftl 6688 2007-04-17 22:52:19Z bmc $
+  $Id$
 -->
 <?xml version="1.0" encoding="${encoding}"?>
 <!--
