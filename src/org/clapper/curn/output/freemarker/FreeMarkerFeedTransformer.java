@@ -386,7 +386,7 @@ public class FreeMarkerFeedTransformer
 
     /**
      * Set the title (which is stored in the FreeMarker data model). If this
-     * method isn't called, the title will be when {@link transformFeed} is
+     * method isn't called, the title will be when {@link #transform} is
      * called.
      *
      * @param title  the title
