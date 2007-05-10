@@ -79,7 +79,7 @@ public class TemplateLocation implements Comparable<TemplateLocation>
      * @param type      the type
      * @param location  the location (URL, path, etc.) for the file
      */
-    TemplateLocation (TemplateType type, String location)
+    public TemplateLocation (TemplateType type, String location)
     {
         this.type     = type;
         this.location = location;
@@ -94,7 +94,7 @@ public class TemplateLocation implements Comparable<TemplateLocation>
      *
      * @throws CurnException bad name
      */
-    TemplateLocation (String name)
+    public TemplateLocation (String name)
         throws CurnException
     {
         // Can't use String.split(), because the delimiter is a regular
