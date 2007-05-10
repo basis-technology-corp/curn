@@ -6,6 +6,7 @@ http://irrelevant.clapper.org/
 rss_2.0
 
     Joe Sixpack to retire
+    
 
     http://irrelevant.clapper.org/2004/06/13/joe6.html
 
@@ -15,6 +16,7 @@ rss_2.0
         me royalties or somethin'."
 
     Fifteen Philadelphia motorists cited for stupidity
+    
 
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
 
@@ -23,6 +25,7 @@ rss_2.0
         Philadelphia's new, controversial "stupid driver" ordinance.
 
     Tripwell caught with pants down
+    
 
     http://irrelevant.clapper.org/2004/06/13/televangelist.html
 
@@ -40,6 +43,7 @@ http://bites.clapper.org/
 rss_2.0
 
     Man Bites Dog
+    
 
     http://bites.clapper.org/manbitesdog.html
 
@@ -50,6 +54,7 @@ rss_2.0
         of treatment for multiple bite wounds.
 
     President Falls
+    
 
     http://bites.clapper.org/prezfall.html
 
@@ -62,19 +67,22 @@ http://justthefactsmaam.clapper.org/
 rss_2.0
 
     New study claims pollen makes people sneeze
+    
 
     http://justthefactsmaam.clapper.org/duh.html
 
     Political correctness organization claims that the word "person" is sexist,
     because it contains the word "son."
+    
 
     http://justthefactsmaam.clapper.org/pcstupid.html
 
     Researcher claims 13% of Americans can't spell their own names
+    
 
     http://justthefactsmaam.clapper.org/names.html
 
 
 ---------------------------------------------------------------------------
-curn, 3.1 (build 20061129.175124.450)
-Generated Wednesday, 29 November, 2006 at 14:30:02 EST
+curn, 3.2 alpha 1 (build 20070510.135156.889)
+Generated Thursday, 10 May, 2007 at 10:01:20 EDT
