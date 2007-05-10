@@ -162,125 +162,17 @@ import java.io.PrintWriter;
  *
  * <p>This handler builds a FreeMarker data model; each call to
  * {@link #displayChannel displayChannel()} adds the data for a channel
- * to the data structure. When the  {@link #flush} method is invoked,
+ * to the data structure. When the {@link #flush} method is invoked,
  * this handler loads the FreeMarker template and feeds it the
  * FreeMarker data model, producing the output. The FreeMarker template
  * can produce any kind of document; this handler doesn't care.</p>
  *
- * <h3>The FreeMarker Data Model</h3>
+ * <p>The actual processing is done by the {@link FreeMarkerFeedTransformer}
+ * class. Please consult the documentation for that class, or the
+ * <i>curn User's Guide</i>, for a complete description of the curn FreeMarker
+ * data model.</p>
  *
- * <p>This handler builds the following FreeMarker data model tree.</p>
- *
- * <pre>
- * <b>Tree</b>                                         <b>Description</b>
- *
- * (root)
- *  |
- *  +-- curn
- *  |    |
- *  |    +-- showToolInfo                       (boolean) whether or not
- *  |    |                                      to display curn information
- *  |    |                                      in the output
- *  |    |
- *  |    +-- version                            version of curn
- *  |    |
- *  |    +-- buildID                            curn's build ID
- *  |
- *  +-- totalItems                              total items for all channels
- *  |
- *  +-- dateGenerated                           date generated
- *  |
- *  +-- extraText                               extra text, from the config
- *  |
- *  +-- encoding                                encoding, from the config
- *  |
- *  +-- tableOfContents                         hash of TOC data
- *  |    |
- *  |    +-- needed                             whether a TOC is needed
- *  |    |
- *  |    +-- channels                           sequence of channel TOC
- *  |          |                                items
- *  |          |
- *  |          +-- (channel)                    TOC entry for one channel
- *  |                |
- *  |                +-- title                  channel title
- *  |                |
- *  |                +-- url                    channel URL (from the XML)
- *  |                |
- *  |                +-- configuredURL          channel/feed URL from the
- *  |                |                          config file
- *  |                |
- *  |                +-- totalItems             total items in channel
- *  |                |
- *  |                +-- channelAnchor          HTML anchor for channel
- *  |
- *  +-- channels                                sequence of channel (feed) data
- *         |
- *         +-- (channel)                        hash for a single channel (feed)
- *                 |
- *                 +-- index                    channel's index in list
- *                 |
- *                 +-- totalItems               total items in channel
- *                 |
- *                 +-- title                    channel title
- *                 |
- *                 +-- anchorName               HTML anchor for channel
- *                 |
- *                 +-- url                      channel's URL (as published in
- *                 |                            the feed)
- *                 |
- *                 +-- configuredURL            channel's URL (as configured to
- *                 |                            <i>curn</i>)
- *                 |
- *                 +-- id                       channel's unique ID
- *                 |
- *                 +-- date                     channel's last-modified date
- *                 |                            (might be missing)
- *                 |
- *                 |-- rssFormat                RSS format of channel (Atom,
- *                 |                            RSS 0.92, etc.)
- *                 |
- *                 |-- authors                  sequence of strings, each one
- *                 |                            denoting an author of the feed
- *                 |
- *                 +-- items                    sequence of channel items
- *                       |
- *                       +-- (item)             entry for one item
- *                             |
- *                             +-- index        item's index in channel
- *                             |
- *                             +-- title        item's title
- *                             |
- *                             +-- url          item's unique URL
- *                             |
- *                             +-- id           item's unique ID
- *                             |
- *                             +-- date         the date
- *                             |                (might be missing)
- *                             |
- *                             +-- author       the author or authors of the
- *                             |                item, combined in a single
- *                             |                string
- *                             |
- *                             +-- author       a sequence of individual
- *                             |                author name strings
- *                             |
- *                             +-- description  description/summary
- * </pre>
- *
- * <p>In addition, the data model provides (at the top level) the following
- * methods:</p>
- *
- * <pre>
- * (root)
- *  |
- *  +-- wrapText (string[, indentation[, lineLength]])
- *  |
- *  +-- indentText (string, indentation)
- *  |
- *  +-- stripHTML (string)
- * </pre>
- *
+ * @see FreeMarkerFeedTransformer
  * @see org.clapper.curn.OutputHandler
  * @see FileOutputHandler
  * @see org.clapper.curn.Curn
@@ -426,7 +318,7 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
 
                 if (config.getOptionalStringValue(section,
                                                   CFG_MIME_TYPE,
-                                                  null) == null)
+                                                  null) != null)
                 {
                     log.error("Configuration section \"" + section +
                               "\": Parameter " + CFG_MIME_TYPE + " is no " +
