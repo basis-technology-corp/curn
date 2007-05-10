@@ -80,9 +80,9 @@ import org.clapper.curn.CurnUtil;
  *   </tr>
  *   <tr valign="top">
  *     <td><tt>SaveOnly</tt></td>
- *     <td>Indicates that raw XML should be saved, but not parsed. This
- *         parameter can only be specified if <tt>SaveAs</tt> is also
- *         specified.</td>
+ *     <td>If set to "true", this parameter indicates that raw XML should be
+ *         saved, but not parsed. This parameter can only be specified if 
+ *         <tt>SaveAs</tt> is also specified.</td>
  *   </tr>
  *   <tr valign="top">
  *     <td><tt>SaveAsEncoding</tt></td>
