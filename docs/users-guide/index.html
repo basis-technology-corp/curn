@@ -2506,6 +2506,13 @@ ArticleFilter: hide ; show author '^moe *howard$'
       that then run against the downloaded files. (See
       <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
       detailed discussion of this tactic.)
+      <br><br>
+      Note: Often, <i>curn</i> can't tell whether there's any new data in a feed without downloading
+      it. (This is true, for instance, if the remote HTTP server doesn't supply a valid
+      <span class="code">Last-Modified</span> header, or if it doesn't honor the
+      <span class="code">If-Modified-Since</span> header.) If <i>curn</i> decides it has to
+      download a feed, and the feed has a configured <span class="code">SaveAs</span> value, the
+      feed will be saved <b>even if <i>curn</i> later decides there's no new data in the feed.</b>
     </td>
     <td align="left">No</td>
     <td align="left">None</td>
@@ -2538,6 +2545,35 @@ ArticleFilter: hide ; show author '^moe *howard$'
       then the feed will be downloaded and saved, but not parsed and
       not included in the generated output. This parameter can be
       useful when <a href="#Bandwidth">Being Bandwidth Friendly</a>.
+    <td align="left">No</td>
+    <td align="left" class="code">false</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Feed_SaveAsRSS"></a><span class="code">SaveAsRSS</span><br/><a href="#PlugIn_SaveAsRSS" class="plug-in-flag">plug-in</a></td>
+    <td align="left">String Path [String]</td>
+    <td align="left">If set, this parameter specifies that the feed should be rewritten in the specified
+     RSS format and saved to the specified file. This configuration item takes a multi-word value:
+     <blockquote><pre>SaveAsRSS: <i>type path [encoding]</i></pre></blockquote>
+     <ul>
+       <li><i>type</i> is the type of RSS output to generate. Currently, "rss2" and "atom" are the
+	   only supported values.
+       <li><i>path</i> is the path to the file where the RSS output should be written.
+       <li><i>encoding</i> is optional and specifies the desired encoding of the file. It defaults to
+	   "utf-8".
+     </ul>
+     Note that only the new data in the feed is converted to RSS.
+    <td align="left">No</td>
+    <td align="left" class="code">None</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Feed_SaveRSSOnly"></a><span class="code">SaveRSSOnly</span><br/><a href="#PlugIn_SaveAsRSS" class="plug-in-flag">plug-in</a></td>
+    <td align="left">Boolean</td>
+    <td align="left">If set, and if
+     <a href="#Feed_SaveAsRSS" class="code">SaveAsRSS</a> is also set,
+     then the feed will be downloaded and parsed, and the RSS output will be generated, but the
+     feed will <i>not</i> be passed to any output handlers (or, for that matter, any other plug-ins).
     <td align="left">No</td>
     <td align="left" class="code">false</td>
   </tr>
@@ -2873,11 +2909,13 @@ built-in templates that produce the appropriate kind of output.</p>
     <td align="left" class="code"><a name="Freemarker_TemplateFile"></a>TemplateFile</td>
     <td align="left">Two strings</td>
     <td align="left">Specifies the location of the FreeMarker template file.
-      The location is specified with two parameters:
+      The location is specified with three parameters:
       <ul>
 	<li>the <i>type</i>, which may be <tt>file</tt>,
 	    <tt>classpath</tt>, <tt>url</tt> or <tt>builtin</tt>
 	<li>an <i>identifier</i> string
+	<li>a <i>MIME type</i> for the generated output. This parameter, if omitted, defaults
+	    to "text/plain"
       </ul>
 
       <p>The form of the identifier string depends on the <i>type</i> value.</p>
@@ -4040,6 +4078,17 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
+    <td align="left"><a name="PlugIn_SaveAsRSS"></a>Save As RSS</td>
+    <td align="left" class="code"><a name="SaveAsRSSPlugIn"></a>SaveAsRSSPlugIn</td>
+    <td align="left">Convert any new data in the feed to a specified RSS format, and save
+    the result to a file.</td>
+    <td align="left">
+      <a href="#Feed_SaveAsRSS" class="code">SaveAsRSS</a><br/>
+      <a href="#Feed_SaveRSSOnly" class="code">SaveRSSOnly</a><br/>
+    </td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a name="PlugIn_ShowAuthors"></a>Show Authors</td>
     <td align="left" class="code">ShowAuthorsPlugIn</td>
     <td align="left">Enable or disable the display of the author(s) of
@@ -4661,6 +4710,8 @@ documentation.</p>
  |      |       |
  |      |       +-- title .................... [String] channel title
  |      |       |
+ |      |       +-- description .............. [String] channel description, or "" if not available
+ |      |       |
  |      |       +-- anchorName ............... [String] HTML anchor name for channel
  |      |       |
  |      |       +-- url ...................... [String] channel's URL (as published in the feed's XML)
@@ -4673,6 +4724,8 @@ documentation.</p>
  |      |       |
  |      |       +-- rssFormat ................ [String] RSS format of channel (Atom, RSS 0.92, etc.).
  |      |       |                              Empty if not to be shown.
+ |      |       |
+ |      |       +-- author .......             [String] the author or authors of the item, combined in a single string, or ""
  |      |       |
  |      |       +-- (authors) ................ sequence of (String) names of authors of the feed
  |      |       |

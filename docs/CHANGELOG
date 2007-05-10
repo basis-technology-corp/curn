@@ -17,6 +17,19 @@ Version 3.2 (...)
 - Added new ${escapeHTML} method to FreeMarker data model, allowing
   FreeMarker templates to escape special HTML/XML characters such as "&".
 
+- Added a new "SaveAsRSS" plug-in. This plug-in operates on a parsed
+  feed and converts the new data in a feed to a specified RSS format,
+  then saves it. The new plug-in works on a per-feed basis. For instance:
+
+        [Feed_foobar]
+        URL: http://www.example.com/rss/fooblog/
+        ReplaceEmptySummaryWith: nothing
+        ShowAuthors:    true
+        AllowEmbeddedHTML: true
+        SaveAsRSSf: rss1 ${curn:curnDir}/tst-rss1-dup.xml utf-8
+
+   The plug-in can convert to RSS 1.0, RSS 2.0 or Atom format. See the
+   "SaveAsRSS" parameter in the User's Guide for details.
 
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
