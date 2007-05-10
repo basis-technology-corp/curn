@@ -14,6 +14,7 @@ import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -31,9 +32,137 @@ import org.clapper.util.logging.Logger;
 import org.clapper.util.text.TextUtil;
 
 /**
- * Handles transforming parsed channel data via a FreeMarker template.
+ * <p>Handles transforming parsed channel data via a FreeMarker template.
  * This class is used by the {@link FreeMarkerOutputHandler}, but it's also
- * available for use by plug-ins and other components.
+ * available for use by plug-ins and other components.</p>
+ *
+ * <p>This class builds a FreeMarker data model; each call to
+ * {@link #addChannel addChannel()} adds the data for a channel (i.e., feed)
+ * to the data structure. When the {@link #transform transform()} method is
+ * invoked, this handler loads the FreeMarker template and feeds it the
+ * FreeMarker data model, producing the output. The FreeMarker template
+ * can produce any kind of document; this class doesn't care.</p>
+ *
+ * <h3>The FreeMarker Data Model</h3>
+ *
+ * <p>This handler builds the following FreeMarker data model tree.</p>
+ *
+ * <pre>
+ * <b>Tree</b>                                         <b>Description</b>
+ *
+ * (root)
+ *  |
+ *  +-- curn
+ *  |    |
+ *  |    +-- showToolInfo                       (boolean) whether or not
+ *  |    |                                      to display curn information
+ *  |    |                                      in the output
+ *  |    |
+ *  |    +-- version                            version of curn
+ *  |    |
+ *  |    +-- buildID                            curn's build ID
+ *  |
+ *  +-- totalItems                              total items for all channels
+ *  |
+ *  +-- dateGenerated                           date generated
+ *  |
+ *  +-- extraText                               extra text, from the config
+ *  |
+ *  +-- encoding                                encoding, from the config
+ *  |
+ *  +-- tableOfContents                         hash of TOC data
+ *  |    |
+ *  |    +-- needed                             whether a TOC is needed
+ *  |    |
+ *  |    +-- channels                           sequence of channel TOC
+ *  |          |                                items
+ *  |          |
+ *  |          +-- (channel)                    TOC entry for one channel
+ *  |                |
+ *  |                +-- title                  channel title
+ *  |                |
+ *  |                +-- url                    channel URL (from the XML)
+ *  |                |
+ *  |                +-- configuredURL          channel/feed URL from the
+ *  |                |                          config file
+ *  |                |
+ *  |                +-- totalItems             total items in channel
+ *  |                |
+ *  |                +-- channelAnchor          HTML anchor for channel
+ *  |
+ *  +-- channels                                sequence of channel (feed) data
+ *         |
+ *         +-- (channel)                        hash for a single channel (feed)
+ *                 |
+ *                 +-- index                    channel's index in list
+ *                 |
+ *                 +-- totalItems               total items in channel
+ *                 |
+ *                 +-- title                    channel title
+ *                 |
+ *                 +-- description              the channel's description, or
+ *                                              "" if unavailable
+ *                 |
+ *                 +-- anchorName               HTML anchor for channel
+ *                 |
+ *                 +-- url                      channel's URL (as published in
+ *                 |                            the feed)
+ *                 |
+ *                 +-- configuredURL            channel's URL (as configured to
+ *                 |                            <i>curn</i>)
+ *                 |
+ *                 +-- id                       channel's unique ID
+ *                 |
+ *                 +-- date                     channel's last-modified date
+ *                 |                            (might be missing)
+ *                 |
+ *                 |-- rssFormat                RSS format of channel (Atom,
+ *                 |                            RSS 0.92, etc.)
+ *                 |
+ *                 +-- author                   all the authors, combined into
+ *                 |                            a single string
+ *                 |
+ *                 |-- authors                  sequence of strings, each one
+ *                 |                            denoting an author of the feed
+ *                 |
+ *                 +-- items                    sequence of channel items
+ *                       |
+ *                       +-- (item)             entry for one item
+ *                             |
+ *                             +-- index        item's index in channel
+ *                             |
+ *                             +-- title        item's title
+ *                             |
+ *                             +-- url          item's unique URL
+ *                             |
+ *                             +-- id           item's unique ID
+ *                             |
+ *                             +-- date         the date
+ *                             |                (might be missing)
+ *                             |
+ *                             +-- author       the author or authors of the
+ *                             |                item, combined in a single
+ *                             |                string
+ *                             |
+ *                             +-- author       a sequence of individual
+ *                             |                author name strings
+ *                             |
+ *                             +-- description  description/summary
+ * </pre>
+ *
+ * <p>In addition, the data model provides (at the top level) the following
+ * methods:</p>
+ *
+ * <pre>
+ * (root)
+ *  |
+ *  +-- wrapText (string[, indentation[, lineLength]])
+ *  |
+ *  +-- indentText (string, indentation)
+ *  |
+ *  +-- stripHTML (string)
+ * </pre>
+ *
  *
  * @version <tt>$Revision$</tt>
  */
@@ -114,7 +243,7 @@ public class FreeMarkerFeedTransformer
     private SimpleSequence                    freemarkerTOCItems;
     private SimpleSequence                    freemarkerChannelsData;
     private TemplateLocation                  templateLocation = null;
-    private String                            mimeType = "application/octet-stream";
+    private String                            mimeType = "text/plain";
     private String                            title = null;
     private String                            extraText = null;
     private String                            encoding = null;
@@ -226,6 +355,8 @@ public class FreeMarkerFeedTransformer
      *
      * @throws ConfigurationException configuration error
      * @throws CurnException          some other error
+     *
+     * @see #setTemplate
      */
     public void setTemplateFromConfig(final String     section,
                                       final String     itemName)
@@ -233,6 +364,24 @@ public class FreeMarkerFeedTransformer
                CurnException
     {
         parseTemplateLocation(config, section, itemName);
+    }
+
+    /**
+     * Set the FreeMarker template via a {@link TemplateLocation} object.
+     *
+     * @param templateLocation the template location
+     * @param mimeType         MIME type for the content the template generates
+     *
+     * @throws CurnException on error
+     *
+     * @see #setTemplateFromConfig
+     */
+    public void setTemplate(TemplateLocation templateLocation,
+                            String           mimeType)
+        throws CurnException
+    {
+        this.templateLocation = templateLocation;
+        this.mimeType         = mimeType;
     }
 
     /**
@@ -312,7 +461,6 @@ public class FreeMarkerFeedTransformer
 
         String channelAnchorName = CHANNEL_ANCHOR_PREFIX
                                  + String.valueOf(totalChannels);
-        String channelTitle = channel.getTitle();
         RSSLink link;
 
         // Store the channel data.
@@ -322,7 +470,16 @@ public class FreeMarkerFeedTransformer
         channelData.put("index", new SimpleNumber(totalChannels));
         channelData.put("totalItems", new SimpleNumber(totalItemsInChannel));
         channelData.put("anchorName", channelAnchorName);
-        channelData.put("title", channelTitle);
+
+        String channelTitle = channel.getTitle();
+        if (channelTitle == null)
+            channelTitle = "";
+        channelData.put("title", channelTitle.trim());
+
+        String description = channel.getDescription();
+        if (description == null)
+            description = "";
+        channelData.put("description", description.trim());
 
         if (config.showRSSVersion())
             channelData.put("rssFormat", channel.getRSSFormat());
@@ -359,13 +516,17 @@ public class FreeMarkerFeedTransformer
 
         Collection<String> authors = channel.getAuthors();
         SimpleSequence authorsData = new SimpleSequence();
+        String authorString = "";
         if (authors != null)
         {
             for (String author : authors)
                 authorsData.add(author);
+
+            authorString = TextUtil.join(authors, ", ");
         }
 
         channelData.put("authors", authorsData);
+        channelData.put("author", authorString);
 
         // Store a table of contents entry for the channel.
 
@@ -414,31 +575,45 @@ public class FreeMarkerFeedTransformer
             // Add both a combined author string ("author") and a sequence of
             // individual authors.
 
-            String authorString = null;
+            authorString = "";
             authors = item.getAuthors();
             authorsData = new SimpleSequence();
             if ((authors != null) && (authors.size() > 0))
             {
                 authorString = TextUtil.join(authors, ", ");
-                itemData.put("author", authorString);
                 for (String author : authors)
                     authorsData.add(author);
             }
 
+            itemData.put("author", authorString);
             itemData.put("authors", authorsData);
 
             String itemTitle = item.getTitle();
             if (itemTitle == null)
                 itemTitle = "(No Title)";
-            itemData.put("title", itemTitle);
+            itemData.put("title", itemTitle.trim());
 
             String desc = item.getSummary();
 
             if (desc == null)
                 desc = "";
 
-            itemData.put("description", desc);
+            itemData.put("description", desc.trim());
         }
+    }
+
+    /**
+     * Transform the data model via the FreeMarker template, writing the
+     * transformed channel data to the specified <tt>Writer</tt>
+     *
+     * @param out where to write the transformed data
+     *
+     * @throws CurnException on error
+     */
+    public void transform(final Writer out)
+        throws CurnException
+    {
+        transform(new PrintWriter(out));
     }
 
     /**
@@ -591,21 +766,21 @@ public class FreeMarkerFeedTransformer
 
         String templateType = templateTokens[0].trim();
 
-        if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_BUILTIN))
+        if (templateType.equalsIgnoreCase(CFG_TEMPLATE_LOAD_BUILTIN))
         {
-            if (templateTokens[1].equals (CFG_BUILTIN_HTML_TEMPLATE))
+            if (templateTokens[1].equals(CFG_BUILTIN_HTML_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_HTML_TEMPLATE;
                 this.mimeType = "text/html";
             }
 
-            else if (templateTokens[1].equals (CFG_BUILTIN_TEXT_TEMPLATE))
+            else if (templateTokens[1].equals(CFG_BUILTIN_TEXT_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_TEXT_TEMPLATE;
                 this.mimeType = "text/plain";
             }
 
-            else if (templateTokens[1].equals (CFG_BUILTIN_SUMMARY_TEMPLATE))
+            else if (templateTokens[1].equals(CFG_BUILTIN_SUMMARY_TEMPLATE))
             {
                 this.templateLocation = BUILTIN_SUMMARY_TEMPLATE;
                 this.mimeType = "text/plain";
@@ -613,33 +788,33 @@ public class FreeMarkerFeedTransformer
 
             else
             {
-                throw new ConfigurationException (section,
-                                                  "Unknown built-in " +
-                                                  "template file \"" +
-                                                  templateTokens[1] + "\"");
+                throw new ConfigurationException(section,
+                                                 "Unknown built-in " +
+                                                 "template file \"" +
+                                                 templateTokens[1] + "\"");
             }
         }
 
-        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_URL))
+        else if (templateType.equalsIgnoreCase(CFG_TEMPLATE_LOAD_FROM_URL))
         {
-            this.templateLocation = new TemplateLocation (TemplateType.URL,
-                                                          templateTokens[1]);
+            this.templateLocation = new TemplateLocation(TemplateType.URL,
+                                                         templateTokens[1]);
             if (templateTokens.length == 3)
                 this.mimeType = templateTokens[2];
         }
 
-        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_FILE))
+        else if (templateType.equalsIgnoreCase(CFG_TEMPLATE_LOAD_FROM_FILE))
         {
-            this.templateLocation = new TemplateLocation (TemplateType.FILE,
-                                                          templateTokens[1]);
+            this.templateLocation = new TemplateLocation(TemplateType.FILE,
+                                                         templateTokens[1]);
             if (templateTokens.length == 3)
                 this.mimeType = templateTokens[2];
         }
 
-        else if (templateType.equalsIgnoreCase (CFG_TEMPLATE_LOAD_FROM_CLASSPATH))
+        else if (templateType.equalsIgnoreCase(CFG_TEMPLATE_LOAD_FROM_CLASSPATH))
         {
-            this.templateLocation = new TemplateLocation (TemplateType.CLASSPATH,
-                                                          templateTokens[1]);
+            this.templateLocation = new TemplateLocation(TemplateType.CLASSPATH,
+                                                         templateTokens[1]);
             if (templateTokens.length == 3)
                 this.mimeType = templateTokens[2];
         }
