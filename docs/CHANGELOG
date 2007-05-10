@@ -26,10 +26,14 @@ Version 3.2 (...)
         ReplaceEmptySummaryWith: nothing
         ShowAuthors:    true
         AllowEmbeddedHTML: true
-        SaveAsRSSf: rss1 ${curn:curnDir}/tst-rss1-dup.xml utf-8
+        SaveAsRSS: rss1 ${curn:curnDir}/tst-rss1-dup.xml utf-8
 
-   The plug-in can convert to RSS 1.0, RSS 2.0 or Atom format. See the
-   "SaveAsRSS" parameter in the User's Guide for details.
+   The plug-in can convert to RSS 1.0, RSS 2.0 or Atom format. The plug-in
+   works on parsed feed data, which means that it only sees new items
+   (because curn's parsing logic discards old items). Thus, if there's no
+   new data, the plug-in isn't invoked, and it doesn't generate the output.
+
+   See the "SaveAsRSS" parameter in the User's Guide for details.
 
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
