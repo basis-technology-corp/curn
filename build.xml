@@ -507,17 +507,35 @@ source and documentation packages.
   <!-- Load the API version from the appropriate resource bundle -->
 
   <target name="-get.version" description="Get the version stamp">
+    <!-- First, get the unmodified version. -->
     <loadproperties
         srcFile="${compiled.classes.dir}/org/clapper/curn/Curn.properties">
       <filterchain>
+        <linecontains>
+          <contains value="curn.version"/>
+        </linecontains>
+      </filterchain>
+    </loadproperties>
+
+    <!-- 
+        Next, since there appears to be no easy way to edit that value
+        to make a new one, load it again, and create a version suitable
+        for file names (i.e., remove the white space).
+    -->
+    <loadproperties
+        srcFile="${compiled.classes.dir}/org/clapper/curn/Curn.properties">
+      <filterchain>
+        <linecontains>
+          <contains value="curn.version"/>
+        </linecontains>
         <replaceregex pattern="[ \t]+" replace="-" flags="g"/>
+        <replaceregex pattern="curn\.version" replace="curn.version.file"/>
       </filterchain>
     </loadproperties>
     <echo>Version: ${curn.version}</echo>
   </target>
 
   <target name="show.version" depends="-get.version"/>
-
   <target name="version" depends="-get.version"/>
 
   <target name="-build.info" depends="-get.version">
@@ -578,22 +596,22 @@ source and documentation packages.
 
   <target name="-set.version.properties" depends="-get.version">
     <property name="versioned_src_zipfile"
-              value="src-${curn.version}.zip"/>
+              value="src-${curn.version.file}.zip"/>
 
     <property name="versioned_curn.jar.file"
-              value="${curn.jar.name}-${curn.version}.jar"/>
+              value="${curn.jar.name}-${curn.version.file}.jar"/>
 
     <property name="versioned_curnboot.jar.file"
-              value="${curnboot.jar.name}-${curn.version}.jar"/>
+              value="${curnboot.jar.name}-${curn.version.file}.jar"/>
 
     <property name="versioned_plugins.jar.file"
-              value="${plugins.jar.name}-${curn.version}.jar"/>
+              value="${plugins.jar.name}-${curn.version.file}.jar"/>
 
     <property name="versioned_docs_zipfile"
-              value="docs-${curn.version}.zip"/>
+              value="docs-${curn.version.file}.zip"/>
 
     <property name="versioned_javadocs_zipfile"
-              value="javadocs-${curn.version}.zip"/>
+              value="javadocs-${curn.version.file}.zip"/>
   </target>
 
   <target name="code.jar" depends="curn.jar, curnboot.jar"/>
@@ -804,7 +822,7 @@ source and documentation packages.
     <!-- Build the installer -->
 
     <izpack input="${install.tmp}/install.xml"
-            output="${release.dir}/install-curn-${curn.version}.jar"
+            output="${release.dir}/install-curn-${curn.version.file}.jar"
             installerType="standard"
             basedir="."
             izPackDir="${izpack.home}">
