@@ -120,39 +120,24 @@ source and documentation packages.
                             Paths and Patterns
   ***************************************************************************
   -->
-  <condition property="third.party.jar.dir" value="${env.HOME}/java/classes">
-    <not>
-      <isset property="third.party.jar.dir"/>
-    </not>
+  <property name="third.party.jar.dir" value="${top.dir}/lib"/>
+
+  <condition property="ocutil.dir"
+             value="${env.OCUTIL_DIR}"
+             else="${env.wwwtest}/software/java/util/download/latest">
+    <isset property="env.OCUTIL_DIR"/>
   </condition>
+  <echo>Using ocutil.jar in ${ocutil.dir}</echo>
 
   <path id="project.class.path">
-    <pathelement location="lib/"/>
-    <pathelement location="${third.party.jar.dir}/activation.jar"/>
-    <pathelement location="${third.party.jar.dir}/mail.jar"/>
-    <pathelement location="${third.party.jar.dir}/asm-${asm.version}.jar"/>
-    <pathelement
-        location="${third.party.jar.dir}/asm-commons-${asm.version}.jar"/>
-    <pathelement
-        location="${third.party.jar.dir}/asm-util-${asm.version}.jar"/>
-    <pathelement location="${third.party.jar.dir}/commons-logging-1.1.jar"/>
-    <pathelement location="${third.party.jar.dir}/freemarker.jar"/>
-    <pathelement location="${third.party.jar.dir}/ocutil.jar"/>
-    <pathelement location="${third.party.jar.dir}/xerces.jar"/>
-    <pathelement location="${third.party.jar.dir}/bsf.jar"/>
-    <pathelement location="${third.party.jar.dir}/rome.jar"/>
-
-    <!--
-        JDOM is necessary for the Informa RSS parser. curn does not use
-        it directly.
-    -->
-    <pathelement location="${third.party.jar.dir}/jdom.jar"/>
-    <pathelement location="${third.party.jar.dir}/informa.jar"/>
+    <fileset dir="${third.party.jar.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <pathelement location="${ocutil.dir}/ocutil.jar"/>
   </path>
 
   <path id="installer.class.path">
     <path refid="project.class.path"/>
-    <pathelement location="${third.party.jar.dir}/izpack-compiler.jar"/>
   </path>
 
   <!--
@@ -763,12 +748,6 @@ source and documentation packages.
     </copy>
 
     <!-- Copy and rename the appropriate ocutil.jar file -->
-
-    <condition property="ocutil.dir"
-               value="${env.OCUTIL_DIR}"
-               else="${env.wwwtest}/software/java/util/download/latest">
-      <isset property="env.OCUTIL_DIR"/>
-    </condition>
 
     <echo>Copying ocutil.jar from ${ocutil.dir}</echo>
     <copy todir="${install.tmp}">
