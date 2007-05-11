@@ -3326,7 +3326,7 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
 
   <dt>Purpose
   <dd>Provides an output handler calls a script via the Apache Jakarta
-      <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a> or the Java 6 (JSR 223) <span class="code">javax.script</span> scripting framework. (The Java 6 scripting framework is only available if you're running <i>curn</i> via Java 6.) BBy default, the ScriptOutputHandler first tries to use the <span class="code">javax.script</span> infrastructure; if that doesn't work, it tries to the BSF infrastructure. This handler supports any scripting language supported by the underlying scripting infrastructure. For complete details on writing a script output handler,
+      <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a> or the Java 6 (JSR 223) <span class="code">javax.script</span> scripting framework. (The Java 6 scripting framework is only available if you're running <i>curn</i> via Java 6.) By default, the ScriptOutputHandler first tries to use the <span class="code">javax.script</span> infrastructure; if that doesn't work, it tries to the BSF infrastructure. This handler supports any scripting language supported by the underlying scripting infrastructure. For complete details on writing a script output handler,
       See <a href="#NewScriptOutputHandler">Writing a Script Output Handler</a>, below.
 </dl>
 <table summary="" class="outlined striped cell-outlined" align="center" width="90%">
@@ -3355,26 +3355,26 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
     <td align="left" class="code">Language</td>
     <td align="left">String</td>
     <td align="left">
-    <p>The scripting language, as recognized by BSF. This
+    The scripting language, as recognized by BSF. This
     handler supports all the scripting language engines that
     are built into the BSF distribution. Of course, the jar
     files for the scripting languages themselves must be available at
     runtime, for those languages to be
     available. (See the section entitled
-    <a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details.)</p>
-
-    <p>The following values represent some of the languages available for
+    <a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details.)
+    <br><br>
+    The following values represent some of the languages available for
     this parameter. The BSF values comes from the
     <span class="filename">Languages.properties</span> file
     distributed with BSF version 2.3.0. The JSR 223 languages are the set
     of languages supported by the JSR 223 engines at
     <a href="https://scripting.dev.java.net/" class="url">https://scripting.dev.java.net/</a>, as of the date this document was last updated. Consult that
-    web site for details on available JSR 223 languages.</p>
-
-    <p>NOTE: In all cases, except Rhino, the actual script language itself
+    web site for details on available JSR 223 languages.
+    <br><br>
+    NOTE: In all cases, except Rhino, the actual script language itself
     does <i>not</i> come with the scripting infrastructure; you have to download
     the language separately. The scripting infrastructure merely contains
-    bindings to (a.k.a., engines for) the various supported scripting languages.</p>
+    bindings to (a.k.a., engines for) the various supported scripting languages.
 
     <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="90%">
       <tr valign="top">
@@ -3507,13 +3507,13 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
   <tr valign="top">
     <td align="left" class="code">ShowCurnInfo</td>
     <td align="left">Boolean</td>
-    <td align="left"><p>Whether or not to display the <i>curn</i>
+    <td align="left">Whether or not to display the <i>curn</i>
     version, <i>curn</i> configuration file path, and other
     <i>curn</i>-related information at the bottom of the generated
-    output.</p>
+    output.<br><br>
 
-    <p>Note: There's no guarantee that a given script will honor
-    this setting.</p>
+    Note: There's no guarantee that a given script will honor
+    this setting.
     </td>
     <td align="left">No</td>
     <td align="left" class="code">true</td>
