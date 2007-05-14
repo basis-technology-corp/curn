@@ -35,6 +35,37 @@ Version 3.2 (...)
 
    See the "SaveAsRSS" parameter in the User's Guide for details.
 
+- Added a new "IgnoreOldArticles" plug-in. This plug-in provides a way to
+  ignore articles that are older than a certain interval. Intervals are
+  expressed in a natural language syntax. For instance:
+
+       IgnoreArticlesOlderThan: 3 days
+       IgnoreArticlesOlderThan: 1 week
+       IgnoreArticlesOlderThan: 365 days
+       IgnoreArticlesOlderThan: 12 hours, 30 minutes
+
+  Valid interval names (in English) are:
+
+        millisecond, milliseconds, ms
+        second, seconds, sec, secs
+        minute, minutes, min, mins
+        hour, hours, hr, hrs
+        day, days
+        week, weeks
+
+  If you're running curn in a Spanish or French locale, the appropriate
+  Spanish or French equivalents are also available, as well as the English
+  versions. (Supporting additional locales requires modifying the
+  org.clapper.util library, but it's easy enough to do.)x
+
+  "year" and "month" are not supported, to avoid the irregularity of leaps
+  years and different month lengths, respectively.
+
+  See the User's Guide for details.
+
+- Fixed a null pointer exception that could occur if all items in a channel
+  have been suppressed by a plug-in.
+
 - Updated bundled freemarker.jar from version 2.3.6 to version 2.3.10.
   See http://freemarker.org/
 

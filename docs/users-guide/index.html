@@ -1510,6 +1510,53 @@ detail, below. (Parameters marked with
   </tr>
 
   <tr valign="top">
+    <td align="left"><a name="Cfg_IgnoreArticlesOlderThan"></a><span class="code">IgnoreArticlesOlderThan</span><br/><a href="#PlugIn_IgnoreOldArticles" class="plug-in-flag">plug-in</a></td>
+    <td align="left">String</td>
+    <td align="left">Provides a way to ignore articles that are
+  older than a certain interval. Intervals are
+  expressed in a natural language syntax. For 
+  instance:
+
+<blockquote><pre>
+IgnoreArticlesOlderThan: 3 days
+IgnoreArticlesOlderThan: 1 week
+IgnoreArticlesOlderThan: 365 days
+IgnoreArticlesOlderThan: 12 hours, 30 minutes
+</pre></blockquote>
+
+                      Valid interval names (in English) are:
+
+  <ul>
+    <li>millisecond, milliseconds, ms
+    <li>second, seconds, sec, secs
+    <li>minute, minutes, min, mins
+    <li>hour, hours, hr, hrs
+    <li>day, days
+    <li>week, weeks
+  </ul>
+
+  If you're running <i>curn</i> in a Spanish or French locale, the appropriate
+  Spanish or French equivalents are also available, as well as the English
+  versions. 
+  <br><br>
+  "year" and "month" are not supported, to avoid
+  the irregularity of leaps years and different
+  month lengths, respectively.
+  <br><br>
+  The actual conversion of the strings is done by the
+  <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
+  library's
+  <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
+  See that class for more details.
+  <br><br>
+  This global value sets the default value.
+    </td>
+    <td align="left">No</td>
+    <td align="left">None (i.e., Articles are not ignored based on age)</td>
+    <td align="left">Per-feed <a href="#Feed_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> parameter</td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a name="MailOutputTo"></a><span class="code">MailOutputTo</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td>One or more comma-separated email addresses to receive the output.
@@ -2297,6 +2344,54 @@ ArticleFilter: hide ; show author '^moe *howard$'
   </tr>
 
   <tr valign="top">
+
+  <tr valign="top">
+    <td align="left"><a name="Feed_IgnoreArticlesOlderThan"></a><span class="code">IgnoreArticlesOlderThan</span><br/><a href="#PlugIn_IgnoreOldArticles" class="plug-in-flag">plug-in</a></td>
+    <td align="left">String</td>
+    <td align="left">Provides a way to ignore articles that are
+  older than a certain interval. Intervals are
+  expressed in a natural language syntax. For 
+  instance:
+
+<blockquote><pre>
+IgnoreArticlesOlderThan: 3 days
+IgnoreArticlesOlderThan: 1 week
+IgnoreArticlesOlderThan: 365 days
+IgnoreArticlesOlderThan: 12 hours, 30 minutes
+</pre></blockquote>
+
+                      Valid interval names (in English) are:
+
+  <ul>
+    <li>millisecond, milliseconds, ms
+    <li>second, seconds, sec, secs
+    <li>minute, minutes, min, mins
+    <li>hour, hours, hr, hrs
+    <li>day, days
+    <li>week, weeks
+  </ul>
+
+  If you're running <i>curn</i> in a Spanish or French locale, the appropriate
+  Spanish or French equivalents are also available, as well as the English
+  versions. (Supporting additional locales requires modifying the
+  <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
+  library, but it's easy enough to do.)
+  <br><br>
+  "year" and "month" are not supported, to avoid
+  the irregularity of leaps years and different
+  month lengths, respectively.
+  <br><br>
+  The actual conversion of the strings is done by the
+  <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
+  library's
+  <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
+  See that class for more details.
+    </td>
+    <td align="left">No</td>
+    <td align="left">The default, as defined by the global
+    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> parameter</td>
+  </tr>
+
     <td align="left"><a name="Feed_IgnoreDuplicateTitles"></a><span class="code">IgnoreDuplicateTitles</span><br/><a href="#PlugIn_IgnoreDuplicateArticles" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
@@ -4040,6 +4135,14 @@ stock plug-ins are in the
     the XML content before sending it to <i>curn</i>, to save network
     bandwidth.</td>
     <td align="left"><a href="#Feed_GzipDownload" class="code">GzipDownload</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="PlugIn_IgnoreOldArticles"></a>Ignore Old Articles</td>
+    <td align="left" class="code">IgnoreOldArticlesPlugIn</td>
+    <td align="left">Suppress articles in a feed that are older than a
+    specified iterval.</td>
+    <td align="left"><a href="#Feed_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a></td>
   </tr>
 
   <tr valign="top">
