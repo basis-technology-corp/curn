@@ -124,7 +124,11 @@ source and documentation packages.
 
   <condition property="ocutil.dir"
              value="${env.OCUTIL_DIR}"
+             else="${env.HOME}/java/classes">
+
+<!--
              else="${env.wwwtest}/software/java/util/download/latest">
+-->
     <isset property="env.OCUTIL_DIR"/>
   </condition>
   <echo>Using ocutil.jar in ${ocutil.dir}</echo>
