@@ -155,10 +155,13 @@ public class RSSChannelAdapter extends RSSChannel
     {
         Collection<SyndEntry> syndItems = new ArrayList<SyndEntry>();
 
-        for (RSSItem ourItem : newItems)
+        if (newItems != null)
         {
-            RSSItemAdapter itemAdapter = (RSSItemAdapter) ourItem;
-            syndItems.add(itemAdapter.getSyndEntry());
+            for (RSSItem ourItem : newItems)
+            {
+                RSSItemAdapter itemAdapter = (RSSItemAdapter) ourItem;
+                syndItems.add(itemAdapter.getSyndEntry());
+            }
         }
 
         // We're storing values from a genericized collection into a
