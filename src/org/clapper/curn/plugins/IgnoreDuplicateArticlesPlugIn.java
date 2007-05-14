@@ -182,10 +182,10 @@ public class IgnoreDuplicateArticlesPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
@@ -232,8 +232,8 @@ public class IgnoreDuplicateArticlesPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          RSSChannel channel)
         throws CurnException
     {
         Boolean ignore = perFeedIgnoreFlagMap.get (feedInfo);
