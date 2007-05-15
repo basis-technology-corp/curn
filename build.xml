@@ -46,7 +46,7 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<project name="curn" default="curn" basedir=".">
+<project name="curn" default="jar" basedir=".">
 
   <description>
 This Ant build file builds the "curn" (Customizable Utilitarian RSS Notifier)
