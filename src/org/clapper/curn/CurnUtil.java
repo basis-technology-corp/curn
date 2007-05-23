@@ -203,7 +203,7 @@ public class CurnUtil
 
         return ResourceBundle.getBundle (Constants.BUNDLE_NAME, locale);
     }
-    
+
     /**
      * Get a string (resource) from the resource bundle.
      *
@@ -228,7 +228,7 @@ public class CurnUtil
         catch (MissingResourceException ex)
         {
         }
-        
+
         return result;
     }
 
@@ -272,7 +272,7 @@ public class CurnUtil
                 buf.append (path);
                 buf.append (RollingFileWriter.INDEX_PATTERN);
                 break;
-                
+
             default:
                 assert (false);
         }
@@ -371,7 +371,7 @@ public class CurnUtil
     {
         return err;
     }
-    
+
     /**
      * Map a configured path name to a <tt>File</tt> object. This method parses
      * the path name and converts any Unix-style path separators to the
@@ -386,14 +386,14 @@ public class CurnUtil
     public static File mapConfiguredPathName (final String pathName)
     {
         File result = null;
-        
+
         if (File.separatorChar == '/')
         {
             // Nothing to do.
-            
+
             result = new File (pathName);
         }
-        
+
         else
         {
             char[] ch = pathName.toCharArray();
@@ -405,7 +405,7 @@ public class CurnUtil
                 else
                     buf.append (ch[i]);
             }
-            
+
             result = new File (buf.toString());
         }
 
