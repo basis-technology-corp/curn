@@ -65,12 +65,19 @@ import java.io.Writer;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import org.clapper.curn.CurnUtil;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.output.freemarker.FreeMarkerFeedTransformer;
 import org.clapper.curn.output.freemarker.TemplateLocation;
 import org.clapper.curn.output.freemarker.TemplateType;
 import org.clapper.curn.parser.RSSChannel;
+import org.clapper.util.cmdline.CommandLineUsageException;
+import org.clapper.util.cmdline.ParameterHandler;
+import org.clapper.util.cmdline.ParameterParser;
+import org.clapper.util.cmdline.UsageInfo;
+import org.clapper.util.io.IOExceptionExt;
 import org.clapper.util.text.TextUtil;
 
 /**
@@ -83,17 +90,26 @@ import org.clapper.util.text.TextUtil;
  * <p>This plug-in intercepts the following per-feed configuration
  * parameters:</p>
  *
- * <table border="1">
+ * <table width="80%" class="nested-table" align="center">
  *   <tr valign="top">
- *     <td><tt>SaveAsRSS <i>type path [encoding]</i></tt></td>
- *     <td>
+ *     <td><tt>SaveAsRSS&nbsp;[options]&nbsp;path</tt></td>
+ *     <td><i>path</i> is the path to the file to receive the RSS output.
+ *
+ *       Options:
  *       <ul>
- *         <li><i>type</i> is the type of RSS output to generate. Currently,
- *             the legal values are: "rss1", "rss2", "atom"
- *         <li><i>path</i> is the path to the RSS file to be written
- *         <li><i>encoding</i> is encoding to use for the file. It defaults
- *             to "utf-8"
+ *         <li><tt>-t <i>type</i></tt> (or <tt>--type <i>type</i></tt>)
+ *             is the type of RSS output to generate. Currently, the legal
+ *             values for the <i>type</i> argument are: "rss1", "rss2", "atom".
+ *             If not specified, this option defaults to "atom".
+ *         <li><tt>-b <i>backups</i></tt> (or <tt>--backups <i>backups</i></tt>)
+ *             specifies how many backups of <i>path</i> to retain. Default: 0
+ *         <li><tt>-e <i>encoding</i></tt> (or <tt>--encoding <i>encoding</i></tt>
+ *             is encoding to use for the file. It defaults to "utf-8".
  *       </ul>
+ *       Examples:
+ * <pre>
+ *    SaveAsRSS: -t rss1 -b 3 -e iso-8859-1 ${user.home:.curn}/rss/foo.xml
+ *    SaveAsRSS: --type atom --encoding utf16 C:/temp/foo.xml</pre>
  *     </td>
  *   </tr>
  *   <tr>
@@ -124,6 +140,12 @@ public class SaveAsRSSPlugIn
 
     private static final String VAR_SAVE_AS_RSS   = "SaveAsRSS";
     private static final String VAR_SAVE_RSS_ONLY = "SaveRSSOnly";
+    private static final String RSS1_TEMPLATE_PATH =
+        "org/clapper/curn/output/freemarker/RSS1.ftl";
+    private static final String RSS2_TEMPLATE_PATH =
+        "org/clapper/curn/output/freemarker/RSS2.ftl";
+    private static final String ATOM_TEMPLATE_PATH =
+        "org/clapper/curn/output/freemarker/Atom.ftl";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
@@ -139,6 +161,7 @@ public class SaveAsRSSPlugIn
         boolean saveOnly;
         String  saveAsEncoding = "utf-8";
         TemplateLocation templateLocation = null;
+        int backups = 0;
 
         FeedSaveInfo()
         {
@@ -250,48 +273,10 @@ public class SaveAsRSSPlugIn
         {
             if (paramName.equals (VAR_SAVE_AS_RSS))
             {
-                FeedSaveInfo saveInfo = getOrMakeFeedSaveInfo(feedInfo);
-                String value = config.getConfigurationValue(sectionName,
-                                                            paramName);
-
-                // Split the value into the 2 or 3 supported tokens.
-
-                String[] tokens = TextUtil.split(value);
-                if ((tokens.length != 2) && (tokens.length != 3))
-                {
-                    throw new CurnException("Section \"" + sectionName +
-                                            "\": Parameter \"" + paramName +
-                                            "\" must have two or three values.");
-                }
-
-                // First token is the RSS type.
-
-                String templatePath = null;
-                if (tokens[0].equalsIgnoreCase("rss1"))
-                    templatePath = "org/clapper/curn/output/freemarker/RSS1.ftl";
-                else if (tokens[0].equalsIgnoreCase("rss2"))
-                    templatePath = "org/clapper/curn/output/freemarker/RSS2.ftl";
-                else if (tokens[0].equalsIgnoreCase("atom"))
-                    templatePath = "org/clapper/curn/output/freemarker/Atom.ftl";
-                else
-                {
-                    throw new CurnException("Section \"" + sectionName +
-                                            "\": Parameter \"" + paramName +
-                                            "\" has unknown RSS type \"" +
-                                            tokens[0] + "\"");
-                }
-
-                saveInfo.templateLocation =
-                    new TemplateLocation(TemplateType.CLASSPATH, templatePath);
-                saveInfo.saveAsFile = CurnUtil.mapConfiguredPathName(tokens[1]);
-
-                // Third token is the encoding, and is optional.
-
-                if (tokens.length == 3)
-                    saveInfo.saveAsEncoding = tokens[2];
-
-                saveInfo.sectionName = sectionName;
-                log.debug ("[" + sectionName + "]: SaveAsRSS=" + value);
+                handleSaveAsConfigParam(sectionName,
+                                        paramName,
+                                        config,
+                                        feedInfo);
             }
 
             else if (paramName.equals (VAR_SAVE_RSS_ONLY))
@@ -398,6 +383,11 @@ public class SaveAsRSSPlugIn
                           saveInfo.saveAsEncoding + ")");
 
                 Writer out =
+                    CurnUtil.openOutputFile(saveInfo.saveAsFile,
+                                            saveInfo.saveAsEncoding,
+                                            CurnUtil.IndexMarker.BEFORE_EXTENSION,
+                                            saveInfo.backups);
+
                     new OutputStreamWriter
                         (new FileOutputStream(saveInfo.saveAsFile),
                          saveInfo.saveAsEncoding);
@@ -406,6 +396,13 @@ public class SaveAsRSSPlugIn
             }
 
             catch (IOException ex)
+            {
+                throw new CurnException ("Can't write RSS output to \"" +
+                                         saveInfo.saveAsFile + "\": ",
+                                         ex);
+            }
+
+            catch (IOExceptionExt ex)
             {
                 throw new CurnException ("Can't write RSS output to \"" +
                                          saveInfo.saveAsFile + "\": ",
@@ -433,4 +430,142 @@ public class SaveAsRSSPlugIn
 
         return saveInfo;
     }
+
+    private void handleSaveAsConfigParam(final String     sectionName,
+                                         final String     paramName,
+                                         final CurnConfig config,
+                                         final FeedInfo   feedInfo)
+        throws CurnException,
+               ConfigurationException
+    {
+        final FeedSaveInfo saveInfo = getOrMakeFeedSaveInfo(feedInfo);
+
+        // Parse the value as a command line.
+
+        UsageInfo usageInfo = new UsageInfo();
+        usageInfo.addOption('b', "backups", "<n>",
+                            "Number of backups to keep");
+        usageInfo.addOption('t', "type", "<rss1|rss2|atom>",
+                            "RSS type for output.");
+        usageInfo.addOption('e', "encoding", "<encoding>",
+                            "Desired output encoding");
+        usageInfo.addParameter("<path>", "Path to RSS output file", true);
+
+        // Inner class for handling command-line syntax of the value.
+
+        class ConfigParameterHandler implements ParameterHandler
+        {
+            String templatePath = ATOM_TEMPLATE_PATH;
+            private String rawValue;
+
+            ConfigParameterHandler(String rawValue)
+            {
+                this.rawValue = rawValue;
+            }
+
+            public void parseOption(char             shortOption,
+                                    String           longOption,
+                                    Iterator<String> it)
+                throws CommandLineUsageException,
+                       NoSuchElementException
+            {
+                String value;
+                switch (shortOption)
+                {
+                    case 'b':
+                        value = it.next();
+                        try
+                        {
+                            saveInfo.backups = Integer.parseInt(value);
+                        }
+
+                        catch (NumberFormatException ex)
+                        {
+                            throw new CommandLineUsageException
+                                ("Section [" + sectionName +
+                                 "], parameter \"" + paramName + "\": " +
+                                 "Unexpected non-numeric value \"" + value +
+                                 "\" for \"" +
+                                  UsageInfo.SHORT_OPTION_PREFIX + shortOption +
+                                  "\" option.");
+                        }
+                        break;
+
+                    case 't':
+                        value = it.next();
+                        if (value.equalsIgnoreCase("rss1"))
+                            templatePath = RSS1_TEMPLATE_PATH;
+                        else if (value.equalsIgnoreCase("rss2"))
+                            templatePath = RSS2_TEMPLATE_PATH;
+                        else if (value.equalsIgnoreCase("atom"))
+                            templatePath = ATOM_TEMPLATE_PATH;
+                        else
+                        {
+                            throw new CommandLineUsageException
+                                ("Section \"" + sectionName +
+                                 "\": Parameter \"" + paramName +
+                                 "\" has unknown RSS type \"" +
+                                 value + "\"");
+                        }
+
+                        break;
+
+                    case 'e':
+                        saveInfo.saveAsEncoding = it.next();
+                        break;
+
+                    default:
+                        throw new CommandLineUsageException
+                            ("Section [" + sectionName +
+                             "], parameter \"" + paramName + "\": " +
+                             "Unknown option \"" +
+                             UsageInfo.SHORT_OPTION_PREFIX + shortOption +
+                            "\" in value \"" + rawValue + "\"");
+                }
+            }
+
+            public void parsePostOptionParameters(Iterator<String> it)
+                throws CommandLineUsageException,
+                       NoSuchElementException
+            {
+                saveInfo.saveAsFile = CurnUtil.mapConfiguredPathName(it.next());
+            }
+        };
+
+        // Parse the parameters.
+
+        ParameterParser paramParser = new ParameterParser(usageInfo);
+        String rawValue = config.getConfigurationValue(sectionName, paramName);
+        try
+        {
+            String[] valueTokens = config.getConfigurationTokens(sectionName,
+                                                                 paramName);
+            if (log.isDebugEnabled())
+            {
+                log.debug("[" + sectionName + "]: SaveAsRSS: value=\"" +
+                          rawValue + "\", tokens=" +
+                          TextUtil.join(valueTokens, '|'));
+            }
+
+            ConfigParameterHandler handler = new ConfigParameterHandler(rawValue);
+            log.debug("Parsing value \"" + rawValue + "\"");
+            paramParser.parse(valueTokens, handler);
+
+            // Save values the parser could not.
+
+            saveInfo.templateLocation =
+                new TemplateLocation(TemplateType.CLASSPATH,
+                                     handler.templatePath);
+        }
+
+        catch (CommandLineUsageException ex)
+        {
+            throw new CurnException("Section [" + sectionName +
+                                    "], parameter \"" + paramName +
+                                    "\": Error parsing value \"" + rawValue +
+                                    "\"",
+                                    ex);
+        }
+    }
 }
+
