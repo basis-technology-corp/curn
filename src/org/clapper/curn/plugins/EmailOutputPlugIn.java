@@ -209,7 +209,7 @@ public class EmailOutputPlugIn
      *                     the item was found
      * @param paramName    the name of the parameter
      * @param config       the {@link CurnConfig} object
-     * 
+     *
      * @throws CurnException on error
      *
      * @see CurnConfig
@@ -244,7 +244,7 @@ public class EmailOutputPlugIn
                 try
                 {
                     emailSender = new EmailAddress (sender);
-                                             
+
                 }
 
                 catch (EmailException ex)
