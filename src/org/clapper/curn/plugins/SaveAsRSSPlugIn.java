@@ -395,14 +395,14 @@ public class SaveAsRSSPlugIn
                 out.close();
             }
 
-            catch (IOException ex)
+            catch (IOExceptionExt ex)
             {
                 throw new CurnException ("Can't write RSS output to \"" +
                                          saveInfo.saveAsFile + "\": ",
                                          ex);
             }
 
-            catch (IOExceptionExt ex)
+            catch (IOException ex)
             {
                 throw new CurnException ("Can't write RSS output to \"" +
                                          saveInfo.saveAsFile + "\": ",
