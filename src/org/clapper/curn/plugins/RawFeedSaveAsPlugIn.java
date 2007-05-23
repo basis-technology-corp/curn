@@ -62,6 +62,7 @@ import org.clapper.util.logging.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -437,8 +438,16 @@ public class RawFeedSaveAsPlugIn
                                             CurnUtil.IndexMarker.BEFORE_EXTENSION,
                                             saveInfo.backups);
 
-                Reader in = new InputStreamReader
-                                (new FileInputStream(feedDataFile), encoding);
+                Reader in;
+                if (encoding == null)
+                {
+                    in = new FileReader(feedDataFile);
+                }
+                else
+                {
+                    in = new InputStreamReader
+                             (new FileInputStream(feedDataFile), encoding);
+                }
                 FileUtil.copyReader(in, out);
                 out.close();
                 in.close();
