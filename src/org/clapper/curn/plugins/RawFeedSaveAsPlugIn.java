@@ -61,13 +61,25 @@ import org.clapper.util.io.FileUtil;
 import org.clapper.util.logging.Logger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
 
 import java.net.URLConnection;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import org.clapper.curn.CurnUtil;
+import org.clapper.util.cmdline.CommandLineUsageException;
+import org.clapper.util.cmdline.ParameterHandler;
+import org.clapper.util.cmdline.ParameterParser;
+import org.clapper.util.cmdline.UsageInfo;
+import org.clapper.util.io.IOExceptionExt;
+import org.clapper.util.text.TextUtil;
 
 /**
  * The <tt>RawFeedSaveAsPlugIn</tt> handles saving a feed to a known location.
@@ -81,7 +93,7 @@ import org.clapper.curn.CurnUtil;
  *   <tr valign="top">
  *     <td><tt>SaveOnly</tt></td>
  *     <td>If set to "true", this parameter indicates that raw XML should be
- *         saved, but not parsed. This parameter can only be specified if 
+ *         saved, but not parsed. This parameter can only be specified if
  *         <tt>SaveAs</tt> is also specified.</td>
  *   </tr>
  *   <tr valign="top">
@@ -118,6 +130,7 @@ public class RawFeedSaveAsPlugIn
     {
         String  sectionName;
         File    saveAsFile;
+        int     backups = 0;
         boolean saveOnly;
         String  saveAsEncoding = "utf-8";
 
@@ -231,12 +244,10 @@ public class RawFeedSaveAsPlugIn
         {
             if (paramName.equals (VAR_SAVE_FEED_AS))
             {
-                FeedSaveInfo saveInfo = getOrMakeFeedSaveInfo (feedInfo);
-                String value = config.getConfigurationValue (sectionName,
-                                                             paramName);
-                saveInfo.saveAsFile = CurnUtil.mapConfiguredPathName (value);
-                saveInfo.sectionName = sectionName;
-                log.debug ("[" + sectionName + "]: SaveAs=" + value);
+                handleSaveAsConfigParam(sectionName,
+                                        paramName,
+                                        config,
+                                        feedInfo);
             }
 
             else if (paramName.equals (VAR_SAVE_ONLY))
@@ -253,6 +264,12 @@ public class RawFeedSaveAsPlugIn
 
             else if (paramName.equals (VAR_SAVE_AS_ENCODING))
             {
+                String msg =
+                    config.getDeprecatedParamMessage(paramName,
+                                                     VAR_SAVE_FEED_AS);
+                CurnUtil.getErrorOut().println(msg);
+                log.warn(msg);
+
                 FeedSaveInfo saveInfo = getOrMakeFeedSaveInfo (feedInfo);
                 saveInfo.saveAsEncoding =
                     config.getConfigurationValue (sectionName, paramName);
@@ -414,10 +431,27 @@ public class RawFeedSaveAsPlugIn
                            saveInfo.saveAsEncoding +
                            ")");
 
-                FileUtil.copyTextFile (feedDataFile,
-                                       encoding,
-                                       saveInfo.saveAsFile,
-                                       saveInfo.saveAsEncoding);
+                Writer out =
+                    CurnUtil.openOutputFile(saveInfo.saveAsFile,
+                                            saveInfo.saveAsEncoding,
+                                            CurnUtil.IndexMarker.BEFORE_EXTENSION,
+                                            saveInfo.backups);
+
+                Reader in = new InputStreamReader
+                                (new FileInputStream(feedDataFile), encoding);
+                FileUtil.copyReader(in, out);
+                out.close();
+                in.close();
+            }
+
+            catch (IOExceptionExt ex)
+            {
+                throw new CurnException ("Can't copy \"" +
+                                         feedDataFile.getPath() +
+                                         "\" to \"" +
+                                         saveInfo.saveAsFile.getPath() +
+                                         "\": ",
+                                         ex);
             }
 
             catch (IOException ex)
@@ -430,7 +464,7 @@ public class RawFeedSaveAsPlugIn
                                          ex);
             }
 
-            keepGoing = ! saveInfo.saveOnly;;
+            keepGoing = ! saveInfo.saveOnly;
         }
 
         return keepGoing;
@@ -450,5 +484,118 @@ public class RawFeedSaveAsPlugIn
         }
 
         return saveInfo;
+    }
+
+    private void handleSaveAsConfigParam(final String     sectionName,
+                                         final String     paramName,
+                                         final CurnConfig config,
+                                         final FeedInfo   feedInfo)
+        throws CurnException,
+               ConfigurationException
+    {
+        final FeedSaveInfo saveInfo = getOrMakeFeedSaveInfo(feedInfo);
+
+        // Parse the value as a command line.
+
+        UsageInfo usageInfo = new UsageInfo();
+        usageInfo.addOption('b', "backups", "<n>",
+                            "Number of backups to keep");
+        usageInfo.addOption('e', "encoding", "<encoding>",
+                            "Desired output encoding");
+        usageInfo.addParameter("<path>", "Path to RSS output file", true);
+
+        // Inner class for handling command-line syntax of the value.
+
+        class ConfigParameterHandler implements ParameterHandler
+        {
+            private String rawValue;
+
+            ConfigParameterHandler(String rawValue)
+            {
+                this.rawValue = rawValue;
+            }
+
+            public void parseOption(char             shortOption,
+                                    String           longOption,
+                                    Iterator<String> it)
+                throws CommandLineUsageException,
+                       NoSuchElementException
+            {
+                String value;
+                switch (shortOption)
+                {
+                    case 'b':
+                        value = it.next();
+                        try
+                        {
+                            saveInfo.backups = Integer.parseInt(value);
+                        }
+
+                        catch (NumberFormatException ex)
+                        {
+                            throw new CommandLineUsageException
+                                ("Section [" + sectionName +
+                                 "], parameter \"" + paramName + "\": " +
+                                 "Unexpected non-numeric value \"" + value +
+                                 "\" for \"" +
+                                  UsageInfo.SHORT_OPTION_PREFIX + shortOption +
+                                  "\" option.");
+                        }
+                        break;
+
+                    case 'e':
+                        saveInfo.saveAsEncoding = it.next();
+                        break;
+
+                    default:
+                        throw new CommandLineUsageException
+                            ("Section [" + sectionName +
+                             "], parameter \"" + paramName + "\": " +
+                             "Unknown option \"" +
+                             UsageInfo.SHORT_OPTION_PREFIX + shortOption +
+                            "\" in value \"" + rawValue + "\"");
+                }
+            }
+
+            public void parsePostOptionParameters(Iterator<String> it)
+                throws CommandLineUsageException,
+                       NoSuchElementException
+            {
+                saveInfo.saveAsFile = CurnUtil.mapConfiguredPathName(it.next());
+            }
+        };
+
+        // Parse the parameters.
+
+        ParameterParser paramParser = new ParameterParser(usageInfo);
+        String rawValue = config.getConfigurationValue(sectionName, paramName);
+        try
+        {
+            String[] valueTokens = config.getConfigurationTokens(sectionName,
+                                                                 paramName);
+            if (log.isDebugEnabled())
+            {
+                log.debug("[" + sectionName + "]: SaveAsRSS: value=\"" +
+                          rawValue + "\", tokens=" +
+                          TextUtil.join(valueTokens, '|'));
+            }
+
+            ConfigParameterHandler handler = new ConfigParameterHandler(rawValue);
+            log.debug("Parsing value \"" + rawValue + "\"");
+            paramParser.parse(valueTokens, handler);
+            log.debug("Section [" + sectionName + "], parameter \"" +
+                      paramName + "\": backups=" + saveInfo.backups +
+                      ", encoding=" + saveInfo.saveAsEncoding +
+                      ", path=" + saveInfo.saveAsFile.getPath());
+        }
+
+        catch (CommandLineUsageException ex)
+        {
+            throw new CurnException("Section [" + sectionName +
+                                    "], parameter \"" + paramName +
+                                    "\": Error parsing value \"" + rawValue +
+                                    "\"",
+                                    ex);
+        }
     }
 }
