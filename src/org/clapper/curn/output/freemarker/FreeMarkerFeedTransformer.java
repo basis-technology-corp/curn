@@ -740,18 +740,6 @@ public class FreeMarkerFeedTransformer
 
         else
         {
-            // The configuration parser only breaks the line into tokens if
-            // there are quoted fields. So, it's possible for there to be
-            // one token (no quoted fields), two tokens (a single quoted
-            // field) or many tokens.
-
-            if (templateTokens.length == 1)
-            {
-                // Split it on white space.
-
-                templateTokens = templateTokens[0].split (" ");
-            }
-
             if ((templateTokens.length != 2) && (templateTokens.length != 3))
             {
                 throw new ConfigurationException
