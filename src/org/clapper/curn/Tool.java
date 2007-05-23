@@ -181,7 +181,7 @@ public class Tool
         {
             // Don't dump a stack trace.
 
-            err.println(ex.getMessage());
+            err.println(ex.getMessages(true));
         }
 
         catch (CommandLineException ex)
