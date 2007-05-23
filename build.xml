@@ -560,6 +560,7 @@ source and documentation packages.
              destdir="${javadocs.api.dir}"
              sourcepath="${src.top}"
              source="${javac.source}"
+             stylesheetfile="${src.top}/javadoc/stylesheet.css"
              breakiterator="true"
              author="true"
              version="true"
