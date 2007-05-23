@@ -26,14 +26,30 @@ Version 3.2 (...)
         ReplaceEmptySummaryWith: nothing
         ShowAuthors:    true
         AllowEmbeddedHTML: true
-        SaveAsRSS: rss1 ${curn:curnDir}/tst-rss1-dup.xml utf-8
+        SaveAsRSS: --type rss1 --encoding utf-8 ${curn:curnDir}/tst-rss1-dup.xml
 
    The plug-in can convert to RSS 1.0, RSS 2.0 or Atom format. The plug-in
    works on parsed feed data, which means that it only sees new items
    (because curn's parsing logic discards old items). Thus, if there's no
    new data, the plug-in isn't invoked, and it doesn't generate the output.
 
+   The plug-in can save backup copies of the generated RSS files (i.e.,
+   it can save versions of the generated RSS files from previous runs);
+   this is configured via a "--backup" option to the "SaveAsRSS" value.
+   
    See the "SaveAsRSS" parameter in the User's Guide for details.
+
+- Modified the per-feed "SaveAs" configuration parameter to use a command
+  line-style argument. The output encoding is now specified with a
+  "--encoding" option to the parameter's value. The parameter also supports
+  a new "--backup" option that can be used to save previously downloaded
+  raw feed data.
+
+  See the "SaveAs" parameter in the User's Guide for details.
+
+- Deprecated the per-feed "SaveOnly" configuration parmeater, in favor of
+  the new "--encoding" option to "SaveAs". "SaveOnly" will still be
+  honored, but its usage will generate a warning.
 
 - Added a new "IgnoreOldArticles" plug-in. This plug-in provides a way to
   ignore articles that are older than a certain interval. Intervals are

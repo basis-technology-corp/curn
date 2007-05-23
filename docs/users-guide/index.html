@@ -2592,7 +2592,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 
   <tr valign="top">
     <td align="left"><a name="Feed_SaveAs"></a><span class="code">SaveAs</span><br/><a href="#PlugIn_SaveAs" class="plug-in-flag">plug-in</a></td>
-    <td align="left">File name or path name</td>
+    <td align="left">[options] Path</td>
     <td align="left">If set, this parameter specifies the path to
       a file where <i>curn</i> should save the raw XML contents of
       the feed, whenever it downloads the feed. This can be useful
@@ -2602,6 +2602,31 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
       detailed discussion of this tactic.)
       <br><br>
+      This configuration item takes a command line-style value:
+     <blockquote><pre>SaveAs: [--backups <i>total_backups</i>] [--encoding <i>encoding</i>] <i>path</i></pre></blockquote>
+
+     or
+
+     <blockquote><pre>SaveAs: [-b <i>total_backups</i>] [-e <i>encoding</i>] <i>path</i></pre></blockquote>
+
+     The parameters have the following meanings:
+
+     <ul>
+       <li><i>total_backups</i> specifies how many backups (i.e., previous
+	   versions) of the generated RSS file to keep. For instance, a value
+	   of 5 means "keep 5 previous versions of the file, plus the one
+	   from the current run." This is the best way to keep RSS files from
+	   previous <i>curn</i> runs. The backup files have version numbers
+	   preceding their extensions. For instance, if the output file is
+	   <span class="filename">foo.xml</span>, and <i>total_backups</i> is
+	   2, <i>curn</i> will keep <span class="filename">foo.0.xml</span>
+	   and <span class="filename">foo.1.xml</span>. The file with the
+	   largest version number is the oldest one. If not specified, this
+	   parameter defaults to 0, which means "no backups".<br><br>
+       <li><i>encoding</i> is optional and specifies the desired encoding of the file. It defaults to "utf-8".<br><br>
+       <li><i>path</i> is the path to the file where the raw RSS data should be written.
+     </ul>
+
       Note: Often, <i>curn</i> can't tell whether there's any new data in a feed without downloading
       it. (This is true, for instance, if the remote HTTP server doesn't supply a valid
       <span class="code">Last-Modified</span> header, or if it doesn't honor the
@@ -2622,7 +2647,11 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       encoding to use when saving the feed to the file.
       If <span class="code">SaveAs</span> is not set for the feed,
       then any <span class="code">SaveAsEncoding</span> parameter is
-      ignored.
+      ignored.<br><br>
+      <b>WARNING:</b> This parameter is deprecated. Use the
+      <span class="code"><i>--encoding</i></span> option to the
+      <a href="#Feed_SaveAs" class="code">SaveAs</a>
+      parameter, instead.
     <td align="left">No</td>
     <td align="left">"utf-8". Note that this default value is the same
       as the default value of the
@@ -2646,7 +2675,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 
   <tr valign="top">
     <td align="left"><a name="Feed_SaveAsRSS"></a><span class="code">SaveAsRSS</span><br/><a href="#PlugIn_SaveAsRSS" class="plug-in-flag">plug-in</a></td>
-    <td align="left">String Path [String]</td>
+    <td align="left">[options] Path</td>
     <td align="left">If set, this parameter specifies that the feed should be rewritten in the specified
      RSS format and saved to the specified file. This configuration item takes a command line-style value:
      <blockquote><pre>SaveAsRSS: [--backups <i>total_backups</i>] [--type <i>rsstype</i>] [--encoding <i>encoding</i>] <i>path</i></pre></blockquote>
@@ -2655,8 +2684,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 
      <blockquote><pre>SaveAsRSS: [-b <i>total_backups</i>] [-t <i>rsstype</i>] [-e <i>encoding</i>] <i>path</i></pre></blockquote>
 
-     The options are, well, <i>optional</i>. The parameters have the following
-     meanings:
+     The parameters have the following meanings:
 
      <ul>
        <li><i>total_backups</i> specifies how many backups (i.e., previous
