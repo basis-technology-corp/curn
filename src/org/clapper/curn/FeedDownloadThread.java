@@ -252,7 +252,7 @@ class FeedDownloadThread implements Runnable
                      configuration.getConfigurationFileURL(),
                  },
                  ex);
-            log.error (ex.getMessage(), this.exception);
+            log.error (ex.getMessages(true), this.exception);
         }
 
         catch (CurnException ex)
@@ -267,7 +267,7 @@ class FeedDownloadThread implements Runnable
                      configuration.getConfigurationFileURL(),
                  },
                  ex);
-            log.error (ex.getMessage(), this.exception);
+            log.error (ex.getMessages(true), this.exception);
         }
     }
 
