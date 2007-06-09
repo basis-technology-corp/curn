@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>curn</name>
+            <properties>
+                <property-file>nbproject/private/bootclasspath.properties</property-file>
+                <!-- Fallback: -->
+                <property name="nbjdk.bootclasspath">${java.home}/../jre/lib/rt.jar</property>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
+                </source-folder>
+                <source-folder>
+                    <label>junit/src</label>
+                    <type>java</type>
+                    <location>junit/src</location>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <script>nbproject/nbjdk.xml</script>
+                    <target>build</target>
+                </action>
+                <action name="clean">
+                    <script>nbproject/nbjdk.xml</script>
+                    <target>clean</target>
+                </action>
+                <action name="javadoc">
+                    <script>nbproject/nbjdk.xml</script>
+                    <target>javadoc</target>
+                </action>
+                <action name="rebuild">
+                    <script>nbproject/nbjdk.xml</script>
+                    <target>clean</target>
+                    <target>build</target>
+                </action>
+                <action name="debug">
+                    <script>nbproject/nbjdk.xml</script>
+                    <target>debug-nb</target>
+                </action>
+            </ide-actions>
+            <export>
+                <type>folder</type>
+                <location>build/classes</location>
+                <script>nbproject/nbjdk.xml</script>
+                <build-target>build</build-target>
+            </export>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>src</label>
+                        <location>src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>junit/src</label>
+                        <location>junit/src</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="javadoc"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="debug"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
+            <compilation-unit>
+                <package-root>src</package-root>
+                <classpath mode="boot">${nbjdk.bootclasspath}</classpath>
+                <classpath mode="compile">../../../../java/classes/bsf.jar:../util/build/classes:../../../../java/freemarker/lib/freemarker.jar:../../../../java/classes/dom4j.jar:../../../../java/classes/informa.jar:../../../../java/classes/commons-logging.jar:../../../../java/classes/jdom.jar:../../../../java/classes/rome.jar:../../../../java/classes/activation.jar:../../../../java/classes/asm-2.2.3.jar:../../../../java/classes/asm-commons-2.2.3.jar:../../../../java/classes/asm-util-2.2.3.jar:../../../../java/classes/jdom.jar:../../../../java/classes/rome.jar:../../../../java/ant/lib/ant.jar:../../../../java/jdk/Classes/classes.jar:../../../../java/classes/mail.jar</classpath>
+                <built-to>build/classes</built-to>
+                <javadoc-built-to>build/javadocs</javadoc-built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>junit/src</package-root>
+                <unit-tests/>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>
