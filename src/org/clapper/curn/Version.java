@@ -283,13 +283,7 @@ public final class Version
         showVersion(out);
         out.println(getCopyright());
         out.println();
-        out.println("Build:          " + buildInfo.getBuildID());
-        out.println("Build date:     " + buildInfo.getBuildDate());
-        out.println("Built by:       " + buildInfo.getBuildUserID());
-        out.println("Built on:       " + buildInfo.getBuildOperatingSystem());
-        out.println("Build Java VM:  " + buildInfo.getBuildJavaVM());
-        out.println("Build compiler: " + buildInfo.getBuildJavaCompiler());
-        out.println("Ant version:    " + buildInfo.getBuildAntVersion());
+        buildInfo.showBuildInfo(out);
         out.flush();
     }
 
