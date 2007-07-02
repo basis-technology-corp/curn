@@ -1,1 +1,1 @@
-/usr/local/curn
+$APPLICATIONS_DEFAULT_ROOT/curn

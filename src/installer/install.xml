@@ -59,14 +59,23 @@
   </info>
 
   <guiprefs height="600" resizable="yes" width="800">
-   <laf name="looks">
-        <os family="windows"/>
-        <param name="variant" value="extwin"/>
+    <laf name="looks">
+      <os family="windows"/>
+      <param name="variant" value="extwin"/>
+    </laf>
+    <laf name="looks">
+      <os family="unix"/>
     </laf>
   </guiprefs>
 
   <locale>
     <langpack iso3="eng"/>
+    <langpack iso3="chn"/>
+    <langpack iso3="deu"/>
+    <langpack iso3="fra"/>
+    <langpack iso3="jpn"/>
+    <langpack iso3="spa"/>
+    <langpack iso3="rus"/>
   </locale>
 
   <resources>
@@ -78,10 +87,10 @@
         Default target installation directories are defined in the
         src/install/path_windows.txt and src/install/path_unix.txt files.
     -->
+
     <res id="TargetPanel.dir.windows" src="@SRC_INSTALL@/path_windows.txt"/>
     <res id="TargetPanel.dir.unix" src="@SRC_INSTALL@/path_unix.txt"/>
     <res id="TargetPanel.dir.macosx" src="@SRC_INSTALL@/path_darwin.txt"/>
-
     <res id="XInfoPanel.info" src="@SRC_INSTALL@/final_screen.txt"/>
     <res id="ProcessPanel.Spec.xml" src="@SRC_INSTALL@/cleanup.xml"/>
 

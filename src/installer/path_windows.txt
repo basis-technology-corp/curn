@@ -1,1 +1,1 @@
-C:\Program Files\ClapperOrg\curn
+$APPLICATIONS_DEFAULT_ROOT\ClapperOrg\curn
