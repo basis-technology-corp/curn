@@ -12,6 +12,13 @@ Version 3.2 (...)
 			       Enhancements
 			       ------------
 
+- Refinements to the installer to support non-English installations better.
+  For instance, the installer should now suggest the appropriate program
+  files directory on Windows (e.g., "C:\Programme" for a German
+  installation), instead of always using "C:\Program Files". Thanks to
+  Carsten Krüger (C.Krueger /at/ gmx /dot/ org) for pointing out the
+  problem and testing the fix.
+
 - Minor refinements to the use of concurrent download threads.
 
 - Added new ${escapeHTML} method to FreeMarker data model, allowing
