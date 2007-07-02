@@ -396,10 +396,11 @@ public abstract class FileOutputHandler implements OutputHandler
             // the file name and the extension, rather than at the end of
             // the file (since the extension is likely to matter).
 
-            w = CurnUtil.openOutputFile (outputFile,
+            w = new PrintWriter 
+                (CurnUtil.openOutputFile(outputFile,
                                          encoding,
                                          CurnUtil.IndexMarker.BEFORE_EXTENSION,
-                                         savedBackups);
+                                         savedBackups));
         }
 
         catch (IOExceptionExt ex)

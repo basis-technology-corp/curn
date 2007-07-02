@@ -147,7 +147,7 @@ class FeedDownloadThread implements Runnable
                         FeedCache               feedCache,
                         CurnConfig              configFile,
                         Queue<FeedInfo>         feedQueue,
-                        FeedDownloadDoneHandler feedDownloadDoneHandler)
+                        FeedDownloadDoneHandler feedDoneHandler)
     {
         this.id = String.valueOf(nextThreadID.getAndIncrement());
 
@@ -159,7 +159,7 @@ class FeedDownloadThread implements Runnable
         this.rssParser = parser;
         this.cache = feedCache;
         this.feedQueue = feedQueue;
-        this.feedDownloadDoneHandler = feedDownloadDoneHandler;
+        this.feedDownloadDoneHandler = feedDoneHandler;
 
         //setPriority (getPriority() + 1);
     }
@@ -217,8 +217,6 @@ class FeedDownloadThread implements Runnable
      * logs it regardless.)
      *
      * @param feed  The <tt>FeedInfo</tt> object for the feed to be processed
-     *
-     * @throws FeedException error processing feed
      *
      * @see #errorOccurred
      * @see #getException
@@ -338,7 +336,7 @@ class FeedDownloadThread implements Runnable
     {
         URL         feedURL = feedInfo.getURL();
         String      feedURLString = feedURL.toString();
-        RSSChannel  channel = null;
+        RSSChannel  resultChannel = null;
 
         try
         {
@@ -356,7 +354,7 @@ class FeedDownloadThread implements Runnable
 
             else
             {
-                channel = downloadAndProcessFeed (feedInfo, parser, conn);
+                resultChannel = downloadAndProcessFeed (feedInfo, parser, conn);
             }
         }
 
@@ -370,7 +368,7 @@ class FeedDownloadThread implements Runnable
             throw new FeedException (feedInfo, ex);
         }
 
-        return channel;
+        return resultChannel;
     }
 
     /**
@@ -394,7 +392,7 @@ class FeedDownloadThread implements Runnable
         throws FeedException,
                CurnException
     {
-        RSSChannel  channel = null;
+        RSSChannel  resultChannel = null;
         URL feedURL = feedInfo.getURL();
 
         try
@@ -449,25 +447,25 @@ class FeedDownloadThread implements Runnable
                                   " to parse \"" + feedURL + "\"");
 
                         InputStream is = new FileInputStream(tempFile.file);
-                        channel = parser.parseRSSFeed(feedURL,
+                        resultChannel = parser.parseRSSFeed(feedURL,
                                                       is,
                                                       tempFile.encoding);
                         is.close();
 
                         // Make sure the channel has a link.
 
-                        Collection<RSSLink> links = channel.getLinks();
+                        Collection<RSSLink> links = resultChannel.getLinks();
                         if ((links == null) || (links.size() == 0))
                         {
                             RSSLink link = new RSSLink(feedURL,
                                                        "text/xml",
                                                        RSSLink.Type.SELF);
-                            channel.setLinks(Collections.singleton(link));
+                            resultChannel.setLinks(Collections.singleton(link));
                         }
 
-                        processChannelItems(channel, feedInfo);
-                        if (channel.getItems().size() == 0)
-                            channel = null;
+                        processChannelItems(resultChannel, feedInfo);
+                        if (resultChannel.getItems().size() == 0)
+                            resultChannel = null;
                     }
                 }
 
@@ -494,8 +492,8 @@ class FeedDownloadThread implements Runnable
 
         log.debug ("downloadAndProcessFeed(): Feed=" +
                    feedInfo.getURL() + ", returning " +
-                   ((channel == null) ? "null" : channel.toString()));
-        return channel;
+                   ((resultChannel == null) ? "null" : resultChannel.toString()));
+        return resultChannel;
     }
 
     /**
@@ -506,6 +504,9 @@ class FeedDownloadThread implements Runnable
      *
      * @return the <tt>DownloadedTempFile</tt> object that captures the
      *         details about the downloaded file
+     *
+     * @throws IOException   I/O error
+     * @throws CurnException some other error
      */
     private DownloadedTempFile downloadFeed (final URLConnection conn,
                                              final FeedInfo      feedInfo)
@@ -620,8 +621,13 @@ class FeedDownloadThread implements Runnable
 
         for (int i = 0; i < fields.length; i++)
         {
-            if (fields[i].startsWith (HTTP_CONTENT_TYPE_CHARSET_FIELD) &&
-                (fields[i].length() > HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN))
+            // Compare in a case-insensitive fashion. Some servers (e.g.,
+            // versions of Microsoft's IIS) will specify "Charset=", not
+            // "charset=".
+
+            String s = fields[i].toLowerCase();
+            if (s.startsWith (HTTP_CONTENT_TYPE_CHARSET_FIELD) &&
+                (s.length() > HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN))
             {
                 // Strip any quotes from the beginning and end of the field.
                 // Some web servers tack them on, some don't. This isn't,
@@ -645,6 +651,8 @@ class FeedDownloadThread implements Runnable
      * @param conn the <tt>URLConnection</tt> to process
      *
      * @return the <tt>InputStream</tt>
+     *
+     * @throws IOException I/O error
      */
     private InputStream getURLInputStream (final URLConnection conn)
         throws IOException

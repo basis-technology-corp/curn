@@ -59,6 +59,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 
 import org.clapper.util.io.FileUtil;
 import org.clapper.util.io.IOExceptionExt;
@@ -311,15 +312,15 @@ public class CurnUtil
      *
      * @throws IOExceptionExt on error
      */
-    public static PrintWriter openOutputFile (final File        file,
-                                              final String      encoding,
-                                              final IndexMarker indexMarkerLoc,
-                                              final int         totalBackups)
+    public static Writer openOutputFile(final File        file,
+                                        final String      encoding,
+                                        final IndexMarker indexMarkerLoc,
+                                        final int         totalBackups)
         throws IOExceptionExt
     {
         try
         {
-            PrintWriter w;
+            Writer w;
 
             if (totalBackups != 0)
             {
@@ -338,9 +339,8 @@ public class CurnUtil
                            file.getPath() + "\"");
                 if (encoding != null)
                 {
-                    w = new PrintWriter
-                          (new OutputStreamWriter
-                             (new FileOutputStream (file), encoding));
+                    w = new OutputStreamWriter(new FileOutputStream (file), 
+                                               encoding);
                 }
 
                 else
