@@ -8,11 +8,11 @@ Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
 
 Version 3.2 (...)
 
-- Minor refinements to the use of concurrent download threads.
+			       ------------
+			       Enhancements
+			       ------------
 
-- Moved FreeMarker transformation logic to new FreeMarkerFeedTransformer
-  class, and modified FreeMarkerOutputHandler to use that class. The
-  new transformer class can now be used by plug-ins.
+- Minor refinements to the use of concurrent download threads.
 
 - Added new ${escapeHTML} method to FreeMarker data model, allowing
   FreeMarker templates to escape special HTML/XML characters such as "&".
@@ -38,18 +38,6 @@ Version 3.2 (...)
    this is configured via a "--backup" option to the "SaveAsRSS" value.
    
    See the "SaveAsRSS" parameter in the User's Guide for details.
-
-- Modified the per-feed "SaveAs" configuration parameter to use a command
-  line-style argument. The output encoding is now specified with a
-  "--encoding" option to the parameter's value. The parameter also supports
-  a new "--backup" option that can be used to save previously downloaded
-  raw feed data.
-
-  See the "SaveAs" parameter in the User's Guide for details.
-
-- Deprecated the per-feed "SaveOnly" configuration parmeater, in favor of
-  the new "--encoding" option to "SaveAs". "SaveOnly" will still be
-  honored, but its usage will generate a warning.
 
 - Added a new "IgnoreOldArticles" plug-in. This plug-in provides a way to
   ignore articles that are older than a certain interval. Intervals are
@@ -79,14 +67,53 @@ Version 3.2 (...)
 
   See the User's Guide for details.
 
-- Fixed a null pointer exception that could occur if all items in a channel
-  have been suppressed by a plug-in.
+				  -------
+				  Changes
+				  -------
+
+- Modified the per-feed "SaveAs" configuration parameter to use a command
+  line-style argument. The output encoding is now specified with a
+  "--encoding" option to the parameter's value. The parameter also supports
+  a new "--backup" option that can be used to save previously downloaded
+  raw feed data.
+
+  See the "SaveAs" parameter in the User's Guide for details.
+
+- Deprecated the per-feed "SaveOnly" configuration parmeater, in favor of
+  the new "--encoding" option to "SaveAs". "SaveOnly" will still be
+  honored, but its usage will generate a warning.
 
 - Updated bundled freemarker.jar from version 2.3.6 to version 2.3.10.
   See http://freemarker.org/
 
 - Updated bundled rome.jar from version 0.8 to version 0.9.
   See https://rome.dev.java.net/
+
+- Moved FreeMarker transformation logic to new FreeMarkerFeedTransformer
+  class, and modified FreeMarkerOutputHandler to use that class. The
+  new transformer class can now be used by plug-ins.
+
+				 ---------
+				 Bug Fixes
+				 ---------
+
+- Fixed a null pointer exception that could occur if all items in a channel
+  have been suppressed by a plug-in.
+
+- Fixed a bug in HTTP character set interpretation. Most HTTP servers that
+  specify a character do so with a Content-Type: header that looks like
+  this:
+
+	Content-Type: text/xml; charset=ISO-8859-1
+	Content-Type: text/xml; charset=UTF-8
+	etc.
+
+  However, some (e.g., Microsoft IIS/5.0) emit:
+
+	Content-Type: text/xml; Charset=ISO-8859-1
+
+  curn was only honoring lower-case in the "charset" field, leading it to
+  ignore advertised character sets.
 
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
