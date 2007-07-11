@@ -162,7 +162,6 @@ public class Curn
      * @param configURL   URL to the configuration data
      * @param useCache    whether or not to use the cache
      *
-     * @throws CurnUsageException user error (e.g., bad configuration)
      * @throws CurnException      some other error
      */
     public void run(final URL configURL, final boolean useCache)
@@ -234,7 +233,6 @@ public class Curn
      *
      * @param useCache whether or not to use the cache
      *
-     * @throws IOException             unable to open or read a required file
      * @throws ConfigurationException  error in configuration file
      * @throws RSSParserException      error parsing XML feed(s)
      * @throws CurnException           any other error
@@ -256,14 +254,6 @@ public class Curn
             metaPlugIn.initPlugIn();
             dataPersister.loadData(cache);
             metaPlugIn.runCacheLoadedPlugIn(cache);
-        }
-
-        if (config.isDownloadOnly())
-        {
-            // No output handlers. No need to instantiate a parser.
-
-            log.debug("Config is download-only. Skipping XML parse phase.");
-            parsingEnabled = false;
         }
 
         Collection<FeedInfo> feeds = config.getFeeds();

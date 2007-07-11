@@ -100,6 +100,15 @@ Version 3.2 (...)
   class, and modified FreeMarkerOutputHandler to use that class. The
   new transformer class can now be used by plug-ins.
 
+- Removed an optimization: Previously, if there were no configured output
+  handlers, curn would download the feed each feed only if "SaveAs" were
+  specified for the feed. Further, since there were no output handlers,
+  curn would not bother parsing the feed. With the introduction of
+  plug-ins, however, that behavior is broken. A plug-in that relies on
+  parsed data (such as the SaveAsRSS plug-in) should still work even if
+  there are no output handlers. So, curn now parses the downloaded RSS
+  feeds even if there are no output handlers configured.
+
 				 ---------
 				 Bug Fixes
 				 ---------

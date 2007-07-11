@@ -109,7 +109,6 @@ import org.clapper.util.text.TextUtil;
 public class RawFeedSaveAsPlugIn
     implements FeedConfigItemPlugIn,
                PostConfigPlugIn,
-               PreFeedDownloadPlugIn,
                PostFeedDownloadPlugIn
 {
     /*----------------------------------------------------------------------*\
@@ -326,62 +325,6 @@ public class RawFeedSaveAsPlugIn
                      });
             }
         }
-    }
-
-    /**
-     * <p>Called just before a feed is downloaded. This method can return
-     * <tt>false</tt> to signal <i>curn</i> that the feed should be
-     * skipped. The plug-in method can also set values on the
-     * <tt>URLConnection</tt> used to download the plug-in, via
-     * <tt>URL.setRequestProperty()</tt>. (Note that <i>all</i> URLs, even
-     * <tt>file:</tt> URLs, are passed into this method. Setting a request
-     * property on the <tt>URLConnection</tt> object for a <tt>file:</tt>
-     * URL will have no effect--though it isn't specifically harmful.)</p>
-     *
-     * <p>Possible uses for a pre-feed download plug-in include:</p>
-     *
-     * <ul>
-     *   <li>filtering on feed URL to prevent downloading non-matching feeds
-     *   <li>changing the default User-Agent value
-     *   <li>setting a non-standard HTTP header field
-     * </ul>
-     *
-     * @param feedInfo  the {@link FeedInfo} object for the feed to be
-     *                  downloaded
-     * @param urlConn   the <tt>java.net.URLConnection</tt> object that will
-     *                  be used to download the feed's XML.
-     *
-     * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed
-     *
-     * @throws CurnException on error
-     *
-     * @see FeedInfo
-     */
-    public boolean runPreFeedDownloadPlugIn (FeedInfo      feedInfo,
-                                             URLConnection urlConn)
-        throws CurnException
-    {
-        boolean processFeed = true;
-
-        // If this is a download-only configuration, and there's no
-        // save-as file, then we can skip this feed.
-
-        if (config.isDownloadOnly())
-        {
-            FeedSaveInfo saveInfo = perFeedSaveAsMap.get (feedInfo);
-
-            if ((saveInfo == null) || (saveInfo.saveAsFile == null))
-            {
-                log.debug ("Feed " +
-                           feedInfo.getURL().toString() +
-                           " has no SaveAs file, and this is a " +
-                           " download-only run. Skipping feed.");
-                processFeed = false;
-            }
-        }
-
-        return processFeed;
     }
 
     /**

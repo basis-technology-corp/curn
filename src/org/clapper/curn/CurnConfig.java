@@ -213,18 +213,6 @@ public class CurnConfig extends Configuration
     }
 
     /**
-     * Determine whether the configuration is a "download-only" configuration
-     * (i.e., one that downloads various RSS feed data but doesn't parse it.).
-     *
-     * @return <tt>true</tt> if this is a download-only configuration,
-     *         <tt>false</tt> otherwise
-     */
-    public boolean isDownloadOnly()
-    {
-        return outputHandlers.size() == 0;
-    }
-
-    /**
      * Return the total number of configured output handlers.
      *
      * @return the total number of configured output handlers, or 0 if there

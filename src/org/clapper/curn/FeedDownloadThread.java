@@ -448,8 +448,8 @@ class FeedDownloadThread implements Runnable
 
                         InputStream is = new FileInputStream(tempFile.file);
                         resultChannel = parser.parseRSSFeed(feedURL,
-                                                      is,
-                                                      tempFile.encoding);
+                                                            is,
+                                                            tempFile.encoding);
                         is.close();
 
                         // Make sure the channel has a link.
