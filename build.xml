@@ -142,6 +142,9 @@ source and documentation packages.
 
   <path id="installer.class.path">
     <path refid="project.class.path"/>
+    <fileset dir="${IzPack.home}/lib">
+      <include name="*.jar"/>
+    </fileset>
   </path>
 
   <!--
