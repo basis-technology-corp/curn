@@ -6,7 +6,7 @@ PREREQUISITES:
 
 Before building curn, you'll need:
 
-1. ant, version 1.5 or better, available at http://ant.apache.org/
+1. ant, version 1.6.5 or better, available at http://ant.apache.org/
 
 2. The clapper.org utility library, available at
    http://www.clapper.org/software/java/util/
@@ -28,6 +28,14 @@ Before building curn, you'll need:
 8. The izpack-compiler.jar file from the IzPack distribution
    (http://izforge.com/izpack/). This is only necessary if you're going to
    build the graphical installer.
+
+9. The ant-contrib jar file (not supplied). Logic in the Ant build file
+   relies on the <outofdate> task from ant-contrib. See
+   http://ant-contrib.sourceforge.net"
+
+Many of the jar files are in the "lib" directory created by the curn
+installer. However, jars that are only used at compile time (e.g.,
+ant-contrib) are not installed with curn and must be downloaded separately.
 
 
 PREPARATION:

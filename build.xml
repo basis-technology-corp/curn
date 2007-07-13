@@ -121,6 +121,8 @@ source and documentation packages.
   ***************************************************************************
   -->
   <property name="third.party.jar.dir" value="${top.dir}/lib"/>
+  <property name="third.party.compile-only.jar.dir"
+            location="${third.party.jar.dir}/compile-only"/>
 
   <condition property="ocutil.dir"
              value="${env.OCUTIL_DIR}"
@@ -146,6 +148,25 @@ source and documentation packages.
       <include name="*.jar"/>
     </fileset>
   </path>
+
+  <!--
+  ***************************************************************************
+                            Macros and Taskdefs
+  ***************************************************************************
+  -->
+
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="${third.party.compile-only.jar.dir}/ant-contrib-1.0b3.jar"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef name="make_build_info"
+           classname="org.clapper.util.ant.MakeBuildInfoTask"
+           classpathref="project.class.path"/>
+
+  <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"
+           classpathref="installer.class.path"/>
 
   <!--
   ***************************************************************************
@@ -532,10 +553,6 @@ source and documentation packages.
 
   <target name="-build.info" depends="-get.version">
 
-    <taskdef name="make_build_info"
-             classname="org.clapper.util.ant.MakeBuildInfoTask"
-             classpathref="project.class.path"/>
-
     <condition property="compiler" value="${build.compiler}">
       <isset property="build.compiler"/>
     </condition>
@@ -558,25 +575,48 @@ source and documentation packages.
   -->
 
   <target name="javadocs" description="Generate API Javadocs">
-    <mkdir dir="${javadocs.api.dir}"/>
-    <javadoc
-             destdir="${javadocs.api.dir}"
-             sourcepath="${src.top}"
-             source="${javac.source}"
-             stylesheetfile="${src.top}/javadoc/stylesheet.css"
-             breakiterator="true"
-             author="true"
-             version="true"
-             splitindex="true"
-             use="true"
-             excludepackagenames=""
-             overview="overview.html"
-             packagenames="org.clapper.curn.*"
-             classpathref="project.class.path"
-             windowtitle="clapper.org curn utility">
-      <doctitle><![CDATA[<h1><i>curn</i>: Customizable Utilitarian RSS Notifier</h1>]]></doctitle>
-      <bottom><![CDATA[<i>Copyright &#169; 2004-2007 Brian M. Clapper. All Rights Reserved.</i>]]></bottom>
-    </javadoc>
+
+    <!--
+        <outofdate> comes from ant-contrib. It fires the <sequential> block
+        if any of the target files is older than any of the sourcefiles.
+
+        In this case, if the javadoc-generated "index.html" file is older
+        than any of the source code or the javadoc stylesheet, we rebuild
+        the javadocs.
+    -->
+    <outofdate>
+      <sourcefiles>
+        <fileset dir="${src.dir}">
+          <include name="**/*.java"/>
+        </fileset>
+        <fileset dir="${src.top}/javadoc">
+          <include name="stylesheet.css"/>
+        </fileset>
+      </sourcefiles>
+
+      <targetfiles path="${javadocs.api.dir}/index.html"/>
+
+      <sequential>
+        <mkdir dir="${javadocs.api.dir}"/>
+        <javadoc destdir="${javadocs.api.dir}"
+                 sourcepath="${src.top}"
+                 source="${javac.source}"
+                 stylesheetfile="${src.top}/javadoc/stylesheet.css"
+                 breakiterator="true"
+                 author="true"
+                 version="true"
+                 splitindex="true"
+                 use="true"
+                 excludepackagenames=""
+                 overview="overview.html"
+                 packagenames="org.clapper.curn.*"
+                 classpathref="project.class.path"
+                 windowtitle="clapper.org curn utility">
+          <doctitle><![CDATA[<h1><i>curn</i>: Customizable Utilitarian RSS Notifier</h1>]]></doctitle>
+          <bottom><![CDATA[<i>Copyright &#169; 2004-2007 Brian M. Clapper. All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+      </sequential>
+    </outofdate>
   </target>
 
   <target name="javadoc" depends="javadocs"/>
@@ -668,8 +708,9 @@ source and documentation packages.
     <mkdir dir="${release.dir}"/>
     <zip destfile="${release.dir}/${versioned_src_zipfile}">
       <!--
-          WARNING: This file set is essentially duplicated in the installer's
-          config file, below. There's no way around that, unfortunately.
+          WARNING: This file set is essentially duplicated in the
+          installer's config file. There's no way around that,
+          unfortunately.
       -->
       <zipfileset id="source.fileset" dir="."
                   prefix="${zip.dir.prefix}" casesensitive="yes">
@@ -717,11 +758,6 @@ source and documentation packages.
   <property name="src.install" value="${src.top}/installer"/>
 
   <target name="-installer.prep">
-
-    <!-- Define the IzPack task -->
-
-    <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"
-             classpathref="installer.class.path"/>
 
     <!-- Create a temporary installation directory -->
 
