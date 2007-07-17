@@ -65,6 +65,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 /**
  * This class implements the <tt>RSSChannel</tt> interface and defines an
@@ -384,7 +385,7 @@ public class RSSChannelAdapter extends RSSChannel
     /**
      * Get the channel's author list.
      *
-     * @return the authors, or null (or an empty <tt>Collection</tt>) if
+     * @return the authors, or an empty <tt>Collection</tt> if
      *         not available
      *
      * @see #addAuthor
@@ -392,12 +393,35 @@ public class RSSChannelAdapter extends RSSChannel
      */
     public Collection<String> getAuthors()
     {
-        // ROME supports only one author per feed.
+        // Some feeds support multiple authors, and some support a single
+        // author. If a feed type supports multiple authors, then ROME
+        // appears to set the SyndFeed.authors field. If a feed type
+        // supports a single author, then ROME appears to set the
+        // SyndFeed.author field. (In other words, it doesn't behave
+        // like this interface does, where a single author is mapped into
+        // a collection of one.)
 
         Collection<String> result = null;
         String author = syndFeed.getAuthor();
-        if (author != null)
+        Collection authors = syndFeed.getAuthors();
+
+        if (authors != null)
+        {
+            result = new TreeSet<String>();
+            for (Object oAuthor : authors)
+                result.add((String) oAuthor);
+        }
+
+        else if (author != null)
+        {
             result = Collections.singleton(syndFeed.getAuthor());
+        }
+
+        else
+        {
+            result = Collections.emptyList();
+        }
+
         return result;
     }
 

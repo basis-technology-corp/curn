@@ -132,6 +132,19 @@ Version 3.2 (...)
   curn was only honoring lower-case in the "charset" field, leading it to
   ignore advertised character sets.
 
+- Fixed a ROME parser usage error. curn was assuming that ROME would set
+  the "authors" field in its SyndFeed and SyndEntry classes, even for feed
+  types (like RSS 2.0) that only support a single author. However, ROME
+  appears to keep two separate fields:
+
+  * an "authors" field for feeds (like Atom) that support multiple authors
+    per item
+  * an "author" field for feeds (like RSS 2.0) that support only one author
+    per item
+
+  curn only ever looked at the "authors" field, so it wasn't propagated
+  the author for RSS 2.0 fields. This bug is now fixed.
+
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
 

@@ -211,7 +211,7 @@ public class RSSItemAdapter extends RSSItem
         catch (MalformedURLException ex)
         {
             log.error("Feed \"" + channel.getURL().toString() + "\": " +
-                      "Bad item URL from underlying parser: \"" + 
+                      "Bad item URL from underlying parser: \"" +
                       entry.getLink() + "\" (" + ex.toString() + ")");
         }
 
@@ -297,24 +297,41 @@ public class RSSItemAdapter extends RSSItem
      */
     public Collection<String> getAuthors()
     {
-        Set<String> result = null;
+        Collection<String> result = null;
+
+        // Some feed typess support multiple authors, and some support a 
+        // single author. If a feed type supports multiple authors, then ROME
+        // appears to set the SyndEntry.authors field. If a feed type
+        // supports a single author, then ROME appears to set the
+        // SyndEntry.author field. (In other words, it doesn't behave
+        // like this interface does, where a single author is mapped into
+        // a collection of one.)
+
         List authors = entry.getAuthors();
         List contributors = entry.getContributors();
+        String author = entry.getAuthor();
+
+        if (authors == null)
+        {
+            if (author != null)
+                authors = Collections.singletonList(author);
+        }
+
         if ((authors != null) || (contributors != null))
             result = new TreeSet<String>();
 
         if (authors != null)
         {
-            for (Object author : authors)
+            for (Object oAuthor : authors)
             {
-                if (author != null)
+                if (oAuthor != null)
                 {
                     String name;
 
-                    if (author instanceof SyndPerson)
-                        name = ((SyndPerson) author).getName();
+                    if (oAuthor instanceof SyndPerson)
+                        name = ((SyndPerson) oAuthor).getName();
                     else
-                        name = author.toString();
+                        name = oAuthor.toString();
 
                     if ((name != null) && (! TextUtil.stringIsEmpty(name)))
                         result.add(name.trim());
