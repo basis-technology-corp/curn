@@ -53,12 +53,12 @@ import org.clapper.curn.parser.RSSParserException;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.FeedException;
-
-import org.xml.sax.InputSource;
+import com.sun.syndication.io.XmlReader;
 
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 import java.net.URL;
 
@@ -119,15 +119,25 @@ public class RSSParserAdapter implements RSSParser
     {
         try
         {
-            InputStreamReader r;
+            Reader r;
 
             if (encoding == null)
-                r = new InputStreamReader(stream);
+            {
+                // Let ROME figure it out. Its XmlReader seems to do a good
+                // job.
+
+                r = new XmlReader(stream);
+            }
+
             else
+            {
+                // Force the encoding.
+
                 r = new InputStreamReader(stream, encoding);
+            }
 
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed      feed  = input.build(new InputSource(r));
+            SyndFeed      feed  = input.build(r);
             feed.setUri(url.toString());
 
             return new RSSChannelAdapter(feed);
