@@ -56,6 +56,7 @@ import org.clapper.util.logging.Logger;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.feed.synd.SyndPerson;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -66,6 +67,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
+import org.clapper.util.text.TextUtil;
 
 /**
  * This class implements the <tt>RSSChannel</tt> interface and defines an
@@ -408,13 +410,23 @@ public class RSSChannelAdapter extends RSSChannel
         if (authors != null)
         {
             result = new TreeSet<String>();
+            String name;
+
             for (Object oAuthor : authors)
-                result.add((String) oAuthor);
+            {
+                if (oAuthor instanceof SyndPerson)
+                    name = ((SyndPerson) oAuthor).getName();
+                else
+                    name = oAuthor.toString();
+
+                if ((name != null) && (! TextUtil.stringIsEmpty(name)))
+                    result.add(name.trim());
+            }
         }
 
         else if (author != null)
         {
-            result = Collections.singleton(syndFeed.getAuthor());
+            result = Collections.singleton(author);
         }
 
         else

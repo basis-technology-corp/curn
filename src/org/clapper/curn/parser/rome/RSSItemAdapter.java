@@ -60,6 +60,7 @@ import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
+import com.sun.syndication.feed.synd.SyndPersonImpl;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -70,7 +71,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import org.clapper.util.text.TextUtil;
 
@@ -364,20 +364,49 @@ public class RSSItemAdapter extends RSSItem
     /**
      * Add to the item's author list.
      *
-     * @param author  another author string to add
+     * @param newAuthor  another author string to add
      *
      * @see #getAuthors
      * @see #clearAuthors
      */
-    public void addAuthor (String author)
+    @SuppressWarnings("unchecked")
+    public void addAuthor (String newAuthor)
     {
-        Collection<String> authors = getAuthors();
-        List<String> newAuthors = new ArrayList<String>();
+        List authors = entry.getAuthors();
+        String existingAuthor = entry.getAuthor();
+        
         if (authors != null)
-            newAuthors.addAll(authors);
-
-        newAuthors.add(author);
-        entry.setAuthors(newAuthors);
+        {
+            // Assume it's a feed type that supports multiple authors.
+            // ROME wants these to be SyndPersonImpl objects.
+            
+            SyndPerson person = new SyndPersonImpl();
+            person.setName(newAuthor);
+            authors.add(person);
+            entry.setAuthors(authors);
+        }
+        
+        else if (existingAuthor == null)
+        {
+            // Assume, for now, that the feed supports just one author.
+            
+            entry.setAuthor(newAuthor);
+        }
+        
+        else
+        {
+            // Move from one author to two.
+            
+            authors = new ArrayList();
+            SyndPerson person = new SyndPersonImpl();
+            person.setName(existingAuthor);
+            authors.add(person);
+            person = new SyndPersonImpl();
+            person.setName(newAuthor);
+            authors.add(person);
+            entry.setAuthor(null);
+            entry.setAuthors(authors);
+        }
     }
 
     /**
@@ -454,6 +483,8 @@ public class RSSItemAdapter extends RSSItem
 
     /**
      * Set the item's publication date.
+     *
+     * @param date  the new pub date
      *
      * @see #getPublicationDate
      */
