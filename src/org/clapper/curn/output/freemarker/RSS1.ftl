@@ -94,6 +94,8 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     <link>${item.url}</link>
     <#if item.date?exists>
     <dc:date>${item.date?string("yyyy-MM-dd'T'HH:mm:ssZ")}</dc:date>
+    <#else>
+    <dc:date>${dateGenerated?string("yyyy-MM-dd'T'HH:mm:ssZ")}</dc:date>
     </#if>
     <description>${escapeHTML(item.description)}</description>
     <dc:creator>${escapeHTML(item.author)}</dc:creator>

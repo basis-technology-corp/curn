@@ -86,6 +86,8 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     <id>${escapeHTML(item.id)}</id>
     <#if item.date?exists>
     <updated>${item.date?string("yyyy-MM-dd'T'HH:mm:ssZ")}</updated>
+    <#else>
+    <updated>${dateGenerated?string("yyyy-MM-dd'T'HH:mm:ssZ")}</updated>
     </#if>
     <summary>${escapeHTML(item.description)}</summary>
     <#list item.authors as author>

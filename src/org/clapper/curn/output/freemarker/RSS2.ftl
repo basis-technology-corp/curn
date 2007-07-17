@@ -80,6 +80,8 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
       <link>${escapeHTML(item.url)}</link>
       <#if item.date?exists>
       <pubDate>${item.date?string("EEE, dd MMM yyyy HH:mm:ss zzz")}</pubDate>
+      <#else>
+      <pubDate>${dateGenerated?string("EEE, dd MMM yyyy HH:mm:ss zzz")}</pubDate>
       </#if>
       <guid>${item.id}</guid>
       <description>${escapeHTML(item.description)}</description>
