@@ -74,6 +74,8 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     <dc:creator>${channel.author}</dc:creator>
     <#if channel.date?exists>
     <dc:date>${channel.date?string("yyyy-MM-dd'T'HH:mm:ssZ")}</dc:date>
+    <#else>
+    <dc:date>${dateGenerated?string("yyyy-MM-dd'T'HH:mm:ssZ")}</dc:date>
     </#if>
     <admin:generatorAgent rdf:resource="http://www.clapper.org/software/java/curn/"/>
 

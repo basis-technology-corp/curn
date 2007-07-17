@@ -66,9 +66,11 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title>${escapeHTML(title)}</title>
-  <link href="${channel.url}"/>
+  <link href="${escapeHTML(channel.url)}"/>
   <#if channel.date?exists>
   <updated>${channel.date?string("yyyy-MM-dd'T'HH:mm:ssZ")}</updated>
+  <#else>
+  <updated>${dateGenerated?string("yyyy-MM-dd'T'HH:mm:ssZ")}</updated>
   </#if>
   <#list channel.authors as author>
   <author>
@@ -80,8 +82,8 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
   <#list channel.items as item>
   <entry>
     <title>${escapeHTML(item.title)}</title>
-    <link href="${item.url}"/>
-    <id>${item.id}</id>
+    <link href="${escapeHTML(item.url)}"/>
+    <id>${escapeHTML(item.id)}</id>
     <#if item.date?exists>
     <updated>${item.date?string("yyyy-MM-dd'T'HH:mm:ssZ")}</updated>
     </#if>

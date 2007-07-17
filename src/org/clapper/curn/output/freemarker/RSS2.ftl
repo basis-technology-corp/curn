@@ -69,13 +69,15 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     <description>${escapeHTML(channel.description)}</description>
     <#if channel.date?exists>
     <pubDate>${channel.date?string("EEE, dd MMM yyyy HH:mm:ss zzz")}</pubDate>
+    <#else>
+    <pubDate>${dateGenerated?string("EEE, dd MMM yyyy HH:mm:ss zzz")}</pubDate>
     </#if>
     <generator>curn, ${curn.version}</generator>
 
     <#list channel.items as item>
     <item>
       <title>${escapeHTML(item.title)}</title>
-      <link>${item.url}</link>
+      <link>${escapeHTML(item.url)}</link>
       <#if item.date?exists>
       <pubDate>${item.date?string("EEE, dd MMM yyyy HH:mm:ss zzz")}</pubDate>
       </#if>
