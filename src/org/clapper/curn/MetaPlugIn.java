@@ -354,7 +354,11 @@ public class MetaPlugIn
                                                        config,
                                                        feedInfo);
             if (! keepGoing)
+            {
+                log.info("Plug-in " + plugIn.getPlugInName() +
+                         " has aborted processing of feed " + sectionName);
                 break;
+            }
         }
 
         return keepGoing;
