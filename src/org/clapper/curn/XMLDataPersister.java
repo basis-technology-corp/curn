@@ -23,7 +23,6 @@ import org.clapper.util.logging.Logger;
 import org.clapper.util.text.TextUtil;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -131,7 +130,7 @@ public class XMLDataPersister extends DataPersister
             }
 
             totalCacheBackups =
-                curnConfig.getOptionalCardinalValue(curnConfig.MAIN_SECTION,
+                curnConfig.getOptionalCardinalValue(CurnConfig.MAIN_SECTION,
                                                     VAR_TOTAL_CACHE_BACKUPS,
                                                     DEF_TOTAL_CACHE_BACKUPS);
         }
@@ -348,13 +347,9 @@ public class XMLDataPersister extends DataPersister
                 document = builder.build(metadataFile);
             }
 
-            catch (JDOMException ex)
+            catch (Throwable ex)
             {
-                throw new CurnException(ex);
-            }
-
-            catch (IOException ex)
-            {
+                log.error(ex);
                 throw new CurnException(ex);
             }
 
@@ -620,9 +615,6 @@ public class XMLDataPersister extends DataPersister
      *
      * @param document the parsed XML file
      * @param loadedDataHandler the callback to invoke with loaded data
-     *
-     * @return a deserialized map of FeedCacheEntry objects, indexed by unique
-     *         ID; or null.
      *
      * @throws CurnException on error
      */
