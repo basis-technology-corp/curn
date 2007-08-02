@@ -379,7 +379,7 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         public String getVersion()
         {
-            return Version.getFullVersion();
+            return Version.getInstance().getFullVersion();
         }
     }
 

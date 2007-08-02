@@ -46,7 +46,6 @@
 
 package org.clapper.curn.plugins;
 
-import org.clapper.curn.AbstractPersistentDataClient;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
@@ -64,7 +63,6 @@ import java.net.URLConnection;
 
 import java.util.Map;
 import java.util.HashMap;
-import org.clapper.curn.FeedCacheEntry;
 
 /**
  * The <tt>UserAgentPlugIn</tt> handles setting the global and per-feed
@@ -289,11 +287,12 @@ public class UserAgentPlugIn
             //
             // e.g.: Googlebot/2.1 (+http://www.google.com/bot.htm
 
-            buf.append (Version.getUtilityName());
+            Version version = Version.getInstance();
+            buf.append (version.getApplicationName());
             buf.append ('/');
-            buf.append (Version.getVersionNumber());
+            buf.append (version.getVersion());
             buf.append (" (+");
-            buf.append (Version.getWebSite());
+            buf.append (version.getWebSite());
             buf.append (')');
             defaultUserAgent = buf.toString();
         }

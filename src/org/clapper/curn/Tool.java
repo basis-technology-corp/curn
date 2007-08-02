@@ -263,6 +263,7 @@ public class Tool
      * @throws NoSuchElementException     overran the iterator (i.e., missing
      *                                    parameter)
      */
+    @Override
     protected void parseCustomOption(final char             shortOption,
                                      final String           longOption,
                                      final Iterator<String> it)
@@ -368,6 +369,7 @@ public class Tool
      *                                    safe for subclass implementations of
      *                                    this method not to handle it
      */
+    @Override
     protected void processPostOptionCommandLine(final Iterator<String> it)
         throws CommandLineUsageException,
                NoSuchElementException
@@ -406,6 +408,7 @@ public class Tool
      *
      * @param info   The <tt>UsageInfo</tt> object to fill.
      */
+    @Override
     protected void getCustomUsageInfo(final UsageInfo info)
     {
         info.setCommandName("curn");
@@ -516,13 +519,13 @@ public class Tool
             if (optShowBuildInfo)
             {
                 abort = true;
-                Version.showBuildInfo();
+                Version.getInstance().showBuildInfo();
             }
 
             else if (optShowVersion)
             {
                 abort = true;
-                Version.showVersion();
+                Version.getInstance().showVersion();
             }
 
             if (optShowPlugIns)

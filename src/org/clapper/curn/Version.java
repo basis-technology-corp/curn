@@ -52,6 +52,7 @@ import java.util.Locale;
 
 import org.clapper.util.misc.BuildInfo;
 import org.clapper.util.misc.BundleUtil;
+import org.clapper.util.misc.VersionBase;
 
 /**
  * <p>Contains the software version for the <i>org.clapper.util</i>
@@ -62,7 +63,7 @@ import org.clapper.util.misc.BundleUtil;
  *
  * @author Copyright &copy; 2004-2007 Brian M. Clapper
  */
-public final class Version
+public final class Version extends VersionBase
 {
     /*----------------------------------------------------------------------*\
                              Public Constants
@@ -99,25 +100,13 @@ public final class Version
     \*----------------------------------------------------------------------*/
 
     /**
-     * Get just the version number string.
+     * Get an instance of this class.
      *
-     * @return the version number string
-     *
-     * @see #getFullVersion
+     * @return a singleton instance of this class.
      */
-    public static String getVersionNumber()
+    public static Version getInstance()
     {
-        return BundleUtil.getString (VERSION_BUNDLE_NAME, "curn.version", "?");
-    }
-
-    /**
-     * Get <i>curn</i>'s official name, for display purposes.
-     *
-     * @return the official name
-     */
-    public static String getUtilityName()
-    {
-        return BundleUtil.getString (VERSION_BUNDLE_NAME, "curn.name", "curn");
+        return new Version();
     }
 
     /**
@@ -125,21 +114,9 @@ public final class Version
      *
      * @return the web site string
      */
-    public static String getWebSite()
+    public String getWebSite()
     {
-        return BundleUtil.getString (VERSION_BUNDLE_NAME, "curn.website", "?");
-    }
-
-    /**
-     * Get the copyright.
-     *
-     * @return the copyright string
-     */
-    public static String getCopyright()
-    {
-        return BundleUtil.getString (VERSION_BUNDLE_NAME,
-                                     "curn.copyright",
-                                     "?");
+        return BundleUtil.getString(VERSION_BUNDLE_NAME, "curn.website", "?");
     }
 
     /**
@@ -156,21 +133,20 @@ public final class Version
      * @see #showVersion(PrintStream)
      * @see #getVersionNumber
      */
-    public static String getFullVersion (final Locale locale)
+    public String getFullVersion (final Locale locale)
     {
-        String    name = getUtilityName();
-        String    version = getVersionNumber();
-        BuildInfo buildInfo = getBuildInfo();
+        String    name = getApplicationName();
+        String    version = getVersion();
 
-        return BundleUtil.getMessage (VERSION_BUNDLE_NAME, locale,
-                                      "curn.fullVersion",
-                                      "{0}, version {1} (build ID {2})",
-                                      new Object[]
-                                      {
-                                          name,
-                                          version,
-                                          buildInfo.getBuildID()
-                                      });
+        return BundleUtil.getMessage(VERSION_BUNDLE_NAME, locale,
+                                     "curn.fullVersion",
+                                     "{0}, version {1} (build ID {2})",
+                                     new Object[]
+                                     {
+                                         name,
+                                         version,
+                                         getBuildInfo().getBuildID()
+                                     });
     }
 
     /**
@@ -186,9 +162,9 @@ public final class Version
      * @see #showVersion(PrintStream)
      * @see #getVersionNumber
      */
-    public static String getFullVersion()
+    public String getFullVersion()
     {
-        return getFullVersion (null);
+        return getFullVersion(null);
     }
 
     /**
@@ -199,7 +175,7 @@ public final class Version
      *
      * @see #getBuildInfo
      */
-    public static String getBuildID()
+    public String getBuildID()
     {
         return getBuildInfo().getBuildID();
     }
@@ -210,9 +186,9 @@ public final class Version
      * @see #showVersion(PrintWriter)
      * @see #showVersion(PrintStream)
      */
-    public static void showVersion()
+    public void showVersion()
     {
-        showVersion (System.out);
+        showVersion(System.out);
     }
 
     /**
@@ -223,9 +199,9 @@ public final class Version
      * @see #showVersion()
      * @see #showVersion(PrintStream)
      */
-    public static void showVersion (final PrintWriter out)
+    public void showVersion(final PrintWriter out)
     {
-        out.println (getFullVersion (null));
+        out.println(getFullVersion(null));
     }
 
     /**
@@ -236,9 +212,9 @@ public final class Version
      * @see #showVersion()
      * @see #showVersion(PrintWriter)
      */
-    public static void showVersion (final PrintStream out)
+    public void showVersion (final PrintStream out)
     {
-        out.println (getFullVersion (null));
+        out.println(getFullVersion(null));
     }
 
     /**
@@ -248,9 +224,9 @@ public final class Version
      * @see #showBuildInfo(PrintStream)
      * @see #getBuildInfo
      */
-    public static void showBuildInfo()
+    public void showBuildInfo()
     {
-        showBuildInfo (System.out);
+        showBuildInfo(System.out);
     }
 
     /**
@@ -262,9 +238,9 @@ public final class Version
      * @see #showBuildInfo(PrintWriter)
      * @see #getBuildInfo
      */
-    public static void showBuildInfo (final PrintStream out)
+    public void showBuildInfo(final PrintStream out)
     {
-        showBuildInfo (new PrintWriter (out));
+        showBuildInfo(new PrintWriter(out));
     }
 
     /**
@@ -276,14 +252,12 @@ public final class Version
      * @see #showBuildInfo(PrintStream)
      * @see #getBuildInfo
      */
-    public static void showBuildInfo (final PrintWriter out)
+    public void showBuildInfo(final PrintWriter out)
     {
-        BuildInfo buildInfo = getBuildInfo();
-
         showVersion(out);
         out.println(getCopyright());
         out.println();
-        buildInfo.showBuildInfo(out);
+        getBuildInfo().showBuildInfo(out);
         out.flush();
     }
 
@@ -309,7 +283,62 @@ public final class Version
     }
 
     /*----------------------------------------------------------------------*\
-                              Private Methods
+                             Protected Methods
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Get the class name of the version resource bundle, which contains
+     * values for the product version, copyright, etc.
+     *
+     * @return the name of the version resource bundle
+     */
+    protected String getVersionBundleName()
+    {
+        return VERSION_BUNDLE_NAME;
+    }
+
+    /**
+     * Get the class name of the build info resource bundle, which contains
+     * data about when the product was built, generated (presumably)
+     * during the build by
+     * {@link BuildInfo#makeBuildInfoBundle BuildInfo.makeBuildInfoBundle()}.
+     *
+     * @return the name of the build info resource bundle
+     */
+    protected String getBuildInfoBundleName()
+    {
+        return BUILD_INFO_BUNDLE_NAME;
+    }
+
+    /**
+     * Get the key for the version string. This key is presumed to be
+     * in the version resource bundle.
+     *
+     * @return the version string key
+     */
+    protected String getVersionKey()
+    {
+        return "curn.version";
+    }
+
+    /**
+     * Get the key for the copyright string. This key is presumed to be
+     * in the version resource bundle.
+     *
+     * @return the copyright string key
+     */
+    protected String getCopyrightKey()
+    {
+        return "curn.copyright";
+    }
+
+    /**
+     * Get the key for the name of the utility or application.
+     *
+     * @return the key
+     */
+    protected String getApplicationNameKey()
+    {
+        return "curn.name";
+    }
 }

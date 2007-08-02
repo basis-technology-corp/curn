@@ -395,7 +395,8 @@ public class EmailOutputPlugIn
                     }
                 }
 
-                message.addHeader ("X-Mailer", Version.getFullVersion());
+                message.addHeader ("X-Mailer", 
+                                   Version.getInstance().getFullVersion());
                 message.setSubject (emailSubject);
 
                 if (emailSender != null)

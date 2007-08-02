@@ -550,7 +550,7 @@ public class Curn
      */
     private void logEnvironmentInfo()
     {
-        log.info(Version.getFullVersion());
+        log.info(Version.getInstance().getFullVersion());
 
         Properties properties = System.getProperties();
         TreeSet<String> sortedNames = new TreeSet<String>();
@@ -561,7 +561,7 @@ public class Curn
         }
 
         log.info("Using org.clapper.util library version: " +
-                 org.clapper.util.misc.Version.getVersion());
+                 org.clapper.util.misc.Version.getInstance().getVersion());
         log.info("--- Start of Java properties");
         for (String name : sortedNames)
             log.info(name + "=" + properties.getProperty(name));

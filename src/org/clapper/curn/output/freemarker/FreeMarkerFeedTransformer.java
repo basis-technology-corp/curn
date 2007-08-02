@@ -316,8 +316,9 @@ public class FreeMarkerFeedTransformer
 
         map = new SimpleHash();
         freemarkerDataModel.put("curn", map);
-        map.put("version", Version.getVersionNumber());
-        map.put("buildID", Version.getBuildID());
+        Version version = Version.getInstance();
+        map.put("version", version.getVersion());
+        map.put("buildID", version.getBuildID());
         if (showToolInfo)
             map.put("showToolInfo", true);
         else
