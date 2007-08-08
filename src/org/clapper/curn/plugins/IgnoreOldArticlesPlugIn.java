@@ -63,7 +63,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.clapper.util.misc.Duration;
+import org.clapper.util.text.Duration;
 
 /**
  * The <tt>IgnoreOldArticlesPlugIn</tt> provides a way to ignore articles that

@@ -63,6 +63,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import org.clapper.curn.parser.RSSContent;
 
 /**
  * This class implements the <tt>RSSItem</tt> interface and defines an
@@ -103,7 +104,7 @@ public class RSSItemAdapter extends RSSItem
      * @param itemIF        the <tt>ItemIF</tt> object
      * @param parentChannel parent <tt>RSSChannel</tt>
      */
-    RSSItemAdapter (ItemIF itemIF, RSSChannel parentChannel)
+    RSSItemAdapter(ItemIF itemIF, RSSChannel parentChannel)
     {
         super();
 
@@ -123,7 +124,7 @@ public class RSSItemAdapter extends RSSItem
      *
      * @return the new instance
      */
-    public RSSItem newInstance (RSSChannel channel)
+    public RSSItem newInstance(RSSChannel channel)
     {
         ItemIF newItem = new Item();
         newItem.setChannel (((RSSChannelAdapter) channel).getChannelIF());
@@ -137,7 +138,7 @@ public class RSSItemAdapter extends RSSItem
      */
     public RSSChannel getParentChannel()
     {
-        return this.channel;        
+        return this.channel;
     }
 
     /**
@@ -195,7 +196,7 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getLinks
      */
-    public void setLinks (Collection<RSSLink> links)
+    public void setLinks(Collection<RSSLink> links)
     {
         // Since Informa doesn't support multiple links per item, we have
         // to assume that the first link is the link for the item.
@@ -227,9 +228,9 @@ public class RSSItemAdapter extends RSSItem
      *
      * @see #getSummary
      */
-    public void setSummary (String newSummary)
+    public void setSummary(String newSummary)
     {
-        this.item.setDescription (newSummary);
+        this.item.setDescription(newSummary);
     }
 
     /**
@@ -256,7 +257,7 @@ public class RSSItemAdapter extends RSSItem
      * @see #getAuthors
      * @see #clearAuthors
      */
-    public void addAuthor (String author)
+    public void addAuthor(String author)
     {
         // Informa doesn't support this field.
     }
@@ -359,6 +360,31 @@ public class RSSItemAdapter extends RSSItem
     public void setID (String id)
     {
         // Nothing to do here.
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Protected Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get all content associated with this item.
+     *
+     * @return a <tt>Collection</tt> of {@link RSSContent} objects
+     */
+    protected Collection<RSSContent> getContent()
+    {
+        // Not entirely sure what to use here, given the Informa API.
+        // So, use the summary field, and assume "text/plain" for now.
+
+        String summary = getSummary();
+        Collection<RSSContent> result = null;
+        if (summary != null)
+        {
+            result = Collections.singletonList(new RSSContent(summary,
+                                                              "text/plain"));
+        }
+
+        return result;
     }
 
     /*----------------------------------------------------------------------*\

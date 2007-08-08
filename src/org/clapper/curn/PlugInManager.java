@@ -115,11 +115,13 @@ public class PlugInManager
             return pl1.getPlugInSortKey().compareToIgnoreCase (pl2.getPlugInSortKey());
         }
 
+        @Override
         public boolean equals (final Object o)
         {
             return (o instanceof PlugInComparator);
         }
 
+        @Override
         public int hashCode()                                       // NOPMD
         {
             return super.hashCode();

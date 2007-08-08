@@ -72,6 +72,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import org.clapper.curn.parser.RSSContent;
 import org.clapper.util.text.TextUtil;
 
 /**
@@ -299,7 +300,7 @@ public class RSSItemAdapter extends RSSItem
     {
         Collection<String> result = null;
 
-        // Some feed typess support multiple authors, and some support a 
+        // Some feed typess support multiple authors, and some support a
         // single author. If a feed type supports multiple authors, then ROME
         // appears to set the SyndEntry.authors field. If a feed type
         // supports a single author, then ROME appears to set the
@@ -370,33 +371,33 @@ public class RSSItemAdapter extends RSSItem
      * @see #clearAuthors
      */
     @SuppressWarnings("unchecked")
-    public void addAuthor (String newAuthor)
+    public void addAuthor(String newAuthor)
     {
         List authors = entry.getAuthors();
         String existingAuthor = entry.getAuthor();
-        
+
         if (authors != null)
         {
             // Assume it's a feed type that supports multiple authors.
             // ROME wants these to be SyndPersonImpl objects.
-            
+
             SyndPerson person = new SyndPersonImpl();
             person.setName(newAuthor);
             authors.add(person);
             entry.setAuthors(authors);
         }
-        
+
         else if (existingAuthor == null)
         {
             // Assume, for now, that the feed supports just one author.
-            
+
             entry.setAuthor(newAuthor);
         }
-        
+
         else
         {
             // Move from one author to two.
-            
+
             authors = new ArrayList();
             SyndPerson person = new SyndPersonImpl();
             person.setName(existingAuthor);
@@ -511,6 +512,48 @@ public class RSSItemAdapter extends RSSItem
     public void setID(String id)
     {
         // Nothing to do here.
+    }
+
+    /*----------------------------------------------------------------------*\
+                              Protected Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get all content associated with this item.
+     *
+     * @return a <tt>Collection</tt> of {@link RSSContent} objects
+     */
+    @SuppressWarnings("unchecked")
+    protected Collection<RSSContent> getContent()
+    {
+        List<?> contents = entry.getContents();
+        Collection<RSSContent> result = null;
+
+        if (contents != null)
+        {
+            result = new ArrayList<RSSContent>();
+
+            for (Iterator it = contents.iterator(); it.hasNext(); )
+            {
+                SyndContent syndContent = (SyndContent) it.next();
+
+                // Sometimes, ROME doesn't normalize the content type.
+                // Normalize it here.
+
+                String type = syndContent.getType();
+                if (type.indexOf('/') == -1)
+                {
+                    // It's something like "html", instead of "text/html".
+                    // Add the "text/" part.
+
+                    type = "text/" + type;
+                }
+
+                result.add(new RSSContent(syndContent.getValue(), type));
+            }
+        }
+
+        return result;
     }
 
     /*----------------------------------------------------------------------*\

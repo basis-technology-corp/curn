@@ -93,7 +93,7 @@ public abstract class RSSItem
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private Map<String,String>   contentMap = new HashMap<String,String>();
+    private Map<String,String> contentMap = null;
 
     /*----------------------------------------------------------------------*\
                               Constructor
@@ -125,6 +125,7 @@ public abstract class RSSItem
      *
      * @see #makeCopy
      */
+    @Override
     public Object clone()
         throws CloneNotSupportedException
     {
@@ -142,6 +143,8 @@ public abstract class RSSItem
     {
         RSSItem copy = newInstance (parentChannel);
 
+        initContentMap();
+        copy.contentMap = new HashMap<String,String>();
         for (String key : this.contentMap.keySet())
             copy.contentMap.put(key, this.contentMap.get(key));
 
@@ -180,13 +183,14 @@ public abstract class RSSItem
      * @see #getFirstContentOfType
      * @see #setContent
      */
-    public String getContent (String mimeType)
+    public String getContent(String mimeType)
     {
         String result = null;
 
-        result = (String) contentMap.get (mimeType);
+        initContentMap();
+        result = contentMap.get (mimeType);
         if (result == null)
-            result = (String) contentMap.get (DEFAULT_CONTENT_TYPE);
+            result = contentMap.get (DEFAULT_CONTENT_TYPE);
 
         return result;
     }
@@ -204,19 +208,20 @@ public abstract class RSSItem
      * @see #clearContent
      * @see #setContent
      */
-    public final String getFirstContentOfType (String ... mimeTypes)
+    public final String getFirstContentOfType(String ... mimeTypes)
     {
         String result = null;
 
+        initContentMap();
         for (int i = 0; i < mimeTypes.length; i++)
         {
-            result = (String) contentMap.get (mimeTypes[i]);
-            if (! TextUtil.stringIsEmpty (result))
+            result = contentMap.get(mimeTypes[i]);
+            if (! TextUtil.stringIsEmpty(result))
                 break;
         }
 
         if (result == null)
-            result = (String) contentMap.get (DEFAULT_CONTENT_TYPE);
+            result = contentMap.get(DEFAULT_CONTENT_TYPE);
 
         return result;
     }
@@ -234,9 +239,10 @@ public abstract class RSSItem
      * @see #getFirstContentOfType
      * @see #clearContent
      */
-    public void setContent (String content, String mimeType)
+    public void setContent(String content, String mimeType)
     {
-        contentMap.put (mimeType, content);
+        initContentMap();
+        contentMap.put(mimeType, content);
     }
 
     /**
@@ -249,7 +255,8 @@ public abstract class RSSItem
      */
     public void clearContent()
     {
-        contentMap.clear();
+        if (contentMap != null)
+            contentMap.clear();
     }
 
     /**
@@ -263,7 +270,8 @@ public abstract class RSSItem
      *         0: this item is equivalent to <tt>other</tt><br>
      *         positive unmber: this item is greater than <tt>other</tt>
      */
-    public int compareTo (Object other)
+    @Override
+    public int compareTo(Object other)
     {
         RSSItem otherItem = (RSSItem) other;
 
@@ -313,6 +321,7 @@ public abstract class RSSItem
      *
      * @return the hash code
      */
+    @Override
     public int hashCode()
     {
         int hc;
@@ -333,6 +342,7 @@ public abstract class RSSItem
      *
      * @return <tt>true</tt> if the objects are equal, <tt>false</tt> if not
      */
+    @Override
     public boolean equals(Object o)
     {
         boolean eq = false;
@@ -348,11 +358,10 @@ public abstract class RSSItem
      *
      * @return the title
      */
+    @Override
     public String toString()
     {
-        String title = getTitle();
-
-        return (title == null) ? "" : title;
+        return getIdentifier();
     }
 
     /*----------------------------------------------------------------------*\
@@ -462,7 +471,7 @@ public abstract class RSSItem
      *
      * @see #getLinks
      */
-    public abstract void setLinks (Collection<RSSLink> links);
+    public abstract void setLinks(Collection<RSSLink> links);
 
     /**
      * Get the categories the item belongs to.
@@ -496,9 +505,11 @@ public abstract class RSSItem
     /**
      * Set the item's publication date.
      *
+     * @param date  the new date, or null to clear
+     *
      * @see #getPublicationDate
      */
-    public abstract void setPublicationDate (Date date);
+    public abstract void setPublicationDate(Date date);
 
     /**
      * Get the item's ID field, if any.
@@ -507,6 +518,7 @@ public abstract class RSSItem
      *
      * @see #setID
      */
+    @Override
     public abstract String getID();
 
     /**
@@ -517,7 +529,18 @@ public abstract class RSSItem
     public abstract void setID (String id);
 
     /*----------------------------------------------------------------------*\
-                          Private Methods
+                              Protected Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Get all content associated with this item.
+     *
+     * @return a <tt>Collection</tt> of {@link RSSContent} objects
+     */
+    protected abstract Collection<RSSContent> getContent();
+
+    /*----------------------------------------------------------------------*\
+                               Private Methods
     \*----------------------------------------------------------------------*/
 
     /**
@@ -545,5 +568,26 @@ public abstract class RSSItem
         }
 
         return id;
+    }
+
+    /**
+     * Initialize the content map.
+     */
+    private void initContentMap()
+    {
+        if (contentMap == null)
+        {
+            contentMap = new HashMap<String,String>();
+
+            Collection<RSSContent> content = getContent();
+            if ((content != null) && (content.size() > 0))
+            {
+                for (RSSContent contentItem : content)
+                {
+                    contentMap.put(contentItem.getMIMEType(),
+                                   contentItem.getTextContent());
+                }
+            }
+        }
     }
 }

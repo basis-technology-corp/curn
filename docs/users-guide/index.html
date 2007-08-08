@@ -515,6 +515,8 @@ function init()
 	      <li><a href="#PlugInWriting">Writing <i>curn</i> Plug-ins</a>
 	      <ul class="toc">
 		<li><a href="#PlugInAPI">The <i>curn</i> Plug-in API</a>
+		<li><a href="#PlugInExecutionOrder">Plug-in Execution Order</a>
+		<li><a href="#PlugInRegistration">Registering the Plug-in with <i>curn</i></a>
 		<li><a href="#ExamplePlugIn">A Simple Example Plug-in</a>
 		<li><a href="#PlugInMetadata">Persisting Data from a Plug-in</a>
 	      </ul>
@@ -4466,7 +4468,7 @@ order.</p>
 
   <tr valign="top">
     <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedParsePlugIn.html" class="code">PostFeedParsePlugIn</a></td>
-    <td align="left"><span class="code">runPostFeedParsePlugIn()</span></td>
+    <td align="left"><span class="code"><a name="PostFeedParsePhase"></a>runPostFeedParsePlugIn()</span></td>
     <td>Called immediately after a feed is parsed, but before it is
         otherwise processed. A post-feed parse plug-in has access to the
         <i>parsed</i> RSS feed data, via an <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
@@ -4535,6 +4537,31 @@ order.</p>
   </tr>
   </tbody>
 </table>
+
+<h4><a name="PlugInExecutionOrder"></a>Plug-in Execution Order</h4>
+
+<p>All plug-ins within a given phase are run in a particular order. The internal
+<i>curn</i> plug-in manager sorts the plug-ins for each phase according to the value
+of each plug-in's <i>sort key</i>. Each plug-in must implement a
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html#getPlugInSortKey()" class="code">getPlugInSortKey()</a>
+method returning a string to be used when sorting that plug-in. For all <i>curn</i>
+<a href="#StockPlugIns">stock plug-ins</a>, that sort key is the plug-in's short class name
+(i.e., the class name without its package name). This is important only if one plug-in within
+a phase depends on another plug-in within the phase having run first. For instance, the
+<a href="#PlugIn_SaveAsRSS">Save As RSS plug-in</a> runs during the
+<a href="#PostFeedParsePhase">post feed-parse phase</a>, operating on the internal parsed
+feed data. It runs <i>after</i> the 
+<a href="#PlugIn_IgnoreDuplicateArticles">Ignore Duplicate Articles plug-in</a>, because
+the Ignore Duplicate Articles plug-in's short class name (<span class="code">IgnoreDuplicateArticlesPlugIn</span>)
+sorts before the Save As RSS plug-in's short class name (<span class="code">SaveAsRSSPlugIn</span>).
+(This example assumes that both plug-ins are enabled, via their respective configuration parameters.)
+If the Save As RSS plug-in's short class name were something like <span class="code">CurnSaveAsRSSPlugIn</span>,
+it would run <i>before</i> the Ignore Duplicate Articles plug-in, and the saved RSS file might have duplicate
+articles in it. Again, if you're
+writing your own plug-in, you care about this operational detail only if your plug-in depends on the
+other plug-ins <i>within the same phase</i>.</p>
+
+<h4><a name="PlugInRegistration"></a>Registering the Plug-in with <i>curn</i></h4>
 
 <p>A plug-in class doesn't have to do anything special to register itself
 with <i>curn</i>. Merely implementing the appropriate interfaces is sufficient,
