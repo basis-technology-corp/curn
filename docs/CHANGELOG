@@ -145,6 +145,11 @@ Version 3.2 (...)
   curn only ever looked at the "authors" field, so it wasn't propagated
   the author for RSS 2.0 fields. This bug is now fixed.
 
+- Fixed a bug in the RSS parser: RSSItem.getFirstContentType() was always
+  returning null, because its internal content map wasn't being set. This
+  problem affected two plug-ins, as well as use of the API. Thanks to
+  "scottblanc /at/ gmail /dot/ com" for reporting the problem.
+
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
 
