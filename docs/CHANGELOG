@@ -16,7 +16,7 @@ Version 3.2 (...)
   For instance, the installer should now suggest the appropriate program
   files directory on Windows (e.g., "C:\Programme" for a German
   installation), instead of always using "C:\Program Files". Thanks to
-  Carsten KrÃ¼ger (C.Krueger /at/ gmx /dot/ org) for pointing out the
+  Carsten Krüger (C.Krueger /at/ gmx /dot/ org) for pointing out the
   problem and testing the fix.
 
 - Minor refinements to the use of concurrent download threads.
@@ -148,7 +148,7 @@ Version 3.2 (...)
 - Fixed a bug in the RSS parser: RSSItem.getFirstContentType() was always
   returning null, because its internal content map wasn't being set. This
   problem affected two plug-ins, as well as use of the API. Thanks to
-  "scottblanc /at/ gmail /dot/ com" for reporting the problem.
+  Scott White (scottblanc /at/ gmail /dot/ com) for reporting the problem.
 
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
