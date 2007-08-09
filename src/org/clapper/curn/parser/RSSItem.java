@@ -165,6 +165,7 @@ public abstract class RSSItem
             }
         }
 
+        copyPrivateFields(copy);
         return copy;
     }
 
@@ -270,7 +271,6 @@ public abstract class RSSItem
      *         0: this item is equivalent to <tt>other</tt><br>
      *         positive unmber: this item is greater than <tt>other</tt>
      */
-    @Override
     public int compareTo(Object other)
     {
         RSSItem otherItem = (RSSItem) other;
@@ -538,6 +538,16 @@ public abstract class RSSItem
      * @return a <tt>Collection</tt> of {@link RSSContent} objects
      */
     protected abstract Collection<RSSContent> getContent();
+    
+    /**
+     * Used by {@link #makeCopy}, this method copies any subclass fields
+     * that aren't visible to this class.
+     *
+     * @param toItem  the other {@link RSSItem} into which to copy fields.
+     *                <tt>item</tt> will have been created by a call to
+     *                {@link #newInstance}
+     */
+    protected abstract void copyPrivateFields(RSSItem toItem);
 
     /*----------------------------------------------------------------------*\
                                Private Methods

@@ -59,6 +59,7 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.feed.synd.SyndPersonImpl;
 
@@ -554,6 +555,21 @@ public class RSSItemAdapter extends RSSItem
         }
 
         return result;
+    }
+
+    /**
+     * Used by {@link #makeCopy}, this method copies any subclass fields
+     * that aren't visible to this class.
+     *
+     * @param toItem  the other {@link RSSItem} into which to copy fields.
+     *                <tt>item</tt> will have been created by a call to
+     *                {@link #newInstance}
+     */
+    protected void copyPrivateFields(RSSItem toItem)
+    {
+        SyndEntryImpl newEntry = new SyndEntryImpl();
+        newEntry.copyFrom(this.entry);
+        ((RSSItemAdapter) toItem).entry = newEntry;
     }
 
     /*----------------------------------------------------------------------*\

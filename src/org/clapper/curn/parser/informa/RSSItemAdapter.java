@@ -387,6 +387,18 @@ public class RSSItemAdapter extends RSSItem
         return result;
     }
 
+    /**
+     * Used by {@link #makeCopy}, this method copies any subclass fields
+     * that aren't visible to this class.
+     *
+     * @param toItem  the other {@link RSSItem} into which to copy fields.
+     *                <tt>item</tt> will have been created by a call to
+     *                {@link #newInstance}
+     */
+    protected void copyPrivateFields(RSSItem toItem)
+    {
+    }
+
     /*----------------------------------------------------------------------*\
                           Package-visible Methods
     \*----------------------------------------------------------------------*/
