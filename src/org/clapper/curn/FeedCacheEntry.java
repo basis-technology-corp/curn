@@ -73,6 +73,7 @@ public class FeedCacheEntry
     private final URL     entryURL;
     private final URL     channelURL;
     private final Date    publicationDate;
+    private       boolean sticky = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -102,7 +103,7 @@ public class FeedCacheEntry
     }
 
     /*----------------------------------------------------------------------*\
-                          Package-visible Methods
+                             Public Methods
     \*----------------------------------------------------------------------*/
 
     /**
@@ -110,7 +111,7 @@ public class FeedCacheEntry
      *
      * @return the unique ID
      */
-    String getUniqueID()
+    public String getUniqueID()
     {
         return entryID;
     }
@@ -121,7 +122,7 @@ public class FeedCacheEntry
      *
      * @return the site's main RSS URL
      */
-    URL getChannelURL()
+    public URL getChannelURL()
     {
         return channelURL;
     }
@@ -184,5 +185,30 @@ public class FeedCacheEntry
     public void setTimestamp (final long timestamp)
     {
         this.timestamp = timestamp;
+    }
+
+    /**
+     * Determine whether this entry is "sticky" (i.e., should be shown even
+     * though it's already been seen.
+     *
+     * @return <tt>true</tt> if the item is marked "sticky",
+     *         <tt>false</tt> if not
+     */
+    public boolean isSticky()
+    {
+        return sticky;
+    }
+
+    /**
+     * Set or clear the "sticky" flag. If an item is marked sticky, it will
+     * be shown even though it's already in the cache. NOTE: Stickiness is
+     * not automatically persisted to the disk store. It's intended to be
+     * calculated at runtime, based on other criteria.
+     *
+     * @param sticky whether or not the entry is to be marked sticky
+     */
+    public void setSticky(boolean sticky)
+    {
+        this.sticky = sticky;
     }
 }

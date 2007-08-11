@@ -62,6 +62,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>EmptyArticleSummaryPlugIn</tt> provides a way to handle an empty
@@ -125,7 +126,7 @@ public class EmptyArticleSummaryPlugIn
     static
     {
         for (ReplacementType r : ReplacementType.values())
-            LEGAL_VALUES_MAP.put (r.toString().toLowerCase(), r);
+            LEGAL_VALUES_MAP.put(r.toString().toLowerCase(), r);
     }
 
     /*----------------------------------------------------------------------*\
@@ -152,7 +153,7 @@ public class EmptyArticleSummaryPlugIn
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (EmptyArticleSummaryPlugIn.class);
+    private static final Logger log = new Logger(EmptyArticleSummaryPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -220,9 +221,9 @@ public class EmptyArticleSummaryPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
@@ -294,10 +295,10 @@ public class EmptyArticleSummaryPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
@@ -355,6 +356,7 @@ public class EmptyArticleSummaryPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -368,8 +370,9 @@ public class EmptyArticleSummaryPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
         ReplacementType type = perFeedSetting.get(feedInfo);

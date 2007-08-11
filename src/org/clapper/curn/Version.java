@@ -131,7 +131,7 @@ public final class Version extends VersionBase
      * @see #showVersion()
      * @see #showVersion(PrintWriter)
      * @see #showVersion(PrintStream)
-     * @see #getVersionNumber
+     * @see #getVersion
      */
     public String getFullVersion (final Locale locale)
     {
@@ -160,7 +160,7 @@ public final class Version extends VersionBase
      * @see #showVersion()
      * @see #showVersion(PrintWriter)
      * @see #showVersion(PrintStream)
-     * @see #getVersionNumber
+     * @see #getVersion
      */
     public String getFullVersion()
     {

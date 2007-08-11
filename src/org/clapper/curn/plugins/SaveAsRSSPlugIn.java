@@ -68,6 +68,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.clapper.curn.CurnUtil;
+import org.clapper.curn.FeedCache;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.output.freemarker.FreeMarkerFeedTransformer;
 import org.clapper.curn.output.freemarker.TemplateLocation;
@@ -345,6 +346,7 @@ public class SaveAsRSSPlugIn
      * otherwise processed.
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed
+     * @param feedCache the feed cache
      * @param channel   the parsed feed data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -355,7 +357,9 @@ public class SaveAsRSSPlugIn
      * @see FeedInfo
      * @see RSSChannel
      */
-    public boolean runPostFeedParsePlugIn(FeedInfo feedInfo, RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(final FeedInfo   feedInfo, 
+                                          final FeedCache  feedCache,
+                                          final RSSChannel channel)
         throws CurnException
     {
         boolean keepGoing = true;
@@ -421,11 +425,11 @@ public class SaveAsRSSPlugIn
 
     private FeedSaveInfo getOrMakeFeedSaveInfo (FeedInfo feedInfo)
     {
-        FeedSaveInfo saveInfo = perFeedSaveAsMap.get (feedInfo);
+        FeedSaveInfo saveInfo = perFeedSaveAsMap.get(feedInfo);
         if (saveInfo == null)
         {
             saveInfo = new FeedSaveInfo();
-            perFeedSaveAsMap.put (feedInfo, saveInfo);
+            perFeedSaveAsMap.put(feedInfo, saveInfo);
         }
 
         return saveInfo;

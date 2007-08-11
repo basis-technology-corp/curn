@@ -50,8 +50,8 @@ import org.clapper.util.text.TextUtil;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This abstract class defines a simplified view of an RSS item, providing
@@ -93,7 +93,7 @@ public abstract class RSSItem
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private Map<String,String> contentMap = null;
+    private HashMap<String,String> contentMap = null;
 
     /*----------------------------------------------------------------------*\
                               Constructor
@@ -189,9 +189,9 @@ public abstract class RSSItem
         String result = null;
 
         initContentMap();
-        result = contentMap.get (mimeType);
+        result = contentMap.get(mimeType);
         if (result == null)
-            result = contentMap.get (DEFAULT_CONTENT_TYPE);
+            result = contentMap.get(DEFAULT_CONTENT_TYPE);
 
         return result;
     }
@@ -538,7 +538,7 @@ public abstract class RSSItem
      * @return a <tt>Collection</tt> of {@link RSSContent} objects
      */
     protected abstract Collection<RSSContent> getContent();
-    
+
     /**
      * Used by {@link #makeCopy}, this method copies any subclass fields
      * that aren't visible to this class.
@@ -592,11 +592,18 @@ public abstract class RSSItem
             Collection<RSSContent> content = getContent();
             if ((content != null) && (content.size() > 0))
             {
+                RSSContent first = null;
                 for (RSSContent contentItem : content)
                 {
                     contentMap.put(contentItem.getMIMEType(),
                                    contentItem.getTextContent());
+                    if (first == null)
+                        first = contentItem;
                 }
+
+                // The default content is the first one.
+
+                contentMap.put(DEFAULT_CONTENT_TYPE, first.getTextContent());
             }
         }
     }

@@ -52,7 +52,6 @@ import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 
-import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
 
@@ -69,6 +68,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
+import org.clapper.curn.parser.RSSChannel;
 
 /**
  * The <tt>ParsedFeedURLEditPlugIn</tt> edits a feed after it has been
@@ -188,7 +189,7 @@ public class ParsedFeedURLEditPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -233,41 +234,39 @@ public class ParsedFeedURLEditPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
             if (paramName.startsWith (VAR_EDIT_ITEM_URL))
             {
-                FeedEditInfo editInfo = getOrMakeFeedEditInfo (feedInfo);
-                String value = config.getConfigurationValue (sectionName,
-                                                             paramName);
+                FeedEditInfo editInfo = getOrMakeFeedEditInfo(feedInfo);
+                String value = config.getConfigurationValue(sectionName,
+                                                            paramName);
                 editInfo.itemURLEditEditCmds.add (value);
-                log.debug ("[" + sectionName + "]: added item regexp " +
-                           value);
+                log.debug("[" + sectionName + "]: added item regexp " + value);
             }
 
             else if (paramName.startsWith (VAR_EDIT_FEED_URL))
             {
-                FeedEditInfo editInfo = getOrMakeFeedEditInfo (feedInfo);
-                String value = config.getConfigurationValue (sectionName,
-                                                             paramName);
-                editInfo.channelURLEditEditCmds.add (value);
-                log.debug ("[" + sectionName + "]: added feed regexp " +
-                           value);
+                FeedEditInfo editInfo = getOrMakeFeedEditInfo(feedInfo);
+                String value = config.getConfigurationValue(sectionName,
+                                                            paramName);
+                editInfo.channelURLEditEditCmds.add(value);
+                log.debug("[" + sectionName + "]: added feed regexp " + value);
             }
 
             else if (paramName.equals (VAR_PRUNE_URLS))
             {
-                FeedEditInfo editInfo = getOrMakeFeedEditInfo (feedInfo);
+                FeedEditInfo editInfo = getOrMakeFeedEditInfo(feedInfo);
                 editInfo.pruneURLs =
-                    config.getRequiredBooleanValue (sectionName, paramName);
-                log.debug ("[" + sectionName + "]: set PruneURLs=" +
-                           editInfo.pruneURLs);
+                    config.getRequiredBooleanValue(sectionName, paramName);
+                log.debug("[" + sectionName + "]: set PruneURLs=" +
+                          editInfo.pruneURLs);
             }
 
             return true;
@@ -275,7 +274,7 @@ public class ParsedFeedURLEditPlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -290,6 +289,7 @@ public class ParsedFeedURLEditPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -303,8 +303,9 @@ public class ParsedFeedURLEditPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
         FeedEditInfo editInfo = perFeedEditInfoMap.get (feedInfo);
@@ -320,28 +321,27 @@ public class ParsedFeedURLEditPlugIn
                 URL     channelURL    = channelLink.getURL();
                 String  strChannelURL = channelURL.toExternalForm();
 
-                log.debug ("Before editing, feed URL=" + strChannelURL);
+                log.debug("Before editing, feed URL=" + strChannelURL);
 
                 if (editInfo.pruneURLs)
-                    strChannelURL = pruneURL (strChannelURL);
+                    strChannelURL = pruneURL(strChannelURL);
 
                 for (String editCmd : editInfo.channelURLEditEditCmds)
-                    strChannelURL = editURL (strChannelURL, editCmd);
+                    strChannelURL = editURL(strChannelURL, editCmd);
 
-                log.debug ("After editing, feed URL=" + strChannelURL);
+                log.debug("After editing, feed URL=" + strChannelURL);
 
                 try
                 {
-                    channelLink.setURL (new URL (strChannelURL));
+                    channelLink.setURL(new URL(strChannelURL));
                 }
 
                 catch (MalformedURLException ex)
                 {
-                    throw new CurnException ("After editing feed URL \"" +
-                                             channelURL +
-                                             "\", result \"" +
-                                             strChannelURL +
-                                             "\" is an illegal URL.");
+                    throw new CurnException("After editing feed URL \"" +
+                                            channelURL + "\", result \"" +
+                                            strChannelURL +
+                                            "\" is an illegal URL.");
                 }
             }
 
@@ -356,26 +356,25 @@ public class ParsedFeedURLEditPlugIn
                     URL     itemURL    = itemLink.getURL();
                     String  strItemURL = itemURL.toExternalForm();
 
-                    log.debug ("Before editing, item URL=" + strItemURL);
+                    log.debug("Before editing, item URL=" + strItemURL);
 
                     if (editInfo.pruneURLs)
-                        strItemURL = pruneURL (strItemURL);
+                        strItemURL = pruneURL(strItemURL);
 
                     for (String editCmd : editInfo.itemURLEditEditCmds)
-                        strItemURL = editURL (strItemURL, editCmd);
+                        strItemURL = editURL(strItemURL, editCmd);
 
-                    log.debug ("After editing, item URL=" + strItemURL);
+                    log.debug("After editing, item URL=" + strItemURL);
 
                     try
                     {
-                        itemLink.setURL (new URL (strItemURL));
+                        itemLink.setURL(new URL(strItemURL));
                     }
 
                     catch (MalformedURLException ex)
                     {
-                        throw new CurnException ("After editing item URL \"" +
-                                                 itemURL +
-                                                 "\", result \"" +
+                        throw new CurnException("After editing item URL \"" +
+                                                itemURL + "\", result \"" +
                                                  strItemURL +
                                                  "\" is an illegal URL",
                                                  ex);
@@ -391,13 +390,13 @@ public class ParsedFeedURLEditPlugIn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private FeedEditInfo getOrMakeFeedEditInfo (FeedInfo feedInfo)
+    private FeedEditInfo getOrMakeFeedEditInfo(FeedInfo feedInfo)
     {
-        FeedEditInfo editInfo = perFeedEditInfoMap.get (feedInfo);
+        FeedEditInfo editInfo = perFeedEditInfoMap.get(feedInfo);
         if (editInfo == null)
         {
             editInfo = new FeedEditInfo();
-            perFeedEditInfoMap.put (feedInfo, editInfo);
+            perFeedEditInfoMap.put(feedInfo, editInfo);
         }
 
         return editInfo;
@@ -410,12 +409,12 @@ public class ParsedFeedURLEditPlugIn
      *
      * @return the possibly edited result
      */
-    private String pruneURL (String urlString)
+    private String pruneURL(String urlString)
     {
-        int i = urlString.indexOf ("?");
+        int i = urlString.indexOf("?");
 
         if (i != -1)
-            urlString = urlString.substring (0, i);
+            urlString = urlString.substring(0, i);
 
         return urlString;
     }
@@ -430,21 +429,18 @@ public class ParsedFeedURLEditPlugIn
      *
      * @throws CurnException on error
      */
-    private String editURL (String urlString, String editCmd)
+    private String editURL(String urlString, String editCmd)
         throws CurnException
     {
         try
         {
-            return regexUtil.substitute (editCmd, urlString);
+            return regexUtil.substitute(editCmd, urlString);
         }
 
         catch (RegexException ex)
         {
-            throw new CurnException ("Failed to edit URL \"" +
-                                     urlString +
-                                     "\" with \"" +
-                                     editCmd +
-                                     "\"",
+            throw new CurnException("Failed to edit URL \"" + urlString +
+                                     "\" with \"" + editCmd + "\"",
                                      ex);
         }
     }

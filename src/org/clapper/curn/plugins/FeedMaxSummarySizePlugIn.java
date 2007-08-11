@@ -62,6 +62,7 @@ import org.clapper.util.html.HTMLUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>FeedMaxSummarySizePlugIn</tt> optionally truncates a feed's
@@ -159,7 +160,7 @@ public class FeedMaxSummarySizePlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -192,17 +193,17 @@ public class FeedMaxSummarySizePlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_MAX_SUMMARY_SIZE))
+            if (paramName.equals(VAR_MAX_SUMMARY_SIZE))
             {
                 maxSummarySizeDefault =
-                    config.getRequiredCardinalValue (sectionName, paramName);
+                    config.getRequiredCardinalValue(sectionName, paramName);
                 if (maxSummarySizeDefault == 0)
                     maxSummarySizeDefault = NO_MAX;
             }
@@ -241,24 +242,23 @@ public class FeedMaxSummarySizePlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_MAX_SUMMARY_SIZE))
+            if (paramName.equals(VAR_MAX_SUMMARY_SIZE))
             {
-                int max = config.getRequiredCardinalValue (sectionName,
-                                                           paramName);
+                int max = config.getRequiredCardinalValue(sectionName,
+                                                          paramName);
                 if (max == 0)
                     max = NO_MAX;
 
-                perFeedMaxSummarySize.put (feedInfo, max);
-                log.debug ("[" + sectionName + "]: " + paramName + "=" +
-                           max);
+                perFeedMaxSummarySize.put(feedInfo, max);
+                log.debug("[" + sectionName + "]: " + paramName + "=" + max);
             }
 
             return true;
@@ -266,7 +266,7 @@ public class FeedMaxSummarySizePlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -281,6 +281,7 @@ public class FeedMaxSummarySizePlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -294,8 +295,9 @@ public class FeedMaxSummarySizePlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
         Integer maxBoxed = perFeedMaxSummarySize.get (feedInfo);
@@ -306,15 +308,15 @@ public class FeedMaxSummarySizePlugIn
 
         if (max != NO_MAX)
         {
-            log.debug ("Truncating all item summaries to " + max +
-                       " characters for feed \"" +
-                       feedInfo.getURL().toString() +
-                       "\"");
+            log.debug("Truncating all item summaries to " + max +
+                      " characters for feed \"" +
+                      feedInfo.getURL().toString() +
+                      "\"");
             for (RSSItem item : channel.getItems())
             {
                 String summary = item.getSummary();
                 if (summary != null)
-                    item.setSummary (truncateSummary (summary, max));
+                    item.setSummary(truncateSummary(summary, max));
             }
         }
 

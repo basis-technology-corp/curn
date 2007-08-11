@@ -61,6 +61,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>IgnoreDuplicateArticlesPlugIn</tt> handles removing duplicate
@@ -219,6 +220,7 @@ public class IgnoreDuplicateArticlesPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -233,6 +235,7 @@ public class IgnoreDuplicateArticlesPlugIn
      * @see FeedInfo
      */
     public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
                                           RSSChannel channel)
         throws CurnException
     {

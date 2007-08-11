@@ -44,6 +44,7 @@ public class AbstractPersistentDataClient implements PersistentDataClient
     /*----------------------------------------------------------------------*\
                                 Public Methods
     \*----------------------------------------------------------------------*/
+
     /**
      * <p>Process a data item that has been read from the metadata store
      * and is associated with a feed (or channel). This method is

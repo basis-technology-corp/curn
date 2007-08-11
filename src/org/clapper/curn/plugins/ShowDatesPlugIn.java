@@ -25,7 +25,7 @@
   3.  Neither the names "clapper.org", "clapper.org Java Utility Library",
       nor any of the names of the project contributors may be used to
       endorse or promote products derived from this software without prior
-      written permission. For written permission, please contact
+      written permission. For written permission, please contactRS
       bmc@clapper.org.
 
   4.  Products derived from this software may not be called "clapper.org
@@ -61,6 +61,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>ShowDatesPlugIn</tt> handles enabling/disabling display of the
@@ -153,7 +154,7 @@ public class ShowDatesPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -186,23 +187,23 @@ public class ShowDatesPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_SHOW_DATES))
+            if (paramName.equals(VAR_SHOW_DATES))
             {
                 showDatesDefault =
-                    config.getRequiredBooleanValue (sectionName, paramName);
+                    config.getRequiredBooleanValue(sectionName, paramName);
             }
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -233,21 +234,20 @@ public class ShowDatesPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
             if (paramName.equals (VAR_SHOW_DATES))
             {
-                boolean flag = config.getRequiredBooleanValue (sectionName,
-                                                               paramName);
-                perFeedShowDatesFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: " + paramName + "=" +
-                           flag);
+                boolean flag = config.getRequiredBooleanValue(sectionName,
+                                                              paramName);
+                perFeedShowDatesFlag.put(feedInfo, flag);
+                log.debug("[" + sectionName + "]: " + paramName + "=" + flag);
             }
 
             return true;
@@ -255,7 +255,7 @@ public class ShowDatesPlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -270,6 +270,7 @@ public class ShowDatesPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -283,28 +284,27 @@ public class ShowDatesPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
-        Boolean showBoxed = perFeedShowDatesFlag.get (feedInfo);
+        Boolean showBoxed = perFeedShowDatesFlag.get(feedInfo);
         boolean show = showDatesDefault;
 
         if (showBoxed != null)
             show = showBoxed;
 
-        log.debug ("Post-parse, " + feedInfo.getURL() + ": showDates=" +
-                   show);
+        log.debug("Post-parse, " + feedInfo.getURL() + ": showDates=" + show);
 
         if (! show)
         {
-            log.debug ("Removing date fields from feed \"" +
-                       feedInfo.getURL().toString() +
-                       "\"");
+            log.debug("Removing date fields from feed \"" +
+                      feedInfo.getURL().toString() + "\"");
 
-            channel.setPublicationDate (null);
+            channel.setPublicationDate(null);
             for (RSSItem item : channel.getItems())
-                item.setPublicationDate (null);
+                item.setPublicationDate(null);
         }
 
         return true;

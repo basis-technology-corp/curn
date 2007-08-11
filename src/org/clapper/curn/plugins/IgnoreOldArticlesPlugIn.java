@@ -63,6 +63,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 import org.clapper.util.text.Duration;
 
 /**
@@ -208,7 +209,7 @@ public class IgnoreOldArticlesPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -328,7 +329,7 @@ public class IgnoreOldArticlesPlugIn
 
                 catch (ParseException ex)
                 {
-log.error(ex);
+                    log.error(ex);
                     throw new CurnException("Bad value for configuration " +
                                             "variable \"" + paramName + "\" " +
                                             "in section [" + sectionName + "]",
@@ -356,6 +357,7 @@ log.error(ex);
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -370,6 +372,7 @@ log.error(ex);
      * @see FeedInfo
      */
     public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
                                           RSSChannel channel)
         throws CurnException
     {

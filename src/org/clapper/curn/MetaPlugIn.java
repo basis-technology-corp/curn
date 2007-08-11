@@ -472,6 +472,7 @@ public class MetaPlugIn
 
     public synchronized boolean
     runPostFeedParsePlugIn(final FeedInfo   feedInfo,
+                           final FeedCache  feedCache,
                            final RSSChannel channel)
         throws CurnException
     {
@@ -480,7 +481,8 @@ public class MetaPlugIn
         for (PostFeedParsePlugIn plugIn : postFeedParsePlugIns)
         {
             logPlugInInvocation("runPostFeedParsePlugIn", plugIn);
-            keepGoing = plugIn.runPostFeedParsePlugIn(feedInfo, channel);
+            keepGoing = plugIn.runPostFeedParsePlugIn(feedInfo, feedCache, 
+                                                      channel);
             if (! keepGoing)
                 break;
         }

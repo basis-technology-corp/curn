@@ -59,6 +59,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>TitleOverridePlugIn</tt> handles overriding the title of a feed.
@@ -93,7 +94,7 @@ public class TitleOverridePlugIn
     \*----------------------------------------------------------------------*/
 
     /**
-     * Feed save data, by feed
+     * Feed title data, by feed
      */
     private Map<FeedInfo,String> perFeedTitleMap =
         new HashMap<FeedInfo,String>();
@@ -101,7 +102,7 @@ public class TitleOverridePlugIn
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (TitleOverridePlugIn.class);
+    private static final Logger log = new Logger(TitleOverridePlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -136,7 +137,7 @@ public class TitleOverridePlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -177,21 +178,21 @@ public class TitleOverridePlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_TITLE_OVERRIDE))
+            if (paramName.equals(VAR_TITLE_OVERRIDE))
             {
-                String title = config.getConfigurationValue (sectionName,
-                                                             paramName);
-                perFeedTitleMap.put (feedInfo, title);
-                log.debug ("[" + sectionName + "]: " + paramName + "=" +
-                           title);
+                String title = config.getConfigurationValue(sectionName,
+                                                            paramName);
+                perFeedTitleMap.put(feedInfo, title);
+                log.debug("[" + sectionName + "]: " + paramName + "=" +
+                          title);
             }
 
             return true;
@@ -199,7 +200,7 @@ public class TitleOverridePlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -214,6 +215,7 @@ public class TitleOverridePlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -227,19 +229,18 @@ public class TitleOverridePlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
         String title = perFeedTitleMap.get (feedInfo);
         if (title != null)
         {
-            log.debug ("Overriding title for feed \"" +
-                       feedInfo.getURL().toString() +
-                       "\" to \"" +
-                       title +
-                       "\"");
-            channel.setTitle (title);
+            log.debug("Overriding title for feed \"" +
+                      feedInfo.getURL().toString() + "\" to \"" +
+                      title + "\"");
+            channel.setTitle(title);
         }
 
         return true;

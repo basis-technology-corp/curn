@@ -61,6 +61,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>ShowAuthorsPlugIn</tt> handles enabling/disabling display of the
@@ -153,7 +154,7 @@ public class ShowAuthorsPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -186,23 +187,23 @@ public class ShowAuthorsPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_SHOW_AUTHORS))
+            if (paramName.equals(VAR_SHOW_AUTHORS))
             {
                 showAuthorsDefault =
-                    config.getRequiredBooleanValue (sectionName, paramName);
+                    config.getRequiredBooleanValue(sectionName, paramName);
             }
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -233,21 +234,20 @@ public class ShowAuthorsPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
             if (paramName.equals (VAR_SHOW_AUTHORS))
             {
-                boolean flag = config.getRequiredBooleanValue (sectionName,
-                                                               paramName);
-                perFeedShowAuthorsFlag.put (feedInfo, flag);
-                log.debug ("[" + sectionName + "]: " + paramName + "=" +
-                           flag);
+                boolean flag = config.getRequiredBooleanValue(sectionName,
+                                                              paramName);
+                perFeedShowAuthorsFlag.put(feedInfo, flag);
+                log.debug("[" + sectionName + "]: " + paramName + "=" + flag);
             }
 
             return true;
@@ -255,7 +255,7 @@ public class ShowAuthorsPlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -270,6 +270,7 @@ public class ShowAuthorsPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -283,24 +284,23 @@ public class ShowAuthorsPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
-        Boolean showBoxed = perFeedShowAuthorsFlag.get (feedInfo);
+        Boolean showBoxed = perFeedShowAuthorsFlag.get(feedInfo);
         boolean show = showAuthorsDefault;
 
         if (showBoxed != null)
             show = showBoxed;
 
-        log.debug ("Post-parse, " + feedInfo.getURL() + ": showAuthors=" +
-                   show);
+        log.debug("Post-parse, " + feedInfo.getURL() + ": showAuthors=" + show);
 
         if (! show)
         {
-            log.debug ("Removing author fields from feed \"" +
-                       feedInfo.getURL().toString() +
-                       "\"");
+            log.debug("Removing author fields from feed \"" +
+                      feedInfo.getURL().toString() + "\"");
 
             channel.clearAuthors();
             for (RSSItem item : channel.getItems())

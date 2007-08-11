@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.clapper.curn.parser.RSSItem;
 import org.clapper.util.logging.Logger;
 
 /**
@@ -202,6 +203,39 @@ public class FeedCache
             result = cacheByURL.get(CurnUtil.urlToLookupKey(url));
 
         return result;
+    }
+
+    /**
+     * Get an entry for an {@link RSSItem} from the cache. This method
+     * attempts to find the item by its unique ID. If the item has no ID,
+     * then this method attempts to find the item by its URL.
+     *
+     * @param item the {@link RSSItem} to find in the cache
+     *
+     * @return the corresponding {@link FeedCacheEntry} object, or null if
+     *         not found
+     */
+    public FeedCacheEntry getEntryForItem(RSSItem item)
+    {
+        FeedCacheEntry entry   = null;
+        String         itemID  = item.getID();
+        URL            itemURL = CurnUtil.normalizeURL(item.getURL().getURL());
+
+        if (itemID != null)
+        {
+            log.debug("Attempting to find item \"" + item.toString() +
+                      "\" in cache.");
+            entry = getEntry(itemID);
+        }
+
+        else
+        {
+            log.debug("Item has no Unique ID. Locating it by URL (\"" +
+                      itemURL.toString() + "\")");
+            entry = getEntryByURL(itemURL);
+        }
+
+        return entry;
     }
 
     /**

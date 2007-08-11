@@ -70,6 +70,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>SortArticlesPlugIn</tt> handles per-feed SortBy settings.
@@ -100,8 +101,8 @@ public class SortArticlesPlugIn
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VAR_SORT_BY           = "SortBy";
-    private static final SortBy DEF_SORT_BY           = SortBy.NONE;
+    private static final String VAR_SORT_BY = "SortBy";
+    private static final SortBy DEF_SORT_BY = SortBy.NONE;
 
     private enum SortBy
     {
@@ -117,9 +118,9 @@ public class SortArticlesPlugIn
         = new HashMap<String,SortBy>();
     static
     {
-        LEGAL_SORT_BY_VALUES.put ("none", SortBy.NONE);
-        LEGAL_SORT_BY_VALUES.put ("time", SortBy.TIME);
-        LEGAL_SORT_BY_VALUES.put ("title", SortBy.TITLE);
+        LEGAL_SORT_BY_VALUES.put("none", SortBy.NONE);
+        LEGAL_SORT_BY_VALUES.put("time", SortBy.TIME);
+        LEGAL_SORT_BY_VALUES.put("title", SortBy.TITLE);
     }
 
     /*----------------------------------------------------------------------*\
@@ -131,12 +132,12 @@ public class SortArticlesPlugIn
         private Date   now = new Date();
         private SortBy sortBy;
 
-        ItemComparator (SortBy sortBy)
+        ItemComparator(SortBy sortBy)
         {
             this.sortBy = sortBy;
         }
 
-        public int compare (RSSItem i1, RSSItem i2)
+        public int compare(RSSItem i1, RSSItem i2)
         {
             int      cmp = 0;
 
@@ -174,12 +175,14 @@ public class SortArticlesPlugIn
             return cmp;
         }
 
-        public int hashCode()                                        // NOPMD
+        @Override
+        public int hashCode()
         {
             return super.hashCode();
         }
 
-        public boolean equals (Object o)
+        @Override
+        public boolean equals(Object o)
         {
             return (o instanceof ItemComparator);
         }
@@ -202,7 +205,7 @@ public class SortArticlesPlugIn
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (SortArticlesPlugIn.class);
+    private static final Logger log = new Logger(SortArticlesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -237,7 +240,7 @@ public class SortArticlesPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -270,27 +273,27 @@ public class SortArticlesPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_SORT_BY))
+            if (paramName.equals(VAR_SORT_BY))
             {
-                String val = config.getOptionalStringValue (sectionName,
-                                                            paramName,
-                                                            null);
+                String val = config.getOptionalStringValue(sectionName,
+                                                           paramName,
+                                                           null);
                 defaultSortBy = (val == null) ? DEF_SORT_BY
-                                              : parseSortByValue (sectionName,
-                                                                  val);
+                                              : parseSortByValue(sectionName,
+                                                                 val);
             }
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -321,22 +324,22 @@ public class SortArticlesPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_SORT_BY))
+            if (paramName.equals(VAR_SORT_BY))
             {
-                String value = config.getConfigurationValue (sectionName,
-                                                             paramName);
-                SortBy sortBy = parseSortByValue (sectionName, value);
+                String value = config.getConfigurationValue(sectionName,
+                                                            paramName);
+                SortBy sortBy = parseSortByValue(sectionName, value);
                 URL feedURL = feedInfo.getURL();
-                perFeedSortByMap.put (feedURL, sortBy);
-                log.debug (feedURL + ": SortBy=" + sortBy);
+                perFeedSortByMap.put(feedURL, sortBy);
+                log.debug(feedURL + ": SortBy=" + sortBy);
             }
 
             return true;
@@ -344,7 +347,7 @@ public class SortArticlesPlugIn
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -359,6 +362,7 @@ public class SortArticlesPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -372,12 +376,13 @@ public class SortArticlesPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
-        log.debug ("Post feed parse: " + feedInfo.getURL());
-        channel.setItems (sortChannelItems (channel.getItems(), feedInfo));
+        log.debug("Post feed parse: " + feedInfo.getURL());
+        channel.setItems(sortChannelItems(channel.getItems(), feedInfo));
         return true;
     }
 
@@ -395,10 +400,10 @@ public class SortArticlesPlugIn
      *
      * @throws ConfigurationException bad value for config item
      */
-    private SortBy parseSortByValue (String sectionName, String value)
+    private SortBy parseSortByValue(String sectionName, String value)
         throws ConfigurationException
     {
-        SortBy val = LEGAL_SORT_BY_VALUES.get (value);
+        SortBy val = LEGAL_SORT_BY_VALUES.get(value);
 
         if (val == null)
         {
@@ -421,18 +426,18 @@ public class SortArticlesPlugIn
      *
      * @return a <tt>Collection</tt> of the same items, possibly sorted
      */
-    private Collection<RSSItem> sortChannelItems (Collection<RSSItem> items,
-                                                  FeedInfo            feedInfo)
+    private Collection<RSSItem> sortChannelItems(Collection<RSSItem> items,
+                                                 FeedInfo            feedInfo)
     {
         Collection<RSSItem> result = null;
         int                 total  = items.size();
         URL                 feedURL = feedInfo.getURL();
 
-        log.debug ("Feed " + feedURL + ": total items=" + total);
+        log.debug("Feed " + feedURL + ": total items=" + total);
         if (total > 0)
         {
-            SortBy sortBy = perFeedSortByMap.get (feedURL);
-            log.debug ("feed " + feedURL + ": SortBy=" + sortBy);
+            SortBy sortBy = perFeedSortByMap.get(feedURL);
+            log.debug("feed " + feedURL + ": SortBy=" + sortBy);
             if (sortBy == null)
                 sortBy = defaultSortBy;
 
@@ -449,12 +454,12 @@ public class SortArticlesPlugIn
                     // then items with the same title will be weeded out.
 
                     List<RSSItem> newItems = new ArrayList<RSSItem> (items);
-                    Collections.sort (newItems, new ItemComparator (sortBy));
+                    Collections.sort(newItems, new ItemComparator(sortBy));
                     result = newItems;
-                break;
+                    break;
 
-            default:
-                assert (false);
+              default:
+                  assert (false);
             }
         }
 

@@ -118,9 +118,9 @@ class FeedDownloadThread implements Runnable
         String  encoding;
         int     bytesDownloaded;
 
-        DownloadedTempFile (File   tempFile,
-                            String encoding,
-                            int    bytesDownloaded)
+        DownloadedTempFile(File   tempFile,
+                           String encoding,
+                           int    bytesDownloaded)
         {
             this.file = tempFile;
             this.encoding = encoding;
@@ -143,18 +143,18 @@ class FeedDownloadThread implements Runnable
      *                        and must be thread safe.
      * @param feedDoneHandler called when afeed is finished downloading
      */
-    FeedDownloadThread (RSSParser               parser,
-                        FeedCache               feedCache,
-                        CurnConfig              configFile,
-                        Queue<FeedInfo>         feedQueue,
-                        FeedDownloadDoneHandler feedDoneHandler)
+    FeedDownloadThread(RSSParser               parser,
+                       FeedCache               feedCache,
+                       CurnConfig              configFile,
+                       Queue<FeedInfo>         feedQueue,
+                       FeedDownloadDoneHandler feedDoneHandler)
     {
         this.id = String.valueOf(nextThreadID.getAndIncrement());
 
         String name = "FeedDownloadThread-" + this.id;
 
         Thread.currentThread().setName(name);
-        this.log = new Logger (name);
+        this.log = new Logger(name);
         this.configuration = configFile;
         this.rssParser = parser;
         this.cache = feedCache;
@@ -178,19 +178,19 @@ class FeedDownloadThread implements Runnable
     {
         boolean done = false;
 
-        log.info ("Thread is alive at priority " +
-                  Thread.currentThread().getPriority());
+        log.info("Thread is alive at priority " +
+                 Thread.currentThread().getPriority());
 
         while (! done)
         {
             FeedInfo feed = null;
 
-            log.debug ("Checking feed queue.");
+            log.debug("Checking feed queue.");
             feed = feedQueue.poll();
 
             if (feed == null)
             {
-                log.info ("Queue of feeds is empty. Nothing left to do.");
+                log.info("Queue of feeds is empty. Nothing left to do.");
                 done = true;
             }
 
@@ -200,7 +200,7 @@ class FeedDownloadThread implements Runnable
             }
         }
 
-        log.debug ("Thread is finishing.");
+        log.debug("Thread is finishing.");
     }
 
     /*----------------------------------------------------------------------*\
@@ -221,20 +221,20 @@ class FeedDownloadThread implements Runnable
      * @see #errorOccurred
      * @see #getException
      */
-    void processFeed (final FeedInfo feed)
+    void processFeed(final FeedInfo feed)
     {
         this.exception = null;
         this.channel = null;
 
         try
         {
-            log.info ("Processing feed: " + feed.getURL().toString());
+            log.info("Processing feed: " + feed.getURL().toString());
 
-            channel = handleFeed (feed, rssParser);
+            channel = handleFeed(feed, rssParser);
             if (channel != null)
             {
-                metaPlugIn.runPostFeedParsePlugIn (feed, channel);
-                feedDownloadDoneHandler.feedFinished (feed, channel);
+                metaPlugIn.runPostFeedParsePlugIn(feed, cache, channel);
+                feedDownloadDoneHandler.feedFinished(feed, channel);
             }
         }
 
@@ -250,7 +250,7 @@ class FeedDownloadThread implements Runnable
                      configuration.getConfigurationFileURL(),
                  },
                  ex);
-            log.error (ex.getMessages(true), this.exception);
+            log.error(ex.getMessages(true), this.exception);
         }
 
         catch (CurnException ex)
@@ -265,7 +265,7 @@ class FeedDownloadThread implements Runnable
                      configuration.getConfigurationFileURL(),
                  },
                  ex);
-            log.error (ex.getMessages(true), this.exception);
+            log.error(ex.getMessages(true), this.exception);
         }
     }
 
@@ -329,8 +329,8 @@ class FeedDownloadThread implements Runnable
      * @throws FeedException  feed download error
      * @throws CurnException  some other error (e.g., plug-in error)
      */
-    private RSSChannel handleFeed (final FeedInfo   feedInfo,
-                                   final RSSParser  parser)
+    private RSSChannel handleFeed(final FeedInfo   feedInfo,
+                                  final RSSParser  parser)
         throws FeedException,
                CurnException
     {
@@ -340,32 +340,32 @@ class FeedDownloadThread implements Runnable
 
         try
         {
-            log.info ("Checking for new data from RSS feed " + feedURLString);
+            log.info("Checking for new data from RSS feed " + feedURLString);
 
             // Open the connection.
 
             URLConnection conn = feedURL.openConnection();
 
-            if (! metaPlugIn.runPreFeedDownloadPlugIn (feedInfo, conn))
+            if (! metaPlugIn.runPreFeedDownloadPlugIn(feedInfo, conn))
             {
-                log.debug ("Feed " + feedInfo.getURL().toString() +
-                           ": A plug-in disabled the feed.");
+                log.debug("Feed " + feedInfo.getURL().toString() +
+                          ": A plug-in disabled the feed.");
             }
 
             else
             {
-                resultChannel = downloadAndProcessFeed (feedInfo, parser, conn);
+                resultChannel = downloadAndProcessFeed(feedInfo, parser, conn);
             }
         }
 
         catch (MalformedURLException ex)
         {
-            throw new FeedException (feedInfo, ex);
+            throw new FeedException(feedInfo, ex);
         }
 
         catch (IOException ex)
         {
-            throw new FeedException (feedInfo, ex);
+            throw new FeedException(feedInfo, ex);
         }
 
         return resultChannel;
@@ -426,7 +426,7 @@ class FeedDownloadThread implements Runnable
 
                 if (tempFile.bytesDownloaded == 0)
                 {
-                    log.debug ("Feed \"" + feedURL + "\" returned no data.");
+                    log.debug("Feed \"" + feedURL + "\" returned no data.");
                 }
 
                 else
@@ -490,9 +490,10 @@ class FeedDownloadThread implements Runnable
             throw new FeedException(feedInfo, ex);
         }
 
-        log.debug ("downloadAndProcessFeed(): Feed=" +
-                   feedInfo.getURL() + ", returning " +
-                   ((resultChannel == null) ? "null" : resultChannel.toString()));
+        log.debug("downloadAndProcessFeed(): Feed=" +
+                  feedInfo.getURL() + ", returning " +
+                  ((resultChannel == null) ? "null" : resultChannel.toString()));
+
         return resultChannel;
     }
 
@@ -508,8 +509,8 @@ class FeedDownloadThread implements Runnable
      * @throws IOException   I/O error
      * @throws CurnException some other error
      */
-    private DownloadedTempFile downloadFeed (final URLConnection conn,
-                                             final FeedInfo      feedInfo)
+    private DownloadedTempFile downloadFeed(final URLConnection conn,
+                                            final FeedInfo      feedInfo)
         throws CurnException,
                IOException
     {
@@ -518,10 +519,10 @@ class FeedDownloadThread implements Runnable
         int totalBytes = 0;
         File tempFile = CurnUtil.createTempXMLFile();
 
-        log.debug ("Downloading \"" + feedURLString + "\" to file \"" +
-                   tempFile.getPath());
+        log.debug("Downloading \"" + feedURLString + "\" to file \"" +
+                  tempFile.getPath());
 
-        InputStream urlStream = getURLInputStream (conn);
+        InputStream urlStream = getURLInputStream(conn);
         Reader      reader;
         Writer      writer;
 
@@ -530,29 +531,29 @@ class FeedDownloadThread implements Runnable
         String protocol = feedURL.getProtocol();
         String encoding = null;
 
-        if (protocol.equals ("http") || protocol.equals("https"))
+        if (protocol.equals("http") || protocol.equals("https"))
         {
             String contentTypeHeader = conn.getContentType();
 
             if (contentTypeHeader != null)
             {
-                encoding = contentTypeCharSet (contentTypeHeader);
-                log.debug ("HTTP server says encoding for \"" +
-                           feedURLString +
-                           "\" is \"" +
-                           ((encoding == null) ? "<null>" : encoding) +
-                           "\"");
+                encoding = contentTypeCharSet(contentTypeHeader);
+                log.debug("HTTP server says encoding for \"" +
+                          feedURLString +
+                          "\" is \"" +
+                          ((encoding == null) ? "<null>" : encoding) +
+                          "\"");
             }
         }
 
-        else if (protocol.equals ("file"))
+        else if (protocol.equals("file"))
         {
             // Assume the same default encoding used by "SaveAsEncoding",
             // unless explicitly specified.
 
             encoding = Constants.DEFAULT_SAVE_AS_ENCODING;
-            log.debug ("Default encoding for \"" + feedURLString +
-                       "\" is \"" + encoding + "\"");
+            log.debug("Default encoding for \"" + feedURLString +
+                      "\" is \"" + encoding + "\"");
         }
 
         // Set the forced encoding, if specified. Note: This is done after
@@ -563,18 +564,18 @@ class FeedDownloadThread implements Runnable
         String forcedEncoding = feedInfo.getForcedCharacterEncoding();
         if (forcedEncoding != null)
         {
-            log.debug ("URL \"" + feedURLString +
-                       "\": Forcing encoding to be \"" + forcedEncoding +
-                       "\"");
+            log.debug("URL \"" + feedURLString +
+                      "\": Forcing encoding to be \"" + forcedEncoding +
+                      "\"");
             encoding = forcedEncoding;
         }
 
         if (encoding != null)
         {
-            log.debug ("Encoding is \"" + encoding + "\"");
-            reader = new InputStreamReader (urlStream, encoding);
-            writer = new OutputStreamWriter (new FileOutputStream (tempFile),
-                                             encoding);
+            log.debug("Encoding is \"" + encoding + "\"");
+            reader = new InputStreamReader(urlStream, encoding);
+            writer = new OutputStreamWriter(new FileOutputStream(tempFile),
+                                            encoding);
 
             /*
             // Cheat by writing an encoding line to the temp file.
@@ -586,16 +587,15 @@ class FeedDownloadThread implements Runnable
 
         else
         {
-            InputStreamReader isr = new InputStreamReader (urlStream);
+            InputStreamReader isr = new InputStreamReader(urlStream);
             reader = isr;
-            writer = new FileWriter (tempFile);
-            log.debug ("No encoding for \"" + feedURLString +
-                       "\". Using VM default of \"" + isr.getEncoding() +
-                       "\"");
+            writer = new FileWriter(tempFile);
+            log.debug("No encoding for \"" + feedURLString +
+                      "\". Using VM default of \"" + isr.getEncoding() + "\"");
         }
 
-        totalBytes = FileUtil.copyReader (reader, writer);
-        log.debug ("Total bytes downloaded: " + totalBytes);
+        totalBytes = FileUtil.copyReader(reader, writer);
+        log.debug("Total bytes downloaded: " + totalBytes);
         writer.close();
         urlStream.close();
 
@@ -603,7 +603,7 @@ class FeedDownloadThread implements Runnable
         // use of the If-Modified-Since header caused an HTTP server to
         // return no content.
 
-        return new DownloadedTempFile (tempFile, encoding, totalBytes);
+        return new DownloadedTempFile(tempFile, encoding, totalBytes);
     }
 
     /**
@@ -613,7 +613,7 @@ class FeedDownloadThread implements Runnable
      *
      * @return the character set, or null if not available
      */
-    private String contentTypeCharSet (final String contentType)
+    private String contentTypeCharSet(final String contentType)
     {
         String result = null;
         String[] fields = TextUtil.split(contentType, "; \t");
@@ -626,7 +626,7 @@ class FeedDownloadThread implements Runnable
             // "charset=".
 
             String s = fields[i].toLowerCase();
-            if (s.startsWith (HTTP_CONTENT_TYPE_CHARSET_FIELD) &&
+            if (s.startsWith(HTTP_CONTENT_TYPE_CHARSET_FIELD) &&
                 (s.length() > HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN))
             {
                 // Strip any quotes from the beginning and end of the field.
@@ -635,8 +635,8 @@ class FeedDownloadThread implements Runnable
                 // But curn has to deal with real-life, including server
                 // brokenness.
 
-                result = fields[i].substring (HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN)
-                                  .replace ("\"", "");
+                result = fields[i].substring(HTTP_CONTENT_TYPE_CHARSET_FIELD_LEN)
+                                  .replace("\"", "");
 
                 break;
             }
@@ -654,22 +654,22 @@ class FeedDownloadThread implements Runnable
      *
      * @throws IOException I/O error
      */
-    private InputStream getURLInputStream (final URLConnection conn)
+    private InputStream getURLInputStream(final URLConnection conn)
         throws IOException
     {
         InputStream is = conn.getInputStream();
-        String ce = conn.getHeaderField ("content-encoding");
+        String ce = conn.getHeaderField("content-encoding");
 
         if (ce != null)
         {
             String urlString = conn.getURL().toString();
 
-            log.debug ("URL \"" + urlString + "\" -> Content-Encoding: " + ce);
-            if (ce.indexOf ("gzip") != -1)
+            log.debug("URL \"" + urlString + "\" -> Content-Encoding: " + ce);
+            if (ce.indexOf("gzip") != -1)
             {
-                log.debug ("URL \"" + urlString +
-                           "\" is compressed. Using GZIPInputStream.");
-                is = new GZIPInputStream (is);
+                log.debug("URL \"" + urlString +
+                          "\" is compressed. Using GZIPInputStream.");
+                is = new GZIPInputStream(is);
             }
         }
 
@@ -687,16 +687,16 @@ class FeedDownloadThread implements Runnable
      * @param feedInfo the information on the feed
      * @param cache    the cache
      */
-    private void setIfModifiedSinceHeader (final URLConnection conn,
-                                           final FeedInfo      feedInfo,
-                                           final FeedCache     cache)
+    private void setIfModifiedSinceHeader(final URLConnection conn,
+                                          final FeedInfo      feedInfo,
+                                          final FeedCache     cache)
     {
         long     lastSeen = 0;
         URL      feedURL = feedInfo.getURL();
 
         if (cache != null)
         {
-            FeedCacheEntry entry = cache.getEntryByURL (feedURL);
+            FeedCacheEntry entry = cache.getEntryByURL(feedURL);
 
             if (entry != null)
             {
@@ -706,14 +706,10 @@ class FeedDownloadThread implements Runnable
                 {
                     if (log.isDebugEnabled())
                     {
-                        log.debug ("Setting If-Modified-Since header for " +
-                                   "feed \"" +
-                                   feedURL.toString() +
-                                   "\" to: " +
-                                   String.valueOf (lastSeen) +
-                                   " (" +
-                                   new Date (lastSeen).toString() +
-                                   ")");
+                        log.debug("Setting If-Modified-Since header for " +
+                                  "feed \"" + feedURL.toString() + "\" to: " +
+                                  String.valueOf (lastSeen) + " (" +
+                                  new Date (lastSeen).toString() + ")");
                     }
 
                     conn.setIfModifiedSince (lastSeen);
@@ -733,10 +729,12 @@ class FeedDownloadThread implements Runnable
      *                 checked
      * @param feedInfo the information on the feed
      * @param cache    the cache
+     *
+     * @throws IOException I/O error
      */
-    private boolean feedHasChanged (final URLConnection conn,
-                                    final FeedInfo      feedInfo,
-                                    final FeedCache     cache)
+    private boolean feedHasChanged(final URLConnection conn,
+                                   final FeedInfo      feedInfo,
+                                   final FeedCache     cache)
         throws IOException
     {
         long     lastSeen = 0;
@@ -754,36 +752,36 @@ class FeedDownloadThread implements Runnable
 
         if (lastSeen == 0)
         {
-            log.debug ("Feed \"" + feedURL.toString() +
-                       "\" has no recorded last-seen time.");
+            log.debug("Feed \"" + feedURL.toString() +
+                      "\" has no recorded last-seen time.");
             hasChanged = true;
         }
 
         else if ((lastModified = conn.getLastModified()) == 0)
         {
-            log.debug ("Feed \"" + feedURL.toString() +
-                       "\" provides no last-modified time.");
+            log.debug("Feed \"" + feedURL.toString() +
+                      "\" provides no last-modified time.");
             hasChanged = true;
         }
 
         else if (lastSeen >= lastModified)
         {
-            log.debug ("Feed \"" + feedURL.toString() +
-                       "\" has Last-Modified time of " +
-                       new Date (lastModified).toString() +
-                       ", which is not newer than last-seen time of " +
-                       new Date (lastSeen).toString() +
-                       ". Feed has no new data.");
+            log.debug("Feed \"" + feedURL.toString() +
+                      "\" has Last-Modified time of " +
+                      new Date (lastModified).toString() +
+                      ", which is not newer than last-seen time of " +
+                      new Date (lastSeen).toString() +
+                      ". Feed has no new data.");
         }
 
         else
         {
-            log.debug ("Feed \"" + feedURL.toString() +
-                       "\" has Last-Modified time of " +
-                       new Date (lastModified).toString() +
-                       ", which is newer than last-seen time of " +
-                       new Date (lastSeen).toString() +
-                       ". Feed might have new data.");
+            log.debug("Feed \"" + feedURL.toString() +
+                      "\" has Last-Modified time of " +
+                      new Date (lastModified).toString() +
+                      ", which is newer than last-seen time of " +
+                      new Date (lastSeen).toString() +
+                      ". Feed might have new data.");
             hasChanged = true;
         }
 
@@ -799,15 +797,15 @@ class FeedDownloadThread implements Runnable
      * @throws RSSParserException    parser exception
      * @throws MalformedURLException bad URL
      */
-    private void processChannelItems (final RSSChannel  channel,
-                                      final FeedInfo    feedInfo)
+    private void processChannelItems(final RSSChannel  channel,
+                                     final FeedInfo    feedInfo)
         throws RSSParserException,
                MalformedURLException
     {
         Collection<RSSItem> items;
         String              channelName;
 
-        RSSLink selfLink = channel.getLink (RSSLink.Type.SELF);
+        RSSLink selfLink = channel.getLink(RSSLink.Type.SELF);
         if (selfLink == null)
             channelName = feedInfo.getURL().toString();
         else
@@ -817,8 +815,8 @@ class FeedDownloadThread implements Runnable
 
         // First, weed out the ones we don't care about.
 
-        log.info ("Channel \"" + channelName + "\": " +
-                  String.valueOf (items.size()) + " total items");
+        log.info("Channel \"" + channelName + "\": " +
+                 String.valueOf (items.size()) + " total items");
         for (Iterator<RSSItem> it = items.iterator(); it.hasNext(); )
         {
             RSSItem item     = it.next();
@@ -826,7 +824,7 @@ class FeedDownloadThread implements Runnable
 
             if (itemLink == null)
             {
-                log.debug ("Skipping item with null URL.");
+                log.debug("Skipping item with null URL.");
                 it.remove();
                 continue;
             }
@@ -835,8 +833,8 @@ class FeedDownloadThread implements Runnable
 
             // Normalize the URL and save it.
 
-            itemURL = CurnUtil.normalizeURL (itemURL);
-            itemLink.setURL (itemURL);
+            itemURL = CurnUtil.normalizeURL(itemURL);
+            itemLink.setURL(itemURL);
 
             // Skip it if it's cached. Note:
             //
@@ -901,71 +899,55 @@ class FeedDownloadThread implements Runnable
     private boolean itemIsNew (final RSSItem item, final URL itemURL)
     {
         String   itemURLString = itemURL.toString();
-        String   itemID        = item.getID();
         boolean  isNew         = true;
+        FeedCacheEntry cacheEntry = cache.getEntryForItem(item);
 
-        if (itemID != null)
+        if (cacheEntry == null)
         {
-            log.debug ("Item URL \"" + itemURLString + "\" has unique ID \"" +
-                       itemID + "\". Using ONLY the ID to test the cache.");
-            if (cache.containsID (itemID))
-            {
-                log.debug ("Skipping cached ID \"" + itemID +
-                           "\" (item URL \"" + itemURLString + "\")");
-                isNew = false;
-            }
+            log.debug("URL \"" + itemURLString +
+                      "\" is not in the cache. It's new.");
+        }
+
+        else if (cacheEntry.isSticky())
+        {
+            log.debug("URL \"" + itemURLString + "\" is marked sticky. " +
+                      "Treating it as new.");
+            isNew = true;
         }
 
         else
         {
-            log.debug ("Item URL \"" + itemURLString +
-                       "\" has no unique ID. Checking cache for URL.");
+            Date cachePubDate = cacheEntry.getPublicationDate();
+            Date itemPubDate  = item.getPublicationDate();
 
-            FeedCacheEntry cacheEntry = cache.getEntryByURL (itemURL);
-            if (cacheEntry == null)
+            if ((cachePubDate == null) || (itemPubDate == null))
             {
-                log.debug ("URL \"" + itemURLString +
-                           "\" is not in the cache. It's new.");
+                log.debug("Missing publication date in item and/or " +
+                           "cache for URL \"" + itemURLString +
+                           "\". Assuming URL is old, since it is in the " +
+                           "cache. Skipping it.");
+                isNew = false;
             }
 
             else
             {
-                Date cachePubDate = cacheEntry.getPublicationDate();
-                Date itemPubDate  = item.getPublicationDate();
-
-                if ((cachePubDate == null) || (itemPubDate == null))
+                log.debug("URL \"" + itemURLString +
+                          "\": Cached publication date is " +
+                          cachePubDate.toString() +
+                          "\", item publication date is " + itemPubDate);
+                if (itemPubDate.after(cachePubDate))
                 {
-                    log.debug ("Missing publication date in item and/or " +
-                               "cache for URL \"" +
-                               itemURLString +
-                               "\". Assuming URL is old, since it is in the " +
-                               "cache. Skipping it.");
-                    isNew = false;
+                    log.debug("URL \"" + itemURLString +
+                              "\" is newer than cached publication date. " +
+                              "Keeping it.");
                 }
 
                 else
                 {
-                    log.debug ("URL \"" +
-                               itemURLString +
-                               "\": Cached publication date is " +
-                               cachePubDate.toString() +
-                               "\", item publication date is " +
-                               itemPubDate);
-                    if (itemPubDate.after (cachePubDate))
-                    {
-                        log.debug ("URL \"" + itemURLString +
-                                   "\" is newer than cached publication " +
-                                   "date. Keeping it.");
-                    }
-
-                    else
-                    {
-                        log.debug ("URL \"" +
-                                   itemURLString +
-                                   "\" is not newer than cached publication " +
-                                   "date. Skipping it.");
-                        isNew = false;
-                    }
+                    log.debug("URL \"" + itemURLString +
+                              "\" is not newer than cached publication date. " +
+                              "Skipping it.");
+                    isNew = false;
                 }
             }
         }

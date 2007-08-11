@@ -4763,7 +4763,7 @@ data in a subsequent <i>curn</i> run. To be able to save and restore metadata,
 a plug-in must:</p>
 
 <ul>
-  <li>implement the 
+  <li>extend the 
 <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PersistentDataClient.html" class="code">org.clapper.curn.PersistentDataClient</a> interface or extend the <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/AbstractPersistentDataClient.html" class="code">org.clapper.curn.AbstractPersistentDataClient</a> class
   <li>register itself as a persistent data handler by calling <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/DataPersister.html" class="code">org.clapper.curn.DataPersister</a> class's <span class="code">addPersistentDataClient()</span> method, typically from the plug-in's
       <span class="code">initPlugIn()</span> method
@@ -4787,7 +4787,7 @@ import org.clapper.curn.AbstractPersistentDataClient;
 
 ...
 
-public class MyPlugIn implements AbstractPersistentDataClient, ...
+public class MyPlugIn extends AbstractPersistentDataClient, ...
 {
     ...
     public void initPlugIn() throws CurnException

@@ -74,6 +74,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.clapper.curn.FeedCache;
 import org.clapper.util.misc.MultiValueMap;
 
 /**
@@ -251,6 +252,7 @@ public class ArticleFilterPlugIn
             this.regex = regex;
         }
 
+        @Override
         public String toString()
         {
             StringBuilder buf = new StringBuilder();
@@ -303,6 +305,7 @@ public class ArticleFilterPlugIn
             return command;
         }
 
+        @Override
         public String toString()
         {
             StringBuilder buf = new StringBuilder();
@@ -332,6 +335,7 @@ public class ArticleFilterPlugIn
             filterRules.add (rule);
         }
 
+        @Override
         public String toString()
         {
             return filterRules.toString();
@@ -350,7 +354,7 @@ public class ArticleFilterPlugIn
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (ArticleFilterPlugIn.class);
+    private static final Logger log = new Logger(ArticleFilterPlugIn.class);
 
     /**
      * Per-feed match rules
@@ -469,6 +473,7 @@ public class ArticleFilterPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -483,6 +488,7 @@ public class ArticleFilterPlugIn
      * @see FeedInfo
      */
     public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
                                           RSSChannel channel)
         throws CurnException
     {

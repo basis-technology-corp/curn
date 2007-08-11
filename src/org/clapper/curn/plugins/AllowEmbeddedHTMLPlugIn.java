@@ -60,6 +60,7 @@ import org.clapper.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.clapper.curn.FeedCache;
 
 /**
  * The <tt>AllowEmbeddedHTMLPlugIn</tt> handles stripping (or not
@@ -122,7 +123,7 @@ public class AllowEmbeddedHTMLPlugIn
     /**
      * For log messages
      */
-    private static final Logger log = new Logger (AllowEmbeddedHTMLPlugIn.class);
+    private static final Logger log = new Logger(AllowEmbeddedHTMLPlugIn.class);
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -190,17 +191,17 @@ public class AllowEmbeddedHTMLPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_ALLOW_EMBEDDED_HTML))
+            if (paramName.equals(VAR_ALLOW_EMBEDDED_HTML))
             {
-                allowHTMLDefault = config.getRequiredBooleanValue (sectionName,
-                                                                   paramName);
+                allowHTMLDefault = config.getRequiredBooleanValue(sectionName,
+                                                                  paramName);
             }
         }
 
@@ -237,10 +238,10 @@ public class AllowEmbeddedHTMLPlugIn
      * @see FeedInfo
      * @see FeedInfo#getURL
      */
-    public boolean runFeedConfigItemPlugIn (String     sectionName,
-                                            String     paramName,
-                                            CurnConfig config,
-                                            FeedInfo   feedInfo)
+    public boolean runFeedConfigItemPlugIn(String     sectionName,
+                                           String     paramName,
+                                           CurnConfig config,
+                                           FeedInfo   feedInfo)
         throws CurnException
     {
         try
@@ -274,6 +275,7 @@ public class AllowEmbeddedHTMLPlugIn
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
+     * @param feedCache the feed cache
      * @param channel   the parsed channel data
      *
      * @return <tt>true</tt> if <i>curn</i> should continue to process the
@@ -287,8 +289,9 @@ public class AllowEmbeddedHTMLPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn (FeedInfo   feedInfo,
-                                           RSSChannel channel)
+    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+                                          FeedCache  feedCache,
+                                          RSSChannel channel)
         throws CurnException
     {
         Boolean allowBoxed = perFeedHTMLFlag.get (feedInfo);
