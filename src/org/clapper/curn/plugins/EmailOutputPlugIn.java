@@ -376,7 +376,7 @@ public class EmailOutputPlugIn
             for (RSSItem item : channel.getItems())
             {
                 newChannel.setItems(Collections.singletonList(item));
-                outputHandler.displayChannel(channel, feedInfo);
+                outputHandler.displayChannel(newChannel, feedInfo);
                 outputHandler.flush();
                 emailOutput(Collections.singletonList(outputHandler),
                             emailAddresses);
