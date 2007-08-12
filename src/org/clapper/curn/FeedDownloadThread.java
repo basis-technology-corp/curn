@@ -232,10 +232,7 @@ class FeedDownloadThread implements Runnable
 
             channel = handleFeed(feed, rssParser);
             if (channel != null)
-            {
-                metaPlugIn.runPostFeedParsePlugIn(feed, cache, channel);
                 feedDownloadDoneHandler.feedFinished(feed, channel);
-            }
         }
 
         catch (FeedException ex)
@@ -342,6 +339,10 @@ class FeedDownloadThread implements Runnable
         {
             log.info("Checking for new data from RSS feed " + feedURLString);
 
+            boolean forceDownload = metaPlugIn.forceFeedDownload(feedInfo, cache);
+            log.debug("Feed \"" + feedURLString + "\": forceDownload=" +
+                      forceDownload);
+
             // Open the connection.
 
             URLConnection conn = feedURL.openConnection();
@@ -354,7 +355,8 @@ class FeedDownloadThread implements Runnable
 
             else
             {
-                resultChannel = downloadAndProcessFeed(feedInfo, parser, conn);
+                resultChannel = downloadAndProcessFeed(feedInfo, parser,
+                                                       conn, forceDownload);
             }
         }
 
@@ -379,6 +381,9 @@ class FeedDownloadThread implements Runnable
      * @param parser        the RSS parser to use, or null if parsing is to
      *                      be skipped
      * @param urlConn       open URLConnection for the feed
+     * @param forceDownload <tt>true</tt> to force the download even if the
+     *                      feed hasn't changed, <tt>false</tt> to observe
+     *                      the normal rules
      *
      * @return the <tt>RSSChannel</tt> representing the parsed feed, if
      *         parsing was enabled; otherwise, null.
@@ -388,7 +393,8 @@ class FeedDownloadThread implements Runnable
      */
     private RSSChannel downloadAndProcessFeed(final FeedInfo      feedInfo,
                                               final RSSParser     parser,
-                                              final URLConnection urlConn)
+                                              final URLConnection urlConn,
+                                              final boolean       forceDownload)
         throws FeedException,
                CurnException
     {
@@ -406,11 +412,14 @@ class FeedDownloadThread implements Runnable
             // newer, we don't bother to parse and process the returned
             // XML.
 
-            setIfModifiedSinceHeader(urlConn, feedInfo, cache);
+            if (! forceDownload)
+                setIfModifiedSinceHeader(urlConn, feedInfo, cache);
 
-            // If the feed has actually changed, process it.
+            // If the feed has actually changed, or if downloading is force,
+            // process it.
 
-            if (! feedHasChanged(urlConn, feedInfo, cache))
+            if ((! forceDownload) &&
+                (! feedHasChanged(urlConn, feedInfo, cache)))
             {
                 log.info ("Feed has not changed. Skipping it.");
             }
@@ -461,6 +470,12 @@ class FeedDownloadThread implements Runnable
                                                        "text/xml",
                                                        RSSLink.Type.SELF);
                             resultChannel.setLinks(Collections.singleton(link));
+                        }
+
+                        if (resultChannel != null)
+                        {
+                            metaPlugIn.runPostFeedParsePlugIn(feedInfo, cache, 
+                                                              resultChannel);
                         }
 
                         processChannelItems(resultChannel, feedInfo);

@@ -3,7 +3,7 @@
   ---------------------------------------------------------------------------
   This software is released under a BSD-style license:
 
-  Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
+  Copyright (c) 2007 Brian M. Clapper. All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
@@ -17,7 +17,7 @@
 
         "This product includes software developed by Brian M. Clapper
         (bmc@clapper.org, http://www.clapper.org/bmc/). That software is
-        copyright (c) 2004-2007 Brian M. Clapper."
+        copyright (c) 2007 Brian M. Clapper."
 
       Alternately, this acknowlegement may appear in the software itself,
       if wherever such third-party acknowlegements normally appear.
@@ -46,55 +46,30 @@
 
 package org.clapper.curn;
 
-import org.clapper.curn.parser.RSSChannel;
-
 /**
- * This interface defines the methods that must be supported by plug-ins
- * that wish to be notified just after <i>curn</i> downloads a feed.
- *
- * @see PlugIn
- * @see MetaPlugIn
- * @see PreFeedDownloadPlugIn
- * @see PostFeedDownloadPlugIn
- * @see Curn
+ * Defines the method to be implemented by plug-ins that want to force
+ * one or more feeds to be downloaded, even if they haven't changed.
  *
  * @version <tt>$Revision$</tt>
  */
-public interface PostFeedParsePlugIn extends PlugIn
+public interface ForceFeedDownloadPlugIn extends PlugIn
 {
-    /*----------------------------------------------------------------------*\
-                              Public Methods
-    \*----------------------------------------------------------------------*/
-
     /**
-     * Called immediately after a feed is parsed, but before it is
-     * otherwise processed. A post-feed parse plug-in has access to the
-     * <i>parsed</i> RSS feed data, via an {@link RSSChannel} object. This
-     * method can return <tt>false</tt> to signal <i>curn</i> that the feed
-     * should be skipped. For instance, a plug-in that filters on the
-     * parsed feed data could use this method to weed out non-matching
-     * feeds before they are downloaded. Similarly, a plug-in that edits
-     * the parsed data (removing or editing individual items, for instance)
-     * could use method to do so.
+     * This method determines (based on some internal criteria) whether
+     * a given feed should be downloaded even if it hasn't changed. If multiple
+     * plug-ins implement this interface, then only one needs to return
+     * <tt>true</tt> for the feed download to be forced.
      *
      * @param feedInfo  the {@link FeedInfo} object for the feed that
      *                  has been downloaded and parsed.
-     * @param feedCache the loaded feed cache, or null if there's no cache
-     * @param channel   the parsed channel data
+     * @param feedCache the feed cache, or null if there isn't one
      *
-     * @return <tt>true</tt> if <i>curn</i> should continue to process the
-     *         feed, <tt>false</tt> to skip the feed. A return value of
-     *         <tt>false</tt> aborts all further processing on the feed.
-     *         In particular, <i>curn</i> will not pass the feed along to
-     *         other plug-ins that have yet to be notified of this event.
+     * @return <tt>true</tt> if the feed should be downloaded and parsed
+     *         even if it's not out of date; <tt>false</tt> if <i>curn</i>'s
+     *         normal downloading rules should apply.
      *
      * @throws CurnException on error
-     *
-     * @see RSSChannel
-     * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
-                                          FeedCache  feedCache,
-                                          RSSChannel channel)
+    public boolean forceFeedDownload(FeedInfo feedInfo, FeedCache feedCache)
         throws CurnException;
 }

@@ -88,6 +88,7 @@ import java.util.Collection;
 public class MetaPlugIn
     implements CacheLoadedPlugIn,
                FeedConfigItemPlugIn,
+               ForceFeedDownloadPlugIn,
                MainConfigItemPlugIn,
                OutputHandlerConfigItemPlugIn,
                PostConfigPlugIn,
@@ -142,6 +143,9 @@ public class MetaPlugIn
     private final Collection<PreCacheSavePlugIn>
         preCacheSavePlugIns = new ArrayList<PreCacheSavePlugIn>();
 
+    private final Collection<ForceFeedDownloadPlugIn>
+        forceFeedDownloadPlugIns = new ArrayList<ForceFeedDownloadPlugIn>();
+
     private final Collection<PreFeedDownloadPlugIn>
         preFeedDownloadPlugIns = new ArrayList<PreFeedDownloadPlugIn>();
 
@@ -193,8 +197,6 @@ public class MetaPlugIn
      * Get the <tt>MetaPlugIn</tt> singleton.
      *
      * @return the <tt>MetaPlugIn</tt> singleton
-     *
-     * @throws CurnException on error
      */
     public static MetaPlugIn getMetaPlugIn()
     {
@@ -243,6 +245,9 @@ public class MetaPlugIn
 
             if (plugIn instanceof PreCacheSavePlugIn)
                 preCacheSavePlugIns.add((PreCacheSavePlugIn) plugIn);
+
+            if (plugIn instanceof ForceFeedDownloadPlugIn)
+                forceFeedDownloadPlugIns.add((ForceFeedDownloadPlugIn) plugIn);
 
             if (plugIn instanceof PreFeedDownloadPlugIn)
                 preFeedDownloadPlugIns.add((PreFeedDownloadPlugIn) plugIn);
@@ -431,6 +436,24 @@ public class MetaPlugIn
     }
 
     public synchronized boolean
+    forceFeedDownload(final FeedInfo feedInfo, final FeedCache feedCache)
+        throws CurnException
+    {
+        boolean forceDownload = true;
+
+        for (ForceFeedDownloadPlugIn plugIn : forceFeedDownloadPlugIns)
+        {
+            logPlugInInvocation("forceFeedDownload", plugIn);
+            forceDownload = plugIn.forceFeedDownload(feedInfo, feedCache);
+
+            if (! forceDownload)
+                break;
+        }
+
+        return forceDownload;
+    }
+
+    public synchronized boolean
     runPreFeedDownloadPlugIn(final FeedInfo      feedInfo,
                              final URLConnection urlConn)
         throws CurnException
@@ -481,7 +504,7 @@ public class MetaPlugIn
         for (PostFeedParsePlugIn plugIn : postFeedParsePlugIns)
         {
             logPlugInInvocation("runPostFeedParsePlugIn", plugIn);
-            keepGoing = plugIn.runPostFeedParsePlugIn(feedInfo, feedCache, 
+            keepGoing = plugIn.runPostFeedParsePlugIn(feedInfo, feedCache,
                                                       channel);
             if (! keepGoing)
                 break;

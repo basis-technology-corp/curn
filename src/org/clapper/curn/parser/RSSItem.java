@@ -148,6 +148,7 @@ public abstract class RSSItem
         for (String key : this.contentMap.keySet())
             copy.contentMap.put(key, this.contentMap.get(key));
 
+        copyPrivateFields(copy);
         copy.setTitle(this.getTitle());
         copy.setSummary(this.getSummary());
         copy.setLinks(this.getLinks());
@@ -165,7 +166,6 @@ public abstract class RSSItem
             }
         }
 
-        copyPrivateFields(copy);
         return copy;
     }
 

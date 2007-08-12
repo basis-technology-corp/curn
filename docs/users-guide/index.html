@@ -577,7 +577,8 @@ the background by a command scheduler such as
 runtime. When querying HTTP sites, <i>curn</i> uses the HTTP
 <span class="code">If-Modified-Since</span> and
 <span class="code">Last-Modified</span> headers to suppress
-retrieving and processing feeds that haven't changed. By default, it also
+retrieving and processing feeds that haven't changed (though
+. By default, it also
 requests that the remote HTTP server <i>gzip</i> the XML before sending it.
 (Some HTTP servers honor the request; some don't.) These measures both minimize
 network bandwidth and ensure that <i>curn</i> is as kind as possible to the
@@ -4220,6 +4221,15 @@ stock plug-ins are in the
   </tr>
 
   <tr valign="top">
+    <td align="left"><a name="PlugIn_RetainArticles"></a>Retain Articles</td>
+    <td align="left" class="code"><a name="RetainArticlesPlugIn"></a>RetainArticlesPlugIn</td>
+    <td align="left">Retains already-seen articles for a specified time.</td>
+    <td align="left">
+      <a href="#Feed_ShowArticlesFor" class="code">ShowArticlesFor</a><br/>
+    </td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a name="PlugIn_SaveAs"></a>Save As</td>
     <td align="left" class="code"><a name="RawFeedSaveAsPlugIn"></a>RawFeedSaveAsPlugIn</td>
     <td align="left">Save a feed's XML to a file.</td>
@@ -4434,9 +4444,22 @@ order.</p>
   </tr>
 
   <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/ForceFeedDownloadPlugIn.html" class="code">ForceFeedDownloadPlugIn</a></td>
+    <td align="left"><span class="code">forceFeedDownload()</span></td>
+    <td>Called after the cache is loaded, but before a feed is downloaded. This method returns
+	<tt>true</tt> if the feed should be downloaded regardless of whether it has changed, and
+	<tt>false</tt> if <i>curn</i> should only download the feed if the feed has changed since the
+	last download. The <a href="#PlugIn_RetainArticles">Retain Articles</a> plug-in uses this
+	capability to force feeds to be downloaded and parsed, so that it can find articles that
+	should be displayed again.
+      </td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedDownloadPlugIn.html" class="code">PreFeedDownloadPlugIn</a></td>
     <td align="left"><span class="code">runPreFeedDownloadPlugIn()</span></td>
-    <td>Called just before a feed is downloaded. This method can return
+    <td>Called before a feed is downloaded (actually, before a feed is checked to see if it has new data).
+	This method can return
         <span class="code">false</span> to signal <i>curn</i> that the feed should be
         skipped. The plug-in method can also set values on the
         <span class="code">URLConnection</span> used to download the plug-in, via

@@ -58,6 +58,7 @@ import org.clapper.curn.FeedCache;
 import org.clapper.curn.FeedCacheEntry;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.FeedInfo;
+import org.clapper.curn.ForceFeedDownloadPlugIn;
 import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
@@ -73,6 +74,7 @@ import org.clapper.util.text.Duration;
 public class RetainArticlesPlugIn
     implements MainConfigItemPlugIn,
                FeedConfigItemPlugIn,
+               ForceFeedDownloadPlugIn,
                PostFeedParsePlugIn
 {
     /*----------------------------------------------------------------------*\
@@ -80,7 +82,6 @@ public class RetainArticlesPlugIn
     \*----------------------------------------------------------------------*/
 
     private static final String VAR_SHOW_ARTICLES_DURATION = "ShowArticlesFor";
-    private static final String STOP_SHOWING_AFTER_KEYWORD = "stop-showing-after";
 
     /*----------------------------------------------------------------------*\
                                Private Data Items
@@ -248,7 +249,7 @@ public class RetainArticlesPlugIn
                     perFeedDuration.put(feedURL, duration);
                     if (log.isDebugEnabled())
                     {
-                        log.debug("[" + sectionName + "] (" + 
+                        log.debug("[" + sectionName + "] (" +
                                   feedURL.toString() + ") " + paramName + "=" +
                                   duration + " (" + duration.format() + ")");
                     }
@@ -271,6 +272,32 @@ public class RetainArticlesPlugIn
         }
 
         return true;
+    }
+    /**
+     * This method determines (based on some internal criteria) whether
+     * a given feed should be downloaded even if it hasn't changed. If multiple
+     * plug-ins implement this interface, then only one needs to return
+     * <tt>true</tt> for the feed download to be forced.
+     *
+     * @param feedInfo  the {@link FeedInfo} object for the feed that
+     *                  has been downloaded and parsed.
+     * @param feedCache the feed cache, or null if there isn't one
+     *
+     * @return <tt>true</tt> if the feed should be downloaded and parsed
+     *         even if it's not out of date; <tt>false</tt> if <i>curn</i>'s
+     *         normal downloading rules should apply.
+     *
+     * @throws CurnException on error
+     */
+    public boolean forceFeedDownload(FeedInfo feedInfo, FeedCache feedCache)
+        throws CurnException
+    {
+        URL feedURL = CurnUtil.normalizeURL(feedInfo.getURL());
+        Duration duration = perFeedDuration.get(feedURL);
+        if (duration == null)
+            duration = globalDefault;
+
+        return (duration != null);
     }
 
     /**
@@ -322,34 +349,30 @@ public class RetainArticlesPlugIn
             for (RSSItem item : channel.getItems())
             {
                 FeedCacheEntry entry = null;
-                Date itemDate = item.getPublicationDate();
-                if (itemDate == null)
+                long itemCacheTime = now;
+                if (feedCache != null)
                 {
-                    log.debug("Item " + item.getURL() + " has no date. " +
-                              "Assuming it's current.");
                     entry = feedCache.getEntryForItem(item);
                     if (entry != null)
-                        entry.setSticky(true);
-
-                    continue;
+                        itemCacheTime = entry.getTimestamp();
                 }
 
-                long itemDateMillis = itemDate.getTime();
-                long itemDateAgeMillis = now - itemDateMillis;
+                long itemAge = now - itemCacheTime;
 
                 // Account for articles dated in the future. (There's no
                 // reason some doofus feed couldn't do that. And then there's
                 // always machine clock-skew.)
 
-                if (itemDateAgeMillis < 0)
-                    itemDateAgeMillis = 0;
+                if (itemAge < 0)
+                    itemAge = 0;
 
                 // Has the item passed the duration to be shown?
 
-                if (itemDateAgeMillis > durationMillis)
+                Date cacheDate = new Date(itemCacheTime);
+                if (itemAge > durationMillis)
                 {
                     log.info("In feed " + feedURLString + ", article " +
-                             item.getURL() + " is dated " + itemDate +
+                             item.getURL() + " was cached " + cacheDate +
                              ", which is more than " + sDuration + ". " +
                              "Suppressing article.");
                     channel.removeItem(item);
@@ -362,7 +385,7 @@ public class RetainArticlesPlugIn
                     {
                         log.info("In feed " + feedURLString +
                                  ", previously seen article " +
-                                  item.getURL() + " is dated " + itemDate +
+                                  item.getURL() + " was cached " + cacheDate +
                                  ", which is less than " + sDuration + ". " +
                                  "Showing article again.");
                         entry.setSticky(true);
