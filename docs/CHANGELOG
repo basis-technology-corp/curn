@@ -74,6 +74,10 @@ Version 3.2 (...)
 
   See the User's Guide for details.
 
+- Within a given plug-in phase, all plug-ins implementing that phase now
+  execute in sorted order. That is, they're sorted per-phase by their
+  declared sort keys, and they executed in that order.
+
 
 				  -------
 				  Changes

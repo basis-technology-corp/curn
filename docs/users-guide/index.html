@@ -1626,6 +1626,23 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
   </tr>
 
   <tr valign="top">
+    <td align="left"><a name="Cfg_MaxArticlesToShow"></a><span class="code">MaxArticlesToShow</span>
+    <br/><a href="#PlugIn_MaxArticles" class="plug-in-flag">plug-in</a></td>
+    <td align="left">Integer</td>
+    <td align="left">
+       Sets an upper limit on the number of articles displayed for the feed. This maximum is applied
+       <i>after</i> the articles are sorted (see <a href="#Cfg_SortBy" class="code">SortBy</a>) and
+       <i>after</i> the <a href="#Cfg_ShowArticlesFor">ShowArticlesFor</a> and
+       <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> policies
+       are applied. This parameter can be
+      <a href="#Feed_ShowArticlesFor">overridden on a per-feed basis</a>.
+      This global parameter sets the default value.
+    </td>
+    <td align="left">No</td>
+    <td align="left">None (i.e., no maximum)</td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a name="Cfg_MaxSummarySize"></a><span class="code">MaxSummarySize</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">Positive integer</td>
     <td align="left">
@@ -1635,7 +1652,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       a trailing ellipsis ("...") to indicate the truncation. A value of
       0 effectively disables this option. This parameter can be
       <a href="#Feed_MaxSummarySize">overridden on a per-feed basis</a>.
-      This global value sets the default value.
+      This global parameter sets the default value.
     </td>
     <td align="left">No</td>
     <td align="left">0 (i.e., no limit on summary size)</td>
@@ -1762,13 +1779,15 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left">
       How long to display show articles from feeds. If specified, this
       parameter is only used when individual feeds don't specify a <span class="code">ShowArticlesFor</span>
-      parameter if their own. The value is a time interval, for instance:
+      parameter if their own. The value is a time interval, expressed using the same natural
+      language strings supported by the <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a>
+      parameter. For instance:
 
 <blockquote><pre>
-IgnoreArticlesOlderThan: 3 days
-IgnoreArticlesOlderThan: 1 week
-IgnoreArticlesOlderThan: 365 days
-IgnoreArticlesOlderThan: 12 hours, 30 minutes
+ShowArticlesFor: 3 days
+ShowArticlesFor: 1 week
+ShowArticlesFor: 365 days
+ShowArticlesFor: 12 hours, 30 minutes
 </pre></blockquote>
 
       Valid interval names (in English) are:
@@ -1783,11 +1802,22 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       </ul>
 
       If this parameter is not specified, then the default value is to show an article one time only.
+      <br/><br/>
+      <b>WARNINGS</b>:
 
-      <b>WARNING</b>: Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
-      <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an article is to
-      download and re-parse the feed. Also, if the article is no longer in the feed, <i>curn</i> can't redisplay
-      the article even if the elapsed time hasn't yet passed.
+      <ul>
+	<li>Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
+	    <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an
+	    article is to download and re-parse the feed. Also, if the article is no longer in the
+	    feed, <i>curn</i> can't redisplay the article even if the elapsed time hasn't yet passed.
+	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan">IgnoreArticlesOlderThan</a>
+	    parameter. For instance, if use <span class="code">ShowArticlesFor</code> to tell
+	    <i>curn</i> to show articles for 5 days, but you also use
+	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> to tell
+	    <i>curn</i> to ignore articles older than 2 days, the
+	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> will take
+	    preference.
+      </ul>
     </td>
     <td align="left">No</td>
     <td align="left">1 millisecond (i.e., show each article once)</td>
@@ -2413,7 +2443,11 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     </td>
     <td align="left">No</td>
     <td align="left">The default, as defined by the global
-    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> parameter</td>
+    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> parameter.
+    If no global 
+    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> value is set,
+    then articles aren't ignored based on their age.
+    </td>
   </tr>
 
     <td align="left"><a name="Feed_IgnoreDuplicateTitles"></a><span class="code">IgnoreDuplicateTitles</span><br/><a href="#PlugIn_IgnoreDuplicateArticles" class="plug-in-flag">plug-in</a></td>
@@ -2433,6 +2467,26 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     </td>
     <td align="left">No</td>
     <td align="left" class="code">false</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Feed_MaxArticlesToShow"></a><span class="code">MaxArticlesToShow</span>
+    <br/><a href="#PlugIn_MaxArticles" class="plug-in-flag">plug-in</a></td>
+    <td align="left">Integer</td>
+    <td align="left">
+       Sets an upper limit on the number of articles displayed for the feed. This maximum is applied
+       <i>after</i> the articles are sorted (see <a href="#Feed_SortBy" class="code">SortBy</a>) and
+       <i>after</i> the <a href="#Feed_ShowArticlesFor">ShowArticlesFor</a> and
+       <a href="#Feed_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> policies
+       are applied.
+    </td>
+    <td align="left">No</td>
+    <td align="left">The default, as defined by the global
+    <a href="#Cfg_MaxArticlesToShow" class="code">MaxArticlesToShow</a> parameter.
+    If no global 
+    <a href="#Cfg_MaxArticlesToShow" class="code">MaxArticlesToShow</a> value is set,
+    then there is no maximum.
+    </td>
   </tr>
 
   <tr valign="top">
@@ -2758,13 +2812,17 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <br/><a href="#PlugIn_RetainArticles" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
-      How long to display show articles from the feed. The value is a time interval, for instance:
+
+      How long to display show articles from the feed. The value is a time
+      interval, expressed using the same natural language strings supported
+      by the <a href="#Feed_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a>
+      parameter. For instance:
 
 <blockquote><pre>
-IgnoreArticlesOlderThan: 3 days
-IgnoreArticlesOlderThan: 1 week
-IgnoreArticlesOlderThan: 365 days
-IgnoreArticlesOlderThan: 12 hours, 30 minutes
+ShowArticlesFor: 3 days
+ShowArticlesFor: 1 week
+ShowArticlesFor: 365 days
+ShowArticlesFor: 12 hours, 30 minutes
 </pre></blockquote>
 
       Valid interval names (in English) are:
@@ -2778,10 +2836,22 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 	<li>week, weeks
       </ul>
 
-      <b>WARNING</b>: Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
-      <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an article is to
-      download and re-parse the feed. Also, if the article is no longer in the feed, <i>curn</i> can't redisplay
-      the article even if the elapsed time hasn't yet passed.
+
+      <b>WARNINGS</b>:
+
+      <ul>
+	<li>Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
+	    <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an
+	    article is to download and re-parse the feed. Also, if the article is no longer in the
+	    feed, <i>curn</i> can't redisplay the article even if the elapsed time hasn't yet passed.
+	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan">IgnoreArticlesOlderThan</a>
+	    parameter. For instance, if use <span class="code">ShowArticlesFor</code> to tell
+	    <i>curn</i> to show articles for 5 days, but you also use
+	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> to tell
+	    <i>curn</i> to ignore articles older than 2 days, the
+	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> will take
+	    preference.
+      </ul>
 
       This value overrides the global
       <a href="#Cfg_ShowArticlesFor" class="code">ShowArticlesFor</a> parameter.
@@ -4262,6 +4332,15 @@ stock plug-ins are in the
     <td align="left">Suppress duplicate articles in a feed, based on a
     comparison of the article titles.</td>
     <td align="left"><a href="#Feed_IgnoreDuplicateTitles" class="code">IgnoreDuplicateTitles</a></td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="PlugIn_MaxArticles"></a>Max Articles</td>
+    <td align="left" class="code"><a name="MaxArticlesPlugIn"></a>MaxArticlesPlugIn</td>
+    <td align="left">Limits the number of articles displayed for a feed.</td>
+    <td align="left">
+      <a href="#Feed_MaxArticlesToShow" class="code">MaxArticlesToShow</a><br/>
+    </td>
   </tr>
 
   <tr valign="top">

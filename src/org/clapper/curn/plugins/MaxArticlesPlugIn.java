@@ -46,64 +46,49 @@
 
 package org.clapper.curn.plugins;
 
-import java.net.URL;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import org.clapper.curn.Constants;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
-import org.clapper.curn.CurnUtil;
-import org.clapper.curn.FeedCache;
-import org.clapper.curn.FeedCacheEntry;
-import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.FeedInfo;
-import org.clapper.curn.ForceFeedDownloadPlugIn;
+import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.PostFeedParsePlugIn;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
+
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
 import org.clapper.util.logging.Logger;
-import org.clapper.util.text.Duration;
+
+import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
+import org.clapper.curn.FeedCache;
 
 /**
-* The <tt>RetainArticlesPlugIn</tt> can be used to force articles in a feed
- * (or in all feeds) to be displayed more than once. It looks for a default
- * (main-configuration section) "ShowArticlesFor" parameter, and it permits
- * a per-feed "ShowArticlesFor" parameter to override the default. The
- * configuration parameter takes a time interval, expressed in a
- * natural language string. (The {@link IgnoreOldArticlesPlugIn} class uses
- * the same time interval form.) Examples:
+ * The <tt>MaxArticlesPlugIn</tt> can be used to set an upper limit on the
+ * number of articles displayed for a feed (or for all feeds).
+ * It looks for a default (main-configuration section) "MaxArticlesToShow"
+ * parameter, and permits a per-feed "MaxArticlesToShow" parameter to override
+ * the default. This plug-in deliberately uses a non-typical sort key to force
+ * it to run <i>after</i> other stock plug-ins in the "post feed parse" phase.
+ * Thus, this plug-in doesn't apply its maximum threshold test until
+ * <i>after</i>:
  *
  * <ul>
- *   <li> 3 days
- *   <li> 1 week
- *   <li> 365 days
- *   <li> 12 hours, 30 minutes
+ *   <li> the articles are sorted (see {@link SortArticlesPlugIn})
+ *   <li> any article retention policy is applied (see
+ *        {@link RetainArticlesPlugIn})
+ *   <li> any "article ignore" policy is applied (see
+ *        {@link IgnoreOldArticlesPlugIn})
  * </ul>
- *
- * Valid interval names (in English) are:
- *
- * <ul>
- *   <li> "millisecond", "milliseconds", "ms"
- *   <li> "second", "seconds", "sec", "secs"
- *   <li> "minutes", "minutes", "min", "mins"
- *   <li> "hour", "hours", "hr", "hrs"
- *   <li> "day", "days"
- *   <li> "week", "weeks"
- * </ul>
- *
- * <p>This plug-in uses the
- * <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
-*  library's
- * <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html"><tt>Duration</tt></a>
- * class to parse the age/duration values. See that class for more details.</p>
  *
  *
  * <p>This plug-in intercepts the following configuration parameters.</p>
- *
+*
  * <table border="1">
  *   <tr valign="top" align="left">
  *     <th>Section</th>
@@ -113,74 +98,71 @@ import org.clapper.util.text.Duration;
  *   </tr>
  *   <tr valign="top">
  *     <td><tt>[curn]</tt></td>
- *     <td><tt>ShowArticlesFor</tt></td>
- *     <td>Global default specifying how long to retain an article. Applies to
- *         all feeds that don't explicitly override this parameter.</td>
- *     <td>None. (Articles displayed only once.)</td>
+ *     <td><tt>MaxArticlesToShow</tt></td>
+ *     <td>Global default specifying the maximum number of articles to show
+ *         per feed. Applies to all feeds that don't explicitly override this
+ *         parameter.</td>
+ *     <td>None. (All articles are shown, subject to actions by other
+ *         plug-ins.)</td>
  *   </tr>
  *   <tr valign="top">
  *     <td><tt>[Feed<i>xxx</i>]</tt></td>
- *     <td><tt>IgnoreArticlesOlderThan</tt></td>
- *     <td>Per-feed parameter specifying how long to retain an article.</td>
- *     <td>The global <tt>IgnoreArticlesOlderThan</tt> setting. If there is
- *         no global setting, then the default is to display articles only
- *         once.</td>
+ *     <td><tt>MaxArticlesToShow</tt></td>
+ *     <td>Per-feed parameter specifying the maximum number of articles to
+ *         show from the feed.</td>
+ *     <td>The global <tt>MaxArticlesToShow</tt> setting. If there is
+ *         no global setting, then the default to show all articles in the
+ *         feed (subject to actions by other plug-ins).</td>
  *   </tr>
  * </table>
  *
- * <p><b>WARNING</b>: Beware of interactions with the
- * {@link IgnoreOldArticlesPlugIn} class. For instance, if you use
- * "ShowArticlesFor" to show articles for 5 days, but you also use
- * "IgnoreArticlesOlderThan" to discard articles older than 2 days,
- * the "IgnoreArticlesOlderThan parameter takes precedence.
- *
  * @version <tt>$Revision$</tt>
  */
-public class RetainArticlesPlugIn
+public class MaxArticlesPlugIn
     implements MainConfigItemPlugIn,
                FeedConfigItemPlugIn,
-               ForceFeedDownloadPlugIn,
                PostFeedParsePlugIn
 {
     /*----------------------------------------------------------------------*\
-                               Private Constants
+                             Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VAR_SHOW_ARTICLES_DURATION = "ShowArticlesFor";
+    private static final String VAR_MAX_ARTICLES = "MaxArticlesToShow";
 
     /*----------------------------------------------------------------------*\
-                               Private Data Items
+                            Private Data Items
     \*----------------------------------------------------------------------*/
 
     /**
-     * Feed duration data, by feed URL. This map contains configuration data.
+     * Feed sort-by data, by feed
      */
-    private Map<URL,Duration> perFeedDuration =
-        new HashMap<URL,Duration>();
+    private Map<URL,Integer> perFeedMaxArticlesMap =
+        new HashMap<URL,Integer>();
 
     /**
-     * The global default
+     * Default sort-by value
      */
-    private Duration globalDefault = null;
+    private Integer defaultMaxArticlesToShow = null;
 
     /**
-     * For logging
+     * For log messages
      */
-    private static final Logger log = new Logger(RetainArticlesPlugIn.class);
+    private static final Logger log = new Logger(MaxArticlesPlugIn.class);
 
     /*----------------------------------------------------------------------*\
-                                   Constructor
+                                Constructor
     \*----------------------------------------------------------------------*/
 
     /**
-     * Creates a new instance of <tt>RetainArticlesPlugIn</tt>
+     * Default constructor (required).
      */
-    public RetainArticlesPlugIn()
+    public MaxArticlesPlugIn()
     {
+        // Nothing to do
     }
 
     /*----------------------------------------------------------------------*\
-                                Public Methods
+               Public Methods Required by *PlugIn Interfaces
     \*----------------------------------------------------------------------*/
 
     /**
@@ -190,7 +172,7 @@ public class RetainArticlesPlugIn
      */
     public String getPlugInName()
     {
-        return "Retain Articles";
+        return "Max Articles";
     }
 
     /**
@@ -200,7 +182,14 @@ public class RetainArticlesPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName(getClass().getName());
+        // Unlike most plug-ins, use a sort key that forces this plug-in
+        // to run after the other stock plug-ins.
+
+        StringBuilder key = new StringBuilder();
+        key.append("ZZZZZ.");
+        key.append(ClassUtil.getShortClassName(getClass().getName()));
+
+        return key.toString();
     }
 
     /**
@@ -240,31 +229,31 @@ public class RetainArticlesPlugIn
     {
         try
         {
-            if (paramName.equals (VAR_SHOW_ARTICLES_DURATION))
+            if (paramName.equals(VAR_MAX_ARTICLES))
             {
-                try
+                int val = config.getRequiredCardinalValue(sectionName,
+                                                          paramName);
+                if (val <= 0)
                 {
-                    String sDuration = config.getConfigurationValue(sectionName,
-                                                                    paramName);
-                    globalDefault.parse(sDuration);
-                    log.debug("[" + sectionName + "] " + paramName + "=" +
-                              globalDefault);
+                    throw new ConfigurationException
+                        (Constants.BUNDLE_NAME, "CurnConfig.badVarValue",
+                         "Section \"{0}\" in the configuration file has a bad " +
+                         "value (\"{1}\") for the \"{2}\" parameter",
+                         new Object[]
+                         {
+                             sectionName,
+                             String.valueOf(val),
+                             VAR_MAX_ARTICLES
+                         });
                 }
 
-                catch (ParseException ex)
-                {
-                    throw new CurnException("Bad value for configuration " +
-                                            "variable \"" + paramName + "\" " +
-                                            "in section [" + sectionName + "]",
-                                            ex);
-                }
-
+                defaultMaxArticlesToShow = val;
             }
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
     }
 
@@ -303,66 +292,36 @@ public class RetainArticlesPlugIn
     {
         try
         {
-            if (paramName.equals (VAR_SHOW_ARTICLES_DURATION))
+            if (paramName.equals(VAR_MAX_ARTICLES))
             {
-                try
+                int val = config.getRequiredCardinalValue(sectionName,
+                                                          paramName);
+                if (val <= 0)
                 {
-                    String sDuration = config.getConfigurationValue(sectionName,
-                                                                    paramName);
-                    Duration duration = new Duration(sDuration);
-                    URL feedURL = CurnUtil.normalizeURL(feedInfo.getURL());
-                    perFeedDuration.put(feedURL, duration);
-                    if (log.isDebugEnabled())
-                    {
-                        log.debug("[" + sectionName + "] (" +
-                                  feedURL.toString() + ") " + paramName + "=" +
-                                  duration + " (" + duration.format() + ")");
-                    }
+                    throw new ConfigurationException
+                        (Constants.BUNDLE_NAME, "CurnConfig.badVarValue",
+                         "Section \"{0}\" in the configuration file has a bad " +
+                         "value (\"{1}\") for the \"{2}\" parameter",
+                         new Object[]
+                         {
+                             sectionName,
+                             String.valueOf(val),
+                             VAR_MAX_ARTICLES
+                         });
                 }
 
-                catch (ParseException ex)
-                {
-                    log.error(ex);
-                    throw new CurnException("Bad value for configuration " +
-                                            "variable \"" + paramName + "\" " +
-                                            "in section [" + sectionName + "]",
-                                            ex);
-                }
+                URL feedURL = feedInfo.getURL();
+                perFeedMaxArticlesMap.put(feedURL, val);
+                log.debug(feedURL + ": " + VAR_MAX_ARTICLES + "=" + val);
             }
+
+            return true;
         }
 
         catch (ConfigurationException ex)
         {
-            throw new CurnException (ex);
+            throw new CurnException(ex);
         }
-
-        return true;
-    }
-    /**
-     * This method determines (based on some internal criteria) whether
-     * a given feed should be downloaded even if it hasn't changed. If multiple
-     * plug-ins implement this interface, then only one needs to return
-     * <tt>true</tt> for the feed download to be forced.
-     *
-     * @param feedInfo  the {@link FeedInfo} object for the feed that
-     *                  has been downloaded and parsed.
-     * @param feedCache the feed cache, or null if there isn't one
-     *
-     * @return <tt>true</tt> if the feed should be downloaded and parsed
-     *         even if it's not out of date; <tt>false</tt> if <i>curn</i>'s
-     *         normal downloading rules should apply.
-     *
-     * @throws CurnException on error
-     */
-    public boolean forceFeedDownload(FeedInfo feedInfo, FeedCache feedCache)
-        throws CurnException
-    {
-        URL feedURL = CurnUtil.normalizeURL(feedInfo.getURL());
-        Duration duration = perFeedDuration.get(feedURL);
-        if (duration == null)
-            duration = globalDefault;
-
-        return (duration != null);
     }
 
     /**
@@ -395,67 +354,33 @@ public class RetainArticlesPlugIn
                                           RSSChannel channel)
         throws CurnException
     {
-        URL feedURL = CurnUtil.normalizeURL(feedInfo.getURL());
-        log.debug("Checking parsed feed \"" + feedURL.toString() + "\"");
-        Duration duration = perFeedDuration.get(feedURL);
-        if (duration == null)
-            duration = globalDefault;
+        URL feedURL = feedInfo.getURL();
+        log.debug("Post feed parse: " + feedURL.toString());
 
-        if (duration != null)
+        Integer max = perFeedMaxArticlesMap.get(feedURL);
+        if (max == null)
+            max = defaultMaxArticlesToShow;
+
+        if (max != null)
         {
-            String feedURLString = feedURL.toString();
-            String sDuration = duration.format();
-            long durationMillis = duration.getDuration();
-
-            log.debug("Articles in feed " + feedURL + " should be shown for " +
-                      sDuration);
-
-            long now = System.currentTimeMillis();
-            for (RSSItem item : channel.getItems())
+            Collection<RSSItem> items  = channel.getItems();
+            int totalItems = items.size();
+            log.debug("Feed \"" + feedURL + "\": Max articles for feed=" + max);
+            log.debug("Feed \"" + feedURL + "\": Total articles=" + totalItems);
+            if (totalItems > max)
             {
-                FeedCacheEntry entry = null;
-                long itemCacheTime = now;
-                if (feedCache != null)
+                log.debug("Feed \"" + feedURL + "\": Trimming articles.");
+                int i = 0;
+                Collection<RSSItem> trimmedItems = new ArrayList<RSSItem>();
+                for (RSSItem item : items)
                 {
-                    entry = feedCache.getEntryForItem(item);
-                    if (entry != null)
-                        itemCacheTime = entry.getTimestamp();
+                    if (i++ >= max)
+                        break;
+
+                    trimmedItems.add(item);
                 }
 
-                long itemAge = now - itemCacheTime;
-
-                // Account for articles dated in the future. (There's no
-                // reason some doofus feed couldn't do that. And then there's
-                // always machine clock-skew.)
-
-                if (itemAge < 0)
-                    itemAge = 0;
-
-                // Has the item passed the duration to be shown?
-
-                Date cacheDate = new Date(itemCacheTime);
-                if (itemAge > durationMillis)
-                {
-                    log.info("In feed " + feedURLString + ", article " +
-                             item.getURL() + " was cached " + cacheDate +
-                             ", which is more than " + sDuration + ". " +
-                             "Suppressing article.");
-                    channel.removeItem(item);
-                }
-
-                else
-                {
-                    entry = feedCache.getEntryForItem(item);
-                    if (entry != null)
-                    {
-                        log.info("In feed " + feedURLString +
-                                 ", previously seen article " +
-                                  item.getURL() + " was cached " + cacheDate +
-                                 ", which is less than " + sDuration + ". " +
-                                 "Showing article again.");
-                        entry.setSticky(true);
-                    }
-                }
+                channel.setItems(trimmedItems);
             }
         }
 
@@ -463,10 +388,6 @@ public class RetainArticlesPlugIn
     }
 
     /*----------------------------------------------------------------------*\
-                               Protected Methods
-    \*----------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------*\
-                                Private Methods
+                              Private Methods
     \*----------------------------------------------------------------------*/
 }

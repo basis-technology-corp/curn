@@ -54,8 +54,8 @@ import java.io.File;
 
 import java.net.URLConnection;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeSet;
 
 /**
  * A <tt>MetaPlugIn</tt> object is basically a plug-in that contains all the
@@ -109,63 +109,68 @@ public class MetaPlugIn
     \*----------------------------------------------------------------------*/
 
     /**
+     * Plug-in comparator.
+     */
+    private PlugInComparator cmp = new PlugInComparator();
+
+    /**
      * The loaded plug-ins, by type.
      */
     private final Collection<CacheLoadedPlugIn>
-        cacheLoadedPlugIns = new ArrayList<CacheLoadedPlugIn>();
+        cacheLoadedPlugIns = new TreeSet<CacheLoadedPlugIn>(cmp);
 
     private final Collection<FeedConfigItemPlugIn>
-        feedConfigItemPlugIns = new ArrayList<FeedConfigItemPlugIn>();
+        feedConfigItemPlugIns = new TreeSet<FeedConfigItemPlugIn>(cmp);
 
     private final Collection<MainConfigItemPlugIn>
-        mainConfigItemPlugIns = new ArrayList<MainConfigItemPlugIn>();
+        mainConfigItemPlugIns = new TreeSet<MainConfigItemPlugIn>(cmp);
 
     private final Collection<OutputHandlerConfigItemPlugIn>
         outputHandlerConfigItemPlugIns =
-            new ArrayList<OutputHandlerConfigItemPlugIn>();
+            new TreeSet<OutputHandlerConfigItemPlugIn>(cmp);
 
     private final Collection<PostConfigPlugIn>
-        postConfigPlugIns = new ArrayList<PostConfigPlugIn>();
+        postConfigPlugIns = new TreeSet<PostConfigPlugIn>(cmp);
 
     private final Collection<PostFeedDownloadPlugIn>
-        postFeedDownloadPlugIns = new ArrayList<PostFeedDownloadPlugIn>();
+        postFeedDownloadPlugIns = new TreeSet<PostFeedDownloadPlugIn>(cmp);
 
     private final Collection<PostFeedOutputPlugIn>
-        postFeedOutputPlugIns = new ArrayList<PostFeedOutputPlugIn>();
+        postFeedOutputPlugIns = new TreeSet<PostFeedOutputPlugIn>(cmp);
 
     private final Collection<PostFeedParsePlugIn>
-        postFeedParsePlugIns = new ArrayList<PostFeedParsePlugIn>();
+        postFeedParsePlugIns = new TreeSet<PostFeedParsePlugIn>(cmp);
 
     private final Collection<PostOutputHandlerFlushPlugIn>
         postOutputHandlerFlushPlugIns =
-            new ArrayList<PostOutputHandlerFlushPlugIn>();
+            new TreeSet<PostOutputHandlerFlushPlugIn>(cmp);
 
     private final Collection<PreCacheSavePlugIn>
-        preCacheSavePlugIns = new ArrayList<PreCacheSavePlugIn>();
+        preCacheSavePlugIns = new TreeSet<PreCacheSavePlugIn>(cmp);
 
     private final Collection<ForceFeedDownloadPlugIn>
-        forceFeedDownloadPlugIns = new ArrayList<ForceFeedDownloadPlugIn>();
+        forceFeedDownloadPlugIns = new TreeSet<ForceFeedDownloadPlugIn>(cmp);
 
     private final Collection<PreFeedDownloadPlugIn>
-        preFeedDownloadPlugIns = new ArrayList<PreFeedDownloadPlugIn>();
+        preFeedDownloadPlugIns = new TreeSet<PreFeedDownloadPlugIn>(cmp);
 
     private final Collection<PreFeedOutputPlugIn>
-        preFeedOutputPlugIns = new ArrayList<PreFeedOutputPlugIn>();
+        preFeedOutputPlugIns = new TreeSet<PreFeedOutputPlugIn>(cmp);
 
     private final Collection<PostOutputPlugIn>
-        postOutputPlugIns = new ArrayList<PostOutputPlugIn>();
+        postOutputPlugIns = new TreeSet<PostOutputPlugIn>(cmp);
 
     private final Collection<ShutdownPlugIn>
-        shutdownPlugIns = new ArrayList<ShutdownPlugIn>();
+        shutdownPlugIns = new TreeSet<ShutdownPlugIn>(cmp);
 
     private final Collection<StartupPlugIn>
-        startupPlugIns = new ArrayList<StartupPlugIn>();
+        startupPlugIns = new TreeSet<StartupPlugIn>(cmp);
 
     private final Collection<UnknownSectionConfigItemPlugIn>
         unknownSectionConfigItemPlugIns =
-            new ArrayList<UnknownSectionConfigItemPlugIn>();
+            new TreeSet<UnknownSectionConfigItemPlugIn>(cmp);
 
-    private final Collection<PlugIn> allPlugIns = new ArrayList<PlugIn>();
+    private final Collection<PlugIn> allPlugIns = new TreeSet<PlugIn>(cmp);
 
     /**
      * The singleton

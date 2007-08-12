@@ -72,7 +72,6 @@ import java.io.FileFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -100,34 +99,6 @@ public class PlugInManager
                                Inner Classes
     \*----------------------------------------------------------------------*/
 
-    /**
-     * Plug-in comparator.
-     */
-    private static class PlugInComparator implements Comparator<PlugIn>
-    {
-        PlugInComparator()
-        {
-            // Nothing to do.
-        }
-
-        public int compare (final PlugIn pl1, final PlugIn pl2)
-        {
-            return pl1.getPlugInSortKey().compareToIgnoreCase (pl2.getPlugInSortKey());
-        }
-
-        @Override
-        public boolean equals (final Object o)
-        {
-            return (o instanceof PlugInComparator);
-        }
-
-        @Override
-        public int hashCode()                                       // NOPMD
-        {
-            return super.hashCode();
-        }
-    }
-
     /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
@@ -141,7 +112,7 @@ public class PlugInManager
      * The located PlugIns
      */
     private static Collection<PlugIn> plugIns =
-        new TreeSet<PlugIn> (new PlugInComparator());
+        new TreeSet<PlugIn>(new PlugInComparator());
 
     /**
      * Whether or not plug-ins are loaded
@@ -151,7 +122,7 @@ public class PlugInManager
     /**
      * File filter to use when looking for jars, zip files, and directories.
      */
-    private static FileFilter plugInLocFilter = null; // NOPMD
+    private static FileFilter plugInLocFilter = null;
 
     static
     {

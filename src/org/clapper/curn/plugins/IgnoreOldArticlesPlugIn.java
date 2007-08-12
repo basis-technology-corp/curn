@@ -80,6 +80,7 @@ import org.clapper.util.text.Duration;
  * </ul>
  *
  * Age is specified using natural language strings that express durations.
+ * (The {@link RetainArticlesPlugIn} class uses the same time interval form.)
  * Examples:
  *
  * <ul>
@@ -122,15 +123,15 @@ import org.clapper.util.text.Duration;
  *   <tr valign="top">
  *     <td><tt>[curn]</tt></td>
  *     <td><tt>IgnoreArticlesOlderThan</tt></td>
- *     <td>Global default specifying how an article must be before this plug-in
- *         will discard it. Applies to all feeds that don't explicitly override
- *         this parameter.</td>
+ *     <td>Global default specifying how old an article must be before this 
+ *         plug-in will discard it. Applies to all feeds that don't explicitly 
+ *         specify this parameter.</td>
  *     <td>None. (Articles aren't suppressed by age.)</td>
  *   </tr>
  *   <tr valign="top">
  *     <td><tt>[Feed<i>xxx</i>]</tt></td>
  *     <td><tt>IgnoreArticlesOlderThan</tt></td>
- *     <td>Per-feed parameter specifying how an article must be before this
+ *     <td>Per-feed parameter specifying how old an article must be before this
  *         plug-in will discard it.</td>
  *     <td>The global <tt>IgnoreArticlesOlderThan</tt> setting. If there is
  *         no global setting, then the default is not to suppress articles
