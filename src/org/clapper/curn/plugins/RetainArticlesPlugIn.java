@@ -443,6 +443,11 @@ public class RetainArticlesPlugIn
                     channel.removeItem(item);
                 }
 
+                else if (feedCache == null)
+                {
+                    log.info("No cache. Retaining article by default.");
+                }
+
                 else
                 {
                     entry = feedCache.getEntryForItem(item);
