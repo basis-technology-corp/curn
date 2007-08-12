@@ -120,18 +120,19 @@ public abstract class FileOutputHandler implements OutputHandler
                            Private Instance Data
     \*----------------------------------------------------------------------*/
 
-    private String      name           = null;
-    private File        outputFile     = null;
-    private CurnConfig  config         = null;                      // NOPMD
-    private boolean     saveOnly       = false;
-    private boolean     showToolInfo   = true;
-    private int         savedBackups   = 0;
-    private String      encoding       = null;
+    private String                  name         = null;
+    private File                    outputFile   = null;
+    private CurnConfig              config       = null;
+    private ConfiguredOutputHandler cfgHandler   = null;
+    private boolean                 saveOnly     = false;
+    private boolean                 showToolInfo = true;
+    private int                     savedBackups = 0;
+    private String                  encoding     = null;
 
     /**
      * For logging
      */
-    private Logger log = null;                                      // NOPMD
+    private Logger log = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -167,7 +168,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @throws CurnException on error
      */
-    public void setName (final String name)
+    public void setName(final String name)
         throws CurnException
     {
         this.name = name;
@@ -185,8 +186,8 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public final void init (final CurnConfig              config,
-                            final ConfiguredOutputHandler cfgHandler)
+    public final void init(final CurnConfig              config,
+                           final ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
@@ -197,21 +198,21 @@ public abstract class FileOutputHandler implements OutputHandler
         sectionName = cfgHandler.getSectionName();
         this.name   = sectionName;
 
-        log = new Logger (getClass().getName() + "[" + name + "]");
+        log = new Logger(getClass().getName() + "[" + name + "]");
         try
         {
             if (sectionName != null)
             {
-                saveAs = config.getOptionalStringValue (sectionName,
-                                                        CFG_SAVE_AS,
-                                                        null);
+                saveAs = config.getOptionalStringValue(sectionName,
+                                                       CFG_SAVE_AS,
+                                                       null);
                 savedBackups = config.getOptionalCardinalValue
                                               (sectionName,
                                                CFG_SAVED_BACKUPS,
                                                0);
-                saveOnly = config.getOptionalBooleanValue (sectionName,
-                                                           CFG_SAVE_ONLY,
-                                                           false);
+                saveOnly = config.getOptionalBooleanValue(sectionName,
+                                                          CFG_SAVE_ONLY,
+                                                          false);
 
                 showToolInfo = config.getOptionalBooleanValue
                                                (sectionName,
@@ -232,33 +233,49 @@ public abstract class FileOutputHandler implements OutputHandler
 
         catch (NoSuchSectionException ex)
         {
-            throw new ConfigurationException (ex);
+            throw new ConfigurationException(ex);
         }
 
         if (saveAs != null)
-            outputFile = CurnUtil.mapConfiguredPathName (saveAs);
+            outputFile = CurnUtil.mapConfiguredPathName(saveAs);
 
         else
         {
             try
             {
-                outputFile = File.createTempFile ("curn", null);
+                outputFile = File.createTempFile("curn", null);
                 outputFile.deleteOnExit();
             }
 
             catch (IOException ex)
             {
-                throw new CurnException (Constants.BUNDLE_NAME,
-                                         "FileOutputHandler.cantMakeTempFile",
-                                         "Cannot create temporary file",
-                                         ex);
+                throw new CurnException(Constants.BUNDLE_NAME,
+                                        "FileOutputHandler.cantMakeTempFile",
+                                        "Cannot create temporary file",
+                                        ex);
             }
         }
 
-        log.debug ("Calling " + this.getClass().getName() +
-                   ".initOutputHandler()");
+        log.debug("Calling " + this.getClass().getName() +
+                  ".initOutputHandler()");
 
-        initOutputHandler (config, cfgHandler);
+        this.cfgHandler = cfgHandler;
+        initOutputHandler(config, cfgHandler);
+    }
+
+    /**
+     * Reinitialize the output handler with the same parameters originally
+     * passed to {@link init init()}. Useful for resetting an output handler
+     * to the state it was in prior to being used.
+     *
+     * @throws ConfigurationException configuration error
+     * @throws CurnException          some other initialization error
+     */
+    public final void reInit()
+        throws ConfigurationException,
+               CurnException
+    {
+        init(config, cfgHandler);
     }
 
     /**
@@ -274,8 +291,8 @@ public abstract class FileOutputHandler implements OutputHandler
      * @throws ConfigurationException  configuration error
      * @throws CurnException           some other initialization error
      */
-    public abstract void initOutputHandler (CurnConfig              config,
-                                            ConfiguredOutputHandler cfgHandler)
+    public abstract void initOutputHandler(CurnConfig              config,
+                                           ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException;
 
@@ -289,7 +306,7 @@ public abstract class FileOutputHandler implements OutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public abstract void displayChannel (RSSChannel channel, FeedInfo feedInfo)
+    public abstract void displayChannel(RSSChannel channel, FeedInfo feedInfo)
         throws CurnException;
 
     /**
@@ -396,7 +413,7 @@ public abstract class FileOutputHandler implements OutputHandler
             // the file name and the extension, rather than at the end of
             // the file (since the extension is likely to matter).
 
-            w = new PrintWriter 
+            w = new PrintWriter
                 (CurnUtil.openOutputFile(outputFile,
                                          encoding,
                                          CurnUtil.IndexMarker.BEFORE_EXTENSION,

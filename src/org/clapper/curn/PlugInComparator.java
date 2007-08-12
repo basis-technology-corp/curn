@@ -88,7 +88,7 @@ public class PlugInComparator implements Comparator<PlugIn>
      *         = 0 if both plug-ins have the same sort key,
      *         > 0 if <tt>plugIn1</tt> is greater than <tt>plugIn2</tt>
      *
-     * @see PlugIn#getSortKey
+     * @see PlugIn#getPlugInSortKey
      */
     public int compare(final PlugIn plugIn1, final PlugIn plugIn2)
     {

@@ -92,7 +92,7 @@ public interface OutputHandler
      *
      * @throws CurnException on error
      */
-    public void setName (String name)
+    public void setName(String name)
         throws CurnException;
 
     /**
@@ -113,7 +113,19 @@ public interface OutputHandler
      * @see CurnConfig
      * @see ConfiguredOutputHandler
      */
-    public void init (CurnConfig config, ConfiguredOutputHandler cfgHandler)
+    public void init(CurnConfig config, ConfiguredOutputHandler cfgHandler)
+        throws ConfigurationException,
+               CurnException;
+    
+    /**
+     * Reinitialize the output handler with the same parameters originally
+     * passed to {@link init init()}. Useful for resetting an output handler
+     * to the state it was in prior to being used.
+     *
+     * @throws ConfigurationException configuration error
+     * @throws CurnException          some other initialization error
+     */
+    public void reInit()
         throws ConfigurationException,
                CurnException;
 
@@ -130,7 +142,7 @@ public interface OutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (RSSChannel channel, FeedInfo feedInfo)
+    public void displayChannel(RSSChannel channel, FeedInfo feedInfo)
         throws CurnException;
 
     /**

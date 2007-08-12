@@ -595,8 +595,8 @@ public class ScriptOutputHandler extends FileOutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public final void displayChannel (RSSChannel  channel,
-                                      FeedInfo    feedInfo)
+    public final void displayChannel(RSSChannel  channel,
+                                     FeedInfo    feedInfo)
         throws CurnException
     {
         // Save the channel.

@@ -49,10 +49,14 @@ package org.clapper.curn.plugins;
 import org.clapper.curn.Constants;
 import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
+import org.clapper.curn.FeedInfo;
 import org.clapper.curn.MainConfigItemPlugIn;
 import org.clapper.curn.OutputHandler;
+import org.clapper.curn.PreFeedOutputPlugIn;
 import org.clapper.curn.PostOutputPlugIn;
 import org.clapper.curn.Version;
+import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSChannel;
 
 import org.clapper.util.classutil.ClassUtil;
 import org.clapper.util.config.ConfigurationException;
@@ -71,6 +75,7 @@ import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The <tt>EmailOutputPlugIn</tt> handles emailing the output from a
@@ -100,24 +105,34 @@ import java.util.Collection;
  *     <td>The subject to use for email messages.</td>
  *     <td>"RSS Feeds"</td>
  *   </tr>
+ *   <tr valign="top">
+ *     <td><tt>MailIndividualArticles</tt></td>
+ *     <td>If set to <tt>true</tt> (or <tt>yes</tt> or <tt>1</tt>),
+ *         <i>curn</i> will send each RSS article individually--i.e.,
+ *         one article per email. Otherwise, it sends all the articles from
+ *         all feeds in a single email.</td>
+ *     <td><tt>false</tt> (i.e., send one email with all articles)</td>
+ *   </tr>
  * </table>
  *
  * @version <tt>$Revision$</tt>
  */
 public class EmailOutputPlugIn
     implements MainConfigItemPlugIn,
+               PreFeedOutputPlugIn,
                PostOutputPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
     \*----------------------------------------------------------------------*/
 
-    private static final String VAR_EMAIL_OUTPUT_TO   = "MailOutputTo";
-    private static final String VAR_SMTP_HOST         = "SMTPHost";
-    private static final String DEF_SMTP_HOST         = "localhost";
-    private static final String VAR_EMAIL_SENDER      = "MailSender";
-    private static final String VAR_EMAIL_SUBJECT     = "MailSubject";
-    private static final String DEF_EMAIL_SUBJECT     = "RSS Feeds";
+    private static final String VAR_EMAIL_OUTPUT_TO       = "MailOutputTo";
+    private static final String VAR_SMTP_HOST             = "SMTPHost";
+    private static final String DEF_SMTP_HOST             = "localhost";
+    private static final String VAR_EMAIL_SENDER          = "MailSender";
+    private static final String VAR_EMAIL_SUBJECT         = "MailSubject";
+    private static final String DEF_EMAIL_SUBJECT         = "RSS Feeds";
+    private static final String VAR_MAIL_INDIVIDUAL_ITEMS = "MailIndividualArticles";
 
     /*----------------------------------------------------------------------*\
                             Private Data Items
@@ -147,6 +162,12 @@ public class EmailOutputPlugIn
      * For log messages
      */
     private static final Logger log = new Logger (EmailOutputPlugIn.class);
+
+    /**
+     * If set, mail individual items, one at a time. If not set, mail
+     * all items at the end, in one email.
+     */
+    private boolean mailIndividualItems = false;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -181,7 +202,7 @@ public class EmailOutputPlugIn
      */
     public String getPlugInSortKey()
     {
-        return ClassUtil.getShortClassName (getClass().getName());
+        return ClassUtil.getShortClassName(getClass().getName());
     }
 
     /**
@@ -214,20 +235,20 @@ public class EmailOutputPlugIn
      *
      * @see CurnConfig
      */
-    public void runMainConfigItemPlugIn (String     sectionName,
-                                         String     paramName,
-                                         CurnConfig config)
+    public void runMainConfigItemPlugIn(String     sectionName,
+                                        String     paramName,
+                                        CurnConfig config)
         throws CurnException
     {
         try
         {
-            if (paramName.equals (VAR_SMTP_HOST))
+            if (paramName.equals(VAR_SMTP_HOST))
             {
-                smtpHost = config.getConfigurationValue (sectionName,
-                                                         paramName);
+                smtpHost = config.getConfigurationValue(sectionName,
+                                                        paramName);
             }
 
-            else if (paramName.equals (VAR_EMAIL_SENDER))
+            else if (paramName.equals(VAR_EMAIL_SENDER))
             {
                 if (emailSender != null)
                 {
@@ -239,11 +260,11 @@ public class EmailOutputPlugIn
                          new Object[] {sectionName, paramName});
                 }
 
-                String sender = config.getConfigurationValue (sectionName,
-                                                              paramName);
+                String sender = config.getConfigurationValue(sectionName,
+                                                             paramName);
                 try
                 {
-                    emailSender = new EmailAddress (sender);
+                    emailSender = new EmailAddress(sender);
 
                 }
 
@@ -259,17 +280,17 @@ public class EmailOutputPlugIn
                 }
             }
 
-            else if (paramName.equals (VAR_EMAIL_SUBJECT))
+            else if (paramName.equals(VAR_EMAIL_SUBJECT))
             {
-                emailSubject = config.getConfigurationValue (sectionName,
-                                                             paramName);
+                emailSubject = config.getConfigurationValue(sectionName,
+                                                            paramName);
             }
 
-            else if (paramName.equals (VAR_EMAIL_OUTPUT_TO))
+            else if (paramName.equals(VAR_EMAIL_OUTPUT_TO))
             {
-                String addrList = config.getConfigurationValue (sectionName,
-                                                                paramName);
-                String[] addrs = TextUtil.split (addrList, ",");
+                String addrList = config.getConfigurationValue(sectionName,
+                                                               paramName);
+                String[] addrs = TextUtil.split(addrList, ",");
 
                 if ((addrs == null) || (addrs.length == 0))
                 {
@@ -289,7 +310,7 @@ public class EmailOutputPlugIn
                     try
                     {
                         addr = addr.trim();
-                        emailAddresses.add (new EmailAddress (addr));
+                        emailAddresses.add(new EmailAddress(addr));
                     }
 
                     catch (EmailException ex)
@@ -305,11 +326,74 @@ public class EmailOutputPlugIn
                     }
                 }
             }
+
+            else if (paramName.equals(VAR_MAIL_INDIVIDUAL_ITEMS))
+            {
+                mailIndividualItems = config.getRequiredBooleanValue(sectionName,
+                                                                     paramName);
+            }
         }
 
         catch (ConfigurationException ex)
         {
             throw new CurnException (ex);
+        }
+    }
+
+    /**
+     * Called immediately before a parsed feed is passed to an output
+     * handler. This method cannot affect the feed's processing. (The time
+     * to stop the processing of a feed is in one of the other, preceding
+     * phases.) This method will be called multiple times for each feed if
+     * there are multiple output handlers.
+     *
+     * @param feedInfo      the {@link FeedInfo} object for the feed that
+     *                      has been downloaded and parsed.
+     * @param channel       the parsed channel data. The plug-in is free
+     *                      to edit this data; it's receiving a copy
+     *                      that's specific to the output handler.
+     * @param outputHandler the {@link OutputHandler} that is about to be
+     *                      called. This object is read-only.
+     *
+     * @throws CurnException on error
+     *
+     * @see RSSChannel
+     * @see FeedInfo
+     */
+    public void runPreFeedOutputPlugIn(FeedInfo      feedInfo,
+                                       RSSChannel    channel,
+                                       OutputHandler outputHandler)
+        throws CurnException
+    {
+        if (mailIndividualItems &
+            (emailAddresses != null) &
+            (emailAddresses.size() > 0))
+        {
+            // Use the output handler to generate the output. Break the channel
+            // into multiple channels with one item each.
+
+            RSSChannel newChannel = channel.makeCopy();
+            for (RSSItem item : channel.getItems())
+            {
+                newChannel.setItems(Collections.singletonList(item));
+                outputHandler.displayChannel(channel, feedInfo);
+                outputHandler.flush();
+                emailOutput(Collections.singletonList(outputHandler),
+                            emailAddresses);
+
+                // Be sure to reinitialize the output handler, so it can be
+                // used fresh again.
+
+                try
+                {
+                    outputHandler.reInit();
+                }
+
+                catch (ConfigurationException ex)
+                {
+                    throw new CurnException(ex);
+                }
+            }
         }
     }
 
@@ -327,13 +411,15 @@ public class EmailOutputPlugIn
      *
      * @see OutputHandler
      */
-    public void runPostOutputPlugIn (Collection<OutputHandler> outputHandlers)
+    public void runPostOutputPlugIn(Collection<OutputHandler> outputHandlers)
         throws CurnException
     {
-        if ((emailAddresses != null) && (emailAddresses.size() > 0))
+        if ((! mailIndividualItems) &
+            (emailAddresses != null) &
+            (emailAddresses.size() > 0))
         {
-            log.debug ("There are email addresses.");
-            emailOutput (outputHandlers, emailAddresses);
+            log.debug("There are email addresses.");
+            emailOutput(outputHandlers, emailAddresses);
         }
     }
 
@@ -341,8 +427,8 @@ public class EmailOutputPlugIn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void emailOutput (Collection<OutputHandler> outputHandlers,
-                              Collection<EmailAddress>  emailAddresses)
+    private void emailOutput(Collection<OutputHandler> outputHandlers,
+                             Collection<EmailAddress>  emailAddresses)
         throws CurnException
     {
         try
@@ -374,7 +460,7 @@ public class EmailOutputPlugIn
             {
                 // Create an SMTP transport and a new email message.
 
-                EmailTransport transport = new SMTPEmailTransport (smtpHost);
+                EmailTransport transport = new SMTPEmailTransport(smtpHost);
                 EmailMessage   message = new EmailMessage();
 
                 log.debug ("SMTP host = " + smtpHost);
@@ -385,25 +471,25 @@ public class EmailOutputPlugIn
                 {
                     try
                     {
-                        log.debug ("Email recipient = " + emailAddress);
-                        message.addTo (emailAddress);
+                        log.debug("Email recipient = " + emailAddress);
+                        message.addTo(emailAddress);
                     }
 
                     catch (EmailException ex)
                     {
-                        throw new CurnException (ex);
+                        throw new CurnException(ex);
                     }
                 }
 
-                message.addHeader ("X-Mailer", 
-                                   Version.getInstance().getFullVersion());
-                message.setSubject (emailSubject);
+                message.addHeader("X-Mailer",
+                                  Version.getInstance().getFullVersion());
+                message.setSubject(emailSubject);
 
                 if (emailSender != null)
-                    message.setSender (emailSender);
+                    message.setSender(emailSender);
 
                 if (log.isDebugEnabled())
-                    log.debug ("Email sender = " + message.getSender());
+                    log.debug("Email sender = " + message.getSender());
 
                 // Add the output. If there's only one attachment, and its
                 // output is text, then there's no need for attachments.
@@ -412,7 +498,7 @@ public class EmailOutputPlugIn
                 // multipart-alternative message with separate attachments
                 // for each output.
 
-                DecimalFormat fmt  = new DecimalFormat ("##000");
+                DecimalFormat fmt  = new DecimalFormat("##000");
                 StringBuffer  name = new StringBuffer();
                 String        ext;
                 String        contentType;
@@ -422,20 +508,20 @@ public class EmailOutputPlugIn
                 {
                     OutputHandler handler = firstHandlerWithOutput;
                     contentType = handler.getContentType();
-                    ext = MIMETypeUtil.fileExtensionForMIMEType (contentType);
+                    ext = MIMETypeUtil.fileExtensionForMIMEType(contentType);
                     file = handler.getGeneratedOutput();
-                    message.setMultipartSubtype (EmailMessage.MULTIPART_MIXED);
+                    message.setMultipartSubtype(EmailMessage.MULTIPART_MIXED);
 
-                    name.append (fmt.format (1));
-                    name.append ('.');
-                    name.append (ext);
+                    name.append(fmt.format(1));
+                    name.append('.');
+                    name.append(ext);
 
-                    if (contentType.startsWith ("text/"))
-                        message.setText (file, name.toString(), contentType);
+                    if (contentType.startsWith("text/"))
+                        message.setText(file, name.toString(), contentType);
                     else
-                        message.addAttachment (file,
-                                               name.toString(),
-                                               contentType);
+                        message.addAttachment(file,
+                                              name.toString(),
+                                              contentType);
                 }
 
                 else
@@ -452,20 +538,20 @@ public class EmailOutputPlugIn
                         file = handler.getGeneratedOutput();
                         if (file != null)
                         {
-                            name.setLength (0);
-                            name.append (fmt.format (i));
-                            name.append ('.');
-                            name.append (ext);
+                            name.setLength(0);
+                            name.append(fmt.format(i));
+                            name.append('.');
+                            name.append(ext);
                             i++;
-                            message.addAttachment (file,
-                                                   name.toString(),
-                                                   contentType);
+                            message.addAttachment(file,
+                                                  name.toString(),
+                                                  contentType);
                         }
                     }
                 }
 
-                log.debug ("Sending message.");
-                transport.send (message);
+                log.debug("Sending message.");
+                transport.send(message);
                 message.clear();
             }
         }

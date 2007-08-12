@@ -87,8 +87,8 @@ public interface PreFeedOutputPlugIn extends PlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public void runPreFeedOutputPlugIn (FeedInfo      feedInfo,
-                                        RSSChannel    channel,
-                                        OutputHandler outputHandler)
+    public void runPreFeedOutputPlugIn(FeedInfo      feedInfo,
+                                       RSSChannel    channel,
+                                       OutputHandler outputHandler)
         throws CurnException;
 }
