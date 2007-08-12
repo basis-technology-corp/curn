@@ -116,18 +116,16 @@ public interface OutputHandler
     public void init(CurnConfig config, ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException;
-    
+
     /**
-     * Reinitialize the output handler with the same parameters originally
-     * passed to {@link init init()}. Useful for resetting an output handler
-     * to the state it was in prior to being used.
+     * Make a copy of the output handler.
      *
-     * @throws ConfigurationException configuration error
-     * @throws CurnException          some other initialization error
+     * @return a clean, initialized copy of the output handler
+     *
+     * @throws CurnException on error
      */
-    public void reInit()
-        throws ConfigurationException,
-               CurnException;
+    public OutputHandler makeCopy()
+        throws CurnException;
 
     /**
      * Display the list of <tt>RSSItem</tt> news items to whatever output

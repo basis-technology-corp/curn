@@ -381,23 +381,11 @@ public class EmailOutputPlugIn
             {
                 log.debug("Mailing item " + item.toString());
                 newChannel.setItems(Collections.singletonList(item));
+                outputHandler = outputHandler.makeCopy();
                 outputHandler.displayChannel(newChannel, feedInfo);
                 outputHandler.flush();
                 emailOutput(Collections.singletonList(outputHandler),
                             emailAddresses);
-
-                // Be sure to reinitialize the output handler, so it can be
-                // used fresh again.
-
-                try
-                {
-                    outputHandler.reInit();
-                }
-
-                catch (ConfigurationException ex)
-                {
-                    throw new CurnException(ex);
-                }
             }
         }
     }

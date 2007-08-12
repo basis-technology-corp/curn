@@ -366,6 +366,8 @@ public class FreeMarkerOutputHandler extends FileOutputHandler
                                final FeedInfo   feedInfo)
         throws CurnException
     {
+        log.debug("displayChannel: channel has " + channel.getItems().size() +
+                  " items");
         feedTransformer.addChannel(channel, feedInfo, allowEmbeddedHTML);
     }
 

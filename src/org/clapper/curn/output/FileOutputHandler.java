@@ -198,7 +198,7 @@ public abstract class FileOutputHandler implements OutputHandler
         sectionName = cfgHandler.getSectionName();
         this.name   = sectionName;
 
-        log = new Logger(getClass().getName() + "[" + name + "]");
+        initLogger();
         try
         {
             if (sectionName != null)
@@ -261,21 +261,6 @@ public abstract class FileOutputHandler implements OutputHandler
 
         this.cfgHandler = cfgHandler;
         initOutputHandler(config, cfgHandler);
-    }
-
-    /**
-     * Reinitialize the output handler with the same parameters originally
-     * passed to {@link init init()}. Useful for resetting an output handler
-     * to the state it was in prior to being used.
-     *
-     * @throws ConfigurationException configuration error
-     * @throws CurnException          some other initialization error
-     */
-    public final void reInit()
-        throws ConfigurationException,
-               CurnException
-    {
-        init(config, cfgHandler);
     }
 
     /**
@@ -378,10 +363,62 @@ public abstract class FileOutputHandler implements OutputHandler
         return hasOutput;
     }
 
+    /**
+     * Make a copy of the output handler.
+     *
+     * @return a clean, initialized copy of the output handler
+     *
+     * @throws CurnException on error
+     */
+    public final OutputHandler makeCopy()
+        throws CurnException
+    {
+        Class cls = this.getClass();
+        FileOutputHandler copy = null;
+        
+        try
+        {
+            copy = (FileOutputHandler) cls.newInstance();
+            copy.name = name;
+            copy.config = config;
+            copy.outputFile = File.createTempFile("curn", null);
+            copy.outputFile.deleteOnExit();
+            copy.cfgHandler = cfgHandler;
+            copy.saveOnly = saveOnly;
+            copy.showToolInfo = showToolInfo;
+            copy.savedBackups = 0;
+            copy.encoding = encoding;
+            copy.initLogger();
+            copySubclassFields(copy);
+            copy.initOutputHandler(config, cfgHandler);
+        }
+        
+        catch (Exception ex)
+        {
+            throw new CurnException("Can't copy instance of \"" +
+                                    cls.toString() + "\"",
+                                    ex);
+        }
+        
+        return copy;
+    }
+
     /*----------------------------------------------------------------------*\
                              Protected Methods
     \*----------------------------------------------------------------------*/
 
+    /**
+     * Copy any subclass fields into a copy of this output handler.
+     * Default version of this method does nothing.
+     *
+     * @param theCopy  copy of this class
+     *
+     * @throws CurnException on error
+     */
+    protected void copySubclassFields(FileOutputHandler theCopy)
+    {
+    }
+    
     /**
      * Get the output file.
      *
@@ -407,6 +444,7 @@ public abstract class FileOutputHandler implements OutputHandler
 
         try
         {
+            assert(outputFile != null);
             log.debug ("Opening output file \"" + outputFile + "\"");
 
             // For the output handler output file, the index marker between
@@ -433,7 +471,8 @@ public abstract class FileOutputHandler implements OutputHandler
      * output to <i>curn</i>.
      *
      * @return <tt>true</tt> if saving output only, <tt>false</tt> if also
-     *         reporting output to <i>curn</i>
+     *         reporting File.createTempFile("curn", null);
+                outputFile.deleteOnExit();output to <i>curn</i>
      */
     protected final boolean savingOutputOnly()
     {
@@ -468,5 +507,14 @@ public abstract class FileOutputHandler implements OutputHandler
     protected final boolean displayToolInfo()
     {
         return this.showToolInfo;
+    }
+
+    /*----------------------------------------------------------------------*\
+                                   Private Methods
+    \*----------------------------------------------------------------------*/
+
+    private void initLogger()
+    {
+        log = new Logger(getClass().getName() + "." + name);
     }
 }
