@@ -198,7 +198,7 @@ source and documentation packages.
           description="Compiles the source"/>
 
   <target name="third.party.parsers"
-          depends="parser.informa,parser.rome"/>
+          depends="parser.rome"/>
 
   <!--
   ***************************************************************************
@@ -235,7 +235,6 @@ source and documentation packages.
       <include name="${pkg.path}/parser/tester.java"/>
 
       <exclude name="${pkg.path}/parser/rome/*.java"/>
-      <exclude name="${pkg.path}/parser/informa/*.java"/>
 
     </javac>
 
@@ -262,64 +261,6 @@ source and documentation packages.
       </fileset>
     </copy>
   </target>
-
-  <!--
-  ***************************************************************************
-                          Informa Parser Targets
-              (Only built if Informa libraries are present.)
-  ***************************************************************************
-  -->
-
-  <target name="-check.informa.exists">
-    <available classname="de.nava.informa.parsers.FeedParser"
-               classpathref="project.class.path"
-               property="informa.exists" value="true"/>
-  </target>
-
-  <target name="-check.informa"
-          depends="-check.informa.exists"
-          unless="informa.exists">
-    <echo>
-*** The Informa parser is not currently available in the build environment.
-*** Because Informa is missing, all targets that require it will be skipped.
-*** To enable these targets, download Informa from
-*** http://informa.sourceforge.net/ and follow the instructions in curn's
-*** docs/BUILDING.txt file.
-    </echo>
-  </target>
-
-  <target name="parser.informa"
-          depends="-check.informa"
-          if="informa.exists">
-    <echo level="verbose">Found Informa parser. Compiling Informa classes.</echo>
-    <javac srcdir="${javac.src.dir}"
-           source="${javac.source}"
-           target="${javac.target}"
-           debug="${javac.debug}"
-           depend="${javac.depend}"
-           deprecation="${javac.deprecation}"
-           listfiles="${javac.listfiles}"
-           destdir="${compiled.classes.dir}">
-
-      <compilerarg compiler="jikes" value="+Peffective-java"/>
-      <compilerarg compiler="jikes" value="+Punused-type-imports"/>
-      <compilerarg compiler="jikes" value="+Punused-package-imports"/>
-      <compilerarg compiler="jikes" value="+Pmodifier-order"/>
-      <compilerarg compiler="jikes" value="+Pserial"/>
-
-      <compilerarg compiler="javac1.5" value="${javac.lint.unchecked.opt}"/>
-      <compilerarg compiler="javac1.6" value="${javac.lint.unchecked.opt}"/>
-
-      <classpath refid="project.class.path"/>
-
-      <patternset id="parser.informa">
-        <include name="${pkg.path}/parser/informa/*.java"/>
-      </patternset>
-
-    </javac>
-  </target>
-
-  <target name="informa" depends="parser.informa"/>
 
   <!--
   ***************************************************************************

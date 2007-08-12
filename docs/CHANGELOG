@@ -110,6 +110,11 @@ Version 3.2 (...)
   there are no output handlers. So, curn now parses the downloaded RSS
   feeds even if there are no output handlers configured.
 
+- Removed support for Informa RSS parser. ROME is better maintained and
+  more functional, and I don't see the point to maintaining both. I was
+  only maintaining Informa to illustrate that it was possible to support
+  more than one RSS parser in curn.
+
 				 ---------
 				 Bug Fixes
 				 ---------

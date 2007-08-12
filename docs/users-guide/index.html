@@ -587,13 +587,10 @@ network bandwidth and ensure that <i>curn</i> is as kind as possible to the
 remote RSS servers. (There are some <a href="#Bandwidth">additional steps</a>
 you can take to be more bandwidth-friendly.)</p>
 
-<i>curn</i> comes with built-in adapters for the
-<a href="https://rome.dev.java.net/">ROME</a> and
-<a href="http://informa.sourceforge.net/">Informa</a> feed parsers, but
-it can easily be extended to use any RSS parser.
-By default, <i>curn</i> uses the
-<a href="https://rome.dev.java.net/">ROME</a> parser, which
-handles all known RSS feed formats.
+<i>curn</i> comes with a built-in adapter for the
+<a href="https://rome.dev.java.net/">ROME</a> feed parser, but
+it can easily be extended to use any RSS parser. (<i>curn</i> uses
+<a href="https://rome.dev.java.net/">ROME</a> by default.)
 See the <a href="#Cfg_ParserClass" class="code">ParserClass</a> configuration
 item for information on how to specify which parser <i>curn</i> should use.
 See the section entitled
@@ -1690,7 +1687,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       it can be nothing more than an adapter for a third party
       RSS parser class.
       <br/><br/>
-      Two parsers are bundled with <i>curn</i>:
+      <i>curn</i> comes bundled with one parser:
 
       <dl>
         <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
@@ -1702,22 +1699,6 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
             Rome jar files are in <i>curn</i>'s class path. Note also
             that Rome requires version 1.0 of the
             <a href="http://www.jdom.org/">JDOM</a> library.)
-
-        <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/RSSParserAdapter.html" class="code">org.clapper.curn.parser.informa.RSSParserAdapter</a>
-
-        <dd>An adapter class that makes the
-            <a href="http://informa.sourceforge.net/">Informa RSS parser</a>
-            work with <i>curn</i>.
-            (The Informa adapter is only available if the appropriate
-            Informa jar files are in <i>curn</i>'s class path.)
-	    <br/><br/>
-            WARNING: As of the last time this document was
-            updated, the Informa parser, version 0.6, does not
-            support Atom 1.0 properly. Specifically, it assumes that
-            a <span class="code">&lt;feed&gt;</span> element will
-            always have a <span class="code">version</span> attribute.
-            That was true for Atom 0.3, but it's not true for Atom
-            1.0.
 
       </dl>
 
@@ -4044,10 +4025,9 @@ various phases of <i>curn</i> processing.</p>
 
 <p>Suppose you've found (or written) an RSS parser that you prefer to use
 instead of
-<a href="https://rome.dev.java.net/">ROME</a> or
-<a href="http://informa.sourceforge.net/">Informa</a>.
+<a href="https://rome.dev.java.net/">ROME</a>.
 (Perhaps it's faster than one of those, or perhaps it
-supports some new RSS syntax that neither ROME nor Informa support. Or,
+supports some new RSS syntax that ROME does not support. Or,
 perhaps you're just playing around.)
 Integrating that parser with <i>curn</i> requires writing some adapter classes
 that implement some interfaces and extend some classes provided with the
@@ -4102,8 +4082,8 @@ that implement some interfaces and extend some classes provided with the
 implement the above interfaces or extend the above classes, and map the
 necessary calls onto methods in the real underlying parser. For a sample
 integration, see the classes in the <i>curn</i> source code package
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/informa/package-summary.html" class="code">org.clapper.curn.parser.informa</a>. Those classes implement a simple adapter for the third-party
-<a href="http://informa.sourceforge.net/">Informa</a> RSS parser.</p>
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/package-summary.html" class="code">org.clapper.curn.parser.rome</a>. Those classes implement a simple adapter for the third-party
+<a href="https://rome.dev.java.net/">ROME</a> RSS parser.</p>
 
 <p>Note: If you've written an adapter for an unsupported RSS parser engine,
 you'll have to make your adapter classes and the RSS parser classes available
@@ -6454,10 +6434,6 @@ which are copyright &copy; Sun Microsystems, Inc.</p>
 <a href="http://jakarta.apache.org/commons/logging/">the Jakarta Commons Logging API</a>, and the
 <a href="http://xerces.apache.org/xerces2-j/">Apache Xerces XML parser API</a>.
 All are copyright &copy; The Apache Software Foundation.</p>
-
-<p><i>curn</i> is integrated with the
-<a href="http://informa.sourceforge.net/">Informa RSS parser</a> (though it does not
-use that parser by default). Informa is copyright &copy; 2002 Niko Schmuck.</p>
 
 <p><i>curn</i> is integrated with the
 <a href="http://rome.java.dev.net/">ROME RSS parser</a> (though it does not
