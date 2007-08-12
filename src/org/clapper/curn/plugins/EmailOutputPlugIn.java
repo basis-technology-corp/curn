@@ -369,12 +369,17 @@ public class EmailOutputPlugIn
             (emailAddresses != null) &
             (emailAddresses.size() > 0))
         {
+            log.debug("mailIndividualItems=true, and there are email " +
+                      "addresses. Mailing individual items for feed " +
+                      feedInfo.getURL());
+
             // Use the output handler to generate the output. Break the channel
             // into multiple channels with one item each.
 
             RSSChannel newChannel = channel.makeCopy();
             for (RSSItem item : channel.getItems())
             {
+                log.debug("Mailing item " + item.getID());
                 newChannel.setItems(Collections.singletonList(item));
                 outputHandler.displayChannel(newChannel, feedInfo);
                 outputHandler.flush();
