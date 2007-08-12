@@ -379,7 +379,7 @@ public class EmailOutputPlugIn
             RSSChannel newChannel = channel.makeCopy();
             for (RSSItem item : channel.getItems())
             {
-                log.debug("Mailing item " + item.getID());
+                log.debug("Mailing item " + item.toString());
                 newChannel.setItems(Collections.singletonList(item));
                 outputHandler.displayChannel(newChannel, feedInfo);
                 outputHandler.flush();
