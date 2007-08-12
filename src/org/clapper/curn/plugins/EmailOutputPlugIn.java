@@ -452,8 +452,8 @@ public class EmailOutputPlugIn
             {
                 // None of the handlers produced any output.
 
-                log.error ("Warning: None of the output handlers " +
-                           "produced any emailable output.");
+                log.debug("None of the output handlers " +
+                          "produced any emailable output.");
             }
 
             else
