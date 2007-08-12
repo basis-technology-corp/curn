@@ -577,8 +577,10 @@ the background by a command scheduler such as
 runtime. When querying HTTP sites, <i>curn</i> uses the HTTP
 <span class="code">If-Modified-Since</span> and
 <span class="code">Last-Modified</span> headers to suppress
-retrieving and processing feeds that haven't changed (though
-. By default, it also
+retrieving and processing feeds that haven't changed (though a
+<a href="#ForceFeedDownloadPlugIn">Force Feed Download Plug In</a>, such as the
+<a href="#PlugIn_RetainArticles">Retain Articles</a>, can override that capability).
+By default, it also
 requests that the remote HTTP server <i>gzip</i> the XML before sending it.
 (Some HTTP servers honor the request; some don't.) These measures both minimize
 network bandwidth and ensure that <i>curn</i> is as kind as possible to the
@@ -1774,6 +1776,44 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
   </tr>
 
   <tr valign="top">
+    <td align="left"><a name="Cfg_ShowArticlesFor"></a><span class="code">ShowArticlesFor</span></td>
+    <td align="left">String</td>
+    <td align="left">
+      How long to display show articles from feeds. If specified, this
+      parameter is only used when individual feeds don't specify a <span class="code">ShowArticlesFor</span>
+      parameter if their own. The value is a time interval, for instance:
+
+<blockquote><pre>
+IgnoreArticlesOlderThan: 3 days
+IgnoreArticlesOlderThan: 1 week
+IgnoreArticlesOlderThan: 365 days
+IgnoreArticlesOlderThan: 12 hours, 30 minutes
+</pre></blockquote>
+
+      Valid interval names (in English) are:
+  
+      <ul>
+	<li>millisecond, milliseconds, ms
+	<li>second, seconds, sec, secs
+	<li>minute, minutes, min, mins
+	<li>hour, hours, hr, hrs
+	<li>day, days
+	<li>week, weeks
+      </ul>
+
+      If this parameter is not specified, then the default value is to show an article one time only.
+
+      <b>WARNING</b>: Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
+      <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an article is to
+      download and re-parse the feed. Also, if the article is no longer in the feed, <i>curn</i> can't redisplay
+      the article even if the elapsed time hasn't yet passed.
+    </td>
+    <td align="left">No</td>
+    <td align="left">1 millisecond (i.e., show each article once)</td>
+    <td align="left">Per-feed <a href="#Feed_ShowArticlesFor" class="code">ShowArticlesFor</a> parameter</td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a name="Cfg_ShowAuthors"></a><span class="code">ShowAuthors</span><br/><a href="#PlugIn_ShowAuthors" class="plug-in-flag">plug-in</a></td>
     <td align="left">Boolean</td>
     <td align="left">
@@ -2730,6 +2770,45 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
      total backed-up files will be kept. A value of 0 disables the feature.
     <td align="left">No</td>
     <td align="left">0</td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Feed_ShowArticlesFor"></a><span class="code">ShowArticles</span>
+    <br/><a href="#PlugIn_RetainArticles" class="plug-in-flag">plug-in</a></td>
+    <td align="left">String</td>
+    <td align="left">
+      How long to display show articles from the feed. The value is a time interval, for instance:
+
+<blockquote><pre>
+IgnoreArticlesOlderThan: 3 days
+IgnoreArticlesOlderThan: 1 week
+IgnoreArticlesOlderThan: 365 days
+IgnoreArticlesOlderThan: 12 hours, 30 minutes
+</pre></blockquote>
+
+      Valid interval names (in English) are:
+  
+      <ul>
+	<li>millisecond, milliseconds, ms
+	<li>second, seconds, sec, secs
+	<li>minute, minutes, min, mins
+	<li>hour, hours, hr, hrs
+	<li>day, days
+	<li>week, weeks
+      </ul>
+
+      <b>WARNING</b>: Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
+      <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an article is to
+      download and re-parse the feed. Also, if the article is no longer in the feed, <i>curn</i> can't redisplay
+      the article even if the elapsed time hasn't yet passed.
+
+      This value overrides the global
+      <a href="#Cfg_ShowArticlesFor" class="code">ShowArticlesFor</a> parameter.
+    </td>
+    <td align="left">No</td>
+    <td align="left">The value of the global
+      <a href="#Cfg_ShowArticlesFor" class="code">ShowArticlesFor</a> parameter.
+    </td>
   </tr>
 
   <tr valign="top">
@@ -4444,7 +4523,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/ForceFeedDownloadPlugIn.html" class="code">ForceFeedDownloadPlugIn</a></td>
+    <td align="left"><a name="ForceFeedDownloadPlugIn"></a><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/ForceFeedDownloadPlugIn.html" class="code">ForceFeedDownloadPlugIn</a></td>
     <td align="left"><span class="code">forceFeedDownload()</span></td>
     <td>Called after the cache is loaded, but before a feed is downloaded. This method returns
 	<tt>true</tt> if the feed should be downloaded regardless of whether it has changed, and
