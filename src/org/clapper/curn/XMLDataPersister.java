@@ -907,7 +907,7 @@ public class XMLDataPersister extends DataPersister
 
         if (value == null)
         {
-            log.error("<" + OLD_XML_ENTRY_ELEMENT + "> is missing required " +
+            log.error("<" + element.getName() + "> is missing required " +
                       "\"" + name + "\" XML attribute.");
         }
 

@@ -439,14 +439,14 @@ public class MetaPlugIn
     forceFeedDownload(final FeedInfo feedInfo, final FeedCache feedCache)
         throws CurnException
     {
-        boolean forceDownload = true;
+        boolean forceDownload = false;
 
         for (ForceFeedDownloadPlugIn plugIn : forceFeedDownloadPlugIns)
         {
             logPlugInInvocation("forceFeedDownload", plugIn);
             forceDownload = plugIn.forceFeedDownload(feedInfo, feedCache);
 
-            if (! forceDownload)
+            if (forceDownload)
                 break;
         }
 
