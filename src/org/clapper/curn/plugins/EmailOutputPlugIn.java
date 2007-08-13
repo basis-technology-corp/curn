@@ -400,8 +400,8 @@ public class EmailOutputPlugIn
                                        OutputHandler outputHandler)
         throws CurnException
     {
-        if (mailIndividualItems &
-            (emailAddresses != null) &
+        if (mailIndividualItems &&
+            (emailAddresses != null) &&
             (emailAddresses.size() > 0))
         {
             log.debug("mailIndividualItems=true, and there are email " +
