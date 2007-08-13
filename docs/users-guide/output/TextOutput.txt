@@ -16,7 +16,7 @@ rss_2.0
         me royalties or somethin'."
 
     Fifteen Philadelphia motorists cited for stupidity
-    
+    Olaf Phenobarb
 
     http://irrelevant.clapper.org/2004/06/13/stupidity.html
 
@@ -43,7 +43,7 @@ http://bites.clapper.org/
 rss_2.0
 
     Man Bites Dog
-    
+    Basil Ironthrower
 
     http://bites.clapper.org/manbitesdog.html
 
@@ -54,7 +54,7 @@ rss_2.0
         of treatment for multiple bite wounds.
 
     President Falls
-    
+    Judith Foinsapp
 
     http://bites.clapper.org/prezfall.html
 
@@ -67,22 +67,22 @@ http://justthefactsmaam.clapper.org/
 rss_2.0
 
     New study claims pollen makes people sneeze
-    
+    Fred Derf
 
     http://justthefactsmaam.clapper.org/duh.html
 
     Political correctness organization claims that the word "person" is sexist,
     because it contains the word "son."
-    
+    James Longwayfromhome
 
     http://justthefactsmaam.clapper.org/pcstupid.html
 
     Researcher claims 13% of Americans can't spell their own names
-    
+    Jonh Smth
 
     http://justthefactsmaam.clapper.org/names.html
 
 
 ---------------------------------------------------------------------------
-curn, 3.2 alpha 1 (build 20070510.135156.889)
-Generated Thursday, 10 May, 2007 at 10:01:20 EDT
+curn, 3.2 beta 1 (build 20070813.023733.479)
+Generated Sunday, 12 August, 2007 at 22:37:39 EDT
