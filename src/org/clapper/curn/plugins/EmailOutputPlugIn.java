@@ -76,6 +76,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.TreeSet;
+import org.clapper.util.misc.MultiValueMap;
 
 /**
  * The <tt>EmailOutputPlugIn</tt> handles emailing the output from a
@@ -135,6 +137,22 @@ public class EmailOutputPlugIn
     private static final String VAR_MAIL_INDIVIDUAL_ITEMS = "MailIndividualArticles";
 
     /*----------------------------------------------------------------------*\
+                                Inner Classes
+    \*----------------------------------------------------------------------*/
+
+    private class GeneratedOutput
+    {
+        final File outputFile;
+        final String mimeType;
+
+        GeneratedOutput(File outputFile, String mimeType)
+        {
+            this.outputFile = outputFile;
+            this.mimeType = mimeType;
+        }
+    }
+
+    /*----------------------------------------------------------------------*\
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
@@ -168,6 +186,18 @@ public class EmailOutputPlugIn
      * all items at the end, in one email.
      */
     private boolean mailIndividualItems = false;
+
+    /**
+     * A map containing all the output generated for each article.
+     * Use to construct individual multipart/alternative messages for
+     * each article. Only used if mailIndividualItems=true
+     */
+    private MultiValueMap<RSSItem,GeneratedOutput> itemOutputMap = null;
+
+    /**
+     * Copy of all items seen. Only used if mailIndividualItems=true
+     */
+    private Collection<RSSItem> itemsSeen = null;
 
     /*----------------------------------------------------------------------*\
                                 Constructor
@@ -331,6 +361,11 @@ public class EmailOutputPlugIn
             {
                 mailIndividualItems = config.getRequiredBooleanValue(sectionName,
                                                                      paramName);
+                if (mailIndividualItems)
+                {
+                    itemOutputMap = new MultiValueMap<RSSItem,GeneratedOutput>();
+                    itemsSeen = new TreeSet<RSSItem>();
+                }
             }
         }
 
@@ -374,18 +409,27 @@ public class EmailOutputPlugIn
                       feedInfo.getURL());
 
             // Use the output handler to generate the output. Break the channel
-            // into multiple channels with one item each.
+            // into multiple channels with one item each. Then, keep the output,
+            // aggregated by RSSItem. That way, when it's time to generate
+            // the output, we'll have the output from ALL output handlers
+            // for each item, allowing us to generate a multipart/alternative
+            // email for each item.
 
             RSSChannel newChannel = channel.makeCopy();
             for (RSSItem item : channel.getItems())
             {
-                log.debug("Mailing item " + item.toString());
+                itemsSeen.add(item);
                 newChannel.setItems(Collections.singletonList(item));
                 outputHandler = outputHandler.makeCopy();
                 outputHandler.displayChannel(newChannel, feedInfo);
                 outputHandler.flush();
-                emailOutput(Collections.singletonList(outputHandler),
-                            emailAddresses);
+                if (outputHandler.hasGeneratedOutput())
+                {
+                    String mimeType = outputHandler.getContentType();
+                    File outputFile = outputHandler.getGeneratedOutput();
+                    itemOutputMap.put(item,
+                                      new GeneratedOutput(outputFile, mimeType));
+                }
             }
         }
     }
@@ -407,12 +451,13 @@ public class EmailOutputPlugIn
     public void runPostOutputPlugIn(Collection<OutputHandler> outputHandlers)
         throws CurnException
     {
-        if ((! mailIndividualItems) &
-            (emailAddresses != null) &
-            (emailAddresses.size() > 0))
+        if ((emailAddresses != null) && (emailAddresses.size() > 0))
         {
             log.debug("There are email addresses.");
-            emailOutput(outputHandlers, emailAddresses);
+            if (mailIndividualItems)
+                emailIndividualArticles();
+            else
+                emailConsolidatedOutput(outputHandlers);
         }
     }
 
@@ -420,133 +465,164 @@ public class EmailOutputPlugIn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void emailOutput(Collection<OutputHandler> outputHandlers,
-                             Collection<EmailAddress>  emailAddresses)
+    private void emailIndividualArticles()
         throws CurnException
     {
+        assert(emailAddresses.size() > 0);
+
+        // One message per item. The runPreFeedOutputPlugIn()
+        // method should have saved the channels and the item outputs.
+
+        assert(itemOutputMap != null);
+        assert(itemsSeen != null);
+
+        for (RSSItem item : itemsSeen)
+        {
+            Collection<GeneratedOutput> itemOutput =
+                itemOutputMap.getValuesForKey(item);
+            if (itemOutput != null)
+            {
+                log.debug("Emailing output for item \"" + item +
+                          "\": total attachments=" + itemOutput.size());
+                emailOutput(itemOutput);
+            }
+        }
+    }
+
+    private void emailConsolidatedOutput(Collection<OutputHandler> outputHandlers)
+        throws CurnException
+    {
+        assert(emailAddresses.size() > 0);
+
+        // One email message with all the output.
+
+        Collection<GeneratedOutput> output =
+            new ArrayList<GeneratedOutput>();
+        for (OutputHandler handler : outputHandlers)
+        {
+            if (! handler.hasGeneratedOutput())
+                break;
+
+            output.add(new GeneratedOutput(handler.getGeneratedOutput(),
+                                           handler.getContentType()));
+        }
+
+        if (output.size() == 0)
+        {
+            log.debug("None of the output handlers " +
+                      "produced any emailable output.");
+        }
+
+        else
+        {
+            emailOutput(output);
+        }
+    }
+
+    private void emailOutput(Collection<GeneratedOutput> generatedOutputs)
+        throws CurnException
+    {
+        assert(generatedOutputs.size() > 0);
+        assert(emailAddresses.size() > 0);
+
         try
         {
-            OutputHandler firstHandlerWithOutput = null;
-            int           totalAttachments = 0;
+            // Create an SMTP transport and a new email message.
 
-            // First, figure out whether we have any attachments or not.
+            EmailTransport transport = new SMTPEmailTransport(smtpHost);
+            EmailMessage   message = new EmailMessage();
 
-            for (OutputHandler handler : outputHandlers)
+            log.debug("SMTP host = " + smtpHost);
+
+            // Add the email addresses.
+
+            for (EmailAddress emailAddress : emailAddresses)
             {
-                if (handler.hasGeneratedOutput())
+                try
                 {
-                    totalAttachments++;
-                    if (firstHandlerWithOutput == null)
-                        firstHandlerWithOutput = handler;
+                    log.debug("Email recipient = " + emailAddress);
+                    message.addTo(emailAddress);
+                }
+
+                catch (EmailException ex)
+                {
+                    throw new CurnException(ex);
                 }
             }
 
-            if (totalAttachments == 0)
-            {
-                // None of the handlers produced any output.
+            // Create an X-Mailer header that identifies this utility.
 
-                log.debug("None of the output handlers " +
-                          "produced any emailable output.");
+            message.addHeader("X-Mailer",
+                              Version.getInstance().getFullVersion());
+
+            // Set the subject
+
+            message.setSubject(emailSubject);
+
+            // Set the sender, if defined.
+
+            if (emailSender != null)
+                message.setSender(emailSender);
+
+            if (log.isDebugEnabled())
+                log.debug("Email sender = " + message.getSender());
+
+            // Add the output. If there's only one attachment, and its
+            // output is text, then there's no need for attachments.
+            // Just set it as the text part, and set the appropriate
+            // Content-type: header. Otherwise, make a
+            // multipart-alternative message with separate attachments
+            // for each output.
+
+            DecimalFormat fmt  = new DecimalFormat("##000");
+            StringBuffer  name = new StringBuffer();
+            String        ext;
+            String        contentType;
+            File          file;
+
+            if (generatedOutputs.size() == 1)
+            {
+                GeneratedOutput output = generatedOutputs.iterator().next();
+                contentType = output.mimeType;
+                ext = MIMETypeUtil.fileExtensionForMIMEType(contentType);
+                file = output.outputFile;
+                message.setMultipartSubtype(EmailMessage.MULTIPART_MIXED);
+
+                name.append(fmt.format(1));
+                name.append('.');
+                name.append(ext);
+
+                if (contentType.startsWith("text/"))
+                    message.setText(file, name.toString(), contentType);
+                else
+                    message.addAttachment(file, name.toString(), contentType);
             }
 
             else
             {
-                // Create an SMTP transport and a new email message.
+                message.setMultipartSubtype(EmailMessage.MULTIPART_ALTERNATIVE);
 
-                EmailTransport transport = new SMTPEmailTransport(smtpHost);
-                EmailMessage   message = new EmailMessage();
-
-                log.debug ("SMTP host = " + smtpHost);
-
-                // Fill 'er up.
-
-                for (EmailAddress emailAddress : emailAddresses)
+                int i = 1;
+                for (GeneratedOutput output : generatedOutputs)
                 {
-                    try
-                    {
-                        log.debug("Email recipient = " + emailAddress);
-                        message.addTo(emailAddress);
-                    }
-
-                    catch (EmailException ex)
-                    {
-                        throw new CurnException(ex);
-                    }
-                }
-
-                message.addHeader("X-Mailer",
-                                  Version.getInstance().getFullVersion());
-                message.setSubject(emailSubject);
-
-                if (emailSender != null)
-                    message.setSender(emailSender);
-
-                if (log.isDebugEnabled())
-                    log.debug("Email sender = " + message.getSender());
-
-                // Add the output. If there's only one attachment, and its
-                // output is text, then there's no need for attachments.
-                // Just set it as the text part, and set the appropriate
-                // Content-type: header. Otherwise, make a
-                // multipart-alternative message with separate attachments
-                // for each output.
-
-                DecimalFormat fmt  = new DecimalFormat("##000");
-                StringBuffer  name = new StringBuffer();
-                String        ext;
-                String        contentType;
-                File          file;
-
-                if (totalAttachments == 1)
-                {
-                    OutputHandler handler = firstHandlerWithOutput;
-                    contentType = handler.getContentType();
+                    contentType = output.mimeType;
                     ext = MIMETypeUtil.fileExtensionForMIMEType(contentType);
-                    file = handler.getGeneratedOutput();
-                    message.setMultipartSubtype(EmailMessage.MULTIPART_MIXED);
-
-                    name.append(fmt.format(1));
-                    name.append('.');
-                    name.append(ext);
-
-                    if (contentType.startsWith("text/"))
-                        message.setText(file, name.toString(), contentType);
-                    else
-                        message.addAttachment(file,
-                                              name.toString(),
-                                              contentType);
-                }
-
-                else
-                {
-                    message.setMultipartSubtype
-                                          (EmailMessage.MULTIPART_ALTERNATIVE);
-
-                    int i = 1;
-                    for (OutputHandler handler : outputHandlers)
+                    file = output.outputFile;
+                    if (file != null)
                     {
-                        contentType = handler.getContentType();
-                        ext = MIMETypeUtil.fileExtensionForMIMEType
-                                                                (contentType);
-                        file = handler.getGeneratedOutput();
-                        if (file != null)
-                        {
-                            name.setLength(0);
-                            name.append(fmt.format(i));
-                            name.append('.');
-                            name.append(ext);
-                            i++;
-                            message.addAttachment(file,
-                                                  name.toString(),
-                                                  contentType);
-                        }
+                        name.setLength(0);
+                        name.append(fmt.format(i));
+                        name.append('.');
+                        name.append(ext);
+                        i++;
+                        message.addAttachment(file, name.toString(), contentType);
                     }
                 }
-
-                log.debug("Sending message.");
-                transport.send(message);
-                message.clear();
             }
+
+            log.debug("Sending message.");
+            transport.send(message);
+            message.clear();
         }
 
         catch (EmailException ex)

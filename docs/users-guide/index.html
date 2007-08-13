@@ -626,10 +626,13 @@ for more details.</p>
 </ul>
 
 <p>In addition, <i>curn</i> supports emailing its output. If email
-addresses are specified <a href="#MailOutputTo">in the configuration file</a>,
+addresses are specified <a href="#Cfg_MailOutputTo">in the configuration file</a>,
 then <i>curn</i> creates a MIME multipart/alternative email
 message&nbsp;<a href="#Note1">[1]</a>, using
-the output of each output handler as one of the alternative attachments.</p>
+the output of each output handler as one of the alternative attachments. (As of version 3.2,
+<i>curn</i> can also send individual email messages for each article; see the
+<a href="#Cfg_MailIndividualArticles" class="code">MailIndividualArticles</a> parameter.)
+</p>
 
 <!-- ********************************************************************** -->
 <h1><a name="Terminology"></a>Terminology</h1>
@@ -1559,19 +1562,15 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="MailOutputTo"></a><span class="code">MailOutputTo</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
+    <td align="left"><a name="Cfg_MailOutputTo"></a><span class="code">MailOutputTo</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td>One or more comma-separated email addresses to receive the output.
         This parameter is optional. If any email addresses are specified, then
-        <i>curn</i> constructs a MIME multipart/alternative email
-        message&nbsp;<a href="#Note1">[1]</a>, attaching the output from
-        each configured output handler as a separate
-        multipart/alternative attachment. (<i>curn</i> assumes that
-        each output handler is generating an alternate form of the
-        same information.) Output handlers that don't generate output
-        are skipped. If none of the configured output handlers
-        generate any output, then <i>curn</i> doesn't send an email
-        message.
+        <i>curn</i> sends its generated output to those addresses. Depending on the setting of
+	the <a href="#Cfg_MailIndividualArticles" class="code">MailIndividualArticles</a> parameter,
+	<i>curn</i> either sends a single MIME multipart/alternative email with all the output, or it
+	sends one message per article found in the feeds. See
+	<a href="#Cfg_MailIndividualArticles" class="code">MailIndividualArticles</a> for details.
     </td>
     <td align="left">No</td>
     <td align="left">Output is not emailed.</td>
@@ -1591,7 +1590,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       "Joe&nbsp;Blow&nbsp;&lt;joe@example.org&gt;") or just a simple address
       (e.g., "joe@example.org"). This parameter is only honored when at
       least one email address is specified via the
-      <a href="#MailOutputTo" class="code">MailOutputTo</a> configuration
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a> configuration
       parameter.
     </td>
     <td align="left">No</td>
@@ -1602,7 +1601,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
       <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
-      <a href="#MailOutputTo" class="code">MailOutputTo</a>
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a>
     </td>
   </tr>
 
@@ -1613,7 +1612,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       The subject line to use when mailing output.
       This parameter is only honored when at
       least one email address is specified via the
-      <a href="#MailOutputTo" class="code">MailOutputTo</a> configuration
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a> configuration
       parameter.
     </td>
     <td align="left">No</td>
@@ -1621,7 +1620,67 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
       <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
-      <a href="#MailOutputTo" class="code">MailOutputTo</a>
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Cfg_MailIndividualArticles"></a><span class="code">MailIndividualArticles</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
+    <td align="left">Boolean</td>
+
+    <td>If set to true, this parameter instructs <i>curn</i> to send an
+	email per article; that is, instead of a single email containing
+	the output from all output handlers, <i>curn</i> will send one
+	individual email for <i>each</i> article. If <i>curn</i> finds 20
+	unread articles, it'll send 20 email message, each with a single
+	article; if there are 100 unread articles, <i>curn</i> will send
+	100 separate email messages. If there are multiple output handlers
+	that actually produce output, then each article email will be a
+	MIME multipart/alternate email containing separate attachments from
+	each output handler for that article.
+	<br/><br/>
+	If this parameter is <tt>false</tt> or absent, <i>curn</i> will
+	send one email containing the generated output for all feeds and
+	items. If there are multiple output handlers that actually produce
+	output, <i>curn</i> will combine all the outputs into a single MIME
+	multipart/alternative email. Each output handler's output will be a
+	separate multipart/alternative attachment. (<i>curn</i> assumes
+	that each output handler is generating an alternate form of the
+	same information.)
+	<br/><br/>
+	Output handlers that don't generate output are skipped. If none of
+	the configured output handlers generate any output, then
+	<i>curn</i> doesn't send an email message.
+
+	<br/><br/>
+	This parameter is ignored if no email addresses are specified by the
+        <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a> parameter.
+      <br/><br/>
+      <b>WARNINGS</b>:
+
+      <ul>
+	<li>If you configure multiple output handlers, <i>curn</i> cannot tell which one
+	    you prefer to use. When <span class="code">MailIndividualArticles</span> is
+	    <span class="code">false</span>, multiple output handlers don't pose a problem;
+	    <i>curn</i> simply sends 
+	    <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an
+	    article is to download and re-parse the feed. Also, if the article is no longer in the
+	    feed, <i>curn</i> can't redisplay the article even if the elapsed time hasn't yet passed.
+	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan">IgnoreArticlesOlderThan</a>
+	    parameter. For instance, if use <span class="code">ShowArticlesFor</code> to tell
+	    <i>curn</i> to show articles for 5 days, but you also use
+	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> to tell
+	    <i>curn</i> to ignore articles older than 2 days, the
+	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> will take
+	    preference.
+      </ul>
+    </td>
+    <td align="left">No</td>
+    <td align="left">Output is not emailed.</td>
+    <td align="left">
+        <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+        <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
+        <a href="#Cfg_MailSubject" class="code">MailSubject</a>
     </td>
   </tr>
 
@@ -1893,7 +1952,7 @@ ShowArticlesFor: 12 hours, 30 minutes
       The SMTP host to use when mailing output.
       This parameter is only honored when at
       least one email address is specified via the
-      <a href="#MailOutputTo" class="code">MailOutputTo</a> configuration
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a> configuration
       parameter.
     </td>
     <td align="left">No</td>
@@ -4278,9 +4337,10 @@ stock plug-ins are in the
     one or more recipients.</td>
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
-      <a href="#MailOutputTo" class="code">MailOutputTo</a><br/>
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a><br/>
       <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
       <a href="#Cfg_MailSubject" class="code">MailSubject</a>
+      <a href="#Cfg_MailIndividualArticles" class="code">MailIndividualArticles</a>
     </td>
   </tr>
 
