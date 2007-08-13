@@ -1659,20 +1659,17 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       <b>WARNINGS</b>:
 
       <ul>
-	<li>If you configure multiple output handlers, <i>curn</i> cannot tell which one
-	    you prefer to use. When <span class="code">MailIndividualArticles</span> is
-	    <span class="code">false</span>, multiple output handlers don't pose a problem;
-	    <i>curn</i> simply sends 
-	    <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an
-	    article is to download and re-parse the feed. Also, if the article is no longer in the
-	    feed, <i>curn</i> can't redisplay the article even if the elapsed time hasn't yet passed.
-	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan">IgnoreArticlesOlderThan</a>
-	    parameter. For instance, if use <span class="code">ShowArticlesFor</code> to tell
-	    <i>curn</i> to show articles for 5 days, but you also use
-	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> to tell
-	    <i>curn</i> to ignore articles older than 2 days, the
-	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> will take
-	    preference.
+	<li>Obviously, if this parameter is <span class="code">true</span>,
+	    and there are lots of new articles, <i>curn</i> will send lots of
+	    small email messages. <b>Use with caution.</b>
+
+	<li>If the output handler supports a <a href="#FreeMarker_SaveOnly" class="code">SaveOnly</a>
+	    parameter (e.g., the <a href="#FreeMarkerOutputHandler" class="code">FreeMarkerOutputHandler</a>),
+	    and you've set the <a href="#FreeMarker_SaveOnly" class="code">SaveOnly</a> parameter, the
+	    output handler won't generate emailable output. Any output handler that's derived from
+	    <i>curn's</i>
+	    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/FileOutputHandler.html" class="code">org.clapper.curn.output.FileOutputHandler</a>
+	    automatically supports <span class="code">SaveOnly</span>.
       </ul>
     </td>
     <td align="left">No</td>
@@ -3141,7 +3138,7 @@ section.</p>
 
 <p><i>curn</i> comes bundled with the following built-in output handlers.</p>
 
-<h4><a name="FreeMarkerOutputHandler" class="code">FreeMarkerOutputHandler</a></h4>
+<h4><a name="FreeMarkerOutputHandler"></a><span class="code">FreeMarkerOutputHandler</span></h4>
 
 <dl class="dlSummary">
   <dt>Class
@@ -3206,7 +3203,7 @@ built-in templates that produce the appropriate kind of output.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left" class="code">SaveAs</td>
+    <td align="left" class="code"><a name="FreeMarker_SaveAs"></a>SaveAs</td>
     <td align="left">File name or path name</td>
     <td align="left">Save a copy of the generated HTML to the
     specified file. The argument is the path to the file. <b>WARNING:
@@ -3218,7 +3215,7 @@ built-in templates that produce the appropriate kind of output.</p>
     </td>
   </tr>
   <tr valign="top">
-    <td align="left" class="code">SaveOnly</td>
+    <td align="left" class="code"><a name="FreeMarker_SaveOnly"></a>SaveOnly</td>
     <td align="left">Boolean</td>
     <td align="left">If <span class="code">true</span> and if
     <span class="code">SaveAs</span> is defined, then save a copy
@@ -5506,7 +5503,7 @@ initialization required by the output handler class.</p>
 <p><b>Note</b>: The sample <span class="code">init()</span> method, above,
 does a little more work than it needs to do. As it turns out, the
 <i>curn</i> API provides a useful abstract base class called
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.output.FileHandler</a> that
+<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/FileOutputHandler.html" class="code">org.clapper.curn.output.FileOutputHandler</a> that
 implements the <span class="code">OutputHandler</span> interface.
 <span class="code">FileOutputHandler</span> provides an
 <span class="code">init()</span> method that:

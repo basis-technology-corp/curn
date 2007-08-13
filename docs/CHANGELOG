@@ -67,12 +67,34 @@ Version 3.2 (...)
   If you're running curn in a Spanish or French locale, the appropriate
   Spanish or French equivalents are also available, as well as the English
   versions. (Supporting additional locales requires modifying the
-  org.clapper.util library, but it's easy enough to do.)x
+  org.clapper.util library, but it's easy enough to do.)
 
   "year" and "month" are not supported, to avoid the irregularity of leaps
   years and different month lengths, respectively.
 
   See the User's Guide for details.
+
+- Added a new "MaxArticles" plug-in. This plug-in provides a way to limit
+  the number of articles displayed for each feed. It can be configured
+  globally and per feed. See the User's Guide for details.
+
+- Added a new "RetainArticles" plug-in. This plug-in provides a
+  configuration parameter, "ShowArticlesFor", that allows you to specify
+  that articles are to be shown more than once. It takes a time interval
+  like the "IgnoreArticlesOlderThan" parameter. For instance:
+
+        ShowArticlesFor: 2 days
+
+  See the User's Guide for details.
+
+- Added a new "MailIndividualArticles" parameter (implemented by the
+  existing EmailOutputPlugIn). If emailing is enabled and this parameter is
+  set to "true", curn will email each new article in its own, individual
+  message. Thus, if there are 200 new articles in all of the feeds, curn
+  will send 200 email messages, each with a single article. If emailing
+  is enabled and this parameter is "false" or missing, curn will do what
+  it's always done, namely, send a single email message containing all
+  output.
 
 - Within a given plug-in phase, all plug-ins implementing that phase now
   execute in sorted order. That is, they're sorted per-phase by their
