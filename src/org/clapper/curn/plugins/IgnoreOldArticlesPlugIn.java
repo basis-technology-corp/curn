@@ -256,7 +256,7 @@ public class IgnoreOldArticlesPlugIn
                 {
                     String sDuration = config.getConfigurationValue(sectionName,
                                                                     paramName);
-                    globalDefault.parse(sDuration);
+                    globalDefault = new Duration(sDuration);
                     log.debug("[" + sectionName + "] " + paramName + "=" +
                               globalDefault);
                 }
