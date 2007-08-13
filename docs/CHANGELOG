@@ -105,6 +105,12 @@ Version 3.2 (...)
 				  Changes
 				  -------
 
+- The PostFeedParsePlugIn interface's runPostFeedParsePlugIn() method
+  now takes a third parameter: The FeedCache.
+
+- The OutputHandler interface now requires a makeCopy() method. Existing
+  output handlers must be extended to support that method.
+
 - Modified the per-feed "SaveAs" configuration parameter to use a command
   line-style argument. The output encoding is now specified with a
   "--encoding" option to the parameter's value. The parameter also supports

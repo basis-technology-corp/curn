@@ -83,7 +83,7 @@ public class ReadOnlyOutputHandler implements OutputHandler
      *
      * @param outputHandler the {@link OutputHandler} to wrap.
      */
-    public ReadOnlyOutputHandler (OutputHandler outputHandler)
+    public ReadOnlyOutputHandler(OutputHandler outputHandler)
     {
         this.outputHandler = outputHandler;
     }
@@ -107,14 +107,14 @@ public class ReadOnlyOutputHandler implements OutputHandler
      *
      * @param name  the name
      */
-    public void setName (final String name)
+    public void setName(final String name)
         throws CurnException
     {
-        throw new CurnException (Constants.BUNDLE_NAME,
-                                 "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler " +
-                                 "method {0}()",
-                                 new Object[] {"setName"});
+        throw new CurnException(Constants.BUNDLE_NAME,
+                                "ReadOnlyOutputHandler.readOnlyMethod",
+                                "Illegal call to read-only OutputHandler " +
+                                "method {0}()",
+                                new Object[] {"setName"});
     }
 
     /**
@@ -137,16 +137,16 @@ public class ReadOnlyOutputHandler implements OutputHandler
      * @see CurnConfig
      * @see ConfiguredOutputHandler
      */
-    public void init (final CurnConfig config, 
-                      final ConfiguredOutputHandler cfgHandler)
+    public void init(final CurnConfig config,
+                     final ConfiguredOutputHandler cfgHandler)
         throws ConfigurationException,
                CurnException
     {
-        throw new CurnException (Constants.BUNDLE_NAME,
-                                 "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler " +
-                                 "method {0}()",
-                                 new Object[] {"init"});
+        throw new CurnException(Constants.BUNDLE_NAME,
+                                "ReadOnlyOutputHandler.readOnlyMethod",
+                                "Illegal call to read-only OutputHandler " +
+                                "method {0}()",
+                                new Object[] {"init"});
     }
 
     /**
@@ -161,15 +161,15 @@ public class ReadOnlyOutputHandler implements OutputHandler
      *
      * @throws CurnException  unable to write output
      */
-    public void displayChannel (final RSSChannel channel, 
-                                final FeedInfo feedInfo)
+    public void displayChannel(final RSSChannel channel,
+                               final FeedInfo feedInfo)
         throws CurnException
     {
-        throw new CurnException (Constants.BUNDLE_NAME,
-                                 "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler " +
-                                 "method {0}()",
-                                 new Object[] {"displayChannel"});
+        throw new CurnException(Constants.BUNDLE_NAME,
+                                "ReadOnlyOutputHandler.readOnlyMethod",
+                                "Illegal call to read-only OutputHandler " +
+                                "method {0}()",
+                                new Object[] {"displayChannel"});
     }
 
     /**
@@ -185,11 +185,11 @@ public class ReadOnlyOutputHandler implements OutputHandler
     public void flush()
         throws CurnException
     {
-        throw new CurnException (Constants.BUNDLE_NAME,
-                                 "ReadOnlyOutputHandler.readOnlyMethod",
-                                 "Illegal call to read-only OutputHandler " +
-                                 "method {0}()",
-                                 new Object[] {"flush"});
+        throw new CurnException(Constants.BUNDLE_NAME,
+                                "ReadOnlyOutputHandler.readOnlyMethod",
+                                "Illegal call to read-only OutputHandler " +
+                                "method {0}()",
+                                new Object[] {"flush"});
     }
 
     /**
@@ -248,4 +248,18 @@ public class ReadOnlyOutputHandler implements OutputHandler
     {
         return outputHandler.hasGeneratedOutput();
     }
+
+    /**
+     * Make a copy of the output handler.
+     *
+     * @return a clean, initialized copy of the output handler
+     *
+     * @throws CurnException on error
+     */
+    public OutputHandler makeCopy()
+        throws CurnException
+    {
+        return new ReadOnlyOutputHandler(outputHandler);
+    }
+    
 }
