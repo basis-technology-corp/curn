@@ -154,6 +154,16 @@ ul.nobullet
     list-style-type: none;
 }
 
+ul li ul.spaced
+{
+    margin-top: 1em;
+}
+
+ul.spaced li
+{
+    margin-bottom: 1em;
+}
+
 ul.nobullet li
 {
     margin-bottom: 5px;
@@ -1875,18 +1885,59 @@ ShowArticlesFor: 12 hours, 30 minutes
       <br/><br/>
       <b>WARNINGS</b>:
 
-      <ul>
+      <ul class="spaced">
 	<li>Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
 	    <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an
 	    article is to download and re-parse the feed. Also, if the article is no longer in the
 	    feed, <i>curn</i> can't redisplay the article even if the elapsed time hasn't yet passed.
-	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan">IgnoreArticlesOlderThan</a>
-	    parameter. For instance, if use <span class="code">ShowArticlesFor</code> to tell
-	    <i>curn</i> to show articles for 5 days, but you also use
-	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> to tell
-	    <i>curn</i> to ignore articles older than 2 days, the
-	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> will take
-	    preference.
+	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a>
+	    parameter. Here's a simple example. Assume the configuration settings are:
+<blockquote><pre>IgnoreArticlesOlderThan: 5 days
+ShowArticlesFor: 2 days</pre></blockquote>
+	    In this case, any article in the feed that's older than 5 days will be discarded
+	    by the <a href="#PlugIn_IgnoreOldArticles">Ignore Old Articles</a> plug-in, which will
+	    run first. Now, assume there are 4 articles:
+	    <ul class="spaced">
+	      <li>Article 1 has never been processed by <i>curn</i> (i.e., isn't in the cache),
+		  and it has an XML timestamp of 3 days ago.
+	      <li>Article 2 <i>has</i> been processed by <i>curn</i>, 3 days ago. It also has an XML
+		  timestamp of 3 days ago.
+	      <li>Article 3 has been processed by <i>curn</i>, 1 hour ago. It has no XML timestamp.
+	      <li>Article 4 has been processed by <i>curn</i>, 3 days ago. It has an XML timestamp
+		  of 6 days ago.
+	    </ul>
+
+	    Now let's see what happens when the plug-ins run. The
+	    <a href="#PlugIn_IgnoreOldArticles">Ignore Old Articles</a> plug-in runs first.
+	    (It sorts higher in the plug-in list. You'll have to take my word for that, or look
+	    at the source code.)
+
+	    <ul class="spaced">
+	      <li>The Ignore Old Articles plug-in keeps Article 1, because
+		  its XML timestamp is 3 days ago, which is newer than the
+		  5-day cutoff.
+	      <li>Ditto for Article 2.
+	      <li>Article 3 has no XML timestamp, so Ignore Old Articles assumes that it's current
+		  and keeps it.
+	      <li>Article 4 has an XML timestamp of 6 days ago, which is past the 5-day cut-off,
+		  so Ignore Old Articles discards it.
+	    </ul>
+
+	    At this point, there are three articles left. The
+	    <a href="#PlugIn_RetainArticles">Retain Articles PlugIn</a> runs. (That's the plug-in
+	    that handles the <span class="code">ShowArticlesFor</span> parameter.)
+
+	    <ul class="spaced">
+	      <li>The Retain Articles plug-in keeps Article 1, because <i>curn</i> has never seen
+		  Article 1 before (i.e., it isn't in the cache).
+	      <li>The Retain Articles plug-in discards Article 2, because <i>curn</i> first
+		  displayed the article 3 days ago, which is past the
+		  <span class="code">ShowArticlesFor</span> cut-off of 2 days.
+	      <li>The Retain Articles plug-in keeps Article 1, because <i>curn</i> first processed
+		  it an hour ago, so it's under the 2-day threshold.
+	    </ul>
+
+	    In the end, two articles are left.
       </ul>
     </td>
     <td align="left">No</td>
@@ -2474,48 +2525,9 @@ ArticleFilter: hide ; show author '^moe *howard$'
     <td align="left">String</td>
     <td align="left">Provides a way to ignore articles that are
   older than a certain interval. Intervals are
-  expressed in a natural language syntax. For 
-  instance:
-
-<blockquote><pre>
-IgnoreArticlesOlderThan: 3 days
-IgnoreArticlesOlderThan: 1 week
-IgnoreArticlesOlderThan: 365 days
-IgnoreArticlesOlderThan: 12 hours, 30 minutes
-</pre></blockquote>
-
-                      Valid interval names (in English) are:
-
-  <ul>
-    <li>millisecond, milliseconds, ms
-    <li>second, seconds, sec, secs
-    <li>minute, minutes, min, mins
-    <li>hour, hours, hr, hrs
-    <li>day, days
-    <li>week, weeks
-  </ul>
-
-  If you're running <i>curn</i> in a Spanish or French locale, the appropriate
-  Spanish or French equivalents are also available, as well as the English
-  versions. (Supporting additional locales requires modifying the
-  <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
-  library, but it's easy enough to do.)
-  <br/><br/>
-  "year" and "month" are not supported, to avoid
-  the irregularity of leaps years and different
-  month lengths, respectively.
-  <br/><br/>
-  The actual conversion of the strings is done by the
-  <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
-  library's
-  <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
-  See that class for more details.
-  <br/><br/>
-  <b>NOTE:</b> The plug-in that implements this capability uses the timestamp in the
-  XML to determine "older than", not the cached timestamp, because the intent is to weed
-  old articles from a feed that you haven't processed in a while (or perhaps are
-  processing for the first time.) If the article has no timestamp in the XML,
-  it is assumed to be current, i.e., to have a date/time of "now".
+  expressed in a natural language syntax. Please see the documentation for the global
+      <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> parameter for a more
+      complete description of this parameter.
     </td>
     <td align="left">No</td>
     <td align="left">The default, as defined by the global
@@ -2888,57 +2900,13 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <br/><a href="#PlugIn_RetainArticles" class="plug-in-flag">plug-in</a></td>
     <td align="left">String</td>
     <td align="left">
-
       How long to display show articles from the feed. The value is a time
       interval, expressed using the same natural language strings supported
       by the <a href="#Feed_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a>
-      parameter. For instance:
-
-<blockquote><pre>
-ShowArticlesFor: 3 days
-ShowArticlesFor: 1 week
-ShowArticlesFor: 365 days
-ShowArticlesFor: 12 hours, 30 minutes
-</pre></blockquote>
-
-      Valid interval names (in English) are:
-  
-      <ul>
-	<li>millisecond, milliseconds, ms
-	<li>second, seconds, sec, secs
-	<li>minute, minutes, min, mins
-	<li>hour, hours, hr, hrs
-	<li>day, days
-	<li>week, weeks
-      </ul>
-
-
+      parameter. Please see the documentation for the global
+      <a href="#Cfg_ShowArticlesFor" class="code">ShowArticlesFor</a> parameter for a more
+      complete description of this parameter.
       <br/><br/>
-      <b>NOTE:</b> The plug-in that implements this capability uses the timestamp in the <i>curn</i>
-      cache when aging an article, not the timestamp in the feed's XML. That's because the intent of
-      this configuration parameter is to permit you to keep showing an article for a certain amount
-      of time <i>after</i> the article was first displayed. The article timestamp in the XML is the
-      time that the article was <i>published</i>, not the time that <i>curn</i> first displayed it.
-      The time in the <i>curn</i> cache represents the time that <i>curn</i> first saw (and presumably
-      displayed) the article.
-      <br/><br/>
-
-      <b>WARNINGS</b>:
-
-      <ul>
-	<li>Specifying this parameter forces feeds to be downloaded, even if they haven't changed.
-	    <i>curn</i> does not keep cached copies of feed data; the only way it can redisplay an
-	    article is to download and re-parse the feed. Also, if the article is no longer in the
-	    feed, <i>curn</i> can't redisplay the article even if the elapsed time hasn't yet passed.
-	<li>Beware of interactions with the <a href="#Cfg_IgnoreArticlesOlderThan">IgnoreArticlesOlderThan</a>
-	    parameter. For instance, if use <span class="code">ShowArticlesFor</code> to tell
-	    <i>curn</i> to show articles for 5 days, but you also use
-	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> to tell
-	    <i>curn</i> to ignore articles older than 2 days, the
-	    <a href="#Cfg_IgnoreArticlesOlderThan" class="code">IgnoreArticlesOlderThan</a> will take
-	    preference.
-      </ul>
-
       This value overrides the global
       <a href="#Cfg_ShowArticlesFor" class="code">ShowArticlesFor</a> parameter.
     </td>
