@@ -1543,18 +1543,24 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
   If you're running <i>curn</i> in a Spanish or French locale, the appropriate
   Spanish or French equivalents are also available, as well as the English
   versions. 
-  <br><br>
+  <br/><br/>
   "year" and "month" are not supported, to avoid
   the irregularity of leaps years and different
   month lengths, respectively.
-  <br><br>
+  <br/><br/>
   The actual conversion of the strings is done by the
   <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
   library's
   <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
   See that class for more details.
-  <br><br>
+  <br/><br/>
   This global value sets the default value.
+  <br/><br/>
+  <b>NOTE:</b> The plug-in that implements this capability uses the timestamp in the
+  XML to determine "older than", not the cached timestamp, because the intent is to weed
+  old articles from a feed that you haven't processed in a while (or perhaps are
+  processing for the first time.) If the article has no timestamp in the XML,
+  it is assumed to be current, i.e., to have a date/time of "now".
     </td>
     <td align="left">No</td>
     <td align="left">None (i.e., Articles are not ignored based on age)</td>
@@ -1858,6 +1864,14 @@ ShowArticlesFor: 12 hours, 30 minutes
       </ul>
 
       If this parameter is not specified, then the default value is to show an article one time only.
+      <br/><br/>
+      <b>NOTE:</b> The plug-in that implements this capability uses the timestamp in the <i>curn</i>
+      cache when aging an article, not the timestamp in the feed's XML. That's because the intent of
+      this configuration parameter is to permit you to keep showing an article for a certain amount
+      of time <i>after</i> the article was first displayed. The article timestamp in the XML is the
+      time that the article was <i>published</i>, not the time that <i>curn</i> first displayed it.
+      The time in the <i>curn</i> cache represents the time that <i>curn</i> first saw (and presumably
+      displayed) the article.
       <br/><br/>
       <b>WARNINGS</b>:
 
@@ -2486,16 +2500,22 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
   versions. (Supporting additional locales requires modifying the
   <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
   library, but it's easy enough to do.)
-  <br><br>
+  <br/><br/>
   "year" and "month" are not supported, to avoid
   the irregularity of leaps years and different
   month lengths, respectively.
-  <br><br>
+  <br/><br/>
   The actual conversion of the strings is done by the
   <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
   library's
   <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
   See that class for more details.
+  <br/><br/>
+  <b>NOTE:</b> The plug-in that implements this capability uses the timestamp in the
+  XML to determine "older than", not the cached timestamp, because the intent is to weed
+  old articles from a feed that you haven't processed in a while (or perhaps are
+  processing for the first time.) If the article has no timestamp in the XML,
+  it is assumed to be current, i.e., to have a date/time of "now".
     </td>
     <td align="left">No</td>
     <td align="left">The default, as defined by the global
@@ -2735,7 +2755,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       that then run against the downloaded files. (See
       <a href="#Bandwidth">Being Bandwidth Friendly</a> for a more
       detailed discussion of this tactic.)
-      <br><br>
+      <br/><br/>
       This configuration item takes a command line-style value:
      <blockquote><pre>SaveAs: [--backups <i>total_backups</i>] [--encoding <i>encoding</i>] <i>path</i></pre></blockquote>
 
@@ -2756,8 +2776,8 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 	   2, <i>curn</i> will keep <span class="filename">foo.0.xml</span>
 	   and <span class="filename">foo.1.xml</span>. The file with the
 	   largest version number is the oldest one. If not specified, this
-	   parameter defaults to 0, which means "no backups".<br><br>
-       <li><i>encoding</i> is optional and specifies the desired encoding of the file. It defaults to "utf-8".<br><br>
+	   parameter defaults to 0, which means "no backups".<br/><br/>
+       <li><i>encoding</i> is optional and specifies the desired encoding of the file. It defaults to "utf-8".<br/><br/>
        <li><i>path</i> is the path to the file where the raw RSS data should be written.
      </ul>
 
@@ -2781,7 +2801,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       encoding to use when saving the feed to the file.
       If <span class="code">SaveAs</span> is not set for the feed,
       then any <span class="code">SaveAsEncoding</span> parameter is
-      ignored.<br><br>
+      ignored.<br/><br/>
       <b>WARNING:</b> This parameter is deprecated. Use the
       <span class="code"><i>--encoding</i></span> option to the
       <a href="#Feed_SaveAs" class="code">SaveAs</a>
@@ -2831,9 +2851,9 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 	   2, <i>curn</i> will keep <span class="filename">foo.0.xml</span>
 	   and <span class="filename">foo.1.xml</span>. The file with the
 	   largest version number is the oldest one. If not specified, this
-	   parameter defaults to 0, which means "no backups".<br><br>
-       <li><i>rsstype</i> is the type of RSS output to generate. Currently, "rss1", "rss2" and "atom" are the supported values.<br><br>
-       <li><i>encoding</i> is optional and specifies the desired encoding of the file. It defaults to "utf-8".<br><br>
+	   parameter defaults to 0, which means "no backups".<br/><br/>
+       <li><i>rsstype</i> is the type of RSS output to generate. Currently, "rss1", "rss2" and "atom" are the supported values.<br/><br/>
+       <li><i>encoding</i> is optional and specifies the desired encoding of the file. It defaults to "utf-8".<br/><br/>
        <li><i>path</i> is the path to the file where the RSS output should be written.
      </ul>
      Note that only the new data in the feed is converted to RSS.
@@ -2892,6 +2912,16 @@ ShowArticlesFor: 12 hours, 30 minutes
 	<li>week, weeks
       </ul>
 
+
+      <br/><br/>
+      <b>NOTE:</b> The plug-in that implements this capability uses the timestamp in the <i>curn</i>
+      cache when aging an article, not the timestamp in the feed's XML. That's because the intent of
+      this configuration parameter is to permit you to keep showing an article for a certain amount
+      of time <i>after</i> the article was first displayed. The article timestamp in the XML is the
+      time that the article was <i>published</i>, not the time that <i>curn</i> first displayed it.
+      The time in the <i>curn</i> cache represents the time that <i>curn</i> first saw (and presumably
+      displayed) the article.
+      <br/><br/>
 
       <b>WARNINGS</b>:
 
@@ -3695,7 +3725,7 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
     runtime, for those languages to be
     available. (See the section entitled
     <a href="#InstallingSupportSoftware" class="sectionRef">Installing Support Software</a> for details.)
-    <br><br>
+    <br/><br/>
     The following values represent some of the languages available for
     this parameter. The BSF values comes from the
     <span class="filename">Languages.properties</span> file
@@ -3703,7 +3733,7 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
     of languages supported by the JSR 223 engines at
     <a href="https://scripting.dev.java.net/" class="url">https://scripting.dev.java.net/</a>, as of the date this document was last updated. Consult that
     web site for details on available JSR 223 languages.
-    <br><br>
+    <br/><br/>
     NOTE: In all cases, except Rhino, the actual script language itself
     does <i>not</i> come with the scripting infrastructure; you have to download
     the language separately. The scripting infrastructure merely contains
@@ -3817,7 +3847,7 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
   <tr valign="top">
     <td align="left" class="code"><a name="#Cfg_ScriptingAPI">ScriptingAPI:</a></td>
     <td align="left">String</td>
-    <td align="left">Specifies which scripting infrastructure to use. Legal values are:<br><br>
+    <td align="left">Specifies which scripting infrastructure to use. Legal values are:<br/><br/>
         <table summary="" class="bordered uncolored" cellspacing="2" align="center" width="50%">
           <tr valign="top">
 	    <td align="top" class="code">bsf</td>
@@ -3843,7 +3873,7 @@ in the <a href="#ExtendingCurn">Extending <i>curn</i></a> section, below.</p>x
     <td align="left">Whether or not to display the <i>curn</i>
     version, <i>curn</i> configuration file path, and other
     <i>curn</i>-related information at the bottom of the generated
-    output.<br><br>
+    output.<br/><br/>
 
     Note: There's no guarantee that a given script will honor
     this setting.
