@@ -151,6 +151,10 @@ Version 3.2 (...)
 				 Bug Fixes
 				 ---------
 
+- Fixed the ROME RSSChannelAdapter to return the items in a LinkedHashSet,
+  not a HashSet, to preserve the original sort order (i.e., the order of
+  items in the XML) if the SortBy parameter is not set or is set to "none".
+
 - Fixed a null pointer exception that could occur if all items in a channel
   have been suppressed by a plug-in.
 
