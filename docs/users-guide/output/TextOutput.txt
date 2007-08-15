@@ -5,6 +5,15 @@ The Daily Irrelevant
 http://irrelevant.clapper.org/
 rss_2.0
 
+    Fifteen Philadelphia motorists cited for stupidity
+    Olaf Phenobarb
+
+    http://irrelevant.clapper.org/2004/06/13/stupidity.html
+
+        During rush hour this morning, on the city's busy Schuylkill Expressway,
+        Philadelphia police stopped fifteen motorists and cited them under
+        Philadelphia's new, controversial "stupid driver" ordinance.
+
     Joe Sixpack to retire
     
 
@@ -14,15 +23,6 @@ rss_2.0
         is retiring at the end of July. "After that, they're just gonna hafta
         use someone else's name," Sixpack said, grinning, "'less they wanna pay
         me royalties or somethin'."
-
-    Fifteen Philadelphia motorists cited for stupidity
-    Olaf Phenobarb
-
-    http://irrelevant.clapper.org/2004/06/13/stupidity.html
-
-        During rush hour this morning, on the city's busy Schuylkill Expressway,
-        Philadelphia police stopped fifteen motorists and cited them under
-        Philadelphia's new, controversial "stupid driver" ordinance.
 
     Tripwell caught with pants down
     
@@ -66,16 +66,16 @@ Simple News Summaries
 http://justthefactsmaam.clapper.org/
 rss_2.0
 
-    New study claims pollen makes people sneeze
-    Fred Derf
-
-    http://justthefactsmaam.clapper.org/duh.html
-
     Political correctness organization claims that the word "person" is sexist,
     because it contains the word "son."
     James Longwayfromhome
 
     http://justthefactsmaam.clapper.org/pcstupid.html
+
+    New study claims pollen makes people sneeze
+    Fred Derf
+
+    http://justthefactsmaam.clapper.org/duh.html
 
     Researcher claims 13% of Americans can't spell their own names
     Jonh Smth
@@ -84,5 +84,5 @@ rss_2.0
 
 
 ---------------------------------------------------------------------------
-curn, 3.2 beta 1 (build 20070813.023733.479)
-Generated Sunday, 12 August, 2007 at 22:37:39 EDT
+curn, 3.2 beta 3 (build 20070815.032430.428)
+Generated Tuesday, 14 August, 2007 at 23:29:51 EDT
