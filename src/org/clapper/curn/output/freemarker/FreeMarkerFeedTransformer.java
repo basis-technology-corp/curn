@@ -506,7 +506,7 @@ public class FreeMarkerFeedTransformer
 
         channelData.put("id", id);
 
-        Date channelDate = null;
+        Date channelDate = channel.getPublicationDate();
         channelData.put("showDate", true);
 
         if (channelDate != null)
