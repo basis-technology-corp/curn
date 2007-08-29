@@ -59,7 +59,6 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.feed.synd.SyndPersonImpl;
 
@@ -74,6 +73,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import org.clapper.curn.parser.RSSContent;
+import org.clapper.curn.parser.RSSLinkChangeListener;
+import org.clapper.curn.parser.RSSLinkChangeListenerAdapter;
 import org.clapper.util.text.TextUtil;
 
 /**
@@ -202,12 +203,24 @@ public class RSSItemAdapter extends RSSItem
 
         Collection<RSSLink> results = new ArrayList<RSSLink>();
 
+        RSSLinkChangeListener changeListener = new RSSLinkChangeListenerAdapter()
+        {
+            @Override
+            public void onURLChange(RSSLink link, URL oldURL, URL newURL)
+            {
+                log.debug("Changing URL from \"" + oldURL.toString() +
+                          "\" to \"" + newURL.toString() + "\"");
+                entry.setLink(newURL.toString());
+            }
+        };
+
         try
         {
             URL url = new URL(entry.getLink());
             results.add(new RSSLink(url,
                                     ParserUtil.getLinkMIMEType (url),
-                                    RSSLink.Type.SELF));
+                                    RSSLink.Type.SELF,
+                                    changeListener));
         }
 
         catch (MalformedURLException ex)

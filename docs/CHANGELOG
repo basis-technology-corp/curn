@@ -6,6 +6,28 @@ $Id$
 Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.1 (...)
+
+
+			       ------------
+			       Enhancements
+			       ------------
+
+				  -------
+				  Changes
+				  -------
+
+				 ---------
+				 Bug Fixes
+				 ---------
+
+- Fixed a bug in the ParsedFeedURLEdit plug-in (which supports the
+  EditItemURL and EditFeedURL configuration items). The plug-in properly
+  performed the edit, but the changed URL didn't get back into the
+  item/feed.
+
+
+---------------------------------------------------------------------------
 Version 3.2 (29 August, 2007)
 
 			       ------------

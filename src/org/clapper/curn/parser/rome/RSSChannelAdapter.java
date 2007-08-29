@@ -67,6 +67,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
+import org.clapper.curn.parser.RSSLinkChangeListener;
+import org.clapper.curn.parser.RSSLinkChangeListenerAdapter;
 import org.clapper.util.text.TextUtil;
 
 /**
@@ -264,12 +266,24 @@ public class RSSChannelAdapter extends RSSChannel
 
         Collection<RSSLink> results = new ArrayList<RSSLink>();
 
+        RSSLinkChangeListener changeListener = new RSSLinkChangeListenerAdapter()
+        {
+            @Override
+            public void onURLChange(RSSLink link, URL oldURL, URL newURL)
+            {
+                log.debug("Changing URL from \"" + oldURL.toString() +
+                          "\" to \"" + newURL.toString() + "\"");
+                syndFeed.setLink(newURL.toString());
+            }
+        };
+
         try
         {
             URL url = new URL(syndFeed.getLink());
             results.add(new RSSLink(url,
                                     ParserUtil.getLinkMIMEType (url),
-                                    RSSLink.Type.SELF));
+                                    RSSLink.Type.SELF,
+                                    changeListener));
         }
 
         catch (MalformedURLException ex)

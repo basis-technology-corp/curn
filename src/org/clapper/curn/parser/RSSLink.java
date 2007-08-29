@@ -47,6 +47,8 @@
 package org.clapper.curn.parser;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
  * An <tt>RSSLink</tt> object describes a link to a URL, including any
@@ -88,6 +90,9 @@ public class RSSLink
     private String mimeType = null;
     private Type   linkType = Type.SELF;
 
+    private Collection<RSSLinkChangeListener> changeListeners =
+        new LinkedHashSet<RSSLinkChangeListener>();
+
     /*----------------------------------------------------------------------*\
                                Constructors
     \*----------------------------------------------------------------------*/
@@ -111,14 +116,58 @@ public class RSSLink
      */
     public RSSLink (URL url, String mimeType, Type linkType)
     {
+        this(url, mimeType, linkType, null);
+    }
+
+    /**
+     * Create and populate a new <tt>RSSLink</tt> object.
+     *
+     * @param url            the link's URL
+     * @param mimeType       the MIME type. Must not be null.
+     * @param linkType       the link type
+     * @param changeListener initial {@link RSSLinkChangeListener} to add to
+     *                       this object. Can be null.
+     */
+    public RSSLink (URL                   url,
+                    String                mimeType,
+                    Type                  linkType,
+                    RSSLinkChangeListener changeListener)
+    {
         this.url      = url;
         this.mimeType = mimeType;
         this.linkType = linkType;
+
+        if (changeListener != null)
+            addChangeListener(changeListener);
     }
 
     /*----------------------------------------------------------------------*\
                               Public Methods
     \*----------------------------------------------------------------------*/
+
+    /**
+     * Add a change listener to this <tt>RSSLink</tt>.
+     *
+     * @param listener the listener to add
+     *
+     * @see #removeChangeListener
+     */
+    public void addChangeListener(RSSLinkChangeListener listener)
+    {
+        changeListeners.add(listener);
+    }
+
+    /**
+     * Remove a change listener from this <tt>RSSLink</tt>.
+     *
+     * @param listener the listener to remove
+     *
+     * @see #addChangeListener
+     */
+    public void removeChangeListener(RSSLinkChangeListener listener)
+    {
+        changeListeners.remove(listener);
+    }
 
     /**
      * Get the URL for this link.
@@ -141,7 +190,11 @@ public class RSSLink
      */
     public void setURL (URL url)
     {
+        URL oldURL = this.url;
         this.url = url;
+
+        for (RSSLinkChangeListener listener : changeListeners)
+            listener.onURLChange(this, oldURL, this.url);
     }
 
     /**
@@ -165,7 +218,11 @@ public class RSSLink
      */
     public void setMIMEType (String mimeType)
     {
+        String oldMIMEType = this.mimeType;
         this.mimeType = mimeType;
+
+        for (RSSLinkChangeListener listener : changeListeners)
+            listener.onMIMETypeChange(this, oldMIMEType, this.mimeType);
     }
 
     /**
@@ -189,7 +246,11 @@ public class RSSLink
      */
     public void setLinkType (Type linkType)
     {
+        Type oldType = this.linkType;
         this.linkType = linkType;
+
+        for (RSSLinkChangeListener listener : changeListeners)
+            listener.onLinkTypeChange(this, oldType, this.linkType);
     }
 
     /**
@@ -197,6 +258,7 @@ public class RSSLink
      *
      * @return the string version
      */
+    @Override
     public String toString()
     {
         return (url == null) ? "null" : url.toExternalForm();
