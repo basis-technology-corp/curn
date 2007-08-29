@@ -100,6 +100,9 @@ Version 3.2 (...)
   execute in sorted order. That is, they're sorted per-phase by their
   declared sort keys, and they executed in that order.
 
+- Minor change to FreeMarker templates for HTML and summary output so that
+  they display "1 item" instead of "1 items" when appropriate.
+
 
 				  -------
 				  Changes

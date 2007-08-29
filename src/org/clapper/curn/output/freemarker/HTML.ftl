@@ -1,4 +1,4 @@
-<html> 
+et<html> 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=${encoding?upper_case}">
 <meta name="GENERATOR" content="curn, version ${curn.version}">
@@ -84,7 +84,12 @@
 <span class="toc">Table of Contents</span>
 <ul>
   <#list tableOfContents.channels as toc>
-  <li class="TOCEntry"><a href="#${toc.channelAnchor}">${toc.title}</a> (${toc.totalItems} items)</li>
+  <#if toc.totalItems gt 1>
+    <#assign plural = "s">
+  <#else>
+    <#assign plural = "">
+  </#if>
+  <li class="TOCEntry"><a href="#${toc.channelAnchor}">${toc.title}</a> (${toc.totalItems} item${plural})</li>
   </#list>
 </ul>
 </#if>

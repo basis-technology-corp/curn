@@ -61,7 +61,12 @@ A summary follows.
 
 ${wrapText (channel.title, 4)}
 ${indentText (channel.url, 4)}
-${wrapText (channel.totalItems?string, 8)} items
+  <#if channel.totalItems gt 1>
+    <#assign plural = "s">
+  <#else>
+    <#assign plural = "">
+  </#if>
+${wrapText (channel.totalItems?string, 8)} item${plural}
 </#list>
 
 <#if (curn.showToolInfo)>
