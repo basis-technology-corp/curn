@@ -6,7 +6,7 @@ $Id$
 Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.2 (...)
+Version 3.2 (29 August, 2007)
 
 			       ------------
 			       Enhancements
@@ -193,6 +193,7 @@ Version 3.2 (...)
   returning null, because its internal content map wasn't being set. This
   problem affected two plug-ins, as well as use of the API. Thanks to
   Scott White (scottblanc /at/ gmail /dot/ com) for reporting the problem.
+
 
 ---------------------------------------------------------------------------
 Version 3.1 (29 November, 2006)
