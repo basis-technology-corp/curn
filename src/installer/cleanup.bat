@@ -23,15 +23,14 @@ rem
 rem     Alternately, this acknowlegement may appear in the software itself,
 rem     if wherever such third-party acknowlegements normally appear.
 rem
-rem 3.  Neither the names "clapper.org", "clapper.org Java Utility Library",
-rem     nor any of the names of the project contributors may be used to
-rem     endorse or promote products derived from this software without prior
-rem     written permission. For written permission, please contact
-rem     bmc@clapper.org.
+rem 3.  Neither the names "clapper.org", "curn", nor any of the names of
+rem     the project contributors may be used to endorse or promote products
+rem     derived from this software without prior written permission. For
+rem     written permission, please contact bmc@clapper.org.
 rem
-rem 4.  Products derived from this software may not be called "clapper.org
-rem     Java Utility Library", nor may "clapper.org" appear in their names
-rem     without prior written permission of Brian M. Clapper.
+rem 4.  Products derived from this software may not be called "curn",
+rem     nor may "clapper.org" appear in their names without prior written
+rem     permission of Brian M. Clapper.
 rem
 rem THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
 rem WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF

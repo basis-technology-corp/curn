@@ -18,28 +18,27 @@
   modification, are permitted provided that the following conditions are
   met:
 
-  1.  Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
 
-  2.  The end-user documentation included with the redistribution, if any,
-      must include the following acknowlegement:
+  2. The end-user documentation included with the redistribution, if any,
+     must include the following acknowlegement:
 
         "This product includes software developed by Brian M. Clapper
         (bmc@clapper.org, http://www.clapper.org/bmc/). That software is
         copyright (c) 2004-2007 Brian M. Clapper."
 
-      Alternately, this acknowlegement may appear in the software itself,
-      if wherever such third-party acknowlegements normally appear.
+     Alternately, this acknowlegement may appear in the software itself,
+     if wherever such third-party acknowlegements normally appear.
 
-  3.  Neither the names "clapper.org", "clapper.org Java Utility Library",
-      nor any of the names of the project contributors may be used to
-      endorse or promote products derived from this software without prior
-      written permission. For written permission, please contact
-      bmc@clapper.org.
+  3. Neither the names "clapper.org", "curn", nor any of the names of the
+     project contributors may be used to endorse or promote products
+     derived from this software without prior written permission. For
+     written permission, please contact bmc@clapper.org.
 
-  4.  Products derived from this software may not be called "clapper.org
-      Java Utility Library", nor may "clapper.org" appear in their names
-      without prior written permission of Brian M. Clapper.
+  4. Products derived from this software may not be called "curn", nor may
+     "clapper.org" appear in their names without prior written permission
+     of Brian M. Clapper.
 
   THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
   WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
