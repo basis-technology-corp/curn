@@ -278,11 +278,15 @@ public class RSSChannelAdapter extends RSSChannel
 
         try
         {
-            URL url = new URL(syndFeed.getLink());
-            results.add(new RSSLink(url,
-                                    ParserUtil.getLinkMIMEType (url),
-                                    RSSLink.Type.SELF,
-                                    changeListener));
+            String link = syndFeed.getLink();
+            if (! TextUtil.stringIsEmpty(link))
+            {
+                URL url = new URL(link);
+                results.add(new RSSLink(url,
+                                        ParserUtil.getLinkMIMEType (url),
+                                        RSSLink.Type.SELF,
+                                        changeListener));
+            }
         }
 
         catch (MalformedURLException ex)

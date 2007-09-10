@@ -215,11 +215,15 @@ public class RSSItemAdapter extends RSSItem
 
         try
         {
-            URL url = new URL(entry.getLink());
-            results.add(new RSSLink(url,
-                                    ParserUtil.getLinkMIMEType (url),
-                                    RSSLink.Type.SELF,
-                                    changeListener));
+            String link = entry.getLink();
+            if (! TextUtil.stringIsEmpty(link))
+            {
+                URL url = new URL(link);
+                results.add(new RSSLink(url,
+                                        ParserUtil.getLinkMIMEType (url),
+                                        RSSLink.Type.SELF,
+                                        changeListener));
+            }
         }
 
         catch (MalformedURLException ex)
