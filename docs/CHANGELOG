@@ -26,6 +26,11 @@ Version 3.2.1 (...)
   performed the edit, but the changed URL didn't get back into the
   item/feed.
 
+- The RSS parser logic now properly handles empty, but present, links
+  (URL references) in the RSS feed. Prior to this fix, curn handled
+  missing link elements just fine; however, if the link element was present,
+  but empty, curn puked on the feed.
+
 
 ---------------------------------------------------------------------------
 Version 3.2 (29 August, 2007)
