@@ -471,15 +471,15 @@ class FeedDownloadThread implements Runnable
                             resultChannel.setLinks(Collections.singleton(link));
                         }
 
-                        if (resultChannel != null)
-                        {
-                            metaPlugIn.runPostFeedParsePlugIn(feedInfo, cache, 
-                                                              resultChannel);
-                        }
-
                         processChannelItems(resultChannel, feedInfo);
                         if (resultChannel.getItems().size() == 0)
                             resultChannel = null;
+
+                        if (resultChannel != null)
+                        {
+                            metaPlugIn.runPostFeedParsePlugIn(feedInfo, cache,
+                                                              resultChannel);
+                        }
                     }
                 }
 
@@ -934,6 +934,7 @@ class FeedDownloadThread implements Runnable
             Date cachePubDate = cacheEntry.getPublicationDate();
             Date itemPubDate  = item.getPublicationDate();
 
+            log.debug("URL \"" + itemURLString + "\" is cached and non-sticky.");
             if ((cachePubDate == null) || (itemPubDate == null))
             {
                 log.debug("Missing publication date in item and/or " +
@@ -966,6 +967,7 @@ class FeedDownloadThread implements Runnable
             }
         }
 
+        log.debug("URL \"" + itemURLString + "\" is new? " + isNew);
         return isNew;
     }
 }

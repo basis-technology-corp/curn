@@ -6,6 +6,25 @@ $Id$
 Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.2 (...)
+
+				 ---------
+				 Bug Fixes
+				 ---------
+
+- Fixed a bug introduced during curn 3.2: curn was invoking each
+  PostFeedParsePlugIn class with a parsed feed before determining whether
+  items in the feed were new or not. It should have been invoking the
+  plug-ins after determining whether items were new or not. This error,
+  introduced in curn 3.2, affected the following plug-ins:
+
+  * MaxArticlesPlugIn
+  * RetainArticlesPlugIn
+  * SaveAsRSSPlugIn
+
+  There are other plug-ins that implement the PostFeedParsePlugIn
+  interface, but the bug would not have affected them.
+
 Version 3.2.1 (11 September, 2007)
 
 
