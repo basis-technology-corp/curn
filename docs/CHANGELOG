@@ -25,6 +25,9 @@ Version 3.2.2 (...)
   There are other plug-ins that implement the PostFeedParsePlugIn
   interface, but the bug would not have affected them.
 
+- Updated to Javamail 1.4.1 and JAF 1.1.1.
+
+
 Version 3.2.1 (11 September, 2007)
 
 
