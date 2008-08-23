@@ -1,0 +1,8 @@
+*.java		ident
+*.xml		ident
+*.xsd		ident
+*.properties	ident
+README		ident
+CHANGELOG	ident
+NOTICE		ident
+LICENSE		ident
