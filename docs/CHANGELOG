@@ -27,7 +27,15 @@ Version 3.2.2 (...)
 
 - Updated to Javamail 1.4.1 and JAF 1.1.1.
 
+			       ------------
+			       Enhancements
+			       ------------
 
+
+- The EmailOutputPlugIn now supports an optional SMTPLocalhost parameter for
+  identifying the local host.
+
+---------------------------------------------------------------------------
 Version 3.2.1 (11 September, 2007)
 
 

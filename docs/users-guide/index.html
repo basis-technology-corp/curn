@@ -1592,6 +1592,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left">Output is not emailed.</td>
     <td align="left">
         <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+        <a href="#Cfg_SMTPLocalhost" class="code">SMTPLocalhost</a><br/>
         <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
         <a href="#Cfg_MailSubject" class="code">MailSubject</a>
     </td>
@@ -1616,6 +1617,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     </td>
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+      <a href="#Cfg_SMTPLocalhost" class="code">SMTPLocalhost</a><br/>
       <a href="#Cfg_MailSubject" class="code">MailSubject</a><br/>
       <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a>
     </td>
@@ -1635,6 +1637,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left"><span class="code">curn output</span></td>
     <td align="left">
       <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+      <a href="#Cfg_SMTPLocalhost" class="code">SMTPLocalhost</a><br/>
       <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
       <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a>
     </td>
@@ -1692,6 +1695,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left">Output is not emailed.</td>
     <td align="left">
         <a href="#Cfg_SMTPHost" class="code">SMTPHost</a><br/>
+        <a href="#Cfg_SMTPLocalhost" class="code">SMTPLocalhost</a><br/>
         <a href="#Cfg_MailFrom" class="code">MailFrom</a><br/>
         <a href="#Cfg_MailSubject" class="code">MailSubject</a>
     </td>
@@ -2019,6 +2023,23 @@ ShowArticlesFor: 2 days</pre></blockquote>
     </td>
     <td align="left">No</td>
     <td align="left" class="code">localhost</td>
+    <td align="left">
+      per-feed <a href="#Feed_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a> parameter
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left"><a name="Cfg_SMTPLocalhost"></a><span class="code">SMTPLocalhost</span><br/><a href="#PlugIn_EmailOutput" class="plug-in-flag">plug-in</a></td>
+    <td align="left">String</td>
+    <td align="left">
+      The name to use to identify the local host when sending email.
+      This parameter is only honored when at
+      least one email address is specified via the
+      <a href="#Cfg_MailOutputTo" class="code">MailOutputTo</a> configuration
+      parameter.
+    </td>
+    <td align="left">No</td>
+    <td align="left">The canonical name of the local host</td>
     <td align="left">
       per-feed <a href="#Feed_ReplaceEmptySummaryWith" class="code">ReplaceEmptySummaryWith</a> parameter
     </td>
