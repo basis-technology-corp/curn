@@ -129,6 +129,7 @@ public class EmailOutputPlugIn
 
     private static final String VAR_EMAIL_OUTPUT_TO       = "MailOutputTo";
     private static final String VAR_SMTP_HOST             = "SMTPHost";
+    private static final String VAR_SMTP_LOCALHOST        = "SMTPLocalHost";
     private static final String DEF_SMTP_HOST             = "localhost";
     private static final String VAR_EMAIL_SENDER          = "MailSender";
     private static final String VAR_EMAIL_SUBJECT         = "MailSubject";
@@ -164,6 +165,11 @@ public class EmailOutputPlugIn
      * SMTP host to use
      */
     private String smtpHost = DEF_SMTP_HOST;
+
+    /**
+     * Name to use for local host.
+     */
+    private String smtpLocalhost = null;
 
     /**
      * Email sender address
@@ -275,6 +281,12 @@ public class EmailOutputPlugIn
             {
                 smtpHost = config.getConfigurationValue(sectionName,
                                                         paramName);
+            }
+            
+            else if (paramName.equals(VAR_SMTP_LOCALHOST))
+            {
+                smtpLocalhost = config.getConfigurationValue(sectionName,
+                                                             paramName);
             }
 
             else if (paramName.equals(VAR_EMAIL_SENDER))
@@ -528,7 +540,8 @@ public class EmailOutputPlugIn
         {
             // Create an SMTP transport and a new email message.
 
-            EmailTransport transport = new SMTPEmailTransport(smtpHost);
+            EmailTransport transport = new SMTPEmailTransport(smtpHost,
+                                                              smtpLocalhost);
             EmailMessage   message = new EmailMessage();
 
             log.debug("SMTP host = " + smtpHost);
