@@ -1,0 +1,11 @@
+h1. curn: Customizable Utilitarian RSS Notifier
+
+_curn_ is an RSS reader. It scans a configured set of URLs, each one representing an RSS feed, and summarizes the results. By default, _curn_ keeps track of individual items within each RSS feed, using an on-disk cache; when using the cache, it will suppress displaying information for items it has already processed.
+
+Unlike many RSS readers, _curn_ does not use a graphical user interface. It is a command-line utility, intended to be run periodically in the background by a command scheduler such as _cron_(8) (on Unix-like systems) or the Windows Scheduler Service (on Windows).
+
+_curn_ can read RSS feeds from any URL that's supported by Java's runtime.  When querying HTTP sites, _curn_ uses the HTTP @If-Modified-Since@ and @Last-Modified@ headers to suppress retrieving and processing feeds that haven't changed. By default, it also requests that the remote HTTP server gzip the XML before sending it. (Some HTTP servers honor the request; some don't.) These measures both minimize network bandwidth and ensure that _curn_ is as kind as possible to the remote RSS servers.
+
+Consult the _curn_ User's Guide for more details.
+
+_curn_ is Copyright (C) 2004-2007 Brian M. Clapper
