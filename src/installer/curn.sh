@@ -70,6 +70,7 @@ exec $JAVA_HOME/bin/java \
 $INSTALL_PATH/lib/curnboot.jar \
 -ea \
 -client \
+-XX:BiasedLockingStartupDelay=0 \
 $vm_opts \
 -Dcurn.home=$INSTALL_PATH \
 org.clapper.curn.Bootstrap \
