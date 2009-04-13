@@ -4718,6 +4718,15 @@ order.</p>
   </tr>
 
   <tr valign="top">
+    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedProcessPlugIn.html" class="code">PostFeedProcessPlugIn</a></td>
+    <td align="left"><span class="code"><a name="PostFeedProcessPhase"></a>runPostFeedProcessPlugIn()</span></td>
+    <td>Called after a feed is parsed and processed. The plug-in has access to the
+        <i>parsed</i> RSS feed data, via an <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
+        method can return <span class="code">false</span> to signal <i>curn</i> that the
+        feed should be skipped.</td>
+  </tr>
+
+  <tr valign="top">
     <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedOutputPlugIn.html" class="code">PreFeedOutputPlugIn</a></td>
     <td align="left"><span class="code">runPreFeedOutputPlugIn()</span></td>
     <td>Called immediately before a parsed feed is passed to an output
@@ -6571,7 +6580,7 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
 <!-- ********************************************************************** -->
 <h1><a name="AppendixB"></a>Appendix B: Copyrights</h1>
 
-<p><i>curn</i> is copyright &copy; 2004-2007 Brian M. Clapper. All rights
+<p><i>curn</i> is copyright &copy; 2004-2009 Brian M. Clapper. All rights
 reserved. This software is licensed under a
 <a href="http://www.clapper.org/software/java/curn/docs/LICENSE">BSD-style license.</a></p>
 
