@@ -94,6 +94,7 @@ public class MetaPlugIn
                PostFeedDownloadPlugIn,
                PostFeedOutputPlugIn,
                PostFeedParsePlugIn,
+               PostFeedProcessPlugIn,
                PostOutputHandlerFlushPlugIn,
                PreCacheSavePlugIn,
                PreFeedDownloadPlugIn,
@@ -136,6 +137,9 @@ public class MetaPlugIn
 
     private final Collection<PostFeedOutputPlugIn>
         postFeedOutputPlugIns = new TreeSet<PostFeedOutputPlugIn>(cmp);
+
+    private final Collection<PostFeedProcessPlugIn>
+        postFeedProcessPlugIns = new TreeSet<PostFeedProcessPlugIn>(cmp);
 
     private final Collection<PostFeedParsePlugIn>
         postFeedParsePlugIns = new TreeSet<PostFeedParsePlugIn>(cmp);
@@ -242,6 +246,9 @@ public class MetaPlugIn
 
             if (plugIn instanceof PostFeedParsePlugIn)
                 postFeedParsePlugIns.add((PostFeedParsePlugIn) plugIn);
+
+            if (plugIn instanceof PostFeedProcessPlugIn)
+                postFeedProcessPlugIns.add((PostFeedProcessPlugIn) plugIn);
 
             if (plugIn instanceof PostOutputHandlerFlushPlugIn)
                 postOutputHandlerFlushPlugIns.add
@@ -510,6 +517,26 @@ public class MetaPlugIn
             logPlugInInvocation("runPostFeedParsePlugIn", plugIn);
             keepGoing = plugIn.runPostFeedParsePlugIn(feedInfo, feedCache,
                                                       channel);
+            if (! keepGoing)
+                break;
+        }
+
+        return keepGoing;
+    }
+
+    public synchronized boolean
+    runPostFeedProcessPlugIn(final FeedInfo   feedInfo,
+                             final FeedCache  feedCache,
+                             final RSSChannel channel)
+        throws CurnException
+    {
+        boolean keepGoing = true;
+
+        for (PostFeedProcessPlugIn plugIn : postFeedProcessPlugIns)
+        {
+            logPlugInInvocation("runPostFeedParsePlugIn", plugIn);
+            keepGoing = plugIn.runPostFeedProcessPlugIn(feedInfo, feedCache,
+                                                        channel);
             if (! keepGoing)
                 break;
         }

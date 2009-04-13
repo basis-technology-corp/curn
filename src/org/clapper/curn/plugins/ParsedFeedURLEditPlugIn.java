@@ -49,7 +49,7 @@ import org.clapper.curn.CurnConfig;
 import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
-import org.clapper.curn.PostFeedParsePlugIn;
+import org.clapper.curn.PostFeedProcessPlugIn;
 
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
@@ -104,7 +104,7 @@ import org.clapper.curn.parser.RSSChannel;
  */
 public class ParsedFeedURLEditPlugIn
     implements FeedConfigItemPlugIn,
-               PostFeedParsePlugIn
+               PostFeedProcessPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -302,7 +302,7 @@ public class ParsedFeedURLEditPlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+    public boolean runPostFeedProcessPlugIn(FeedInfo   feedInfo,
                                           FeedCache  feedCache,
                                           RSSChannel channel)
         throws CurnException

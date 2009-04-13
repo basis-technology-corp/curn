@@ -6,6 +6,21 @@ $Id$
 Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.3 (12 April, 2009)
+
+				 ---------
+				 Bug Fixes
+				 ---------
+
+- Added new PostFeedProcessPlugIn phase, and changed most existing plug-ins
+  to use it. This reflects what's really happening: The plug-in is being
+  invoked after the feed is parsed *and* after it's been processed.
+
+- Left RetainArticlesPlugIn as a PostFeedParsePlugIn. This corrects a bug
+  introduced in version 3.2.2: That fix to PostFeedParsePlugIn broken the
+  ShowArticlesFor configuration keyword.
+
+---------------------------------------------------------------------------
 Version 3.2.2 (8 January, 2009)
 
 				 ---------

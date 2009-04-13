@@ -50,7 +50,7 @@ import org.clapper.curn.CurnException;
 import org.clapper.curn.FeedInfo;
 import org.clapper.curn.FeedConfigItemPlugIn;
 import org.clapper.curn.MainConfigItemPlugIn;
-import org.clapper.curn.PostFeedParsePlugIn;
+import org.clapper.curn.PostFeedProcessPlugIn;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 
@@ -96,7 +96,7 @@ import org.clapper.curn.FeedCache;
 public class FeedMaxSummarySizePlugIn
     implements MainConfigItemPlugIn,
                FeedConfigItemPlugIn,
-               PostFeedParsePlugIn
+               PostFeedProcessPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -294,7 +294,7 @@ public class FeedMaxSummarySizePlugIn
      * @see RSSChannel
      * @see FeedInfo
      */
-    public boolean runPostFeedParsePlugIn(FeedInfo   feedInfo,
+    public boolean runPostFeedProcessPlugIn(FeedInfo   feedInfo,
                                           FeedCache  feedCache,
                                           RSSChannel channel)
         throws CurnException

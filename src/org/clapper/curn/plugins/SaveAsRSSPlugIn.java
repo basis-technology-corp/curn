@@ -68,7 +68,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.clapper.curn.CurnUtil;
 import org.clapper.curn.FeedCache;
-import org.clapper.curn.PostFeedParsePlugIn;
+import org.clapper.curn.PostFeedProcessPlugIn;
 import org.clapper.curn.output.freemarker.FreeMarkerFeedTransformer;
 import org.clapper.curn.output.freemarker.TemplateLocation;
 import org.clapper.curn.output.freemarker.TemplateType;
@@ -132,7 +132,7 @@ import org.clapper.util.text.TextUtil;
 public class SaveAsRSSPlugIn
     implements FeedConfigItemPlugIn,
                PostConfigPlugIn,
-               PostFeedParsePlugIn
+               PostFeedProcessPlugIn
 {
     /*----------------------------------------------------------------------*\
                              Private Constants
@@ -356,7 +356,7 @@ public class SaveAsRSSPlugIn
      * @see FeedInfo
      * @see RSSChannel
      */
-    public boolean runPostFeedParsePlugIn(final FeedInfo   feedInfo, 
+    public boolean runPostFeedProcessPlugIn(final FeedInfo   feedInfo,
                                           final FeedCache  feedCache,
                                           final RSSChannel channel)
         throws CurnException

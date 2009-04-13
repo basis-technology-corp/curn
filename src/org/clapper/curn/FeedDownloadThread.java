@@ -471,14 +471,26 @@ class FeedDownloadThread implements Runnable
                             resultChannel.setLinks(Collections.singleton(link));
                         }
 
-                        processChannelItems(resultChannel, feedInfo);
-                        if (resultChannel.getItems().size() == 0)
+                        if (! metaPlugIn.runPostFeedParsePlugIn(feedInfo,
+                                                                cache,
+                                                                resultChannel))
+                        {
                             resultChannel = null;
+                        }
 
                         if (resultChannel != null)
                         {
-                            metaPlugIn.runPostFeedParsePlugIn(feedInfo, cache,
-                                                              resultChannel);
+                            processChannelItems(resultChannel, feedInfo);
+                            if (resultChannel.getItems().size() == 0)
+                                resultChannel = null;
+                        }
+
+                        if (resultChannel != null)
+                        {
+                            if (! metaPlugIn.runPostFeedProcessPlugIn(feedInfo,
+                                                                      cache,
+                                                                      resultChannel))
+                                resultChannel = null;
                         }
                     }
                 }
@@ -850,7 +862,7 @@ class FeedDownloadThread implements Runnable
             itemURL = CurnUtil.normalizeURL(itemURL);
             itemLink.setURL(itemURL);
 
-            // Skip it if it's cached. Note:
+            // Skip it if it's cached--unless it's sticky. Note:
             //
             // 1. If the item has a unique ID, then the ID alone is used to
             //    determine whether it's been cached. This is the preferred

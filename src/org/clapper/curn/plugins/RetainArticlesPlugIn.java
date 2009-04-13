@@ -348,7 +348,7 @@ public class RetainArticlesPlugIn
      * @param feedCache the feed cache, or null if there isn't one
      *
      * @return <tt>true</tt> if the feed should be downloaded and parsed
-     *         even if it's not out of date; <tt>false</tt> if <i>curn</i>'s
+     *         even if it's out of date; <tt>false</tt> if <i>curn</i>'s
      *         normal downloading rules should apply.
      *
      * @throws CurnException on error
