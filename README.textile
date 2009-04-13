@@ -8,4 +8,4 @@ _curn_ can read RSS feeds from any URL that's supported by Java's runtime.  When
 
 Consult the _curn_ User's Guide for more details.
 
-_curn_ is Copyright (C) 2004-2007 Brian M. Clapper
+_curn_ is Copyright (C) 2004-2009 Brian M. Clapper
