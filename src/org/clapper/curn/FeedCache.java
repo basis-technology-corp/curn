@@ -218,7 +218,14 @@ public class FeedCache
     {
         FeedCacheEntry entry   = null;
         String         itemID  = item.getID();
-        URL            itemURL = CurnUtil.normalizeURL(item.getURL().getURL());
+        URL            itemURL = item.getURL();
+
+        if (itemURL != null)
+        {
+            itemURL = itemURL.getURL();
+            if (itemURL != null)
+                itemURL = CurnUtil.normalizeURL(itemURL);
+        }
 
         if (itemID != null)
         {
@@ -229,9 +236,15 @@ public class FeedCache
 
         else
         {
-            log.debug("Item has no Unique ID. Locating it by URL (\"" +
-                      itemURL.toString() + "\")");
-            entry = getEntryByURL(itemURL);
+            if (itemURL == null)
+                log.info("Item has no unique ID or URL. Ignoring it.");
+
+            else
+            {
+                log.debug("Item has no Unique ID. Locating it by URL (\"" +
+                          itemURL.toString() + "\")");
+                entry = getEntryByURL(itemURL);
+            }
         }
 
         return entry;
