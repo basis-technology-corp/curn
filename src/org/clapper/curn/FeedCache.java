@@ -55,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.clapper.curn.parser.RSSItem;
+import org.clapper.curn.parser.RSSLink;
 import org.clapper.util.logging.Logger;
 
 /**
@@ -216,13 +217,14 @@ public class FeedCache
      */
     public FeedCacheEntry getEntryForItem(RSSItem item)
     {
-        FeedCacheEntry entry   = null;
-        String         itemID  = item.getID();
-        URL            itemURL = item.getURL();
+        FeedCacheEntry entry    = null;
+        String         itemID   = item.getID();
+        RSSLink        itemLink = item.getURL();
+        URL            itemURL  = null;
 
-        if (itemURL != null)
+        if (itemLink != null)
         {
-            itemURL = itemURL.getURL();
+            itemURL = itemLink.getURL();
             if (itemURL != null)
                 itemURL = CurnUtil.normalizeURL(itemURL);
         }
