@@ -232,6 +232,10 @@ public class XMLDataPersister extends DataPersister
     protected void saveFeedData(PersistentFeedData feedData) throws CurnException
     {
         FeedCacheEntry feedCacheData = feedData.getFeedCacheEntry();
+
+        if (feedCacheData == null)
+            return;
+
         URL channelURL = feedCacheData.getChannelURL();
 
         Element channelElement = new Element(XML_FEED_ELEMENT);

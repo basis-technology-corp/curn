@@ -10,6 +10,8 @@ Version 3.2.4 (...)
 
 - Fixed null pointer exception when RetainArticlesPlugIn refers to an item
   that has no URL.
+- Fixed null pointer exception when saving the cache for an item that has
+  no URL.
 
 ---------------------------------------------------------------------------
 Version 3.2.3 (12 April, 2009)
