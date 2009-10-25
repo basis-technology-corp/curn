@@ -131,9 +131,11 @@
       <fileset dir="@THIRD_PARTY_JAR_DIR@"
                includes="*.jar"
                targetdir="$INSTALL_PATH/lib"/>
+<!--
       <fileset dir="@INSTALL_TMP@"
                includes="ocutil.jar"
                targetdir="$INSTALL_PATH/lib"/>
+-->
 
       <!-- curn shell file (Unix only) -->
 

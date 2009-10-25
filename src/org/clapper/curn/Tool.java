@@ -145,6 +145,7 @@ public class Tool
     private boolean optShowVersion               = false;
     private Boolean optUpdateCache               = null;
     private boolean optAbortOnUndefinedConfigVar = true;
+    private String  configEncoding               = null;
 
     /**
      * For log messages
@@ -295,6 +296,10 @@ public class Tool
                 deprecatedOption(shortOption, longOption);
                 break;
 
+            case 'e':           // --config-encoding
+                configEncoding = it.next();
+                break;
+
             case 'p':           // --plug-ins
                 optShowPlugIns = true;
                 break;
@@ -429,6 +434,10 @@ public class Tool
         info.addOption('C', "no-cache", "Don't use a cache file at all.");
         info.addOption('d', "show-dates", null);
         info.addOption('D', "no-dates", null);
+        info.addOption('e', "config-encoding", "encoding",
+                       "The encoding to use when reading the configuration " +
+                       "file. Default: The default encoding for the Java " +
+                       "runtime on the current operating system.");
         info.addOption('p', "plug-ins",
                        "Show the list of located plug-ins and output " +
                        "handlers, then exit. This option can be combined " +
@@ -551,7 +560,9 @@ public class Tool
                 curn.setCurrentTime(currentTime);
                 curn.setAbortOnUndefinedConfigVariable
                     (optAbortOnUndefinedConfigVar);
-                curn.run(getConfigurationURL(), this.useCache);
+                curn.run(getConfigurationURL(),
+                         configEncoding,
+                         this.useCache);
             }
         }
 

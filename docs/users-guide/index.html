@@ -701,50 +701,61 @@ Usage: curn [options] config
 
 OPTIONS:
 
--B, --build-info  Show full build information, then exit. This option shows a
-                  bit more information than the --version option. This option
-                  can be combined with the --plug-ins option to show the
-                  loaded plug-ins.
--C, --no-cache    Don't use a cache file at all.
---logging         Enable logging via Jakarta Commons Logging.
--p, --plug-ins    Show the list of located plug-ins and output handlers, then
-                  exit. This option can be combined with either --build-info
-                  or --version to show version information, as well.
--t, --time &lt;time&gt; For the purposes of cache expiration, pretend the current
-                  time is &lt;time&gt;. &lt;time&gt; may be in one of the following
-                  formats.
-                  2006/06/08 02:59:36 PM
-                  2006/06/08 02:59:36
-                  2006/06/08 02:59 PM
-                  2006/06/08 02:59
-                  2006/06/08 2:59 PM
-                  2006/06/08 2:59
-                  2006/06/08 02 PM
-                  2006/06/08 2 PM
-                  2006/06/08 14:59:36
-                  2006/06/08 14:59
-                  2006/06/08
-                  06/06/08
-                  02:59:36 PM
-                  02:59:36
-                  02:59 PM
-                  02:59
-                  2:59 PM
-                  2:59
-                  02 PM
-                  2 PM
-                  14:59:36 PM
-                  14:59:36
-                  14:59 PM
-                  14:59
--u, --no-update   Read the cache, but don't update it.
--v, --version     Show version information, then exit. This option can be
-                  combined with the --plug-ins option to show the loaded
-                  plug-ins.
+-B, --build-info               Show full build information, then exit. This
+                               option shows a bit more information than the
+                               --version option. This option can be combined
+                               with the --plug-ins option to show the loaded
+                               plug-ins.
+-C, --no-cache                 Don't use a cache file at all.
+-e, --config-encoding encoding The encoding to use when reading the
+                               configuration file. Default: The default
+                               encoding for the Java runtime on the current
+                               operating system.
+--logging                      Enable logging via Jakarta Commons Logging.
+-p, --plug-ins                 Show the list of located plug-ins and output
+                               handlers, then exit. This option can be
+                               combined with either --build-info or --version
+                               to show version information, as well.
+-t, --time &lt;time&gt;              For the purposes of cache expiration, pretend
+                               the current time is &lt;time&gt;. &lt;time&gt; may be in
+                               one of the following formats.
+                               2009/10/25 01:14:41 PM
+                               2009/10/25 01:14:41
+                               2009/10/25 01:14 PM
+                               2009/10/25 01:14
+                               2009/10/25 1:14 PM
+                               2009/10/25 1:14
+                               2009/10/25 01 PM
+                               2009/10/25 1 PM
+                               2009/10/25 13:14:41
+                               2009/10/25 13:14
+                               2009/10/25
+                               09/10/25
+                               01:14:41 PM
+                               01:14:41
+                               01:14 PM
+                               01:14
+                               1:14 PM
+                               1:14
+                               01 PM
+                               1 PM
+                               13:14:41 PM
+                               13:14:41
+                               13:14 PM
+                               13:14
+-U, --allow-undefined-cfg-vars Don't abort when an undefined variable is
+                               encountered in the configuration file;
+                               substitute an empty string, instead. Normally,
+                               an undefined configuration variable will cause
+                               curn to abort.
+-u, --no-update                Read the cache, but don't update it.
+-v, --version                  Show version information, then exit. This
+                               option can be combined with the --plug-ins
+                               option to show the loaded plug-ins.
 
 PARAMETERS:
 
-config  Path to configuration file
+config Path or URL to configuration file
 </pre></blockquote>
     </td>
   </tr>
@@ -800,6 +811,16 @@ Ant version:    Apache Ant version 1.6.5 compiled on June 2 2005</pre>
         appear to be new and will be passed to the output handlers.
         Also see the <a href="#Cfg_CacheFile" class="code">CacheFile</a>
         configuration directive.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td align="left" class="code">-e <i>encoding</i></td>
+    <td><a name="opt-config-encoding" class="code">--config-encoding <i>encoding</i></a></td>
+    <td>Specify the encoding of the configuration file. The specified encoding can be any of the
+        encodings <a href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html" >supported by the underlying Java virtual machine</a>.
+        If you don't specify an encoding, <i>curn</i> will use the default encoding for the Java virtual machine. On Unix systems in the
+        United States and western Europe, this is usually "ISO-8859-1"; on Windows systems, it is typically "Cp1252".
     </td>
   </tr>
 

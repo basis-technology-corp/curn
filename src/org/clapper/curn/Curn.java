@@ -158,19 +158,23 @@ public class Curn
     /**
      * Run <i>curn</i> against a configuration file.
      *
-     * @param configURL   URL to the configuration data
-     * @param useCache    whether or not to use the cache
+     * @param configURL      URL to the configuration data
+     * @param configEncoding the encoding for the configuration file, or
+     *                       null for the default.
+     * @param useCache       whether or not to use the cache
      *
      * @throws CurnException      some other error
      */
-    public void run(final URL configURL, final boolean useCache)
+    public void run(final URL configURL,
+                    final String configEncoding,
+                    final boolean useCache)
         throws CurnException
     {
         metaPlugIn.runStartupPlugIn();
 
         try
         {
-            this.config = loadConfig(configURL);
+            this.config = loadConfig(configURL, configEncoding);
             this.dataPersister = DataPersisterFactory.getInstance();
             loadOutputHandlers(config);
             metaPlugIn.registerPersistentDataClientPlugIns(dataPersister);
@@ -278,7 +282,7 @@ public class Curn
         }
     }
 
-    private CurnConfig loadConfig(final URL configURL)
+    private CurnConfig loadConfig(final URL configURL, final String encoding)
         throws CurnException,
                ConfigurationException
     {
@@ -286,7 +290,7 @@ public class Curn
         {
             config = new CurnConfig(err);
             config.setAbortOnUndefinedVariable(abortOnUndefinedVariable);
-            config.load(configURL);
+            config.load(configURL, encoding);
             MetaPlugIn.getMetaPlugIn().runPostConfigPlugIn(config);
             return config;
         }

@@ -121,28 +121,9 @@ source and documentation packages.
   <property name="third.party.compile-only.jar.dir"
             location="${third.party.jar.dir}/compile-only"/>
 
-  <condition property="ocutil.dir"
-             value="${env.OCUTIL_DIR}"
-             else="${env.HOME}/java/classes">
-
-<!--
-             else="${env.wwwtest}/software/java/util/download/latest">
--->
-    <isset property="env.OCUTIL_DIR"/>
-  </condition>
-  <echo>Using ocutil.jar in ${ocutil.dir}</echo>
-
   <path id="project.class.path">
     <fileset dir="${third.party.jar.dir}">
       <include name="**/*.jar"/>
-    </fileset>
-    <pathelement location="${ocutil.dir}/ocutil.jar"/>
-  </path>
-
-  <path id="installer.class.path">
-    <path refid="project.class.path"/>
-    <fileset dir="${IzPack.home}/lib">
-      <include name="*.jar"/>
     </fileset>
   </path>
 
@@ -161,9 +142,6 @@ source and documentation packages.
   <taskdef name="make_build_info"
            classname="org.clapper.util.ant.MakeBuildInfoTask"
            classpathref="project.class.path"/>
-
-  <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"
-           classpathref="installer.class.path"/>
 
   <!--
   ***************************************************************************
@@ -695,6 +673,16 @@ source and documentation packages.
   <property name="izpack.home" value="${env.HOME}/java/IzPack"/>
   <property name="src.install" value="${src.top}/installer"/>
 
+  <path id="installer.class.path">
+    <path refid="project.class.path"/>
+    <fileset dir="${izpack.home}/lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask"
+           classpathref="installer.class.path"/>
+
   <target name="-installer.prep">
 
     <!-- Create a temporary installation directory -->
@@ -728,17 +716,6 @@ source and documentation packages.
                 value="${versioned_plugins.jar.file}"/>
       </filterset>
     </copy>
-
-    <!-- Copy and rename the appropriate ocutil.jar file -->
-
-    <echo>Copying ocutil.jar from ${ocutil.dir}</echo>
-    <copy todir="${install.tmp}">
-      <fileset dir="${ocutil.dir}"
-               includes="ocutil*.jar"/>
-    </copy>
-    <move tofile="${install.tmp}/ocutil.jar">
-      <fileset dir="${install.tmp}" includes="ocutil*.jar"/>
-    </move>
 
     <!--
         Copy the LICENSE file and "unwrap" it so it's not wrapped weirdly

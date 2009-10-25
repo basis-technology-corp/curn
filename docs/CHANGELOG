@@ -6,12 +6,15 @@ $Id$
 Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.2.4 (...)
+Version 3.2.4 (25 October, 2009)
 
 - Fixed null pointer exception when RetainArticlesPlugIn refers to an item
   that has no URL.
 - Fixed null pointer exception when saving the cache for an item that has
   no URL.
+- Curn now supports a -e (--config-encoding) parameter, to specify the encoding
+  of the configuration file. If not specified, the encoding defaults to the
+  JVM's default encoding.
 
 ---------------------------------------------------------------------------
 Version 3.2.3 (12 April, 2009)
@@ -88,7 +91,7 @@ Version 3.2 (29 August, 2007)
   For instance, the installer should now suggest the appropriate program
   files directory on Windows (e.g., "C:\Programme" for a German
   installation), instead of always using "C:\Program Files". Thanks to
-  Carsten Krüger (C.Krueger /at/ gmx /dot/ org) for pointing out the
+  Carsten Krï¿½ger (C.Krueger /at/ gmx /dot/ org) for pointing out the
   problem and testing the fix.
 
 - Minor refinements to the use of concurrent download threads.

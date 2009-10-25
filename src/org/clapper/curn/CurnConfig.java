@@ -402,17 +402,19 @@ public class CurnConfig extends Configuration
     /**
      * Load configuration from a path. Any existing data is discarded.
      *
-     * @param path the path
+     * @param path      the path
+     * @param encoding  the encoding to use when loading, or null
      *
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(final String path)
+    @Override
+    public void load(final String path, final String encoding)
         throws FileNotFoundException,
                IOException,
                ConfigurationException
     {
-        super.load(path);
+        super.load(path, encoding);
         try
         {
             validate();
@@ -428,16 +430,18 @@ public class CurnConfig extends Configuration
      * Load configuration from an open <tt>InputStream</tt>.
      * Any existing data is discarded.
      *
-     * @param iStream open input stream
+     * @param iStream   open input stream
+     * @param encoding  the encoding to use when loading, or null
      *
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(final InputStream iStream)
+    @Override
+    public void load(final InputStream iStream, final String encoding)
         throws IOException,
                ConfigurationException
     {
-        super.load(iStream);
+        super.load(iStream, encoding);
         try
         {
             validate();
@@ -452,16 +456,18 @@ public class CurnConfig extends Configuration
     /**
      * Load configuration from a URL. Any existing data is discarded.
      *
-     * @param url  the URL
+     * @param url       the URL
+     * @param encoding  the encoding to use when loading, or null
      *
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(final URL url)
+    @Override
+    public void load(final URL url, final String encoding)
         throws IOException,
                ConfigurationException
     {
-        super.load(url);
+        super.load(url, encoding);
         try
         {
             validate();
@@ -477,15 +483,17 @@ public class CurnConfig extends Configuration
      * Load configuration from a file. Any existing data is discarded.
      *
      * @param file the file
+     * @param encoding  the encoding to use when loading, or null
      *
      * @throws IOException            read error
      * @throws ConfigurationException parse error
      */
-    public void load(final File file)
+    @Override
+    public void load(final File file, final String encoding)
         throws IOException,
                ConfigurationException
     {
-        super.load(file);
+        super.load(file, encoding);
         try
         {
             validate();
