@@ -1,12 +1,16 @@
 ---------------------------------------------------------------------------
 CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 
-$Id$
-
-Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
+Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.2.4 (...)
+Version 3.2.5 (26 February, 2010)
+
+- Freemarker transformation code is a little more careful: It no longer
+  invokes Freemarker on a template, if there are no feeds to display.
+
+---------------------------------------------------------------------------
+Version 3.2.4 (25 October, 2009)
 
 - Fixed null pointer exception when RetainArticlesPlugIn refers to an item
   that has no URL.

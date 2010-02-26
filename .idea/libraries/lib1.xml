@@ -12,6 +12,7 @@
       <root url="jar://$PROJECT_DIR$/lib/informa.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/asm-2.2.3.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/activation.jar!/" />
+      <root url="file:///Users/bmc/src/mystuff/java/util/build/classes" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

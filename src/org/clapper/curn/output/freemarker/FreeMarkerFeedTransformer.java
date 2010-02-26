@@ -628,6 +628,28 @@ public class FreeMarkerFeedTransformer
     public void transform(final PrintWriter out)
         throws CurnException
     {
+        // Don't bother, if no channels have been added.
+
+        if (totalChannels == 0)
+            log.warn("Skipping transformation: No channels defined.");
+        else
+            doTransform(out);
+    }
+
+    /*----------------------------------------------------------------------*\
+                               Protected Methods
+    \*----------------------------------------------------------------------*/
+
+    /*----------------------------------------------------------------------*\
+                                Private Methods
+    \*----------------------------------------------------------------------*/
+
+    /**
+     * Perform the actual transformation. Called by transform().
+     */
+    private void doTransform(final PrintWriter out)
+        throws CurnException
+    {
         // Put the remainder of the data in the data model.
 
         freemarkerDataModel.put("dateGenerated",
@@ -697,14 +719,6 @@ public class FreeMarkerFeedTransformer
                            new Object[] {templateLocation.getLocation()});
         }
     }
-
-    /*----------------------------------------------------------------------*\
-                               Protected Methods
-    \*----------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------*\
-                                Private Methods
-    \*----------------------------------------------------------------------*/
 
     /**
      * Parse and validate the template file configuration parameter. Sets
