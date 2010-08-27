@@ -1,11 +1,24 @@
 ---------------------------------------------------------------------------
 CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 
-$Id$
-
-Copyright (c) 2004-2007 Brian M. Clapper. All rights reserved.
+Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.6 (23 April, 2010)
+
+- Rolled in new version of org.clapper Java Utility library, which contains
+  a fix for boolean configuration value parsing. This new library fixes bugs
+  with Curn's handling of boolean configuration values, which were defaulting
+  to "false" in cases where they should not have been.
+- Changed license to a true BSD license.
+
+---------------------------------------------------------------------------
+Version 3.2.5 (26 February, 2010)
+
+- Freemarker transformation code is a little more careful: It no longer
+  invokes Freemarker on a template, if there are no feeds to display.
+
+---------------------------------------------------------------------------
 Version 3.2.4 (25 October, 2009)
 
 - Fixed null pointer exception when RetainArticlesPlugIn refers to an item

@@ -60,6 +60,10 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 <#stop "Atom Freemarker template only supports one feed at a time.">
 </#if>
 
+<#if (channels?size == 0)>
+<#stop "Atom Freemarker template requires a feed.">
+</#if>
+
 <#assign channel = channels?first>
 
 <feed xmlns="http://www.w3.org/2005/Atom">

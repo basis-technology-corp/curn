@@ -59,6 +59,11 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
 <#if (channels?size > 1)>
 <#stop "RSS1 Freemarker template only supports one feed at a time.">
 </#if>
+
+<#if (channels?size == 0)>
+<#stop "RSS2 Freemarker template requires a feed.">
+</#if>
+
 <#assign channel = channels?first>
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
