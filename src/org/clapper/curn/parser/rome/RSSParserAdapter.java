@@ -54,6 +54,10 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.XmlReader;
 
+import org.jdom.input.SAXBuilder;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -135,14 +139,24 @@ public class RSSParserAdapter implements RSSParser
                 r = new InputStreamReader(stream, encoding);
             }
 
+            Document dom = new SAXBuilder().build(r);
+
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed      feed  = input.build(r);
+            SyndFeed      feed  = input.build(dom);
             feed.setUri(url.toString());
 
-            return new RSSChannelAdapter(feed);
+            RSSChannel channel = new RSSChannelAdapter(feed);
+            channel.setDOM(dom);
+
+            return channel;
         }
 
         catch (FeedException ex)
+        {
+            throw new RSSParserException(ex);
+        }
+
+        catch (JDOMException ex)
         {
             throw new RSSParserException(ex);
         }

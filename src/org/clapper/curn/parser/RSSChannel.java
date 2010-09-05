@@ -47,6 +47,8 @@ package org.clapper.curn.parser;
 
 import org.clapper.util.html.HTMLUtil;
 
+import org.jdom.Document;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -73,6 +75,7 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
     \*----------------------------------------------------------------------*/
 
     private boolean htmlStripped = false;
+    private Document dom = null;
 
     /*----------------------------------------------------------------------*\
                               Constructors
@@ -186,6 +189,36 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
 
             htmlStripped = true;
         }
+    }
+
+    /**
+     * Get the JDOM document object model (DOM) from which the feed was
+     * parsed. This value is set by the underlying parser, if supported.
+     *
+     * @return  the DOM
+     *
+     * @throws UnsupportedOperationException if the DOM has been set,
+     *                                       signifying that this feature
+     *                                       isn't supported
+     */
+    public Document getDOM()
+    {
+        if (dom == null)
+            throw new UnsupportedOperationException();
+
+        return dom;
+    }
+
+    /**
+     * Set the JDOM document object model (DOM) from which the feed was
+     * parsed. This method is invoked internally, by the parser adapter
+     * classes, and should not be called directly.
+     *
+     * @param dom  the DOM
+     */
+    public void setDOM(Document dom)
+    {
+        this.dom = dom;
     }
 
     /**
