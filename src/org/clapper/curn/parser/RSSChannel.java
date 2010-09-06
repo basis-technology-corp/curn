@@ -32,6 +32,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
+
 package org.clapper.curn.parser;
 
 import org.clapper.util.html.HTMLUtil;
