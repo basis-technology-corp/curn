@@ -49,6 +49,7 @@ import org.clapper.curn.parser.ParserUtil;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
+import org.clapper.curn.parser.RSSFeedType;
 
 import org.clapper.util.logging.Logger;
 
@@ -358,6 +359,33 @@ public class RSSChannelAdapter extends RSSChannel
     public void setCopyright(String copyright)
     {
         this.syndFeed.setCopyright(copyright);
+    }
+
+    /**
+     * Get the RSS type (format), as a normalized enumeration.
+     *
+     * @return the RSS format, as an enumerated value
+     *
+     * @see #getRSSFormat
+     * @see RSSFeedType
+     */
+    public RSSFeedType getFeedType()
+    {
+        String romeType = syndFeed.getFeedType();
+        RSSFeedType result = RSSFeedType.ATOM;
+
+        if (romeType.startsWith("rss_0.9"))
+            result = RSSFeedType.RSS_0_9;
+        else if (romeType.startsWith("rss_1"))
+            result = RSSFeedType.RSS_1;
+        else if (romeType.startsWith("rss_2"))
+            result = RSSFeedType.RSS_2;
+        else if (romeType.startsWith("atom"))
+            result = RSSFeedType.ATOM;
+        else
+            assert(false);
+
+        return result;
     }
 
     /**
