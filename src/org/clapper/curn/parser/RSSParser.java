@@ -40,6 +40,8 @@ import java.io.InputStream;
 
 import java.net.URL;
 
+import org.jdom.Document;
+
 /**
  * This interface defines a simplified view of an RSS parser, providing
  * only the methods necessary for <i>curn</i> to work. <i>curn</i> uses
@@ -79,4 +81,18 @@ public interface RSSParser
                                     String      encoding)
         throws IOException,
                RSSParserException;
+
+    /**
+     * Parse an RSS feed from a pre-loaded JDOM document object model.
+     *
+     * @param dom   the DOM to parse
+     * @param url   the feed's URL, if known, for metadata purposes; or null
+     *
+     * @return an <tt>RSSChannel</tt> object representing the RSS data from
+     *         DOM.
+     *
+     * @throws RSSParserException unable to parse RSS XML
+     */
+    public RSSChannel parseRSSFeed (Document dom, URL url)
+        throws RSSParserException;
 }

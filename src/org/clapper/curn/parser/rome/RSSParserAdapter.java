@@ -129,11 +129,36 @@ public class RSSParserAdapter implements RSSParser
                 r = new InputStreamReader(stream, encoding);
             }
 
-            Document dom = new SAXBuilder().build(r);
+            return parseRSSFeed(new SAXBuilder().build(r), url);
+        }
 
+        catch (JDOMException ex)
+        {
+            throw new RSSParserException(ex);
+        }
+    }
+
+    /**
+     * Parse an RSS feed from a pre-loaded JDOM document object model.
+     *
+     * @param dom   the DOM to parse
+     * @param url   the feed's URL, if known, for metadata purposes; or null
+     *
+     * @return an <tt>RSSChannel</tt> object representing the RSS data from
+     *         DOM.
+     *
+     * @throws RSSParserException unable to parse RSS XML
+     */
+    public RSSChannel parseRSSFeed (Document dom, URL url)
+        throws RSSParserException
+    {
+        try
+        {
             SyndFeedInput input = new SyndFeedInput();
             SyndFeed      feed  = input.build(dom);
-            feed.setUri(url.toString());
+
+            if (url != null)
+                feed.setUri(url.toString());
 
             RSSChannel channel = new RSSChannelAdapter(feed);
             channel.setDOM(dom);
@@ -142,11 +167,6 @@ public class RSSParserAdapter implements RSSParser
         }
 
         catch (FeedException ex)
-        {
-            throw new RSSParserException(ex);
-        }
-
-        catch (JDOMException ex)
         {
             throw new RSSParserException(ex);
         }

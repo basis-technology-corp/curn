@@ -4,6 +4,31 @@ CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.7 (...)
+
+- Implemented a new PruneOriginalRSSPlugIn plug-in that saves a copy of the
+  original RSS document after removing any already-seen items. This plug-in
+  is conceptually similar to the SaveAsRSSPlugIn, except that
+  PruneOriginalRSSPlugIn works directly off a JDOM version of the RSS
+  document (i.e., at the XML level), which means it's less likely to drop
+  non-standard XML elements from the RSS feed, since the edited DOM does
+  not go through the ROME parser.
+
+  NOTE: This plug-in was funded by Dow Jones & Co., under contract with
+  ArdenTex, Inc.  Dow Jones & Co. and ArdenTex, Inc. have donated the
+  resulting code back to the Curn project, as open source.
+
+- Updated the ROME RSS parser adapter to parse the RSS document via a
+  JDOM object, rather than a file. This change allows the Curn RSS parser
+  API to provide a JDOM view of the feed, as well as the ROME version.
+
+- Removed spurious informa.jar from the distribution. Curn no longer bundles
+  the Informa RSS parsing API; the jar was a leftover.
+
+- Updated RSSChannel class to provide an enumerated value that indicates
+  the type of the RSS feed.
+
+---------------------------------------------------------------------------
 Version 3.2.6 (23 April, 2010)
 
 - Rolled in new version of org.clapper Java Utility library, which contains
