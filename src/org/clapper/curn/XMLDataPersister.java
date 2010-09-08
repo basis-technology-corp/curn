@@ -270,10 +270,11 @@ public class XMLDataPersister extends DataPersister
         URL channelURL = feedCacheData.getChannelURL();
 
         Element channelElement = new Element(XML_FEED_ELEMENT);
-        channelElement.setAttribute(XML_URL_ATTR, channelURL.toString());
+        String urlString = channelURL.toString();
+            channelElement.setAttribute(XML_URL_ATTR, urlString);
         channelElement.setAttribute
             (XML_TIMESTAMP_ATTR, String.valueOf(feedCacheData.getTimestamp()));
-        channelElement.setAttribute(XML_ID_ATTR, feedCacheData.getUniqueID());
+        channelElement.setAttribute(XML_ID_ATTR, urlString);
         rootElementForSaving.addContent(channelElement);
 
         // Now the feed metadata
@@ -293,9 +294,10 @@ public class XMLDataPersister extends DataPersister
             itemElement.setAttribute
                 (XML_TIMESTAMP_ATTR,
                  String.valueOf(itemCacheData.getTimestamp()));
-            itemElement.setAttribute(XML_ID_ATTR, itemCacheData.getUniqueID());
-            itemElement.setAttribute(XML_URL_ATTR,
-                                     itemCacheData.getEntryURL().toString());
+            urlString = itemCacheData.getEntryURL().toString();
+            itemElement.setAttribute(XML_ID_ATTR, urlString);
+            itemElement.setAttribute(XML_URL_ATTR, urlString);
+                                     
 
             // Only write the publication date if it's present.
 
@@ -635,8 +637,7 @@ public class XMLDataPersister extends DataPersister
                      entryID + "\". Skipping entry.");
             }
 
-            result = new FeedCacheEntry(entryID,
-                                        channelURL,
+            result = new FeedCacheEntry(channelURL,
                                         entryURL,
                                         publicationDate,
                                         timestamp);
@@ -799,8 +800,7 @@ public class XMLDataPersister extends DataPersister
                  XML_FEED_ELEMENT + "> with unique ID \"" + id + "\"");
         }
 
-        FeedCacheEntry entry = new FeedCacheEntry(id,
-                                                  channelURL,
+        FeedCacheEntry entry = new FeedCacheEntry(channelURL,
                                                   channelURL,
                                                   null,
                                                   timestamp);
@@ -894,8 +894,7 @@ public class XMLDataPersister extends DataPersister
                      id + "\". Skipping entry.");
             }
 
-            result = new FeedCacheEntry(id,
-                                        channelURL,
+            result = new FeedCacheEntry(channelURL,
                                         itemURL,
                                         publicationDate,
                                         timestamp);

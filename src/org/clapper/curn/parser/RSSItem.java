@@ -143,7 +143,6 @@ public abstract class RSSItem
         copy.setLinks(this.getLinks());
         copy.setCategories(this.getCategories());
         copy.setPublicationDate(this.getPublicationDate());
-        copy.setID(this.getID());
 
         Collection<String> authors = this.getAuthors();
         if (authors != null)
@@ -288,14 +287,10 @@ public abstract class RSSItem
 
             if ((cmp = thisTitle.compareTo (otherTitle)) == 0)
             {
-                String otherID = otherItem.getID();
-                String thisID  = this.getID();
-
-                if (otherID == null)
-                    otherID = "";
-
-                if (thisID == null)
-                    thisID = "";
+                RSSLink thisURL  = this.getURL();
+                String thisID = (thisURL == null) ? "" : thisURL.toString();
+                RSSLink otherURL = otherItem.getURL();
+                String otherID = (otherURL == null) ? "" : otherURL.toString();
 
                 if ((cmp = thisID.compareTo (otherID)) == 0)
                     cmp = this.hashCode() - other.hashCode();
@@ -314,12 +309,12 @@ public abstract class RSSItem
     public int hashCode()
     {
         int hc;
-        String id = getIdentifier();
+        RSSLink url = getURL();
 
-        if (id == null)
+        if (url == null)
             hc = super.hashCode();
         else
-            hc = id.hashCode();
+            hc = url.toString().hashCode();
 
         return hc;
     }
@@ -337,7 +332,16 @@ public abstract class RSSItem
         boolean eq = false;
 
         if (o instanceof RSSItem)
-            eq = getIdentifier().equals(((RSSItem) o).getIdentifier());
+        {
+            RSSLink thisURL = getURL();
+            RSSLink thatURL = ((RSSItem) o).getURL();
+
+            // Two null URLs are not equal (by fiat). Thus, if either URL
+            // is null, the result is false.
+
+            if ((thisURL != null) && (thatURL != null))
+                eq = thisURL.equals(thatURL);
+        }
 
         return eq;
     }
@@ -350,7 +354,15 @@ public abstract class RSSItem
     @Override
     public String toString()
     {
-        return getIdentifier();
+        RSSLink url = getURL();
+        String result;
+
+        if (url == null)
+            result = String.format("RSSLink#%x", System.identityHashCode(this));
+        else
+            result = url.toString();
+
+        return result;
     }
 
     /*----------------------------------------------------------------------*\
@@ -500,23 +512,6 @@ public abstract class RSSItem
      */
     public abstract void setPublicationDate(Date date);
 
-    /**
-     * Get the item's ID field, if any.
-     *
-     * @return the ID field, or null if not set
-     *
-     * @see #setID
-     */
-    @Override
-    public abstract String getID();
-
-    /**
-     * Set the item's ID field, if any.
-     *
-     * @param id the ID field, or null
-     */
-    public abstract void setID (String id);
-
     /*----------------------------------------------------------------------*\
                               Protected Methods
     \*----------------------------------------------------------------------*/
@@ -541,33 +536,6 @@ public abstract class RSSItem
     /*----------------------------------------------------------------------*\
                                Private Methods
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Get a unique identifier for this RSSItem. This method will return the
-     * ID (see getID()), if it's set; otherwise, it'll return the URL. If
-     * there's no URL, it'll return the title. If there's no title, it returns
-     * null.
-     *
-     * @return a unique identifier
-     */
-    private String getIdentifier()
-    {
-        String id = getID();
-        if (id == null)
-        {
-            RSSLink url = getURL();
-            if (url != null)
-                id = url.toString();
-            else
-            {
-                // No URL. Use the hash code of the title, if present.
-
-                id = getTitle();
-            }
-        }
-
-        return id;
-    }
 
     /**
      * Initialize the content map.

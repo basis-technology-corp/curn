@@ -530,12 +530,7 @@ public class FreeMarkerFeedTransformer
         else
             channelURL = link.getURL();
         channelData.put("url", channelURL.toString());
-
-        String id = channel.getID();
-        if (id == null)
-            id = channelURL.toExternalForm();
-
-        channelData.put("id", id);
+        channelData.put("id", channelURL.toExternalForm());
 
         Date channelDate = channel.getPublicationDate();
         channelData.put("showDate", true);
@@ -597,11 +592,7 @@ public class FreeMarkerFeedTransformer
             assert (link != null);
             URL itemURL = link.getURL();
             itemData.put("url", itemURL.toString());
-            id = item.getID();
-            if (id == null)
-                id = itemURL.toString();
-            itemData.put("id", id);
-
+            itemData.put("id", itemURL.toExternalForm());
             itemData.put("showAuthor", true);
 
             // Add both a combined author string ("author") and a sequence of

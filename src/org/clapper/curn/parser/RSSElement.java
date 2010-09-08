@@ -124,27 +124,6 @@ public abstract class RSSElement
     }
 
     /**
-     * Get a unique ID for the item. The default implementation of this
-     * method simply returns the URL, if any.
-     *
-     * @return the ID, or null if there isn't one.
-     */
-    public String getID()
-    {
-        String id = null;
-        RSSLink link = getURL();
-
-        if (link != null)
-        {
-            URL url = link.getURL();
-            if (url != null)
-                id = url.toExternalForm();
-        }
-
-        return id;
-    }
-
-    /**
      * Get the link with a specific MIME type and one of a set of
      * link types.
      *

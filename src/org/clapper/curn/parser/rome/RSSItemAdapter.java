@@ -501,26 +501,6 @@ public class RSSItemAdapter extends RSSItem
         this.entry.setPublishedDate(date);
     }
 
-    /**
-     * Get the item's ID field, if any.
-     *
-     * @return the ID field, or null if not set
-     */
-    public String getID()
-    {
-        return null;
-    }
-
-    /**
-     * Set the item's ID field, if any.
-     *
-     * @param id the ID field, or null
-     */
-    public void setID(String id)
-    {
-        // Nothing to do here.
-    }
-
     /*----------------------------------------------------------------------*\
                               Protected Methods
     \*----------------------------------------------------------------------*/

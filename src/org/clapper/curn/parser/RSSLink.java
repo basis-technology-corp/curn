@@ -252,4 +252,31 @@ public class RSSLink
     {
         return (url == null) ? "null" : url.toExternalForm();
     }
+
+    /**
+     * Compare this object with another.
+     *
+     * @param o  the other object
+     *
+     * @return <tt>true</tt> if they're equal, <tt>false</tt> if not.
+     */
+    public boolean equals(Object o)
+    {
+        boolean eq = false;
+
+        if ((o != null) && (o instanceof RSSLink))
+            eq = this.url.equals(((RSSLink) o).url);
+
+        return eq;
+    }
+
+    /**
+     * Get this object's hash code.
+     *
+     * @return the hash code
+     */
+    public int hashCode()
+    {
+        return url.hashCode();
+    }
 }

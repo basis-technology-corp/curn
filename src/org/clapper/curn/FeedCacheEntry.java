@@ -58,7 +58,6 @@ public class FeedCacheEntry
     \*----------------------------------------------------------------------*/
 
     private       long    timestamp = 0;
-    private final String  entryID;
     private final URL     entryURL;
     private final URL     channelURL;
     private final Date    publicationDate;
@@ -71,20 +70,17 @@ public class FeedCacheEntry
     /**
      * Construct a new <tt>FeedCacheEntry</tt>.
      *
-     * @param entryID     the entry's unique ID.
      * @param channelURL  the main URL for the site's RSS feed
      * @param entryURL    the URL to be cached. May be an individual item URL,
      *                    or the channel URL (again).
      * @param pubDate     the publication date of the item, or null if unknown
      * @param timestamp   the timestamp (milliseconds) to be cached
      */
-    public FeedCacheEntry(String entryID,
-                          URL    channelURL,
+    public FeedCacheEntry(URL    channelURL,
                           URL    entryURL,
                           Date   pubDate,
                           long   timestamp)
     {
-        this.entryID         = entryID;
         this.channelURL      = channelURL;
         this.entryURL        = entryURL;
         this.timestamp       = timestamp;
@@ -94,16 +90,6 @@ public class FeedCacheEntry
     /*----------------------------------------------------------------------*\
                              Public Methods
     \*----------------------------------------------------------------------*/
-
-    /**
-     * Get the unique ID (i.e., cache key) associated with this item.
-     *
-     * @return the unique ID
-     */
-    public String getUniqueID()
-    {
-        return entryID;
-    }
 
     /**
      * Get the main (channel) RSS URL for the site. This URL is the main

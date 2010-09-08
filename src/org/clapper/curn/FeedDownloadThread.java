@@ -477,9 +477,10 @@ class FeedDownloadThread implements Runnable
 
                         if (resultChannel != null)
                         {
-                            if (! metaPlugIn.runPostFeedProcessPlugIn(feedInfo,
-                                                                      cache,
-                                                                      resultChannel))
+                            boolean ok = metaPlugIn.runPostFeedProcessPlugIn(
+                                feedInfo, cache, resultChannel
+                            );
+                            if (! ok)
                                 resultChannel = null;
                         }
                     }
@@ -488,8 +489,7 @@ class FeedDownloadThread implements Runnable
                 tempFile.file.delete();
                 if (cache != null)
                 {
-                    cache.addToCache(null,
-                                     feedURL,
+                    cache.addToCache(feedURL,
                                      new Date(urlConn.getLastModified()),
                                      feedInfo);
                 }
@@ -852,25 +852,10 @@ class FeedDownloadThread implements Runnable
             itemURL = CurnUtil.normalizeURL(itemURL);
             itemLink.setURL(itemURL);
 
-            // Skip it if it's cached--unless it's sticky. Note:
-            //
-            // 1. If the item has a unique ID, then the ID alone is used to
-            //    determine whether it's been cached. This is the preferred
-            //    strategy, since it handles the case where a feed has
-            //    unique item IDs that change every day, but has URLs
-            //    that are re-used.
-            //
-            // 2. If the item has no unique ID, then determine whether the
-            //    URL is cached. If it is, then compare the publication date
-            //    of the item with the cached publication date, to see whether
-            //    the item is new. If the publication date is missing from
-            //    one of them, then use the URL alone and assume/hope that
-            //    the item's URL is unique.
+            // Skip it if it's cached--unless it's sticky. We cache by item
+            // URL.
 
-            String itemID = item.getID();
             log.debug ("Item link: " + itemURL);
-            log.debug ("Item ID: " + ((itemID == null) ? "<null>" : itemID));
-
             if ((cache != null) && (! itemIsNew (item, itemURL)))
             {
                 log.debug("Discarding old, cached item.");
@@ -890,8 +875,7 @@ class FeedDownloadThread implements Runnable
                 URL itemURL = itemLink.getURL();
 
                 log.debug ("Caching URL: " + itemURL);
-                cache.addToCache (item.getID(),
-                                  itemURL,
+                cache.addToCache (itemURL,
                                   item.getPublicationDate(),
                                   feedInfo);
             }

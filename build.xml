@@ -189,7 +189,8 @@ source and documentation packages.
            depend="${javac.depend}"
            deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes.dir}">
+           destdir="${compiled.classes.dir}"
+           includeantruntime="false">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -272,7 +273,8 @@ source and documentation packages.
            depend="${javac.depend}"
            deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes.dir}">
+           destdir="${compiled.classes.dir}"
+           includeantruntime="false">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -311,7 +313,8 @@ source and documentation packages.
            depend="${javac.depend}"
            deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes.dir}">
+           destdir="${compiled.classes.dir}"
+           includeantruntime="false">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>
@@ -353,7 +356,8 @@ source and documentation packages.
            depend="${javac.depend}"
            deprecation="${javac.deprecation}"
            listfiles="${javac.listfiles}"
-           destdir="${compiled.classes.dir}">
+           destdir="${compiled.classes.dir}"
+           includeantruntime="false">
 
       <compilerarg compiler="jikes" value="+Peffective-java"/>
       <compilerarg compiler="jikes" value="+Punused-type-imports"/>

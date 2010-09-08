@@ -120,7 +120,7 @@
                   target="$INSTALL_PATH/LICENSE.html"/>
       <singlefile src="@TOP_DIR@/README.html"
                   target="$INSTALL_PATH/README.html"/>
-      <singlefile src="@TOP_DIR@/README" target="$INSTALL_PATH/README.txt"/>
+      <singlefile src="@TOP_DIR@/README.md" target="$INSTALL_PATH/README.md"/>
 
       <singlefile src="@RELEASE_DIR@/@VERSIONED_CURN_JAR_FILE@"
                  target="$INSTALL_PATH/lib/curn.jar"/>

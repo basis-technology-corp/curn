@@ -79,12 +79,6 @@ public class FeedCache
     /**
      * The actual cache, indexed by unique ID.
      */
-    private Map<String,FeedCacheEntry> cacheByID = null;
-
-    /**
-     * Alternate cache (not saved, but regenerated on the fly), indexed
-     * by URL.
-     */
     private Map<String,FeedCacheEntry> cacheByURL = null;
 
     /**
@@ -122,22 +116,6 @@ public class FeedCache
     \*----------------------------------------------------------------------*/
 
     /**
-     * Determine whether the cache contains an entry with the specified
-     * unique ID.
-     *
-     * @param id  the ID to check.
-     *
-     * @return <tt>true</tt> if the ID is present in the cache,
-     *         <tt>false</tt> if not
-     */
-    public boolean containsID(final String id)
-    {
-        boolean hasKey = cacheByID.containsKey (id);
-        log.debug("Cache contains \"" + id + "\"? " + hasKey);
-        return hasKey;
-    }
-
-    /**
      * Determine whether the cache contains the specified URL.
      *
      * @param url  the URL to check. This method normalizes it.
@@ -157,24 +135,6 @@ public class FeedCache
         }
 
         return hasURL;
-    }
-
-    /**
-     * Get an entry from the cache by its unique ID.
-     *
-     * @param id  the unique ID to check
-     *
-     * @return the corresponding <tt>FeedCacheEntry</tt> object, or null if
-     *         not found
-     */
-    public FeedCacheEntry getEntry(final String id)
-    {
-        FeedCacheEntry result = null;
-
-        if (cacheByID != null)
-            result = cacheByID.get(id);
-
-        return result;
     }
 
     /**
@@ -208,7 +168,6 @@ public class FeedCache
     public FeedCacheEntry getEntryForItem(RSSItem item)
     {
         FeedCacheEntry entry    = null;
-        String         itemID   = item.getID();
         RSSLink        itemLink = item.getURL();
         URL            itemURL  = null;
 
@@ -219,24 +178,13 @@ public class FeedCache
                 itemURL = CurnUtil.normalizeURL(itemURL);
         }
 
-        if (itemID != null)
-        {
-            log.debug("Attempting to find item \"" + item.toString() +
-                      "\" in cache.");
-            entry = getEntry(itemID);
-        }
+        if (itemURL == null)
+            log.info("Item has no URL. Ignoring it.");
 
         else
         {
-            if (itemURL == null)
-                log.info("Item has no unique ID or URL. Ignoring it.");
-
-            else
-            {
-                log.debug("Item has no Unique ID. Locating it by URL (\"" +
-                          itemURL.toString() + "\")");
-                entry = getEntryByURL(itemURL);
-            }
+            log.debug("Locating item by URL: " + itemURL.toString());
+            entry = getEntryByURL(itemURL);
         }
 
         return entry;
@@ -245,8 +193,6 @@ public class FeedCache
     /**
      * Add (or replace) a cached URL.
      *
-     * @param uniqueID   the unique ID string for the cache entry, or null.
-     *                   If null, the URL is used as the unique ID.
      * @param url        the URL to cache. May be an individual item URL, or
      *                   the URL for an entire feed.
      * @param pubDate    the publication date, if known; or null
@@ -254,37 +200,28 @@ public class FeedCache
      *
      * @see CurnUtil#normalizeURL
      */
-    public void addToCache(String         uniqueID,
-                           final URL      url,
+    public void addToCache(final URL      url,
                            final Date     pubDate,
                            final FeedInfo parentFeed)
     {
         synchronized (this)
         {
-            if (cacheByID == null)
-            {
-                cacheByID = new HashMap<String,FeedCacheEntry>();
+            if (cacheByURL == null)
                 cacheByURL = new HashMap<String,FeedCacheEntry>();
-            }
         }
 
-        if (uniqueID == null)
-            uniqueID = url.toExternalForm();
-
         URL parentURL = parentFeed.getURL();
-        FeedCacheEntry entry = new FeedCacheEntry(uniqueID,
-                                                  parentURL,
+        FeedCacheEntry entry = new FeedCacheEntry(parentURL,
                                                   url,
                                                   pubDate,
                                                   System.currentTimeMillis());
 
         log.debug ("Adding cache entry for URL \"" +
                    entry.getEntryURL().toExternalForm() +
-                   "\". ID=\"" + uniqueID + "\", channel URL: \"" +
+                   "\", channel URL: \"" +
                    entry.getChannelURL().toExternalForm() +
                    "\"");
 
-        cacheByID.put(uniqueID, entry);
         cacheByURL.put(CurnUtil.urlToLookupKey(url), entry);
     }
 
@@ -297,8 +234,8 @@ public class FeedCache
     {
         Collection<FeedCacheEntry> result = null;
 
-        if (cacheByID != null)
-            result = Collections.unmodifiableCollection(cacheByID.values());
+        if (cacheByURL != null)
+            result = Collections.unmodifiableCollection(cacheByURL.values());
         else
             result = new ArrayList<FeedCacheEntry>();
 
@@ -372,14 +309,13 @@ public class FeedCache
 
         log.debug("HashMap sizing: Max entries=" + maxEntries + ", " +
                   "initialCapacity=" +  initialCapacity);
-        cacheByID = new HashMap<String,FeedCacheEntry>(initialCapacity);
         cacheByURL = new HashMap<String,FeedCacheEntry>(initialCapacity);
 
         for (FeedCacheEntry entry : loadedEntries)
         {
             boolean removed = false;
             URL channelURL = entry.getChannelURL();
-            String itemKey = entry.getUniqueID();
+            String itemKey = entry.getEntryURL().toString();
 
             if (log.isDebugEnabled())
                 dumpCacheEntry (itemKey, entry, "");
@@ -440,8 +376,6 @@ public class FeedCache
                 cacheByURL.put(strURL, entry);
                 log.debug("Loading entry for URL \"" + strURL +
                           "\" into in-memory ID lookup cache.");
-                cacheByID.put(itemKey, entry);
-                log.debug ("Insert complete.");
             }
         }
 
