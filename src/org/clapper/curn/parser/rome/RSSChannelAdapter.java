@@ -194,6 +194,34 @@ public class RSSChannelAdapter extends RSSChannel
         return getItems().contains(item);
     }
 
+    /**
+     * Determine whether a channel contains an item.
+     *
+     * @param itemURL  the item's URL string
+     *
+     * @return <tt>true</tt> if found, <tt>false</tt> if not found
+     */
+    public boolean hasItem(String url)
+    {
+        boolean found = false;
+
+        for (RSSItem item : getItems())
+        {
+            for (RSSLink link : item.getLinks())
+            {
+                if (link.getURL().toString().equals(url))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+                break;
+        }
+
+        return found;
+    }
 
     /**
      * Get the channel's title

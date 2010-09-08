@@ -56,9 +56,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import java.util.Map;
+import java.net.MalformedURLException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.clapper.curn.CurnUtil;
@@ -73,7 +77,11 @@ import org.clapper.util.cmdline.UsageInfo;
 import org.clapper.util.io.IOExceptionExt;
 import org.clapper.util.text.TextUtil;
 
+import org.jdom.JDOMException;
 import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Attribute;
+import org.jdom.xpath.XPath;
 import org.jdom.output.XMLOutputter;
 
 /**
@@ -375,37 +383,147 @@ public class PruneOriginalRSSPlugIn
     \*----------------------------------------------------------------------*/
 
     private void pruneDOM(Document dom, RSSChannel channel)
+        throws CurnException
     {
-        switch (channel.getFeedType())
+        try
         {
-            case RSS_1:
-                pruneRSS1DOM(dom, channel);
-                break;
+            switch (channel.getFeedType())
+            {
+                case RSS_1:
+                    pruneRSS1DOM(dom, channel);
+                    break;
 
-            case RSS_2:
-            case RSS_0_9:
-                pruneRSS2DOM(dom, channel);
-                break;
+                case RSS_2:
+                case RSS_0_9:
+                    pruneRSS2DOM(dom, channel);
+                    break;
 
-            case ATOM:
-                pruneAtomDOM(dom, channel);
-                break;
+                case ATOM:
+                    pruneAtomDOM(dom, channel);
+                    break;
 
-            default:
-                assert(false);
+                default:
+                    assert(false);
+            }
+        }
+
+        catch (JDOMException ex)
+        {
+            throw new CurnException(ex);
+        }
+
+        catch (MalformedURLException ex)
+        {
+            throw new CurnException(ex);
         }
     }
 
     private void pruneRSS1DOM(Document dom, RSSChannel channel)
+        throws JDOMException, MalformedURLException
     {
+        // JDOM's XPath doesn't seem to handle these properly.
+        XPath xpath = XPath.newInstance("//*");
+        List<?> elements = xpath.selectNodes(dom);
+        for (Object e : elements)
+        {
+            Element element = (Element) e;
+            if (! element.getName().toLowerCase().endsWith("item"))
+                continue;
+
+            // This is an item. Get the URL children. Don't rely on
+            // getChild(); it's not reliable.
+
+            List<Element> childLinks = namedChildren(element, "link");
+            for (Element link : childLinks)
+            {
+                String url = link.getText();
+                if ((url != null) && (channelHasItem(channel, url)))
+                {
+                    log.debug("RSS1 item \"" + url + "\" has been seen " +
+                              "already. Removing it from the DOM.");
+                    element.getParent().removeContent(element);
+                }
+            }
+        }
     }
 
     private void pruneRSS2DOM(Document dom, RSSChannel channel)
+        throws JDOMException, MalformedURLException
     {
+        XPath xpath = XPath.newInstance("/rss/channel/item");
+        List<?> elements = xpath.selectNodes(dom);
+        for (Object e : elements)
+        {
+            Element element = (Element) e;
+
+            // This is an item. Get the URL children. Don't rely on
+            // getChild(); it's not reliable.
+
+            List<Element> childLinks = namedChildren(element, "link");
+            for (Element link : childLinks)
+            {
+                String url = link.getText();
+                if ((url != null) && (channelHasItem(channel, url)))
+                {
+                    log.debug("RSS2 item \"" + url + "\" has been seen " +
+                              "already. Removing it from the DOM.");
+                    element.getParent().removeContent(element);
+                }
+            }
+        }
     }
 
     private void pruneAtomDOM(Document dom, RSSChannel channel)
+        throws JDOMException, MalformedURLException
     {
+        XPath xpath = XPath.newInstance("//atom:entry");
+        xpath.addNamespace("atom", "http://www.w3.org/2005/Atom");
+        List<?> elements = xpath.selectNodes(dom);
+        for (Object e : elements)
+        {
+            Element element = (Element) e;
+
+            // This is an item. Get the URL children. Don't rely on
+            // getChild(); it's not reliable.
+
+            List<Element> childLinks = namedChildren(element, "entry");
+            for (Element link : childLinks)
+            {
+                Attribute urlAttr = link.getAttribute("href");
+                if (urlAttr != null)
+                {
+                    String url = urlAttr.getValue();
+                    if ((url != null) && (channelHasItem(channel, url)))
+                    {
+                        log.debug("Atom item \"" + url + "\" has been seen " +
+                                  "already. Removing it from the DOM.");
+                        element.getParent().removeContent(element);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean channelHasItem(RSSChannel channel, String link)
+        throws MalformedURLException
+    {
+        return channel.hasItem(CurnUtil.normalizeURL(link).toExternalForm());
+    }
+
+    private List<Element> namedChildren(Element element, String name)
+    {
+        List<Element> result = new ArrayList<Element>();
+        Iterator<?> children = element.getChildren().iterator();
+
+        while (children.hasNext())
+        {
+            Element child = (Element) children.next();
+            String childName = child.getName().toLowerCase();
+            if (childName.equals(name) || (childName.endsWith(":" + name)))
+                result.add(child);
+        }
+
+        return result;
     }
 
     private PruneInfo getOrMakePruneInfo (FeedInfo feedInfo)

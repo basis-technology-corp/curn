@@ -299,6 +299,15 @@ public abstract class RSSChannel extends RSSElement implements Cloneable
     public abstract boolean hasItem(RSSItem item);
 
     /**
+     * Determine whether a channel contains an item.
+     *
+     * @param itemURL  the item's URL string
+     *
+     * @return <tt>true</tt> if found, <tt>false</tt> if not found
+     */
+    public abstract boolean hasItem(String url);
+
+    /**
      * Get the channel's title
      *
      * @return the channel's title, or null if there isn't one
