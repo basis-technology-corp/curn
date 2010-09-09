@@ -28,6 +28,8 @@ Version 3.2.7 (...)
 - Updated RSSChannel class to provide an enumerated value that indicates
   the type of the RSS feed.
 
+- Installer no longer pre-selects source and documentation packs.
+
 ---------------------------------------------------------------------------
 Version 3.2.6 (23 April, 2010)
 
