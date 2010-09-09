@@ -183,7 +183,7 @@
                   os="windows"/>
     </pack>
 
-    <pack name="Docs" required="no">
+    <pack name="Docs" required="no" preselected="no">
       <description>The curn User's Guide and the Javadocs</description>
       <file src="@JAVADOCS_DIR@"
             targetdir="$INSTALL_PATH/docs"/>
@@ -193,7 +193,7 @@
             targetdir="$INSTALL_PATH/docs"/>
     </pack>
 
-    <pack name="Sources" required="no">
+    <pack name="Sources" required="no" preselected="no">
       <description>The sources</description>
       <!--
           WARNING: This file set is essentially a duplicate of the

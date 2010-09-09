@@ -84,7 +84,7 @@ import org.jdom.Attribute;
 import org.jdom.output.XMLOutputter;
 
 /**
- * <p>The <tt>PruneSameRSSPlugIn</tt> is a special-case variant of the
+ * <p>The <tt>PruneOriginalRSSPlugIn</tt> is a special-case variant of the
  * {@link SaveAsRSSPlugIn}: It saves a copy of the original RSS document
  * after removing any already-seen items. This plug-in differs from the
  * {@link SaveAsRSSPlugIn}, however, because the
@@ -337,38 +337,43 @@ public class PruneOriginalRSSPlugIn
         if ((pruneInfo != null) && (pruneInfo.pruneToFile != null))
         {
             Document dom = channel.getDOM();
-            pruneDOM(dom, channel);
-            XMLOutputter outputter = new XMLOutputter();
+            int itemsLeft = pruneDOM(dom, channel);
 
-            try
+            if (itemsLeft > 0)
             {
-                log.debug("Generating RSS output file \"" +
-                          pruneInfo.pruneToFile + "\" (encoding " +
-                          pruneInfo.outputEncoding + ")");
+                log.debug("There are items left in the DOM. Writing it.");
 
-                Writer out = CurnUtil.openOutputFile(
-                    pruneInfo.pruneToFile,
-                    pruneInfo.outputEncoding,
-                    CurnUtil.IndexMarker.BEFORE_EXTENSION,
-                    pruneInfo.backups
-                );
+                XMLOutputter outputter = new XMLOutputter();
+                try
+                {
+                    log.debug("Generating RSS output file \"" +
+                              pruneInfo.pruneToFile + "\" (encoding " +
+                              pruneInfo.outputEncoding + ")");
 
-                outputter.output(dom, out);
-                out.close();
-            }
+                    Writer out = CurnUtil.openOutputFile(
+                        pruneInfo.pruneToFile,
+                        pruneInfo.outputEncoding,
+                        CurnUtil.IndexMarker.BEFORE_EXTENSION,
+                        pruneInfo.backups
+                    );
 
-            catch (IOExceptionExt ex)
-            {
-                throw new CurnException ("Can't write RSS output to \"" +
-                                         pruneInfo.pruneToFile + "\": ",
-                                         ex);
-            }
+                    outputter.output(dom, out);
+                    out.close();
+                }
 
-            catch (IOException ex)
-            {
-                throw new CurnException ("Can't write RSS output to \"" +
-                                         pruneInfo.pruneToFile + "\": ",
-                                         ex);
+                catch (IOExceptionExt ex)
+                {
+                    throw new CurnException ("Can't write RSS output to \"" +
+                                             pruneInfo.pruneToFile + "\": ",
+                                             ex);
+                }
+
+                catch (IOException ex)
+                {
+                    throw new CurnException ("Can't write RSS output to \"" +
+                                             pruneInfo.pruneToFile + "\": ",
+                                             ex);
+                }
             }
 
             keepGoing = ! pruneInfo.pruneOnly;
@@ -381,47 +386,47 @@ public class PruneOriginalRSSPlugIn
                               Private Methods
     \*----------------------------------------------------------------------*/
 
-    private void pruneDOM(Document dom, RSSChannel channel)
+    private int pruneDOM(Document dom, RSSChannel channel)
         throws CurnException
     {
         try
         {
+            int result = 0;
             switch (channel.getFeedType())
             {
                 case RSS_1:
-                    pruneRSS1DOM(dom, channel);
+                    result = pruneRSS1DOM(dom, channel);
                     break;
 
                 case RSS_2:
                 case RSS_0_9:
-                    pruneRSS2DOM(dom, channel);
+                    result = pruneRSS2DOM(dom, channel);
                     break;
 
                 case ATOM:
-                    pruneAtomDOM(dom, channel);
+                    result = pruneAtomDOM(dom, channel);
                     break;
 
                 default:
                     assert(false);
             }
+
+            log.debug("After pruning DOM, there are " + result + " items left");
+            return result;
         }
 
         catch (JDOMException ex)
         {
             throw new CurnException(ex);
         }
-
-        catch (MalformedURLException ex)
-        {
-            throw new CurnException(ex);
-        }
     }
 
-    private void pruneRSS1DOM(Document dom, RSSChannel channel)
-        throws JDOMException, MalformedURLException
+    private int pruneRSS1DOM(Document dom, RSSChannel channel)
+        throws JDOMException, CurnException
     {
         // Any items will be children of the root node.
 
+        int itemsLeft = 0;
         for (Element element : namedChildren(dom.getRootElement(), "item"))
         {
             // This is an item. Get the URL children. Don't use
@@ -430,42 +435,52 @@ public class PruneOriginalRSSPlugIn
             for (Element link : namedChildren(element, "link"))
             {
                 String url = link.getText();
-                if ((url != null) && (channelHasItem(channel, url)))
+                if (shouldPruneItem(url, channel))
                 {
                     log.debug("RSS1 item \"" + url + "\" has been seen " +
                               "already. Removing it from the DOM.");
                     element.getParent().removeContent(element);
                 }
+
+                else
+                {
+                    log.debug("RSS1 item \"" + url + "\" has not been seen " +
+                              "yet. Keeping it in the DOM.");
+                    itemsLeft++;
+                }
             }
         }
+
+        return itemsLeft;
     }
 
-    private void pruneRSS2DOM(Document dom, RSSChannel channel)
-        throws JDOMException, MalformedURLException
+    private int pruneRSS2DOM(Document dom, RSSChannel channel)
+        throws JDOMException, CurnException
     {
         // Any elements will be below the only channel node:
         //    <rss> <channel> <item> ...
 
+        int itemsLeft = 0;
         Element root = dom.getRootElement();
         if (! elementNameMatches(root, "rss"))
         {
             log.error("Root element of alleged RSS 2 feed is \"" +
                       root.getName() + "\", not the expected <rss>");
-            return;
+            return 0;
         }
 
         List<?> children = root.getChildren();
         if (children.size() == 0)
         {
             log.error("There are no <channel> elements in the RSS 2 feed.");
-            return;
+            return 0;
         }
 
         if (children.size() > 1)
         {
             log.error("There are multiple <channel> elements in the RSS 2 " +
                       "feed.");
-            return;
+            return 0;
         }
 
         Element channelElem = (Element) children.get(0);
@@ -478,20 +493,31 @@ public class PruneOriginalRSSPlugIn
             for (Element link : namedChildren(element, "link"))
             {
                 String url = link.getText();
-                if ((url != null) && (channelHasItem(channel, url)))
+                if (shouldPruneItem(url, channel))
                 {
                     log.debug("RSS2 item \"" + url + "\" has been seen " +
                               "already. Removing it from the DOM.");
                     element.getParent().removeContent(element);
                 }
+
+                else
+                {
+                    log.debug("RSS2 item \"" + url + "\" has not been seen " +
+                              "yet. Keeping it in the DOM.");
+                    itemsLeft++;
+                }
             }
         }
+
+        return itemsLeft;
     }
 
-    private void pruneAtomDOM(Document dom, RSSChannel channel)
-        throws JDOMException, MalformedURLException
+    private int pruneAtomDOM(Document dom, RSSChannel channel)
+        throws JDOMException, CurnException
     {
         // Any items will be children of the root node.
+
+        int itemsLeft = 0;
 
         for (Element element : namedChildren(dom.getRootElement(), "entry"))
         {
@@ -505,20 +531,44 @@ public class PruneOriginalRSSPlugIn
                     continue;
 
                 String url = urlAttr.getValue();
-                if ((url != null) && (channelHasItem(channel, url)))
+                if (shouldPruneItem(url, channel))
                 {
                     log.debug("Atom item \"" + url + "\" has been seen " +
                               "already. Removing it from the DOM.");
                     element.getParent().removeContent(element);
                 }
+
+                else
+                {
+                    log.debug("Atom item \"" + url + "\" has not been seen " +
+                              "yet. Keeping it in the DOM.");
+                    itemsLeft++;
+                }
             }
         }
+
+        return itemsLeft;
+    }
+
+    private boolean shouldPruneItem(String itemURL, RSSChannel channel)
+        throws CurnException
+    {
+        return (itemURL != null) && (! channelHasItem(channel, itemURL.trim()));
     }
 
     private boolean channelHasItem(RSSChannel channel, String link)
-        throws MalformedURLException
+        throws CurnException
     {
-        return channel.hasItem(CurnUtil.normalizeURL(link).toExternalForm());
+        try
+        {
+            String adjLink = CurnUtil.normalizeURL(link).toExternalForm();
+            return channel.hasItem(adjLink);
+        }
+
+        catch (MalformedURLException ex)
+        {
+            throw new CurnException(ex);
+        }
     }
 
     private boolean elementNameMatches(Element element, String name)

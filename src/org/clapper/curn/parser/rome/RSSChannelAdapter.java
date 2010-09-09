@@ -197,7 +197,7 @@ public class RSSChannelAdapter extends RSSChannel
     /**
      * Determine whether a channel contains an item.
      *
-     * @param itemURL  the item's URL string
+     * @param url  the item's URL string
      *
      * @return <tt>true</tt> if found, <tt>false</tt> if not found
      */
