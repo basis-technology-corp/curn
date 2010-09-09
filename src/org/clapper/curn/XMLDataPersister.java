@@ -150,13 +150,13 @@ public class XMLDataPersister extends DataPersister
                                                   null);
             if (cacheFileName == null)
             {
-                log.debug("Feed metadata file is null.");
+                log.debug("Feed metadata (cache) file is not configured.");
             }
 
             else
             {
-                log.debug("Feed metadata file is " + metadataFile);
                 metadataFile = CurnUtil.mapConfiguredPathName(cacheFileName);
+                log.debug("Feed metadata (cache) file is " + metadataFile);
                 if (metadataFile.isDirectory())
                 {
                     throw new CurnException
@@ -375,6 +375,7 @@ public class XMLDataPersister extends DataPersister
         throws CurnException
     {
         String filePath = metadataFile.getPath();
+        log.debug("Preparing to load " + metadataFile);
         if (! metadataFile.exists())
         {
             log.warn("Feed metadata file \"" + filePath + "\" does not exist.");
