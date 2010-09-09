@@ -81,7 +81,6 @@ import org.jdom.JDOMException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Attribute;
-import org.jdom.xpath.XPath;
 import org.jdom.output.XMLOutputter;
 
 /**
@@ -421,20 +420,14 @@ public class PruneOriginalRSSPlugIn
     private void pruneRSS1DOM(Document dom, RSSChannel channel)
         throws JDOMException, MalformedURLException
     {
-        // JDOM's XPath doesn't seem to handle these properly.
-        XPath xpath = XPath.newInstance("//*");
-        List<?> elements = xpath.selectNodes(dom);
-        for (Object e : elements)
+        // Any items will be children of the root node.
+
+        for (Element element : namedChildren(dom.getRootElement(), "item"))
         {
-            Element element = (Element) e;
-            if (! element.getName().toLowerCase().endsWith("item"))
-                continue;
+            // This is an item. Get the URL children. Don't use
+            // getChild(name); it's not reliable.
 
-            // This is an item. Get the URL children. Don't rely on
-            // getChild(); it's not reliable.
-
-            List<Element> childLinks = namedChildren(element, "link");
-            for (Element link : childLinks)
+            for (Element link : namedChildren(element, "link"))
             {
                 String url = link.getText();
                 if ((url != null) && (channelHasItem(channel, url)))
@@ -450,17 +443,39 @@ public class PruneOriginalRSSPlugIn
     private void pruneRSS2DOM(Document dom, RSSChannel channel)
         throws JDOMException, MalformedURLException
     {
-        XPath xpath = XPath.newInstance("/rss/channel/item");
-        List<?> elements = xpath.selectNodes(dom);
-        for (Object e : elements)
+        // Any elements will be below the only channel node:
+        //    <rss> <channel> <item> ...
+
+        Element root = dom.getRootElement();
+        if (! elementNameMatches(root, "rss"))
         {
-            Element element = (Element) e;
+            log.error("Root element of alleged RSS 2 feed is \"" +
+                      root.getName() + "\", not the expected <rss>");
+            return;
+        }
 
-            // This is an item. Get the URL children. Don't rely on
-            // getChild(); it's not reliable.
+        List<?> children = root.getChildren();
+        if (children.size() == 0)
+        {
+            log.error("There are no <channel> elements in the RSS 2 feed.");
+            return;
+        }
 
-            List<Element> childLinks = namedChildren(element, "link");
-            for (Element link : childLinks)
+        if (children.size() > 1)
+        {
+            log.error("There are multiple <channel> elements in the RSS 2 " +
+                      "feed.");
+            return;
+        }
+
+        Element channelElem = (Element) children.get(0);
+
+        for (Element element : namedChildren(channelElem, "item"))
+        {
+            // This is an item. Get the URL children. Don't use
+            // getChild(name); it's not reliable.
+
+            for (Element link : namedChildren(element, "link"))
             {
                 String url = link.getText();
                 if ((url != null) && (channelHasItem(channel, url)))
@@ -476,29 +491,25 @@ public class PruneOriginalRSSPlugIn
     private void pruneAtomDOM(Document dom, RSSChannel channel)
         throws JDOMException, MalformedURLException
     {
-        XPath xpath = XPath.newInstance("//atom:entry");
-        xpath.addNamespace("atom", "http://www.w3.org/2005/Atom");
-        List<?> elements = xpath.selectNodes(dom);
-        for (Object e : elements)
+        // Any items will be children of the root node.
+
+        for (Element element : namedChildren(dom.getRootElement(), "entry"))
         {
-            Element element = (Element) e;
+            // This is an entry. Get the URL children. Don't use
+            // getChild(name); it's not reliable.
 
-            // This is an item. Get the URL children. Don't rely on
-            // getChild(); it's not reliable.
-
-            List<Element> childLinks = namedChildren(element, "entry");
-            for (Element link : childLinks)
+            for (Element link : namedChildren(element, "link"))
             {
                 Attribute urlAttr = link.getAttribute("href");
-                if (urlAttr != null)
+                if (urlAttr == null)
+                    continue;
+
+                String url = urlAttr.getValue();
+                if ((url != null) && (channelHasItem(channel, url)))
                 {
-                    String url = urlAttr.getValue();
-                    if ((url != null) && (channelHasItem(channel, url)))
-                    {
-                        log.debug("Atom item \"" + url + "\" has been seen " +
-                                  "already. Removing it from the DOM.");
-                        element.getParent().removeContent(element);
-                    }
+                    log.debug("Atom item \"" + url + "\" has been seen " +
+                              "already. Removing it from the DOM.");
+                    element.getParent().removeContent(element);
                 }
             }
         }
@@ -510,6 +521,14 @@ public class PruneOriginalRSSPlugIn
         return channel.hasItem(CurnUtil.normalizeURL(link).toExternalForm());
     }
 
+    private boolean elementNameMatches(Element element, String name)
+    {
+        String elemName = element.getName().toLowerCase();
+
+        // Allow for namespaces.
+        return (elemName.equals(name) || elemName.endsWith(":" + name));
+    }
+
     private List<Element> namedChildren(Element element, String name)
     {
         List<Element> result = new ArrayList<Element>();
@@ -518,8 +537,7 @@ public class PruneOriginalRSSPlugIn
         while (children.hasNext())
         {
             Element child = (Element) children.next();
-            String childName = child.getName().toLowerCase();
-            if (childName.equals(name) || (childName.endsWith(":" + name)))
+            if (elementNameMatches(child, name))
                 result.add(child);
         }
 
