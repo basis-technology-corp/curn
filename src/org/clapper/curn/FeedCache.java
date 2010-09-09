@@ -379,7 +379,8 @@ public class FeedCache
             }
         }
 
-        log.debug ("DONE PRUNING CACHE");
+        log.debug("Cache now has " + cacheByURL.size() + " elements.");
+        log.debug("DONE PRUNING CACHE");
     }
 
     /**

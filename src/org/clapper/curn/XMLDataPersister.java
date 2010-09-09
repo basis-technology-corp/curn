@@ -148,8 +148,14 @@ public class XMLDataPersister extends DataPersister
                 curnConfig.getOptionalStringValue(CurnConfig.MAIN_SECTION,
                                                   VAR_CACHE_FILE,
                                                   null);
-            if (cacheFileName != null)
+            if (cacheFileName == null)
             {
+                log.debug("Feed metadata file is null.");
+            }
+
+            else
+            {
+                log.debug("Feed metadata file is " + metadataFile);
                 metadataFile = CurnUtil.mapConfiguredPathName(cacheFileName);
                 if (metadataFile.isDirectory())
                 {
@@ -369,7 +375,12 @@ public class XMLDataPersister extends DataPersister
         throws CurnException
     {
         String filePath = metadataFile.getPath();
-        if (metadataFile.exists())
+        if (! metadataFile.exists())
+        {
+            log.warn("Feed metadata file \"" + filePath + "\" does not exist.");
+        }
+
+        else
         {
             log.debug("Reading feed metadata from \"" + filePath + "\"");
 

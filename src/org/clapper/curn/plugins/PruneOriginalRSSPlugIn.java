@@ -347,8 +347,9 @@ public class PruneOriginalRSSPlugIn
                 try
                 {
                     log.debug("Generating RSS output file \"" +
-                              pruneInfo.pruneToFile + "\" (encoding " +
-                              pruneInfo.outputEncoding + ")");
+                              pruneInfo.pruneToFile + "\" using encoding " +
+                              pruneInfo.outputEncoding);
+                    log.debug("Backups to keep: " + pruneInfo.backups);
 
                     Writer out = CurnUtil.openOutputFile(
                         pruneInfo.pruneToFile,

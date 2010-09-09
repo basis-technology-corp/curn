@@ -239,7 +239,6 @@ public class Curn
         boolean parsingEnabled = true;
         FeedCache cache = null;
 
-
         if (useCache)
         {
             cache = new FeedCache(config);
