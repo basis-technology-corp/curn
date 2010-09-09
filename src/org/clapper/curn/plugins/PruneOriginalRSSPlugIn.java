@@ -115,7 +115,7 @@ public class PruneOriginalRSSPlugIn
     \*----------------------------------------------------------------------*/
 
     private static final String VAR_PRUNE_TO_FILE   = "PruneOriginalRSSTo";
-    private static final String VAR_PRUNE_ONLY      = "PruneOnly";
+    private static final String VAR_PRUNE_ONLY      = "PruneOriginalRSSOnly";
 
     /*----------------------------------------------------------------------*\
                               Private Classes
