@@ -4,7 +4,7 @@ CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.2.7 (...)
+Version 3.2.7 (13 September, 2010)
 
 - Implemented a new PruneOriginalRSSPlugIn plug-in that saves a copy of the
   original RSS document after removing any already-seen items. This plug-in
