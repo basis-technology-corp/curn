@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!-- $Id$ -->
+<rss version="2.0">
+    <channel>
+        <title>The Daily Irrelevant</title>
+        <link>http://irrelevant.clapper.org/</link>
+        <description>Irrelevant (and often untrue) News Items</description>
+	<pubDate>Wed Jul 28 06:00:00 2004 EDT</pubDate>
+        <item>
+            <title>Fifteen Philadelphia motorists cited for stupidity</title>
+            <link>http://irrelevant.clapper.org/2004/06/13/stupidity.html</link>
+            <description>During rush hour this morning, on the city's busy Schuylkill Expressway, Philadelphia police stopped fifteen motorists and cited them under Philadelphia's new, controversial "stupid driver" ordinance.</description>
+            <author>Olaf Phenobarb</author>
+            <pubDate>Wed, 28 Jul 2004 00:00:00 EDT</pubDate>
+        </item>
+
+        <item>
+            <title>Joe Sixpack to retire</title>
+            <link>http://irrelevant.clapper.org/2004/06/13/joe6.html</link>
+            <description>Joe Sixpack, whose name is frequently used to represent an average guy, is retiring at the end of July. "After that, they're just gonna hafta use someone else's name," Sixpack said, grinning, "'less they wanna pay me royalties or somethin'."</description>
+            <pubDate>Wed, 28 Jul 2004 02:12:07 EDT</pubDate>
+        </item>
+
+        <item>
+            <title>Tripwell caught with pants down</title>
+            <link>http://irrelevant.clapper.org/2004/06/13/televangelist.html</link>
+            <description>Police, responding to neighbors' reports of disturbing sounds from televangelist Gerard Tripwell's home, found his garage door open and the door to his home ajar. Upon entering, police encountered Tripwell and a young woman having sex on the kitchen table. The woman has been identified as Tripwell's secretary. Tripwell is married, but his wife, Trudy, had left an hour earlier to catch a plane to Little Rock, Arkansas, to visit her dying father.</description>
+            <pubDate>Wed, 28 Jul 2004 02:13:29 EDT</pubDate>
+        </item>
+    </channel>
+</rss>

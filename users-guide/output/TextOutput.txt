@@ -1,0 +1,88 @@
+RSS Feeds
+
+---------------------------------------------------------------------------
+The Daily Irrelevant
+http://irrelevant.clapper.org/
+rss_2.0
+
+    Fifteen Philadelphia motorists cited for stupidity
+    Olaf Phenobarb
+
+    http://irrelevant.clapper.org/2004/06/13/stupidity.html
+
+        During rush hour this morning, on the city's busy Schuylkill Expressway,
+        Philadelphia police stopped fifteen motorists and cited them under
+        Philadelphia's new, controversial "stupid driver" ordinance.
+
+    Joe Sixpack to retire
+    
+
+    http://irrelevant.clapper.org/2004/06/13/joe6.html
+
+        Joe Sixpack, whose name is frequently used to represent an average guy,
+        is retiring at the end of July. "After that, they're just gonna hafta
+        use someone else's name," Sixpack said, grinning, "'less they wanna pay
+        me royalties or somethin'."
+
+    Tripwell caught with pants down
+    
+
+    http://irrelevant.clapper.org/2004/06/13/televangelist.html
+
+        Police, responding to neighbors' reports of disturbing sounds from
+        televangelist Gerard Tripwell's home, found his garage door open and the
+        door to his home ajar. Upon entering, police encountered Tripwell and a
+        young woman having sex on the kitchen table. The woman has been
+        identified as Tripwell's secretary. Tripwell is married, but his wife,
+        Trudy, had left an hour earlier to catch a plane to Little Rock,
+        Arkansas, to visit her dying father.
+
+---------------------------------------------------------------------------
+News Bites
+http://bites.clapper.org/
+rss_2.0
+
+    Man Bites Dog
+    Basil Ironthrower
+
+    http://bites.clapper.org/manbitesdog.html
+
+        Repeatedly attacked by a small, but persistent, neighborhood Chihuahua
+        name Juan, jogger John "Choppers" McNabb finally got fed up and took
+        action: He bit Juan back. Now Juan's owners are suing McNabb for
+        veterinary bills. McNabb has countersued, seeking to recover the costs
+        of treatment for multiple bite wounds.
+
+    President Falls
+    Judith Foinsapp
+
+    http://bites.clapper.org/prezfall.html
+
+        While stepping off Air Force One, the President tripped, fell onto the
+        tarmac, and bruised his right pinky. ...
+
+---------------------------------------------------------------------------
+Simple News Summaries
+http://justthefactsmaam.clapper.org/
+rss_2.0
+
+    Political correctness organization claims that the word "person" is sexist,
+    because it contains the word "son."
+    James Longwayfromhome
+
+    http://justthefactsmaam.clapper.org/pcstupid.html
+
+    New study claims pollen makes people sneeze
+    Fred Derf
+
+    http://justthefactsmaam.clapper.org/duh.html
+
+    Researcher claims 13% of Americans can't spell their own names
+    Jonh Smth
+
+    http://justthefactsmaam.clapper.org/names.html
+
+
+---------------------------------------------------------------------------
+curn, 3.2 beta 3 (build 20070815.032430.428)
+Generated Tuesday, 14 August, 2007 at 23:29:51 EDT

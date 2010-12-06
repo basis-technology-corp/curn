@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!-- $Id$ -->
+<rss version="2.0">
+    <channel>
+        <title>Simple News Summaries</title>
+        <link>http://justthefactsmaam.clapper.org/</link>
+	<pubDate>Wed Jul 28 06:01:30 2004 EDT</pubDate>
+
+        <item>
+            <title>Political correctness organization claims that the word "person" is sexist, because it contains the word "son."</title>
+            <link>http://justthefactsmaam.clapper.org/pcstupid.html</link>
+            <author>James Longwayfromhome</author>
+            <pubDate>Wed, 28 Jul 2004 02:15:00 EDT</pubDate>
+        </item>
+
+        <item>
+            <title>New study claims pollen makes people sneeze</title>
+            <link>http://justthefactsmaam.clapper.org/duh.html</link>
+            <author>Fred Derf</author>
+            <pubDate>Wed, 28 Jul 2004 02:31:07 EDT</pubDate>
+        </item>
+
+        <item>
+            <title>Researcher claims 13% of Americans can't spell their own names</title>
+            <link>http://justthefactsmaam.clapper.org/names.html</link>
+            <author>Jonh Smth</author>
+            <pubDate>Wed, 28 Jul 2004 02:32:27 EDT</pubDate>
+        </item>
+
+    </channel>
+</rss>
