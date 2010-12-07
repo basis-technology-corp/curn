@@ -76,8 +76,8 @@ parameter to the invocation).
 
 To install *curn*:
 
-* Download the installer jar, [install-curn-3.2.7.jar][]
-* Run the installer jar: `java -jar install-curn-3.2.7.jar`
+* Download the installer jar from the [downloads area][].
+* Run the installer jar: `java -jar install-curn-xxxxx.jar`
 * Follow the instructions in the graphical installation screens.
 
 Once you've installed the *curn* via the graphical installer, you should
@@ -123,10 +123,11 @@ Linux users may find packages (RPMs, DEBs, etc.) for those libraries.
 
 1. Once you've downloaded the various third-party jar files, place them in
    a directory somewhere.
-2. Unpack the source zip file, and change your working directory to the
-   resulting `curn` directory.
-3. In the topmost source directory (i.e., the directory containing the
-   `build.xml` file), create a file called `build`.properties containing the
+2. Download the source from the [downloads area][] and unzip it, or
+   get the code from the [GitHub repository][].
+3. Change your working directory to the top-level `curn` source directory.
+4. In the topmost source directory (i.e., the directory containing the
+   `build.xml` file), create a file called `build.properties` containing the
    following line:
    
     third.party.jar.dir: /path/to/directory/containing/jars
@@ -232,7 +233,6 @@ request. Along with any patch you send:
 [rss-1.0]: http://web.resource.org/rss/1.0/
 [rss-2.0]: http://cyber.law.harvard.edu/rss/rss.html
 [IzPack]: http://www.izforge.com/izpack/
-[install-curn-3.2.7.jar]: https://github.com/downloads/bmc/curn/install-curn-3.2.7.jar
 [ArdenTex, Inc.]: http://www.ardentex.com/
 [Down Jones & Co.]: http://www.dowjones.com/
 [Ubuntu]: http://www.ubuntu.com/
@@ -263,7 +263,6 @@ request. Along with any patch you send:
 [rss-1.0]: http://web.resource.org/rss/1.0/
 [rss-2.0]: http://cyber.law.harvard.edu/rss/rss.html
 [IzPack]: http://www.izforge.com/izpack/
-[install-curn-3.2.7.jar]: https://github.com/downloads/bmc/curn/install-curn-3.2.7.jar
 [ArdenTex, Inc.]: http://www.ardentex.com/
 [Down Jones & Co.]: http://www.dowjones.com/
 [Ubuntu]: http://www.ubuntu.com/
@@ -293,7 +292,6 @@ request. Along with any patch you send:
 [rss-1.0]: http://web.resource.org/rss/1.0/
 [rss-2.0]: http://cyber.law.harvard.edu/rss/rss.html
 [IzPack]: http://www.izforge.com/izpack/
-[install-curn-3.2.7.jar]: https://github.com/downloads/bmc/curn/install-curn-3.2.7.jar
 [ArdenTex, Inc.]: http://www.ardentex.com/
 [Down Jones & Co.]: http://www.dowjones.com/
 [Ubuntu]: http://www.ubuntu.com/
@@ -303,7 +301,7 @@ request. Along with any patch you send:
 [What is RSS?]: http://www.xml.com/pub/a/2002/12/18/dive-into-xml.html
 [All About RSS]: http://www.faganfinder.com/search/rss.php
 [rawdog]: http://offog.org/code/rawdog.html
-[CHANGELOG]: changelog.txt
+[CHANGELOG]: CHANGELOG.txt
 [FAQ]: FAQ.html
 [Ant]: http://ant.apache.org/
 [ocutil-jars]: http://www.clapper.org/software/java/util/install.shtml#Jars
