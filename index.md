@@ -13,8 +13,8 @@ items it has already processed (though that behavior can be disabled).
 
 Unlike many RSS readers, *curn* does not use a graphical user interface. It
 is a command-line utility, intended to be run periodically in the
-background by a command scheduler such as [cron][](8) (on Unix-like systems) or
-the Windows Scheduler Service (on Windows).
+background by a command scheduler such as [*cron*][cron](8) (on Unix-like
+systems) or the Windows Scheduler Service (on Windows).
 
 *curn* is written entirely in [Java][] and can read RSS feeds from any URL
 that's supported by Java's runtime. When querying HTTP sites, *curn* uses
