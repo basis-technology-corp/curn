@@ -25,4 +25,4 @@ please visit the [*curn* home page][].
 
 *curn* is Copyright &copy; 2004-2010 Brian M. Clapper
 
-[*curn* home page]: http://www.clapper.org/software/java/curn/
+[*curn* home page]: http://bmc.github.com/curn/
