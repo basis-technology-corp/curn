@@ -17,7 +17,7 @@ Before running curn, you'll need:
 4. An XML parser. Xerces or JAXP will do.
 
 5. The clapper.org utility library, available at
-   http://www.clapper.org/software/java/util/
+   http://software.clapper.org/java/util/
 
 6. curn.jar. (See BUILDING.txt)
 

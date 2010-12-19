@@ -91,9 +91,9 @@ import org.clapper.util.text.Duration;
  * </ul>
  *
  * <p>This plug-in uses the
- * <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
+ * <a href="http://software.clapper.org/java/util/">org.clapper.util</a>
 *  library's
- * <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html"><tt>Duration</tt></a>
+ * <a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html"><tt>Duration</tt></a>
  * class to parse the age/duration values. See that class for more details.</p>
  *
  * <p>For this plug-in to work for a feed, the feed's articles must be tagged

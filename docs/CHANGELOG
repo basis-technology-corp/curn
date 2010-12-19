@@ -719,7 +719,7 @@ Version 2.6.4 (5 February, 2006)
   WARNING: This version of curn REQUIRES version 2.1.3 (or later) of the
   org.clapper.util Java Utility Library. If you install curn manually, be
   sure to download and install the updated org.clapper.util jar file, as well.
-  (See http://www.clapper.org/software/java/util/) If you install curn via
+  (See http://software.clapper.org/java/util/) If you install curn via
   the graphical installer, the new version of the utility library will be
   installed automatically for you.
 
@@ -835,7 +835,7 @@ Version 2.6 (25 November, 2005)
 
 *** WARNING: This version of curn REQUIRES version 2.1 (or better) of
 *** the org.clapper.util Java Utility Library. See
-*** http://www.clapper.org/software/java/util/
+*** http://software.clapper.org/java/util/
 
 
 ---------------------------------------------------------------------------
@@ -990,7 +990,7 @@ Version 2.2 (29 July, 2005)
 - curn no longer copies the generated output files to temporary files when
   emailing them. This buglet resulted from a combination of two things:
 
-  a) The utility library (http://www.clapper.org/software/java/util/) has a
+  a) The utility library (http://software.clapper.org/java/util/) has a
      set of email classes that provide a simplified front-end to the Java
      Mail API. The EmailMessage class supports adding attachments to and
      setting the text of a message from a java.io.File, a String or an
@@ -1116,7 +1116,7 @@ Version 1.15.12 (09 Aug, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
 - curn no longer copies the generated output files to temporary files when
   emailing them. This buglet resulted from a combination of two things:
 
-  a) The utility library (http://www.clapper.org/software/java/util/) has a
+  a) The utility library (http://software.clapper.org/java/util/) has a
      set of email classes that provide a simplified front-end to the Java
      Mail API. The EmailMessage class supports adding attachments to and
      setting the text of a message from a java.io.File, a String or an

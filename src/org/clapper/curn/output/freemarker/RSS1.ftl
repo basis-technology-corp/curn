@@ -70,7 +70,7 @@ Generated ${dateGenerated?string("EEEEEE, dd MMMM, yyyy 'at' HH:mm:ss zzz")}
     <#else>
     <dc:date>${dateGenerated?string("yyyy-MM-dd'T'HH:mm:ssZ")}</dc:date>
     </#if>
-    <admin:generatorAgent rdf:resource="http://www.clapper.org/software/java/curn/"/>
+    <admin:generatorAgent rdf:resource="http://software.clapper.org/java/curn/"/>
 
     <items>
       <rdf:Seq>
