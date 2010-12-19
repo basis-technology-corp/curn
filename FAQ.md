@@ -199,7 +199,7 @@ Please run *curn* with logging enabled, and mail me the log file. See the
 how to enable logging.
 
 [users-guide]: users-guide/index.html
-[ocutil]: http://bmc.github.com/javautil/
+[ocutil]: http://software.clapper.org/javautil/
 [standard Java coding conventions]: http://www.oracle.com/technetwork/java/codeconvtoc-136057.html
 [Allman style]: http://en.wikipedia.org/wiki/Indent_style#Allman_style_.28bsd_in_Emacs.29
 [Installing Supporting Software]: users-guide/index.html#InstallingSupportSoftware

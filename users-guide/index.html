@@ -1580,9 +1580,9 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
   month lengths, respectively.
   <br/><br/>
   The actual conversion of the strings is done by the
-  <a href="http://www.clapper.org/software/java/util/">org.clapper.util</a>
+  <a href="http://software.clapper.org/java/util/">org.clapper.util</a>
   library's
-  <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
+  <a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/misc/Duration.html" class="code">Duration</a> class.
   See that class for more details.
   <br/><br/>
   This global value sets the default value.
@@ -1708,7 +1708,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
 	    and you've set the <a href="#FreeMarker_SaveOnly" class="code">SaveOnly</a> parameter, the
 	    output handler won't generate emailable output. Any output handler that's derived from
 	    <i>curn's</i>
-	    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/FileOutputHandler.html" class="code">FileOutputHandler</a>
+	    <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/FileOutputHandler.html" class="code">FileOutputHandler</a>
 	    automatically supports <span class="code">SaveOnly</span>.
       </ul>
     </td>
@@ -1796,7 +1796,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
     <td align="left">
       The full name of the underlying RSS parser class to be used.
       This class must implement the
-      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+      <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
       interface. It can be a first-class parser of its own, or
       it can be nothing more than an adapter for a third party
       RSS parser class.
@@ -1804,7 +1804,7 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       <i>curn</i> comes bundled with one parser:
 
       <dl>
-        <dt><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
+        <dt><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a>
 
         <dd>An adapter class that makes the
             <a href="https://rome.dev.java.net/">Rome RSS parser</a>
@@ -1817,11 +1817,11 @@ IgnoreArticlesOlderThan: 12 hours, 30 minutes
       </dl>
 
       <p>Any class that implements
-      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
+      <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a>
       may be used as a value for <span class="code">ParserClass</span>.
     </td>
     <td align="left">No</td>
-    <td align="left" class="code"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a></td>
+    <td align="left" class="code"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/RSSParserAdapter.html" class="code">org.clapper.curn.parser.rome.RSSParserAdapter</a></td>
     <td align="left">&nbsp;</td>
   </tr>
 
@@ -3189,7 +3189,7 @@ variables common to all output handlers are described below.</p>
     <td>String</td>
     <td align="left">Identifies Java class that implements the output
     handler. (The class must implement the
-    <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+    <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
     interface. See
     <a href="#NewOutputHandler">Writing Your Own Output Handler</a>
     for details.)
@@ -4252,17 +4252,17 @@ that implement some interfaces and extend some classes provided with the
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html" class="code">org.clapper.curn.parser.RSSParser</a></td>
     <td align="left">Interface</td>
     <td align="left">
       Defines a simplified view of an RSS parser. Classes implementing
       this interface must provide a default public constructor and
-      a <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
+      a <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSParser.html##parseRSSFeed(java.io.InputStream)" class="code">parseRSSFeed()</a> method
     </td>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">org.clapper.curn.parser.RSSChannel</a></td>
     <td align="left">Abstract class</td>
     <td align="left">
       Defines a simplified view of an RSS channel (a.k.a., a parsed
@@ -4273,7 +4273,7 @@ that implement some interfaces and extend some classes provided with the
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSItem.html" class="code">org.clapper.curn.parser.RSSItem</a></td>
     <td align="left">Abstract class</td>
     <td align="left">
       Defines a simplified view of an RSS item (a.k.a., one of the items
@@ -4291,7 +4291,7 @@ that implement some interfaces and extend some classes provided with the
 implement the above interfaces or extend the above classes, and map the
 necessary calls onto methods in the real underlying parser. For a sample
 integration, see the classes in the <i>curn</i> source code package
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/package-summary.html" class="code">org.clapper.curn.parser.rome</a>. Those classes implement a simple adapter for the third-party
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/rome/package-summary.html" class="code">org.clapper.curn.parser.rome</a>. Those classes implement a simple adapter for the third-party
 <a href="https://rome.dev.java.net/">ROME</a> RSS parser.</p>
 
 <p>Note: If you've written an adapter for an unsupported RSS parser engine,
@@ -4607,7 +4607,7 @@ configuration parameters.</p>
 <p>Each plug-in phase is represented by its own Java interface, and
 each interface has exactly one method. Each plug-in interface, in turn,
 extends the <i>curn</i> parent
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html" class="code">PlugIn</a> interface, which defines some
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html" class="code">PlugIn</a> interface, which defines some
 additional methods that all plug-ins must provide.</p>
 
 <p>A plug-in that intercepts multiple <i>curn</i> processing phases must
@@ -4625,7 +4625,7 @@ order.</p>
 
   <tbody>
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/StartupPlugIn.html" class="code">StartupPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/StartupPlugIn.html" class="code">StartupPlugIn</a></td>
     <td align="left"><span class="code">runStartupPlugIn()</span></td>
     <td>Called immediately after <i>curn</i> has started, but before it has
         loaded its configuration file or its cache. Intercepting this phase
@@ -4633,7 +4633,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/MainConfigItemPlugIn.html" class="code">MainConfigItemPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/MainConfigItemPlugIn.html" class="code">MainConfigItemPlugIn</a></td>
     <td align="left"><span class="code">runMainConfigItemPlugIn()</span></td>
     <td>Called immediately after <i>curn</i> has read and processed a
         configuration item in the main <span class="code">[curn]</span> configuration
@@ -4653,7 +4653,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedConfigItemPlugIn.html" class="code">FeedConfigItemPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/FeedConfigItemPlugIn.html" class="code">FeedConfigItemPlugIn</a></td>
     <td align="left"><span class="code">runFeedConfigItemPlugIn()</span></td>
     <td>Called immediately after <i>curn</i> has read and processed a
         configuration item in a "Feed" configuration section. All
@@ -4671,7 +4671,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandlerConfigItemPlugIn.html" class="code">OutputHandlerConfigItemPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandlerConfigItemPlugIn.html" class="code">OutputHandlerConfigItemPlugIn</a></td>
     <td align="left"><span class="code">runOutputHandlerConfigItemPlugIn()</span></td>
     <td>Called immediately after <i>curn</i> has read and processed a
         configuration item in an "OutputHandler" configuration section. All
@@ -4689,7 +4689,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/UnknownSectionConfigItemPlugIn.html" class="code">UnknownSectionConfigItemPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/UnknownSectionConfigItemPlugIn.html" class="code">UnknownSectionConfigItemPlugIn</a></td>
     <td align="left"><span class="code">runUnknownSectionConfigItemPlugIn()</span></td>
     <td>Called immediately after <i>curn</i> has read and processed a
         configuration item in an unknown configuration section. All
@@ -4707,7 +4707,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostConfigPlugIn.html" class="code">PostConfigPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostConfigPlugIn.html" class="code">PostConfigPlugIn</a></td>
     <td align="left"><span class="code">runPostConfigPlugIn()</span></td>
     <td>Called after the entire configuration has been read and parsed, but
         before any feeds are processed. Intercepting this event is useful
@@ -4724,7 +4724,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/CacheLoadedPlugIn.html" class="code">CacheLoadedPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/CacheLoadedPlugIn.html" class="code">CacheLoadedPlugIn</a></td>
     <td align="left"><span class="code">runCacheLoadedPlugIn()</span></td>
     <td>Called after the <i>curn</i> cache has been read (and after any
         expired entries have been purged), but before any feeds are processed.
@@ -4732,7 +4732,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a name="ForceFeedDownloadPlugIn"></a><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/ForceFeedDownloadPlugIn.html" class="code">ForceFeedDownloadPlugIn</a></td>
+    <td align="left"><a name="ForceFeedDownloadPlugIn"></a><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/ForceFeedDownloadPlugIn.html" class="code">ForceFeedDownloadPlugIn</a></td>
     <td align="left"><span class="code">forceFeedDownload()</span></td>
     <td>Called after the cache is loaded, but before a feed is downloaded. This method returns
 	<tt>true</tt> if the feed should be downloaded regardless of whether it has changed, and
@@ -4744,7 +4744,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedDownloadPlugIn.html" class="code">PreFeedDownloadPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedDownloadPlugIn.html" class="code">PreFeedDownloadPlugIn</a></td>
     <td align="left"><span class="code">runPreFeedDownloadPlugIn()</span></td>
     <td>Called before a feed is downloaded (actually, before a feed is checked to see if it has new data).
 	This method can return
@@ -4767,7 +4767,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedDownloadPlugIn.html" class="code">PostFeedDownloadPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedDownloadPlugIn.html" class="code">PostFeedDownloadPlugIn</a></td>
     <td align="left"><span class="code">runPostFeedDownloadPlugIn()</span></td>
     <td> Called immediately after a feed is downloaded. This method can
         return <span class="code">false</span> to signal <i>curn</i> that the feed should be
@@ -4778,11 +4778,11 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedParsePlugIn.html" class="code">PostFeedParsePlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedParsePlugIn.html" class="code">PostFeedParsePlugIn</a></td>
     <td align="left"><span class="code"><a name="PostFeedParsePhase"></a>runPostFeedParsePlugIn()</span></td>
     <td>Called immediately after a feed is parsed, but before it is
         otherwise processed. A post-feed parse plug-in has access to the
-        <i>parsed</i> RSS feed data, via an <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
+        <i>parsed</i> RSS feed data, via an <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
         method can return <span class="code">false</span> to signal <i>curn</i> that the
         feed should be skipped. For instance, a plug-in that filters on the
         parsed feed data could use this method to weed out non-matching
@@ -4792,16 +4792,16 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedProcessPlugIn.html" class="code">PostFeedProcessPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedProcessPlugIn.html" class="code">PostFeedProcessPlugIn</a></td>
     <td align="left"><span class="code"><a name="PostFeedProcessPhase"></a>runPostFeedProcessPlugIn()</span></td>
     <td>Called after a feed is parsed and processed. The plug-in has access to the
-        <i>parsed</i> RSS feed data, via an <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
+        <i>parsed</i> RSS feed data, via an <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/RSSChannel.html" class="code">RSSChannel</a> object. This
         method can return <span class="code">false</span> to signal <i>curn</i> that the
         feed should be skipped.</td>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedOutputPlugIn.html" class="code">PreFeedOutputPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PreFeedOutputPlugIn.html" class="code">PreFeedOutputPlugIn</a></td>
     <td align="left"><span class="code">runPreFeedOutputPlugIn()</span></td>
     <td>Called immediately before a parsed feed is passed to an output
         handler. A pre-feed output plug-in cannot affect the feed's
@@ -4811,7 +4811,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedOutputPlugIn.html" class="code">PostFeedOutputPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostFeedOutputPlugIn.html" class="code">PostFeedOutputPlugIn</a></td>
     <td align="left"><span class="code">runPostFeedOutputPlugIn()</span></td>
     <td>Called immediately after a parsed feed is passed to an output
         handler. A post-feed output plug-in cannot affect the feed's
@@ -4821,7 +4821,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostOutputHandlerFlushPlugIn.html" class="code">PostOutputHandlerFlushPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostOutputHandlerFlushPlugIn.html" class="code">PostOutputHandlerFlushPlugIn</a></td>
     <td align="left"><span class="code">runPostOutputHandlerFlushPlugIn()</span></td>
     <td>Called immediately after an output handler is flushed (i.e., after
         it has been called to process all feeds and its output has been
@@ -4831,7 +4831,7 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PostOutputPlugIn.html" class="code">PostOutputPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PostOutputPlugIn.html" class="code">PostOutputPlugIn</a></td>
     <td align="left"><span class="code">runPostOutputPlugIn()</span></td>
     <td>Called after <i>curn</i> has flush <i>all</i> output handlers. A
         post-output plug-in is a useful place to consolidate the output from
@@ -4843,14 +4843,14 @@ order.</p>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PreCacheSavePlugIn.html" class="code">PreCacheSavePlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PreCacheSavePlugIn.html" class="code">PreCacheSavePlugIn</a></td>
     <td align="left"><span class="code">runPreCacheSavePlugIn()</span></td>
     <td>Called right before the <i>curn</i> cache is to be saved. A plug-in
         might choose to edit the cache at this point.</td>
   </tr>
 
   <tr valign="top">
-    <td align="left"><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/ShutdownPlugIn.html" class="code">ShutdownPlugIn</a></td>
+    <td align="left"><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/ShutdownPlugIn.html" class="code">ShutdownPlugIn</a></td>
     <td align="left"><span class="code">runShutdownPlugIn()</span></td>
     <td> Called just before <i>curn</i> gets ready to exit. This method
          allows plug-ins to perform any clean-up they require.</td>
@@ -4863,7 +4863,7 @@ order.</p>
 <p>All plug-ins within a given phase are run in a particular order. The internal
 <i>curn</i> plug-in manager sorts the plug-ins for each phase according to the value
 of each plug-in's <i>sort key</i>. Each plug-in must implement a
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html#getPlugInSortKey()" class="code">getPlugInSortKey()</a>
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PlugIn.html#getPlugInSortKey()" class="code">getPlugInSortKey()</a>
 method returning a string to be used when sorting that plug-in. For all <i>curn</i>
 <a href="#StockPlugIns">stock plug-ins</a>, that sort key is the plug-in's short class name
 (i.e., the class name without its package name). This is important only if one plug-in within
@@ -4902,7 +4902,7 @@ here's a simple plug-in that:</p>
 </ul>
 
 <p>It uses a convenience class,
-<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/io/Zipper.html" class="code">org.clapper.util.io.Zipper</a>,
+<a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/io/Zipper.html" class="code">org.clapper.util.io.Zipper</a>,
 to simplify the chore of writing the zip file. Here's the source (with
 comments stripped out). Note that this is a stripped-down version of the
 actual <a href="#ZipOutputPlugIn" class="code">ZipOutputPlugIn</a>.</p>
@@ -5084,8 +5084,8 @@ a plug-in must:</p>
 
 <ul>
   <li>extend the 
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/PersistentDataClient.html" class="code">org.clapper.curn.PersistentDataClient</a> interface or extend the <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/AbstractPersistentDataClient.html" class="code">org.clapper.curn.AbstractPersistentDataClient</a> class
-  <li>register itself as a persistent data handler by calling <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/DataPersister.html" class="code">org.clapper.curn.DataPersister</a> class's <span class="code">addPersistentDataClient()</span> method, typically from the plug-in's
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/PersistentDataClient.html" class="code">org.clapper.curn.PersistentDataClient</a> interface or extend the <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/AbstractPersistentDataClient.html" class="code">org.clapper.curn.AbstractPersistentDataClient</a> class
+  <li>register itself as a persistent data handler by calling <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/DataPersister.html" class="code">org.clapper.curn.DataPersister</a> class's <span class="code">addPersistentDataClient()</span> method, typically from the plug-in's
       <span class="code">initPlugIn()</span> method
 </ul>
 
@@ -5278,7 +5278,7 @@ FreeMarker methods in the data model, as well:</p>
     <td align="left" class="code">wrapText</td>
     <td align="left">Wraps text at the end of the line, on word boundaries.
        Uses the <i>org.clapper.util</i> Java Utility Library's
-       <a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/io/WordWrapWriter.html" class="code">WordWrapWriter</a>
+       <a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/io/WordWrapWriter.html" class="code">WordWrapWriter</a>
        class.
     </td>
     <td align="left">
@@ -5426,7 +5426,7 @@ writing a FreeMarker template will be simpler and faster.</p>
 
 <ul>
   <li>First, write a Java class the implements the
-      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
+      <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/OutputHandler.html" class="code">org.clapper.curn.OutputHandler</a>
       interface.
   <li>Compile the class, place it in a jar file, and put the jar file 
       someplace where <i>curn</i> can find it. (See the section entitled
@@ -5438,7 +5438,7 @@ writing a FreeMarker template will be simpler and faster.</p>
 <p>To illustrate the concept, let's look at an output handler that simply
 writes each channel and its items as plain text. (As it turns out,
 this example is a stripped down version of the existing
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a> class. The real source code has more
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a> class. The real source code has more
 comments and documentation and also implements a common base class.)</p>
 
 <p>First, let's look at the top of the class and the required
@@ -5605,7 +5605,7 @@ initialization required by the output handler class.</p>
 <p><b>Note</b>: The sample <span class="code">init()</span> method, above,
 does a little more work than it needs to do. As it turns out, the
 <i>curn</i> API provides a useful abstract base class called
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/FileOutputHandler.html" class="code">org.clapper.curn.output.FileOutputHandler</a> that
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/FileOutputHandler.html" class="code">org.clapper.curn.output.FileOutputHandler</a> that
 implements the <span class="code">OutputHandler</span> interface.
 <span class="code">FileOutputHandler</span> provides an
 <span class="code">init()</span> method that:
@@ -5763,7 +5763,7 @@ output-related methods that are required by the
   <li><span class="code">displayChannel()</span>: Displays the output for
       a parsed channel. This method takes the parsed
       <span class="code">RSSChannel</span> object and a special
-      <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
+      <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">org.clapper.curn.FeedInfo</a>
       object that contains the configuration information about the feed
       (i.e., its URL, its title, etc.).
   <li><span class="code">flush()</span>: Flushes the output and closes the
@@ -5955,7 +5955,7 @@ to point to your script.</p>
 <h5><a name="SupportedScriptingLanguages"></a>Supported Scripting Languages</h5>
 
 <p>The
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html" class="code">ScriptOutputHandler</a>
 uses the Apache Jakarta
 <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework (BSF)</a> or
 the JSR 223 scripting engine 
@@ -5974,10 +5974,10 @@ you want JSR 223 support for languages other than Javascript, please see
 
 <p>The <span class="code">ScriptOutputHandler</span> class's
 
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#displayChannel(org.clapper.curn.parser.RSSChannel,%20org.clapper.curn.FeedInfo)" class="code">displayChannel()</a>
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#displayChannel(org.clapper.curn.parser.RSSChannel,%20org.clapper.curn.FeedInfo)" class="code">displayChannel()</a>
 method doesn't actually generated any output. Instead, it buffers the
 channels so that the
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#flush()" class="code">flush()</a>
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/script/ScriptOutputHandler.html#flush()" class="code">flush()</a>
 method can invoke the script. That way, the overhead of invoking the
 script occurs only once.</p>
 
@@ -6003,9 +6003,9 @@ script, without the need for the script to call any methods to find it.</p>
     <td class="code">java.util.Collection</td>
     <td>An <span class="code">Collection</span> of special internal
         objects that wrap both
-        <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">RSSChannel</a>
+        <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/parser/RSSChannel.html" class="code">RSSChannel</a>
         and
-        <a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">FeedInfo</a>
+        <a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/FeedInfo.html" class="code">FeedInfo</a>
         objects. The wrapper objects provide two methods:
 
         <ul>
@@ -6030,7 +6030,7 @@ script, without the need for the script to call any methods to find it.</p>
   <tr valign="top">
     <td class="code">curn.config</td>
     <td class="code">config</td>
-    <td><a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/CurnConfig.html" class="code">CurnConfig</a></td>
+    <td><a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/CurnConfig.html" class="code">CurnConfig</a></td>
     <td>The <span class="code">org.clapper.curn.CurnConfig</span> object
         that represents the parsed configuration data. Useful in
         conjunction with the "configSection" object, to parse
@@ -6094,7 +6094,7 @@ script, without the need for the script to call any methods to find it.</p>
 <p>Here's a sample <a href="http://www.jython.org/">Jython</a> script
 that shows how to put it all together. This script reimplements most of the
 functionality of the
-<a href="http://www.clapper.org/software/java/curn/javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a>
+<a href="http://software.clapper.org/java/curn/javadocs/curn/api/org/clapper/curn/output/TextOutputHandler.html" class="code">org.clapper.curn.output.TextOutputHandler</a>
 Java class that comes with <i>curn</i>. (Note that the script uses a
 <span class="code">org.clapper.util.io.WordWrapWriter</span> object for
 its output. While the word-wrapping functionality could have been implemented
@@ -6358,7 +6358,7 @@ logging frameworks, <span class="code">java.util.logging</span> and Log4J.</p>
 
 <p>Note: Please be aware that, as of <i>curn</i> 3.0, there are some subtle
 "issues" with JDK logging. If you happened to be using the
-<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/logging/JavaUtilLoggingTextFormatter.html" class="code">org.clapper.util.logging.JavaUtilLoggingTextFormatter</a>
+<a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/logging/JavaUtilLoggingTextFormatter.html" class="code">org.clapper.util.logging.JavaUtilLoggingTextFormatter</a>
 class to format your output, you're out of luck.
 In general, 
 you're far better off using <a href="#Log4J">Log4J</a>. The gory details,
@@ -6656,7 +6656,7 @@ features, and invocation. It's written in Python. Like <i>curn</i>,
 
 <p><i>curn</i> is copyright &copy; 2004-2010 Brian M. Clapper. All rights
 reserved. This software is licensed under a
-<a href="http://www.clapper.org/software/java/curn/docs/LICENSE">BSD-style license.</a></p>
+<a href="http://software.clapper.org/java/curn/docs/LICENSE">BSD-style license.</a></p>
 
 <p><i>curn</i> uses software (Freemarker) developed by the
 <a href="http://www.visigoths.org/">Visigoth Software Society</a>
@@ -6719,7 +6719,7 @@ messages are:</p>
 
 <p class="endnote"><a name="Note2"></a>[2]
 <i>curn</i>'s configuration file is parsed by a subclass of the
-<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
+<a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/config/Configuration.html" class="code">org.clapper.util.config.Configuration</a>
 class, so it implicitly supports all the features provided by that class.
 
 <p class="endnote"><a name="Note3"></a>[3]
@@ -6738,11 +6738,11 @@ escapes. This problem would go away if the configuration file parser parsed
 both metacharacter sequences and variable substitutions itself, in one
 pass. It doesn't currently do that, because I wanted to make use of the
 existing
-<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html"
+<a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html"
 class="code">org.clapper.util.text.XStringBuffer</a> class's 
-<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html#decodeMetacharacters()"
+<a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/text/XStringBuffer.html#decodeMetacharacters()"
 class="code">decodeMetacharacters()</a> method and the 
-<a href="http://www.clapper.org/software/java/util/javadocs/util/api/org/clapper/util/text/UnixShellVariableSubstituter.html"
+<a href="http://software.clapper.org/java/util/javadocs/util/api/org/clapper/util/text/UnixShellVariableSubstituter.html"
 class="code">org.clapper.util.text.UnixShellVariableSubstituter</a> class.
 In general, you're better off just sticking with single quotes. I may
 eventually fix this problem, but single quotes work now and will continue
