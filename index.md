@@ -296,3 +296,5 @@ request. Along with any patch you send:
 [bsf]: http://jakarta.apache.org/bsf/
 [Maven]: http://maven.apache.org/
 [dow-jones]: http://www.dowjones.com/
+[Buildr]: http://buildr.apache.org/
+[download and install Buildr]: http://buildr.apache.org/installing.html
