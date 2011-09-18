@@ -17,6 +17,8 @@ GROUP                 = 'org.clapper'
 CURN_JAR_NAME         = 'curn'
 CURN_BOOT_JAR_NAME    = 'curn-boot'
 CURN_PLUGINS_JAR_NAME = 'curn-plugins'
+API_DOC_TARGET        = '../gh-pages/api'
+CHANGELOG_TARGET      = '../gh-pages/CHANGELOG.txt'
 
 # Dependencies.
 ASM_VERSION      = '3.3.1'
@@ -37,6 +39,7 @@ IZPACK = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK_VERSION}"
 
 # Some local tasks and task aliases
 Project.local_task :installer
+Project.local_task :copydoc
 
 define 'curn' do
   project.version = CURN_VERSION
@@ -77,6 +80,12 @@ define 'curn' do
   }
 
   resources.filter.using :maven, PROPERTY_FILE_VARIABLES
+
+  task :copydoc => :doc do
+    rm_rf API_DOC_TARGET
+    cp_r 'target/doc', API_DOC_TARGET
+    cp 'docs/CHANGELOG', CHANGELOG_TARGET
+  end
 
   # ----------------------------------------------------------------------
   # The IzPack installer

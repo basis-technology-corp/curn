@@ -4,7 +4,7 @@ CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
-Version 3.2.8 (...)
+Version 3.2.8 (18 September, 2011)
 
 - Now builds with Buildr and uses Maven semantics for third-party
   dependencies.
