@@ -36,7 +36,7 @@ IZPACK_VERSION   = '4.3.4'
 IZPACK = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK_VERSION}"
 
 # Some local tasks and task aliases
-Project.local_task :install
+Project.local_task :installer
 
 define 'curn' do
   project.version = CURN_VERSION
@@ -123,7 +123,7 @@ define 'curn' do
         :izPackDir => IZPACK_HOME
       end
 
-    else
+    ensure
       # Remove the temporary directory.
       rm_r TMP_DIR
     end
