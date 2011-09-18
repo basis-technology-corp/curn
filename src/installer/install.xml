@@ -37,7 +37,7 @@
 <installation version="1.0">
   <info>
     <appname>curn (Customizable Utilitarian RSS Notifier)</appname>
-    <appversion>@CURN_VERSION@</appversion>
+    <appversion>${CURN_VERSION}</appversion>
     <appsubpath>clapper.org/curn</appsubpath>
     <authors>
       <author name="Brian M. Clapper" email="bmc@clapper.org"/>
@@ -67,26 +67,26 @@
   </locale>
 
   <resources>
-    <res id="HTMLLicencePanel.licence" src="@TOP_DIR@/LICENSE.html"/>
-    <res id="Installer.image" src="@SRC_INSTALL@/curn-logo.png"/>
-    <res id="HTMLInfoPanel.info" src="@TOP_DIR@/README.html"/>
+    <res id="HTMLLicencePanel.licence" src="${TOP_DIR}/LICENSE.html"/>
+    <res id="Installer.image" src="${SRC_INSTALL}/curn-logo.png"/>
+    <res id="HTMLInfoPanel.info" src="${TOP_DIR}/README.html"/>
 
     <!--
         Default target installation directories are defined in the
         src/install/path_windows.txt and src/install/path_unix.txt files.
     -->
 
-    <res id="TargetPanel.dir.windows" src="@SRC_INSTALL@/path_windows.txt"/>
-    <res id="TargetPanel.dir.unix" src="@SRC_INSTALL@/path_unix.txt"/>
-    <res id="TargetPanel.dir.macosx" src="@SRC_INSTALL@/path_darwin.txt"/>
-    <res id="XInfoPanel.info" src="@SRC_INSTALL@/final_screen.txt"/>
-    <res id="ProcessPanel.Spec.xml" src="@SRC_INSTALL@/cleanup.xml"/>
+    <res id="TargetPanel.dir.windows" src="${SRC_INSTALL}/path_windows.txt"/>
+    <res id="TargetPanel.dir.unix" src="${SRC_INSTALL}/path_unix.txt"/>
+    <res id="TargetPanel.dir.macosx" src="${SRC_INSTALL}/path_darwin.txt"/>
+    <res id="XInfoPanel.info" src="${SRC_INSTALL}/final_screen.txt"/>
+    <res id="ProcessPanel.Spec.xml" src="${SRC_INSTALL}/cleanup.xml"/>
 
     <!--
         Points to a (deliberately) empty text file. Specifies that native
         look and feel should be used, if at all possible.
     -->
-    <res id="useNativeLAF" src="@SRC_INSTALL@/nativelook.txt"/>
+    <res id="useNativeLAF" src="${SRC_INSTALL}/nativelook.txt"/>
   </resources>
 
   <panels>
@@ -104,31 +104,31 @@
   <packs>
     <pack name="Core" required="yes">
       <description>The curn jar file, binaries, and dependent jars</description>
-      <singlefile src="@TOP_DIR@/LICENSE" target="$INSTALL_PATH/LICENSE.txt"/>
-      <singlefile src="@TOP_DIR@/LICENSE.html" 
+      <singlefile src="${TOP_DIR}/LICENSE" target="$INSTALL_PATH/LICENSE.txt"/>
+      <singlefile src="${TOP_DIR}/LICENSE.html" 
                   target="$INSTALL_PATH/LICENSE.html"/>
-      <singlefile src="@TOP_DIR@/README.html"
+      <singlefile src="${TOP_DIR}/README.html"
                   target="$INSTALL_PATH/README.html"/>
-      <singlefile src="@TOP_DIR@/README.md" target="$INSTALL_PATH/README.md"/>
+      <singlefile src="${TOP_DIR}/README.md" target="$INSTALL_PATH/README.md"/>
 
-      <singlefile src="@RELEASE_DIR@/@VERSIONED_CURN_JAR_FILE@"
+      <singlefile src="${RELEASE_DIR}/${CURN_JAR_FILE}"
                  target="$INSTALL_PATH/lib/curn.jar"/>
-      <singlefile src="@RELEASE_DIR@/@VERSIONED_CURNBOOT_JAR_FILE@"
+      <singlefile src="${RELEASE_DIR}/${CURNBOOT_JAR_FILE}"
                  target="$INSTALL_PATH/lib/curnboot.jar"/>
-      <singlefile src="@RELEASE_DIR@/@VERSIONED_PLUGINS_JAR_FILE@"
+      <singlefile src="${RELEASE_DIR}/${PLUGINS_JAR_FILE}"
                  target="$INSTALL_PATH/plugins/curn-plugins.jar"/>
-      <fileset dir="@THIRD_PARTY_JAR_DIR@"
+      <fileset dir="${DEP_JAR_DIR}"
                includes="*.jar"
                targetdir="$INSTALL_PATH/lib"/>
 <!--
-      <fileset dir="@INSTALL_TMP@"
+      <fileset dir="${INSTALL_TMP}"
                includes="ocutil.jar"
                targetdir="$INSTALL_PATH/lib"/>
 -->
 
       <!-- curn shell file (Unix only) -->
 
-      <singlefile src="@SRC_TOP@/installer/curn.sh"
+      <singlefile src="${SRC_INSTALL}/curn.sh"
                   target="$INSTALL_PATH/bin/curn">
         <os family="unix"/>
       </singlefile>
@@ -139,7 +139,7 @@
 
       <!-- curn.bat (Windows only) -->
 
-      <singlefile src="@SRC_TOP@/installer/curn.bat"
+      <singlefile src="${SRC_INSTALL}/curn.bat"
                   target="$INSTALL_PATH/bin/curn.bat">
         <os family="windows"/>
       </singlefile>
@@ -151,7 +151,7 @@
 
       <!-- for cleaning up -->
 
-      <singlefile src="@SRC_TOP@/installer/cleanup.sh"
+      <singlefile src="${SRC_INSTALL}/cleanup.sh"
                   target="$INSTALL_PATH/scripts/cleanup.sh">
         <os family="unix"/>
       </singlefile>
@@ -161,7 +161,7 @@
       <executable targetfile="$INSTALL_PATH/scripts/cleanup.sh"
                   stage="never" os="unix"/>
 
-      <singlefile src="@SRC_TOP@/installer/cleanup.bat"
+      <singlefile src="${SRC_INSTALL}/cleanup.bat"
                   target="$INSTALL_PATH/scripts/cleanup.bat">
         <os family="windows"/>
       </singlefile>
@@ -174,40 +174,12 @@
 
     <pack name="Docs" required="no" preselected="no">
       <description>The curn User's Guide and the Javadocs</description>
-      <file src="@JAVADOCS_DIR@"
+      <file src="${JAVADOCS_DIR}"
             targetdir="$INSTALL_PATH/docs"/>
-      <file src="@DOCS_DIR@/users-guide"
+      <file src="${DOCS_DIR}/users-guide"
             targetdir="$INSTALL_PATH/docs"/>
-      <file src="@DOCS_DIR@/CHANGELOG"
+      <file src="${DOCS_DIR}/CHANGELOG"
             targetdir="$INSTALL_PATH/docs"/>
-    </pack>
-
-    <pack name="Sources" required="no" preselected="no">
-      <description>The sources</description>
-      <!--
-          WARNING: This file set is essentially a duplicate of the
-          sources <zipfileset>, earlier in this file. There's no
-          way around that, unfortunately.
-
-          KLUDGE: For some reason, the IzPack <fileset> element doesn't
-          properly include properties files with @SRC_TOP@/**/*.properties,
-          and exclusion via @BUILD_DIR@ doesn't work, either. (It's not quite
-          like the Ant <fileset>, no matter what the docs say.) So, we'll
-          clean up the incorrectly copied build directory in the final panel.
-      -->
-      <fileset dir="@TOP_DIR@" targetdir="$INSTALL_PATH/sources">
-        <exclude name="@BUILD_DIR_RELATIVE@/**"/>
-        <exclude name="**/.svn"/>
-        <exclude name="docs/**"/>
-
-        <include name="**/*.java"/>
-        <include name="**/package.html"/>
-        <include name="overview.html"/>
-        <include name="build.xml"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.properties"/>
-        <include name="**/*.ftl"/>
-      </fileset>
     </pack>
   </packs>
 </installation>
