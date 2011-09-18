@@ -1,0 +1,7 @@
+org.clapper.curn
+org.clapper.curn.output
+org.clapper.curn.output.freemarker
+org.clapper.curn.output.script
+org.clapper.curn.parser
+org.clapper.curn.parser.rome
+org.clapper.curn.plugins

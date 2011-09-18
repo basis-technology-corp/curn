@@ -77,7 +77,7 @@ parameter to the invocation).
 To install *curn*:
 
 * Download the installer jar from the [downloads area][].
-* Run the installer jar: `java -jar install-curn-xxxxx.jar`
+* Run the installer jar: `java -jar curn-installer-xxxxx.jar`
 * Follow the instructions in the graphical installation screens.
 
 Once you've installed the *curn* via the graphical installer, you should
@@ -90,57 +90,41 @@ installed *curn*.
 For complete instructions on configuring and using *curn*, please see the
 [*curn* User's Guide][users-guide].
 
-# Building *curn*
+# Building *curn* from source
 
-*curn* does not currently build with [Maven][], so building it from source
-is a bit of a pain.
+### Git
 
-## Third-party Software
+The source for the Java Utility Library is in a [GitHub repository][]. The
+easiest way to obtain it is via [Git][], which runs on Unix-like operating
+systems (such as Linux and FreeBSD), Windows, and Mac OS X.
 
-Before building *curn*, you'll need
+### Buildr
 
-1. [Jakarta Ant][Ant], version 1.6.5 or better.
-2. The [clapper.org Java Utility Library][].
-3. The [prerequisite jar files][ocutil-jars] for the
-   [clapper.org Java Utility Library][].
-4. The [Jakarta Commons Logging][jcl] jar.
-5. The [JavaMail][] jar.
-6. The [JavaBeans Activation Framework][jaf] (JAF), if you're using a 1.5 JDK.
-   (JAF is bundled with Java 1.6.)
-7. A SAX2 XML Parser, such as [Apache Xerces][].
-8. The [Jakarta Bean Scripting Framework][bsf] jar file.
-9. The `izpack-compiler.jar` file from the [IzPack][] distribution. This is
-   only necessary if you're going to build the installer.
-   
-The easiest way to get everything except IzPack and Ant is to install *curn*
-via the installer. Be sure to install the source, too.
-
-[FreeBSD][] users will find ports for many of the third-party libraries.
-Linux users may find packages (RPMs, DEBs, etc.) for those libraries.
-
-## Prepare the Build Environment
-
-
-1. Once you've downloaded the various third-party jar files, place them in
-   a directory somewhere.
-2. Download the source from the [downloads area][] and unzip it, or
-   get the code from the [GitHub repository][].
-3. Change your working directory to the top-level `curn` source directory.
-4. In the topmost source directory (i.e., the directory containing the
-   `build.xml` file), create a file called `build.properties` containing the
-   following line:
-   
-    `third.party.jar.dir: /path/to/directory/containing/jars`
+The library builds with Apache [Buildr][], because Buildr's Ruby-based
+build files are more powerful and flexible, and much easier to read and
+maintain, than [Maven][]'s POM files. If you're building this library from
+source, you must first [download and install Buildr][].
 
 ## Building
 
-* Type `ant build` to compile the code and create the jar file. The jar file
-  ends up in the `build/lib` subdirectory.
-* To create the Javadocs, type `ant javadocs`. (This step is optional.)
-* To create version-stamped release files, type `ant release`. The
-  resulting files end up in the `build/release` directory.
-* To create the installer, type `ant release installer`. The installer jar
-  file will end up in the `build/release` directory.
+First, clone a copy of the Git repository:
+
+    git clone git://github.com/bmc/curn.git
+
+Then, change your working directory to the newly-created `curn` directory,
+and type:
+
+    buildr compile
+
+to compile the code.
+
+To build the [IzPack][] installer, first ensure that you've installed IzPack.
+Then, set environment variable `IZPACK_HOME` to the directory where you
+installed IzPack. Then, within the `curn` source directory, simply type
+
+    buildr installer
+
+to generate the IzPack installer jar.
 
 # Keeping Up to Date
 
@@ -195,11 +179,11 @@ have successfully built it on:
 
 * Mac OS X, using the Apple-supplied 1.6 JDK
 * FreeBSD, using the native FreeBSD 1.6 JDK
-* Ubuntu 9 and 10, using the Sun Linux 1.6.0 JDK
+* Ubuntu 9, 10 and 11, using the Sun Linux 1.6.0 JDK
 
 # Copyright and License
 
-*curn* is copyright &copy; 2004-2010 Brian M. Clapper and is released under
+*curn* is copyright &copy; 2004-2011 Brian M. Clapper and is released under
 a [BSD License][].
 
 # Patches
