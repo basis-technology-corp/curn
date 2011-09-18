@@ -1,5 +1,7 @@
 #                                                                  -*- ruby -*-
 # Buildr Buildfile for curn
+#
+# To build curn, you'll need Apache Buildr.
 # ---------------------------------------------------------------------------
 
 # Environment variables
@@ -80,54 +82,9 @@ define 'curn' do
   # The IzPack installer
   # ----------------------------------------------------------------------
 
+  # Create the installer jar.
   task :installer => [:package, :doc, :installerxml] do
-    # Create the installation temporary directory.
-    mkdir_p TMP_DIR
-
-    # Copy the dependent jars there.
-    compile.dependencies.each do |d|
-      cp d.to_s, TMP_DIR
-    end
-
-    # Generate the installer. This fails, for some reason:
-    #
-    # sh "#{IZPACK_HOME}/bin/compile", _('target/install.xml'),
-    #    '-b', TOP_DIR, '-h', IZPACK_HOME,
-    #    '-o ', _("target/curn-installer-#{version}.jar")
-    #
-    # So, we're bailing, and falling back to Ant.
-    ENV['INSTALLER_JAR'] = _("target/curn-installer-#{version}.jar")
-    ENV['INSTALL_XML'] = _('target/install.xml')
-
-    #Java.load
-    #Java.org.apache.tools.ant.Main.main(['-file', 'ant-installer.xml'])
-    classpath = 
-    ant("installer") do |proj|
-      # Define the Ant task.
-      proj.taskdef :name => 'izpack',
-                   :classname => 'com.izforge.izpack.ant.IzPackTask',
-                   :classpath => Dir.glob("#{IZPACK_HOME}/lib/*.jar").join(":")
-
-      # Invoke it.
-      proj.izpack :input => _('target/install.xml'),
-                  :output => _("target/curn-installer-#{version}.jar"),
-                  :installerType => 'standard',
-                  :basedir => '.',
-                  :izPackDir => IZPACK_HOME
-    end
-
-
-    rm_r TMP_DIR
-  end
-
-  task :installerxml do
-    # Download IzPack
-
-    # artifact(IZPACK).invoke
-    # IZ_DIR = "#{ENV['HOME']}/.m2/repository/org/codehaus/izpack/" +
-    #          "izpack-standalone-compiler/#{IZPACK_VERSION}/"
-    # IZ_JAR = "#{IZ_DIR}/izpack-standalone-compiler-#{IZPACK_VERSION}.jar"
-
+    # Verify installation of IzPack.
     IZPACK_HOME = ENV['IZPACK_HOME']
     puts IZPACK_HOME
     if !File.exists? IZPACK_HOME
@@ -136,6 +93,46 @@ define 'curn' do
       raise Exception.new "IZPACK_HOME #{IZPACK_HOME} is not a directory."
     end
 
+    # Create the installation temporary directory.
+    mkdir_p TMP_DIR
+
+    begin
+      # Copy the dependent jars there.
+      compile.dependencies.each do |d|
+        cp d.to_s, TMP_DIR
+      end
+
+      # Generate the installer. This fails, for some reason:
+      #
+      # sh "#{IZPACK_HOME}/bin/compile", _('target/install.xml'),
+      #    '-b', TOP_DIR, '-h', IZPACK_HOME,
+      #    '-o ', _("target/curn-installer-#{version}.jar")
+      #
+      # So, we're bailing, and falling back to Ant.
+      ant("installer") do |proj|
+        # Define the Ant task.
+        proj.taskdef :name => 'izpack',
+        :classname => 'com.izforge.izpack.ant.IzPackTask',
+        :classpath => Dir.glob("#{IZPACK_HOME}/lib/*.jar").join(":")
+
+        # Invoke it.
+        proj.izpack :input => _('target/install.xml'),
+        :output => _("target/curn-installer-#{version}.jar"),
+        :installerType => 'standard',
+        :basedir => '.',
+        :izPackDir => IZPACK_HOME
+      end
+
+    else
+      # Remove the temporary directory.
+      rm_r TMP_DIR
+    end
+  end
+
+  # Create the installer XML from the XML template. NOTE: IzPack must
+  # already be installed, and its home directory must be specified via the
+  # IZPACK_HOME environment variable.
+  task :installerxml do
     # Filter the template install.xml file into one with the variables
     # substituted
     TOP_DIR = _(".")
