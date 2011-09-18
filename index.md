@@ -13,8 +13,8 @@ items it has already processed (though that behavior can be disabled).
 
 Unlike many RSS readers, *curn* does not use a graphical user interface. It
 is a command-line utility, intended to be run periodically in the
-background by a command scheduler such as [cron][](8) (on Unix-like systems) or
-the Windows Scheduler Service (on Windows).
+background by a command scheduler such as [*cron*][cron](8) (on Unix-like
+systems) or the Windows Scheduler Service (on Windows).
 
 *curn* is written entirely in [Java][] and can read RSS feeds from any URL
 that's supported by Java's runtime. When querying HTTP sites, *curn* uses
@@ -222,7 +222,7 @@ request. Along with any patch you send:
 [Ubuntu]: http://www.ubuntu.com/
 [FreeBSD]: http://www.freebsd.org/
 [Mac OS X]: http://www.apple.com/macosx/
-[clapper.org Java Utility Library]: http://bmc.github.com/javautil/
+[clapper.org Java Utility Library]: http://software.clapper.org/javautil/
 [What is RSS?]: http://www.xml.com/pub/a/2002/12/18/dive-into-xml.html
 [All About RSS]: http://www.faganfinder.com/search/rss.php
 [rawdog]: http://offog.org/code/rawdog.html
@@ -252,7 +252,7 @@ request. Along with any patch you send:
 [Ubuntu]: http://www.ubuntu.com/
 [FreeBSD]: http://www.freebsd.org/
 [Mac OS X]: http://www.apple.com/macosx/
-[clapper.org Java Utility Library]: http://bmc.github.com/javautil/
+[clapper.org Java Utility Library]: http://software.clapper.org/javautil/
 [What is RSS?]: http://www.xml.com/pub/a/2002/12/18/dive-into-xml.html
 [All About RSS]: http://www.faganfinder.com/search/rss.php
 [BSD License]: license.html
@@ -281,14 +281,14 @@ request. Along with any patch you send:
 [Ubuntu]: http://www.ubuntu.com/
 [FreeBSD]: http://www.freebsd.org/
 [Mac OS X]: http://www.apple.com/macosx/
-[clapper.org Java Utility Library]: http://bmc.github.com/javautil/
+[clapper.org Java Utility Library]: http://software.clapper.org/javautil/
 [What is RSS?]: http://www.xml.com/pub/a/2002/12/18/dive-into-xml.html
 [All About RSS]: http://www.faganfinder.com/search/rss.php
 [rawdog]: http://offog.org/code/rawdog.html
 [CHANGELOG]: CHANGELOG.txt
 [FAQ]: FAQ.html
 [Ant]: http://ant.apache.org/
-[ocutil-jars]: http://www.clapper.org/software/java/util/install.shtml#Jars
+[ocutil-jars]: http://software.clapper.org/java/util/install.shtml#Jars
 [jcl]: http://jakarta.apache.org/commons/logging/
 [JavaMail]: http://www.oracle.com/technetwork/java/index-jsp-139225.html
 [jaf]: http://java.sun.com/products/archive/javabeans/jaf102.html
