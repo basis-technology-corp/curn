@@ -57,12 +57,11 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.clapper.curn.CurnUtil;
-import org.clapper.util.scripting.ScriptFrameworkType;
-import org.clapper.util.scripting.UnifiedScriptEngine;
-import org.clapper.util.scripting.UnifiedScriptEngineManager;
-import org.clapper.util.scripting.UnifiedScriptException;
 
 /**
  * Provides an output handler calls a script via the Apache Jakarta
@@ -376,15 +375,14 @@ public class ScriptOutputHandler extends FileOutputHandler
                             Private Data Items
     \*----------------------------------------------------------------------*/
 
-    private UnifiedScriptEngineManager scriptManager      = null;
-    private UnifiedScriptEngine        scriptEngine       = null;
-    private ScriptFrameworkType        type               = null;
+    private ScriptEngineManager        scriptManager      = null;
+    private ScriptEngine               scriptEngine       = null;
     private Collection<ChannelWrapper> channels           = new ChannelList();
     private String                     scriptPath         = null;
     private String                     scriptString       = null;
     private String                     mimeType           = null;
     private String                     language           = null;
-    private Logger                     scriptLogger       = null;     // NOPMD
+    private Logger                     scriptLogger       = null; // NOPMD
     private CurnScriptObjects          scriptObjects      = null;
     private boolean                    allowEmbeddedHTML  = false;
 
@@ -441,21 +439,6 @@ public class ScriptOutputHandler extends FileOutputHandler
                         (section,
                          CurnConfig.CFG_ALLOW_EMBEDDED_HTML,
                          false);
-
-                String s = config.getOptionalStringValue(section,
-                                                         "ScriptingAPI",
-                                                         null);
-                if (s != null)
-                {
-                    type = ScriptFrameworkType.getTypeFromString(s);
-                    if (type == null)
-                    {
-                        throw new ConfigurationException
-                            ("Section \"" + section + "\": Unknown value \"" +
-                             s + "\" for " + "\"ScriptingAPI\" configuration" +
-                             "parameter");
-                    }
-                }
             }
         }
 
@@ -489,31 +472,13 @@ public class ScriptOutputHandler extends FileOutputHandler
 
         try
         {
-            if (type == null)
-            {
-                // No type. First, try to get JSR 223, then BSF.
-
-                scriptManager =
-                    UnifiedScriptEngineManager.getManager
-                       (new ScriptFrameworkType[]
-                       {
-                           ScriptFrameworkType.JAVAX_SCRIPT,
-                           ScriptFrameworkType.BSF
-                       });
-            }
-
-            else
-            {
-                scriptManager = UnifiedScriptEngineManager.getManager(type);
-            }
+            scriptManager = new ScriptEngineManager();
         }
 
-        catch (UnifiedScriptException ex)
+        catch (Throwable ex)
         {
             throw new CurnException(ex);
         }
-
-        log.info("Using " + scriptManager.getType() + " scripting API");
 
         // Next, get the scripting engine itself.
 
@@ -522,7 +487,7 @@ public class ScriptOutputHandler extends FileOutputHandler
             scriptEngine = scriptManager.getEngineByName(language);
         }
 
-        catch (UnifiedScriptException ex)
+        catch (Throwable ex)
         {
             throw new CurnException("Unable to load scripting engine for \"" +
                                     language + "\" language",
@@ -550,10 +515,10 @@ public class ScriptOutputHandler extends FileOutputHandler
         this.scriptObjects = new CurnScriptObjects();
         try
         {
-            scriptManager.put("curn", scriptObjects);
+            scriptEngine.put("curn", scriptObjects);
         }
 
-        catch (UnifiedScriptException ex)
+        catch (Throwable ex)
         {
             throw new CurnException ("Can't register script 'curn' object",
                                      ex);
@@ -613,14 +578,14 @@ public class ScriptOutputHandler extends FileOutputHandler
             // Run the script
 
             log.debug ("Invoking " + scriptPath);
-            scriptEngine.exec(scriptString);
+            scriptEngine.eval(scriptString);
 
             // Handle the MIME type.
 
             mimeType = scriptObjects.mimeType;
         }
 
-        catch (UnifiedScriptException ex)
+        catch (ScriptException ex)
         {
             Throwable realException = ex.getCause();
             if (ex == null)

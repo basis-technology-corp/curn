@@ -4,6 +4,14 @@ CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.8 (...)
+
+- Now builds with Buildr and uses Maven semantics for third-party
+  dependencies.
+- Now uses javax.script directly. Support for the Bean Scripting Framework
+  (BSF) is gone. The "ScriptAPI" configuration parameter is also gone.
+
+---------------------------------------------------------------------------
 Version 3.2.7 (13 September, 2010)
 
 - Implemented a new PruneOriginalRSSPlugIn plug-in that saves a copy of the
