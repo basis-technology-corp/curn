@@ -12,7 +12,7 @@ ENV['IZPACK_HOME'] ||= "#{ENV['HOME']}/java/IzPack"
 
 # Constants
 
-CURN_VERSION          = '3.2.8'
+CURN_VERSION          = '3.2.9'
 GROUP                 = 'org.clapper'
 CURN_JAR_NAME         = 'curn'
 CURN_BOOT_JAR_NAME    = 'curn-boot'
@@ -24,7 +24,7 @@ CHANGELOG_TARGET      = '../gh-pages/CHANGELOG.txt'
 ASM_VERSION      = '3.3.1'
 
 JAVAUTIL         = 'org.clapper:javautil:jar:3.0.1'
-FREEMARKER       = 'org.freemarker:freemarker:jar:2.3.14'
+FREEMARKER       = 'org.freemarker:freemarker:jar:2.3.19'
 JAVAMAIL         = 'javax.mail:mail:jar:1.4.4'
 JDOM             = 'org.jdom:jdom:jar:1.1'
 COMMONS_LOGGING  = 'commons-logging:commons-logging:jar:1.1.1'
@@ -34,7 +34,7 @@ ASM_COMMONS      = "asm:asm-commons:jar:#{ASM_VERSION}"
 COMPILE_ARTIFACTS= [ASM, ASM_COMMONS, COMMONS_LOGGING, FREEMARKER, JAVAMAIL,
                     JAVAUTIL, JDOM, ROME]
 
-IZPACK_VERSION   = '4.3.4'
+IZPACK_VERSION   = '4.3.5'
 IZPACK = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK_VERSION}"
 
 # Some local tasks and task aliases
@@ -46,8 +46,7 @@ define 'curn' do
   project.group   = GROUP
 
   # Repos
-  repositories.remote << 'http://download.java.net/maven/2'
-  repositories.remote << 'http://www.ibiblio.org/maven2/'
+  repositories.remote << 'http://repo1.maven.org/maven2/'
   repositories.remote << 'http://maven.clapper.org/'
 
   # Compilation
