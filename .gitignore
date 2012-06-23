@@ -1,3 +1,4 @@
 build.properties
 .semantic.cache
 target
+.envrc
