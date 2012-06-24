@@ -4,4 +4,3 @@
 source 'http://rubygems.org'
 
 gem 'buildr'
-gem 'buildrizpack'

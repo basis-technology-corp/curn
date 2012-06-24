@@ -19,23 +19,26 @@ CURN_BOOT_JAR_NAME    = 'curn-boot'
 CURN_PLUGINS_JAR_NAME = 'curn-plugins'
 API_DOC_TARGET        = '../gh-pages/api'
 CHANGELOG_TARGET      = '../gh-pages/CHANGELOG.txt'
+TOP                   = File.expand_path(".")
+SRC                   = File.expand_path(TOP, 'src')
+INSTALLER_SRC         = File.expand_path(SRC, 'installer')
+TARGET                = File.expand_path(TOP, 'target')
 
 # Dependencies.
-ASM_VERSION      = '3.3.1'
-
-JAVAUTIL         = 'org.clapper:javautil:jar:3.0.1'
-FREEMARKER       = 'org.freemarker:freemarker:jar:2.3.19'
-JAVAMAIL         = 'javax.mail:mail:jar:1.4.4'
-JDOM             = 'org.jdom:jdom:jar:1.1'
-COMMONS_LOGGING  = 'commons-logging:commons-logging:jar:1.1.1'
-ROME             = 'rome:rome:jar:1.0'
-ASM              = "asm:asm:jar:#{ASM_VERSION}"
-ASM_COMMONS      = "asm:asm-commons:jar:#{ASM_VERSION}"
-COMPILE_ARTIFACTS= [ASM, ASM_COMMONS, COMMONS_LOGGING, FREEMARKER, JAVAMAIL,
+ASM_VERSION       = '3.3.1'
+ 
+JAVAUTIL          = 'org.clapper:javautil:jar:3.0.1'
+FREEMARKER        = 'org.freemarker:freemarker:jar:2.3.19'
+JAVAMAIL          = 'javax.mail:mail:jar:1.4.4'
+JDOM              = 'org.jdom:jdom:jar:1.1'
+COMMONS_LOGGING   = 'commons-logging:commons-logging:jar:1.1.1'
+ROME              = 'rome:rome:jar:1.0'
+ASM               = "asm:asm:jar:#{ASM_VERSION}"
+ASM_COMMONS       = "asm:asm-commons:jar:#{ASM_VERSION}"
+COMPILE_ARTIFACTS = [ASM, ASM_COMMONS, COMMONS_LOGGING, FREEMARKER, JAVAMAIL,
                     JAVAUTIL, JDOM, ROME]
-
-IZPACK_VERSION   = '4.3.5'
-IZPACK = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK_VERSION}"
+IZPACK_VERSION    = '4.3.5'
+IZPACK            = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK_VERSION}"
 
 # Some local tasks and task aliases
 Project.local_task :installer
@@ -91,7 +94,12 @@ define 'curn' do
   # ----------------------------------------------------------------------
 
   # Create the installer jar.
+  #
+  # NOTE: Assumes IzPack is installed in a location specified by environment
+  # variable $IZPACK_HOME
   task :installer => [:package, :doc, :installerxml] do
+    require 'tempfile'
+
     # Verify installation of IzPack.
     IZPACK_HOME = ENV['IZPACK_HOME']
     puts IZPACK_HOME
@@ -101,39 +109,45 @@ define 'curn' do
       raise Exception.new "IZPACK_HOME #{IZPACK_HOME} is not a directory."
     end
 
+    # Use BuildrIzPack, but only to launch IzPack. Its DSL isn't complete
+    # and requires building custom XML for more complex options. It's easier
+    # to use a template XML installer and edit it on the fly.
     # Create the installation temporary directory.
-    mkdir_p TMP_DIR
 
-    begin
+    Dir.mktmpdir do |tmp_dir|
+
       # Copy the dependent jars there.
+      deps = []
       compile.dependencies.each do |d|
-        cp d.to_s, TMP_DIR
+        cp d.to_s, tmp_dir
+        deps << File.basename(d.to_s)
       end
 
-      # Generate the installer. This fails, for some reason:
-      #
-      # sh "#{IZPACK_HOME}/bin/compile", _('target/install.xml'),
-      #    '-b', TOP_DIR, '-h', IZPACK_HOME,
-      #    '-o ', _("target/curn-installer-#{version}.jar")
-      #
-      # So, we're bailing, and falling back to Ant.
-      ant("installer") do |proj|
-        # Define the Ant task.
-        proj.taskdef :name => 'izpack',
-        :classname => 'com.izforge.izpack.ant.IzPackTask',
-        :classpath => Dir.glob("#{IZPACK_HOME}/lib/*.jar").join(":")
+      # Filter the template install.xml file into one with the variables
+      # substituted
 
-        # Invoke it.
-        proj.izpack :input => _('target/install.xml'),
-        :output => _("target/curn-installer-#{version}.jar"),
-        :installerType => 'standard',
-        :basedir => '.',
-        :izPackDir => IZPACK_HOME
-      end
+      filter('src/installer').
+        into('target').
+        include('*.xml').
+        using('CURN_VERSION'      => version,
+              'INSTALL_TMP'       => tmp_dir,
+              'TOP_DIR'           => TOP,
+              'SRC_INSTALL'       => "#{TOP}/src/installer",
+              'RELEASE_DIR'       => "#{TOP}/target",
+              'CURN_JAR_FILE'     => "#{CURN_JAR_NAME}-#{version}.jar",
+              'CURNBOOT_JAR_FILE' => "#{CURN_BOOT_JAR_NAME}-#{version}.jar",
+              'PLUGINS_JAR_FILE'  => "#{CURN_PLUGINS_JAR_NAME}-#{version}.jar",
+              'ASM_VERSION'       => ASM_VERSION,
+              'DOCS_DIR'          => _('docs'),
+              'DEP_JAR_DIR'       => tmp_dir,
+              'JAVADOCS_DIR'      => _('target/doc')).
+        run
 
-    ensure
-      # Remove the temporary directory.
-      rm_r TMP_DIR
+      # Generate the installer.
+      cmd = "#{IZPACK_HOME}/bin/compile target/install.xml -b #{TOP} " +
+            "-h #{IZPACK_HOME} -o target/curn-installer-#{version}.jar"
+      puts "+ #{cmd}"
+      sh cmd
     end
   end
 
@@ -141,26 +155,6 @@ define 'curn' do
   # already be installed, and its home directory must be specified via the
   # IZPACK_HOME environment variable.
   task :installerxml do
-    # Filter the template install.xml file into one with the variables
-    # substituted
-    TOP_DIR = _(".")
-    TMP_DIR = _('target/install-tmp')
-    filter('src/installer').
-      into('target').
-      include('*.xml').
-      using('CURN_VERSION'      => version,
-            'INSTALL_TMP'       => TMP_DIR,
-            'TOP_DIR'           => TOP_DIR,
-            'SRC_INSTALL'       => "#{TOP_DIR}/src/installer",
-            'RELEASE_DIR'       => "#{TOP_DIR}/target",
-            'CURN_JAR_FILE'     => "#{CURN_JAR_NAME}-#{version}.jar",
-            'CURNBOOT_JAR_FILE' => "#{CURN_BOOT_JAR_NAME}-#{version}.jar",
-            'PLUGINS_JAR_FILE'  => "#{CURN_PLUGINS_JAR_NAME}-#{version}.jar",
-            'ASM_VERSION'       => ASM_VERSION,
-            'DOCS_DIR'          => _('docs'),
-            'DEP_JAR_DIR'       => TMP_DIR,
-            'JAVADOCS_DIR'      => _('target/doc')).
-      run
   end
 
 end

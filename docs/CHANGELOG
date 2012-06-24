@@ -4,6 +4,12 @@ CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
 Copyright (c) 2004-2010 Brian M. Clapper. All rights reserved.
 ---------------------------------------------------------------------------
 
+Version 3.2.9 (24 June, 2012)
+
+- Changes to Maven repositories, to get FreeMarker to resolve again.
+- Minor changes to the way the installer is generated.
+
+---------------------------------------------------------------------------
 Version 3.2.8 (18 September, 2011)
 
 - Now builds with Buildr and uses Maven semantics for third-party
