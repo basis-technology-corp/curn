@@ -35,8 +35,9 @@ COMMONS_LOGGING   = 'commons-logging:commons-logging:jar:1.1.1'
 ROME              = 'rome:rome:jar:1.0'
 ASM               = "asm:asm:jar:#{ASM_VERSION}"
 ASM_COMMONS       = "asm:asm-commons:jar:#{ASM_VERSION}"
+COMMONS_IO        = "commons-io:commons-io:jar:2.4"
 COMPILE_ARTIFACTS = [ASM, ASM_COMMONS, COMMONS_LOGGING, FREEMARKER, JAVAMAIL,
-                    JAVAUTIL, JDOM, ROME]
+                    JAVAUTIL, JDOM, ROME, COMMONS_IO]
 IZPACK_VERSION    = '4.3.5'
 IZPACK            = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK_VERSION}"
 
@@ -55,7 +56,7 @@ define 'curn' do
   # Compilation
   compile.using :target => '1.6', :lint => 'all', :deprecation => true
   compile.with ASM, ASM_COMMONS, COMMONS_LOGGING, FREEMARKER, JAVAMAIL,
-               JAVAUTIL, JDOM, ROME
+               JAVAUTIL, JDOM, ROME, COMMONS_IO
   # Main jar
   package(:jar, :id => CURN_JAR_NAME).
     exclude(_('target/classes/**/Bootstrap*.class')).
