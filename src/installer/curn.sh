@@ -62,6 +62,7 @@ do
             ;;
         -debug)
             vm_opts="$vm_opts -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000"
+            shift
             ;;
         *)
 	    break

@@ -61,13 +61,16 @@ define 'curn' do
   # Main jar
   package(:jar, :id => CURN_JAR_NAME).
     exclude(_('target/classes/**/Bootstrap*.class')).
-    exclude(_('target/classes/**/plugins/*.class'))
+    exclude(_('target/classes/**/plugins/*.class')).
+    exclude(_('target/resources/**/*.ftl'))
 
   # Plugins jar
   package(:jar, :id => CURN_PLUGINS_JAR_NAME).
     clean.
     include('target/classes/org/clapper/curn/plugins',
-            :as => 'org/clapper/curn/plugins')
+            :as => 'org/clapper/curn/plugins').
+    include('target/resources/org/clapper/curn/output/freemarker',
+            :as => 'org/clapper/curn/output/freemarker')
 
   # Bootstrap jar
   package(:jar, :id => CURN_BOOT_JAR_NAME).
