@@ -53,8 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.XmlStreamReader;
-import org.apache.commons.io.input.XmlStreamReaderException;
 import org.clapper.curn.parser.RSSChannel;
 import org.clapper.curn.parser.RSSItem;
 import org.clapper.curn.parser.RSSLink;
@@ -538,10 +536,14 @@ class FeedDownloadThread implements Runnable
 
         InputStream urlStream = getURLInputStream(conn);
 
-        // Determine the character set encoding to use.
+        /* Determine the character set encoding to use.
+         * When downloading, all we are doing is copying bytes.
+         * If we get an indication of encoding, we pass it along
+         * to Rome or whatnot to use in interpreting those bytes.
+         */
 
         String protocol = feedURL.getProtocol();
-        String encoding = null;
+        String encoding = null; // null unless we see some other indication.
 
         if (protocol.equals("http") || protocol.equals("https"))
         {
@@ -568,34 +570,15 @@ class FeedDownloadThread implements Runnable
                       "\" is \"" + encoding + "\"");
         }
 
-        // Set the forced encoding, if specified. Note: This is done after
-        // we check the HTTP encoding, so we can log any discrepancies
-        // between the config-specified encoding and the HTTP
-        // server-specified encoding.
+        if (feedInfo.getForcedCharacterEncoding() != null)
+        {
+            encoding = feedInfo.getForcedCharacterEncoding();
+        }
+
         OutputStream tempOutput = null;
         try {
             tempOutput = new FileOutputStream(tempFile);
-            String forcedEncoding = feedInfo.getForcedCharacterEncoding();
-            if (forcedEncoding != null)
-            {
-                // Forced; just believe them.
-                log.debug("URL \"" + feedURLString +
-                        "\": Forcing encoding to be \"" + forcedEncoding +
-                        "\"");
-                encoding = forcedEncoding;
-                totalBytes = IOUtils.copy(urlStream, tempOutput);
-            }
-            else
-            {
-                try {
-                    XmlStreamReader xmlStreamReader = new XmlStreamReader(urlStream, encoding, false, "utf-8");
-                    encoding = xmlStreamReader.getEncoding();
-                    IOUtils.copy(xmlStreamReader, tempOutput, encoding);
-                } catch (XmlStreamReaderException xsre) {
-                    // not XML?
-                    totalBytes = IOUtils.copy(urlStream, tempOutput);
-                }
-            }
+            totalBytes = IOUtils.copy(urlStream, tempOutput);
         } finally {
             IOUtils.closeQuietly(tempOutput);
             IOUtils.closeQuietly(urlStream);
@@ -604,6 +587,7 @@ class FeedDownloadThread implements Runnable
         // It's possible for totalBytes to be zero if, for instance, the
         // use of the If-Modified-Since header caused an HTTP server to
         // return no content.
+        // It's possible for the encoding to be null if nothing gave us a clue.
 
         return new DownloadedTempFile(tempFile, encoding, totalBytes);
     }

@@ -44,6 +44,7 @@ IZPACK            = "org.codehaus.izpack:izpack-standalone-compiler:jar:#{IZPACK
 # Some local tasks and task aliases
 Project.local_task :installer
 Project.local_task :copydoc
+Project.local_task :devinstall
 
 define 'curn' do
   project.version = CURN_VERSION
@@ -158,6 +159,16 @@ define 'curn' do
   task :installerxml do
   end
 
+  task :devinstall => :compile do
+      FileUtils.mkdir_p "target/fake_install/lib"
+      FileUtils.mkdir_p "target/fake_install/plugins"
+      cp "target/#{CURN_JAR_NAME}-#{version}.jar", 'target/fake_install/lib/curn.jar'
+      cp "target/#{CURN_BOOT_JAR_NAME}-#{version}.jar", 'target/fake_install/lib/curnboot.jar'
+      cp "target/#{CURN_PLUGINS_JAR_NAME}-#{version}.jar", 'target/fake_install/plugins/curn-plugins.jar'
+      compile.dependencies.each do |d|
+        cp d.to_s, 'target/fake_install/lib'
+      end
+  end
 end
 
 
