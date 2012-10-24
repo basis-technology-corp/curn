@@ -129,13 +129,8 @@ public final class Version extends VersionBase
 
         return BundleUtil.getMessage(VERSION_BUNDLE_NAME, locale,
                                      "curn.fullVersion",
-                                     "{0}, version {1} (build ID {2})",
-                                     new Object[]
-                                     {
-                                         name,
-                                         version,
-                                         getBuildInfo().getBuildID()
-                                     });
+                                     "{0}, version {1}",
+                                     new Object[] {name, version});
     }
 
     /**
