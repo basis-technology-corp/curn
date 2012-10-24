@@ -131,6 +131,7 @@ define 'curn' do
       # Filter the template install.xml file into one with the variables
       # substituted
 
+      rm_f File.join('target/install.xml')
       filter('src/installer').
         into('target').
         include('*.xml').
@@ -147,7 +148,8 @@ define 'curn' do
               'DEP_JAR_DIR'       => tmp_dir,
               'JAVADOCS_DIR'      => _('target/doc')).
         run
-
+require 'pry'
+binding.pry
       # Generate the installer.
       cmd = "#{IZPACK_HOME}/bin/compile target/install.xml -b #{TOP} " +
             "-h #{IZPACK_HOME} -o target/curn-installer-#{version}.jar"
