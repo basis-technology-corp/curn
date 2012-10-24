@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<h1 id="curn-customizable-utilitarian-rss-notifier"><em>curn</em>: Customizable Utilitarian RSS Notifier</h1>
+<p><em>curn</em> is an RSS reader. It scans a configured set of URLs, each one representing an RSS feed, and summarizes the results. By default, <em>curn</em> keeps track of individual items within each RSS feed, using an on-disk cache; when using the cache, it will suppress displaying information for items it has already processed.</p>
+<p>Unlike many RSS readers, <em>curn</em> does not use a graphical user interface. It is a command-line utility, intended to be run periodically in the background by a command scheduler such as <em>cron</em>(8) (on Unix-like systems) or the Windows Scheduler Service (on Windows).</p>
+<p><em>curn</em> can read RSS feeds from any URL that's supported by Java's runtime. When querying HTTP sites, <em>curn</em> uses the HTTP <code>If-Modified-Since</code> and <code>Last-Modified</code> headers to suppress retrieving and processing feeds that haven't changed. By default, it also requests that the remote HTTP server gzip the XML before sending it. (Some HTTP servers honor the request; some don't.) These measures both minimize network bandwidth and ensure that <em>curn</em> is as kind as possible to the remote RSS servers.</p>
+<p>To download <em>curn</em>, or to read the User's Guide and other documentation, please visit the <a href="http://software.clapper.org/curn/"><em>curn</em> home page</a>.</p>
+<p><em>curn</em> is Copyright © 2004-2012 Brian M. Clapper</p>
+</body>
+</html>
