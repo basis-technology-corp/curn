@@ -1,0 +1,1465 @@
+# CHANGELOG: curn (Customizable Utilitarian RSS Notifier)
+
+Copyright (c) 2004-2012 Brian M. Clapper. All rights reserved.
+
+Version 3.3 (24 October, 2012)
+
+- Folded in various changes from Benson Margulies (bimargulies /at/ gmail.com),
+  to handle XML encodings better. (Thanks, Benson.)
+
+----
+
+Version 3.2.9 (24 June, 2012)
+
+- Changes to Maven repositories, to get FreeMarker to resolve again.
+- Minor changes to the way the installer is generated.
+
+----
+
+Version 3.2.8 (18 September, 2011)
+
+- Now builds with Buildr and uses Maven semantics for third-party
+  dependencies.
+- Now uses javax.script directly. Support for the Bean Scripting Framework
+  (BSF) is gone. The "ScriptAPI" configuration parameter is also gone.
+
+----
+
+Version 3.2.7 (13 September, 2010)
+
+- Implemented a new `PruneOriginalRSSPlugIn` plug-in that saves a copy of
+  the original RSS document after removing any already-seen items. This
+  plug-in is conceptually similar to the SaveAsRSSPlugIn, except that
+  PruneOriginalRSSPlugIn works directly off a JDOM version of the RSS
+  document (i.e., at the XML level), which means it's less likely to drop
+  non-standard XML elements from the RSS feed, since the edited DOM does
+  not go through the ROME parser.
+
+  NOTE: This plug-in was funded by Dow Jones & Co., under contract with
+  ArdenTex, Inc.  Dow Jones & Co. and ArdenTex, Inc. have donated the
+  resulting code back to the Curn project, as open source.
+
+- Updated the ROME RSS parser adapter to parse the RSS document via a
+  JDOM object, rather than a file. This change allows the Curn RSS parser
+  API to provide a JDOM view of the feed, as well as the ROME version.
+
+- Removed spurious informa.jar from the distribution. Curn no longer bundles
+  the Informa RSS parsing API; the jar was a leftover.
+
+- Updated `RSSChannel` class to provide an enumerated value that indicates
+  the type of the RSS feed.
+
+- Installer no longer pre-selects source and documentation packs.
+
+----
+
+Version 3.2.6 (23 April, 2010)
+
+- Rolled in new version of org.clapper Java Utility library, which contains
+  a fix for boolean configuration value parsing. This new library fixes bugs
+  with Curn's handling of boolean configuration values, which were defaulting
+  to "false" in cases where they should not have been.
+- Changed license to a true BSD license.
+
+----
+
+Version 3.2.5 (26 February, 2010)
+
+- Freemarker transformation code is a little more careful: It no longer
+  invokes Freemarker on a template, if there are no feeds to display.
+
+----
+
+Version 3.2.4 (25 October, 2009)
+
+- Fixed null pointer exception when `RetainArticlesPlugIn` refers to an item
+  that has no URL.
+- Fixed null pointer exception when saving the cache for an item that has
+  no URL.
+- Curn now supports a -e (--config-encoding) parameter, to specify the encoding
+  of the configuration file. If not specified, the encoding defaults to the
+  JVM's default encoding.
+
+----
+
+Version 3.2.3 (12 April, 2009)
+
+- Added new `PostFeedProcessPlugIn` phase, and changed most existing plug-ins
+  to use it. This reflects what's really happening: The plug-in is being
+  invoked after the feed is parsed *and* after it's been processed.
+
+- Left `RetainArticlesPlugIn` as a `PostFeedParsePlugIn`. This corrects a
+  bug introduced in version 3.2.2: That fix to `PostFeedParsePlugIn` broken
+  the ShowArticlesFor configuration keyword.
+
+----
+
+Version 3.2.2 (8 January, 2009)
+
+- Fixed a bug introduced during curn 3.2: curn was invoking each
+  `PostFeedParsePlugIn` class with a parsed feed before determining whether
+  items in the feed were new or not. It should have been invoking the
+  plug-ins after determining whether items were new or not. This error,
+  introduced in curn 3.2, affected the following plug-ins:
+
+  * `MaxArticlesPlugIn`
+  * `RetainArticlesPlugIn`
+  * `SaveAsRSSPlugIn`
+
+  There are other plug-ins that implement the `PostFeedParsePlugIn`
+  interface, but the bug would not have affected them.
+
+- Updated to Javamail 1.4.1 and JAF 1.1.1.
+
+- The `EmailOutputPlugIn` now supports an optional SMTPLocalhost parameter for
+  identifying the local host.
+
+----
+
+Version 3.2.1 (11 September, 2007)
+
+- Fixed a bug in the ParsedFeedURLEdit plug-in (which supports the
+  EditItemURL and EditFeedURL configuration items). The plug-in properly
+  performed the edit, but the changed URL didn't get back into the
+  item/feed.
+
+- The RSS parser logic now properly handles empty, but present, links
+  (URL references) in the RSS feed. Prior to this fix, curn handled
+  missing link elements just fine; however, if the link element was present,
+  but empty, curn puked on the feed.
+
+
+----
+
+Version 3.2 (29 August, 2007)
+
+- Refinements to the installer to support non-English installations better.
+  For instance, the installer should now suggest the appropriate program
+  files directory on Windows (e.g., `C:\Programme` for a German
+  installation), instead of always using `C:\Program Files`. Thanks to
+  Carsten Kr�ger (C.Krueger /at/ gmx /dot/ org) for pointing out the
+  problem and testing the fix.
+
+- Minor refinements to the use of concurrent download threads.
+
+- Added new `${escapeHTML}` method to FreeMarker data model, allowing
+  FreeMarker templates to escape special HTML/XML characters such as "&".
+
+- Added a new `SaveAsRSS` plug-in. This plug-in operates on a parsed
+  feed and converts the new data in a feed to a specified RSS format,
+  then saves it. The new plug-in works on a per-feed basis. For instance:
+
+    [Feed_foobar]
+    URL: http://www.example.com/rss/fooblog/
+    ReplaceEmptySummaryWith: nothing
+    ShowAuthors:    true
+    AllowEmbeddedHTML: true
+    SaveAsRSS: --type rss1 --encoding utf-8 ${curn:curnDir}/tst-rss1-dup.xml
+
+   The plug-in can convert to RSS 1.0, RSS 2.0 or Atom format. The plug-in
+   works on parsed feed data, which means that it only sees new items
+   (because curn's parsing logic discards old items). Thus, if there's no
+   new data, the plug-in isn't invoked, and it doesn't generate the output.
+
+   The plug-in can save backup copies of the generated RSS files (i.e.,
+   it can save versions of the generated RSS files from previous runs);
+   this is configured via a "--backup" option to the `SaveAsRSS` value.
+   
+   See the `SaveAsRSS` parameter in the User's Guide for details.
+
+- Added a new `IgnoreOldArticles` plug-in. This plug-in provides a way to
+  ignore articles that are older than a certain interval. Intervals are
+  expressed in a natural language syntax. For instance:
+
+       IgnoreArticlesOlderThan: 3 days
+       IgnoreArticlesOlderThan: 1 week
+       IgnoreArticlesOlderThan: 365 days
+       IgnoreArticlesOlderThan: 12 hours, 30 minutes
+
+  Valid interval names (in English) are:
+
+    millisecond, milliseconds, ms
+    second, seconds, sec, secs
+    minute, minutes, min, mins
+    hour, hours, hr, hrs
+    day, days
+    week, weeks
+
+  If you're running curn in a Spanish or French locale, the appropriate
+  Spanish or French equivalents are also available, as well as the English
+  versions. (Supporting additional locales requires modifying the
+  org.clapper.util library, but it's easy enough to do.)
+
+  "year" and "month" are not supported, to avoid the irregularity of leaps
+  years and different month lengths, respectively.
+
+  See the User's Guide for details.
+
+- Added a new `MaxArticles` plug-in. This plug-in provides a way to limit
+  the number of articles displayed for each feed. It can be configured
+  globally and per feed. See the User's Guide for details.
+
+- Added a new `RetainArticles` plug-in. This plug-in provides a
+  configuration parameter, `ShowArticlesFor`, that allows you to specify
+  that articles are to be shown more than once. It takes a time interval
+  like the `IgnoreArticlesOlderThan` parameter. For instance:
+
+    ShowArticlesFor: 2 days
+
+  See the User's Guide for details.
+
+- Added a new `MailIndividualArticles` parameter (implemented by the
+  existing `EmailOutputPlugIn`). If emailing is enabled and this parameter is
+  set to `true`, curn will email each new article in its own, individual
+  message. Thus, if there are 200 new articles in all of the feeds, curn
+  will send 200 email messages, each with a single article. If emailing
+  is enabled and this parameter is `false` or missing, curn will do what
+  it's always done, namely, send a single email message containing all
+  output.
+
+- Within a given plug-in phase, all plug-ins implementing that phase now
+  execute in sorted order. That is, they're sorted per-phase by their
+  declared sort keys, and they executed in that order.
+
+- Minor change to FreeMarker templates for HTML and summary output so that
+  they display "1 item" instead of "1 items" when appropriate.
+
+
+				  -------
+				  Changes
+				  -------
+
+- The `PostFeedParsePlugIn` interface's ``runPostFeedParsePlugIn`()` method
+  now takes a third parameter: The FeedCache.
+
+- The OutputHandler interface now requires a `makeCopy()` method. Existing
+  output handlers must be extended to support that method.
+
+- Modified the per-feed `SaveAs` configuration parameter to use a command
+  line-style argument. The output encoding is now specified with a
+  "--encoding" option to the parameter's value. The parameter also supports
+  a new "--backup" option that can be used to save previously downloaded
+  raw feed data.
+
+  See the `SaveAs` parameter in the User's Guide for details.
+
+- Deprecated the per-feed `SaveOnly` configuration parmeater, in favor of
+  the new "--encoding" option to `SaveAs`. `SaveOnly` will still be
+  honored, but its usage will generate a warning.
+
+- Updated bundled freemarker.jar from version 2.3.6 to version 2.3.10.
+  See http://freemarker.org/
+
+- Updated bundled rome.jar from version 0.8 to version 0.9.
+  See https://rome.dev.java.net/
+
+- Moved FreeMarker transformation logic to new FreeMarkerFeedTransformer
+  class, and modified FreeMarkerOutputHandler to use that class. The
+  new transformer class can now be used by plug-ins.
+
+- Removed an optimization: Previously, if there were no configured output
+  handlers, curn would download the feed each feed only if `SaveAs` were
+  specified for the feed. Further, since there were no output handlers,
+  curn would not bother parsing the feed. With the introduction of
+  plug-ins, however, that behavior is broken. A plug-in that relies on
+  parsed data (such as the `SaveAsRSS` plug-in) should still work even if
+  there are no output handlers. So, curn now parses the downloaded RSS
+  feeds even if there are no output handlers configured.
+
+- Removed support for Informa RSS parser. ROME is better maintained and
+  more functional, and I don't see the point to maintaining both. I was
+  only maintaining Informa to illustrate that it was possible to support
+  more than one RSS parser in curn.
+
+				 ---------
+				 Bug Fixes
+				 ---------
+
+- Fixed the ROME `RSSChannel`Adapter to return the items in a LinkedHashSet,
+  not a HashSet, to preserve the original sort order (i.e., the order of
+  items in the XML) if the SortBy parameter is not set or is set to `none`.
+
+- Fixed a null pointer exception that could occur if all items in a channel
+  have been suppressed by a plug-in.
+
+- Fixed a bug in HTTP character set interpretation. Most HTTP servers that
+  specify a character do so with a Content-Type: header that looks like
+  this:
+
+	Content-Type: text/xml; charset=ISO-8859-1
+	Content-Type: text/xml; charset=UTF-8
+	etc.
+
+  However, some (e.g., Microsoft IIS/5.0) emit:
+
+	Content-Type: text/xml; Charset=ISO-8859-1
+
+  curn was only honoring lower-case in the `charset` field, leading it to
+  ignore advertised character sets.
+
+- Fixed a ROME parser usage error. curn was assuming that ROME would set
+  the `authors` field in its SyndFeed and SyndEntry classes, even for feed
+  types (like RSS 2.0) that only support a single author. However, ROME
+  appears to keep two separate fields:
+
+  * an `authors` field for feeds (like Atom) that support multiple authors
+    per item
+  * an `author` field for feeds (like RSS 2.0) that support only one author
+    per item
+
+  curn only ever looked at the `authors` field, so it wasn't propagated
+  the author for RSS 2.0 fields. This bug is now fixed.
+
+- Fixed a bug in the RSS parser: RSSItem.`getFirstContentType()` was always
+  returning null, because its internal content map wasn't being set. This
+  problem affected two plug-ins, as well as use of the API. Thanks to
+  Scott White (scottblanc /at/ gmail /dot/ com) for reporting the problem.
+
+
+----
+
+Version 3.1 (29 November, 2006)
+
+- curn's multithreaded download logic now uses the java.util.concurrent
+  library, instead of native Java synchronization. While this change won't
+  necessarily improve performance for small numbers of feeds and threads,
+  it should permit curn to scale better to large numbers of feeds. Improving
+  concurrency and performance is an ongoing effort; expect more changes in
+  this area in subsequent releases.
+
+- The configuration file parser now supports "${var?default value}" syntax.
+  In that example, if "${var}" does not have a value, or has an empty
+  value, the string "default value" will be substituted.
+
+- The configuration file specified on the curn command line can now be
+  a path or a URL. (Previously, curn only accepted a path.)
+
+- curn's ScriptOutputHandler now supports both the Apache Jakarta Bean
+  Scripting Framework and the Java 6 (JSR 223) javax.script scripting
+  framework. The Java 6 scripting framework requires Java 6, obviously.
+  By default, the ScriptOutputHandler first tries to use the javax.script
+  infrastructure; if that doesn't work, it tries to the BSF infrastructure.
+  You can force it to try just one of them with the (new) optional
+  `ScriptingAPI` configuration directive. That directive takes two possible
+  values:
+
+       javax.script - use the Java 6 scripting framework, and abort
+                      if it's not available
+       bsf          - use the Bean Scripting Framework, and abort if
+                      it's not available
+
+  e.g.:
+
+      [OutputHandlerMyScript]
+      Class: org.clapper.curn.output.script.ScriptOutputHandler
+      Script: ${system:user.home}/curn/my_output_handler.py
+      Language: jython
+      ScriptingAPI: bsf
+
+- The FreeMarkerOutputHandler (org.clapper.curn.output.freemarker package)
+  now exports a `configuredURL` value for each channel, in addition to the
+  existing `url` parameter. `url` contains the channel's URL, as published
+  in the downloaded feed XML; `configuredURL` contains the URL as listed
+  in the curn configuration file. The two URLs might be the same, but they
+  can also be different (due to HTTP redirects, etc.).
+
+- The org.clapper.curn.CurnConfig class no longer provides constructors
+  that parse the configuration; Such constructors are unsafe, since they
+  invoke methods in the parent class that, in turn, call methods that could
+  be overridden--and thus could be called on an incompletely constructed
+  object. CurnConfig now provides explicit `load()` methods, instead.
+
+- By default, curn now aborts if it encounters a reference to an undefined
+  configuration file variable. Previously, it would simply substitute an
+  empty string, but that behavior can lead to some hard-to-debug runtime
+  errors. A new -U (--allow-undefined-cfg-vars) command-line option
+  restores the original behavior.
+
+- The ScriptOutputHandler no longer supports the BSF objects that had
+  to be retrieved via "bsf.`lookupBean()`". Instead, only the global
+  `curn` object is exposed, and it's exposed automatically as a script
+  global. For more information, see the "Writing a Script Output Handler"
+  section in the "curn User's Guide".
+
+- The Common XML Fixups plug-in:
+
+  a) now does `demoronization` (with apologies to John Walker's
+     `demoroniser` tool). Demoronizing is the act of replacing Microsoft
+     Windows-specific characters with more reasonable, universal
+     values--values that will actually display properly in my Firefox
+     browser on Unix or FreeBSD. These annoying characters include the
+     Windows 1252 character set's `smart` quotes, trademark symbol, em
+     dash, and other characters that don't display properly in non-Windows
+     character sets. Previously, demoronization was done in the
+     MiniRSSParser logic, but doing it in a plug-in makes more sense
+     (especially since it can be used regardless of the underlying RSS
+     parser).
+
+  b) now escapes unknown character entities. This tactic is an attempt
+     to deal with bad XML generated by broken feed generators. One place
+     where unknown entities often appear is in links, where the link
+     contains HTTP `GET` parameters, e.g.:
+
+       http://rss.example.com/articles?id=100&mode=print
+
+     The "&" in the URL causes XML parsing errors. The Common XML Fixups
+     will convert the URL to:
+
+       http://rss.example.com/articles?id=100&amp;mode=print
+
+- curn's MiniRSSParser has been removed. There's no sense in maintaining a
+  stripped-down RSS parser, when fully functional parsers such as Informa
+  and ROME exist and are constantly being updated. curn now uses ROME by
+  default (and ships with the necessary jars).
+
+- curn's cache saving and loading logic has been refactored. It's now
+  layered so that the default XML data store can be replaced with pretty
+  much anything else (including, for instance, an RDBMS). To do that, a
+  programmer must extend the (new) DataPersister class, implementing the
+  appropriate methods, and then specify the new data persister class via
+  the `DataPersisterClass` configuration variable.
+
+- Plug-ins can now save data to and read data from the curn cache (which is
+  now formally called the "curn metadata repository"). A plug-in that
+  wishes to persist data must implement the PersistentDataClient interface
+  or extend the AbstractPersistentDataClient class. Plug-ins that do one of
+  those two things are automatically polled for data to be written and
+  invoke when their data is read.
+
+- The PlugIn interface has changed:
+
+  a) `getName()` is now ``getPlugIn`Name()`.
+  b) `getSortKey()` is now ``getPlugIn`SortKey()`.
+  c) There's a new `initPlutIn()` method.
+
+- curn now uses JDOM (http://www.jdom.org) to parse and write its cache
+  (now called "feed metadata") XML file.
+
+- Miscellaneous code cleanup based on output from PMD (pmd.sourceforge.net).
+
+- The graphical installer now renders the license in a more readable,
+  proportional font.
+
+- Propagated modified license (from version 3.0) into source files.
+
+- Updated bundled version of ASM from 2.2.1 to 2.2.3.
+
+- Fixed global default handling logic in EmptyArticleSummaryPlugin class.
+  Plug-in was parsing the global default setting, but not honoring it.
+
+- Fixed an editing bug in the CommonsXMLFixups plug-in. The plug-in would
+  convert the sequence "&amp;nbsp;" in the XML to "&amp;", leaving a stray
+  "&" in the XML.
+
+- `ArticleFilterPlugIn` was documented as supporting multiple `ArticleFilter`
+  configuration items per feed, but the code only supported one. The code
+  now supports multiple items, as indicated in the User's Guide.
+
+- When I converted output handlers to FreeMarker, in version 2.6, I
+  inadvertently dropped support for the global ShowRSSVersion configuration
+  item. That support has been restored. The built-in HTML and text FreeMarker
+  templates honor the configuration setting. See the User's Guide for details.
+
+- Modified default Windows installation path from
+  "%SYSTEMDRIVE%\Program Files\clapper.org\curn" to
+  "%SYSTEMDRIVE%\Program Files\ClapperOrg\curn". The "." in "clapper.org"
+  was causing problems on Windows 2000.
+
+- Fixed Windows curn.bat file to quote arguments that might contains
+  blanks.
+
+Notes:
+
+- The Bean Scripting Framework API is shipped with curn. If you use
+  the curn.bat or curn.sh script installed by the curn graphical
+  installer, you will automatically have access to the BSF API and
+  the language bindings that are shipped with it.
+
+- To use the Java 6 javax.script API, you must be running under Java 6.
+  Additionally, to use any languages other than Rhino Javascript (which
+  comes with Java 6), you must have the add-on JSR 223 scripting engine
+  jar file for the scripting language you're using. JSR 223 scripting
+  engines are available  "https://scripting.dev.java.net/".
+
+----
+
+Version 3.0 (5 July, 2006)
+
+- Added plug-in capability. Upon startup, curn will look for plug-ins
+  in ${curn.home}/plugins, ${user.home}/curn/plugins and
+  ${user.home}/.curn/plugins. (${user.home} is the Java System "user.home"
+  property. ${curn.home} is the `curn` installation directory.)
+
+  See the Users' Guide for details on writing and deploying plug-ins.
+
+  NOTES: 
+
+  1. For this capability to work properly, you must invoke curn via the
+     supplied curn.sh shell script (Unix) or curn.bat (Windows) script.
+     Those files handle setting ${curn.home} and running curn via a new
+     Bootstrap class that finds all the plug-in jar files and installs an
+     alternate class loader that will load classes from them.
+
+  2. Custom OutputHandler classes should now be placed in ${curn.home}/lib,
+     ${user.home}/curn/lib or ${user.home}/.curn/lib, so that curn can find
+     them. Simply adding them to the CLASSPATH won't work any more.
+
+- Converted some base curn functionality into (built-in) plug-ins.
+
+- Path names in the curn configuration file can now be expressed with
+  Unix-style file separators ("/" characters), regardless of the operating
+  system where curn is being run. At runtime, curn will convert them to the
+  appropriate file separator (e.g., "\" on Windows). This enhancement
+  provides two benefits:
+
+  1. It enhances the portability of curn configuration files.
+  2. It provides a means to avoid using (and, therefore, having to escape)
+     backslash characters in the configuration file.
+
+- The `EditItemURL` feed configuration parameter may now be specified multiple
+  times within a feed, provided each instance has its own unique suffix (e.g.,
+  "EditItemURL1", "EditItemURL2", `EditItemURLFoo`, etc.)
+
+- curn now supports a per-feed `EditFeedURL` configuration parameter. Like
+  `EditItemURL`, this parameter may be be specified multiple times within a
+  feed, provided each instance has its own unique suffix. `EditFeedURL` can
+  be used to edit the feed's URL, as opposed to the URLs of the individual
+  items within a feed.
+
+- The `ShowDates` global configuration value (in the [curn]) section can
+  now be overridden on a per-feed basis, by a feed-specific `ShowDates`
+  configuration parameter.
+
+- Added a new per-feed configuration item, `ArticleFilter`, that permits
+  filtering out feed items based on their content. See the User's Guide
+  for details. (This capability is handled by a stock curn plug-in.)
+
+- Added a new configuration item, `CommonXMLFixups`. If enabled for a feed
+  (or globally, for all feeds), curn will edit downloaded XML, before
+  parsing it, to attempt to fix some of the more common XML syntax
+  problems.
+
+- curn's ScriptOutputHandler class now exports curn-related data to the
+  script via a global `curn` object that does not have to be retrieved via
+  bsf.`lookupBean()`. (i.e., The `curn` object is global to the script.) For
+  backward compatibility with previously written scripts, the data is also
+  available via the old beans, but new scripts should use the new `curn`
+  script global.
+
+- curn's full version string now contains a build ID string. The build ID
+  now appears in the version stamp field in all default
+  FreeMarkerOutputHandler templates.
+
+- Enhanced error reporting (exception handling) in some areas.
+
+- The org.clapper.curn.output.`TextOutputHandler`,
+  org.clapper.curn.output.Simple`SummaryOutputHandler`, and
+  org.clapper.curn.output.html.`HTMLOutputHandler` classes are gone. They'd
+  been deprecated as of version 2.6 and reimplemented in terms of the
+  FreeMarkerOutputHandler. Use the FreeMarkerOutputHandler, instead.
+
+- The global `GetGzippedFeeds` configuration parameter has been renamed to
+  `GzipDownload`. The old name is still accepted for now, but is
+  deprecated, will generate a warning message, and may be removed in the
+  future.
+
+- The global `GzipDownload` parameter may now be overridden on a per-feed
+  basis.
+
+- The `SummaryOnly` configuration parameter is now deprecated. Please
+  use the new `ReplaceEmptySummaryWith` configuration parameter. Use
+  of the `SummaryOnly` parameter will result in a warning message, though
+  it will still be honored. It will be removed entirely in a future
+  release.
+
+- curn no longer accepts email addresses on the command line. Instead,
+  email addresses must be specified in the configuration file, using a new
+  `MailOutputTo` configuration option in the main [curn] configuration
+  section. This change was necessary to permit moving email handling into a
+  plug-in. It's also more consistent, since the other email-related
+  parameters (subject, SMTP host, sender) are specified in the
+  configuration file.
+
+- The following curn command line options are now deprecated. These command
+  line options used to override the corresponding configuration items, but
+  they no longer do that. They can still be specified on the command line,
+  but their usage will generate warnings, and they will be ignored.
+
+    SHORT OPTION   LONG OPTION        CORRESPONDING CONFIG ITEM
+    ------------------------------------------------------------
+    -a             --show-authors     ShowAuthors: true
+    -A             --no-authors       ShowAuthors: false
+    -d             --show-dates       ShowDates: true
+    -D             --no-dates         ShowDates: false
+    -r             --rss-version      ShowRSSVersion: true
+    -R             --no-rss-version   ShowRSSVersion: false
+    -T n           --threads n        MaxThreads: n
+    -z             --gzip             GetGzippedFeeds: true
+    -Z             --no-gzip          GetGzippedFeeds: false
+    ------------------------------------------------------------
+
+- curn no longer dumps the output of the first handler to standard output
+  when not emailing output.
+
+- Changed org.clapper.curn.ConfigFile to org.clapper.curn.CurnConfig.
+
+- Completely removed support for old-style curn binary cache file. curn
+  will no longer read and convert a pre-2.0 binary cache file.
+
+- All classes extending org.clapper.curn.parser.`RSSChannel` must now provide
+  a "`removeItem()`" method. This change only affects custom adapters for RSS
+  parsers.
+
+- The ScriptOutputHandler no longer unconditionally strips HTML from the
+  parsed RSS feed data before passing it to the output script. Instead, it
+  honors an `AllowEmbeddedHTML` output handler configuration item to permit
+  embedded HTML (`true`) or strip it (`false`). The configuration parameter
+  defaults to `false`, so existing configuration files with script-based
+  output handlers will continue to behave the same.
+
+- In the FreemarkerOutputHandler's template data model, the `showAuthor`
+  and `showDate` items are deprecated, and are always set to `true`. New
+  `ShowAuthorsPlugIn` and `ShowDatesPlugIn` plug-in classes handle the
+  `ShowAuthors` and `ShowDates` configuration items, respectively; those
+  plug-ins remove the corresponding data from the parsed feeds if their
+  respective flags are false, so the Freemarker `show` flags are no longer
+  necessary (though you *should* check for empty `author` or `date` fields
+  in your template).
+
+- The CurnConfig class no longer supports the `showDates()` and `showAuthors()`
+  methods.
+
+- curn wasn't caching data about the overall feed (as opposed to the
+  individual items in the feed, which were being cache). For download-only
+  configurations, where the feeds are downloaded (and presumably saved),
+  but not cached, this bug caused no cache to be saved, so the feeds were
+  always downloaded on every run.
+
+- The built-in MiniRSSParser wasn't handling relative URLs inside <link>
+  elements (in any of the RSS formats).
+
+- The built-in MiniRSSParser wasn't properly handling empty XML elements
+  (e.g., "<author/>", "<dc:creator/>"). Some feeds have do them.
+
+- curn now handles web servers that specify a feed's character set in an
+  HTTP header that looks like this:
+
+    Content-Type: text/xml; charset="utf-8"
+
+  According to the HTTP/1.1 specification
+  (http://www.w3.org/Protocols/rfc2616/rfc2616.html), the `charset`
+  field isn't supposed to be quoted. That is, a legal Content-Type header
+  with a `charset` field should look like this:
+
+    Content-Type: text/xml; charset=utf-8
+    Content-Type: text/xml; charset=ISO-8859-1
+
+  However, there are some broken HTTP servers (or servers with broken
+  configurations) that insist on quoting the field.
+
+- Various `SaveAs` parameters weren't properly being processed on Windows.
+  Specifically, embedded file separators ("\" characters) were being swallowed
+  when they should not have been. This bug fix actually occurred in the
+  RollingFileWriter class (in the org.clapper.util library) that is bundled
+  with curn.
+
+----
+
+Version 2.6.4 (5 February, 2006)
+
+- Fixed a bug reported by Manpreet Dharni <mpsdh2003 /at/ yahoo.com>: If
+  the value for a TemplateFile configuration directive (to the
+  FreeMarkerOutputHandler) contains white space (after variable expansion),
+  curn complained that there were too many tokens. For instance:
+
+    TemplateFile: url file:/C:/Program Files/clapper.org/curn/bin/html.ftl
+
+  or
+
+    # ${program:cwd.url} will expand to file:/C:/Program Files/...
+    TemplateFile: url ${program:cwd.url}/html
+
+  curn was parsing the value strictly on white space delimiters, so white
+  space in a file name or URL caused curn to see too many tokens.
+
+  curn now uses a new double-quoting capability in the
+  org.clapper.util.config.Configuration class, allowing double quoting of
+  tokens that may contain white space. Now, the above problem can be
+  remedied by quoting the file name or URL:
+
+    TemplateFile: url "${program:cwd.url}/html"
+    TemplateFile: url "file:/C:/Program Files/clapper.org/curn/bin/html.ftl"
+
+- Fixed sample script output handlers to use the correct methods for
+  various curn API calls. I'd neglected to update them when I changed the
+  API.
+
+- Added a sample ObjectScript (http://objectscript.sourceforge.net/)
+  script output handler.
+
+  WARNING: This version of curn REQUIRES version 2.1.3 (or later) of the
+  org.clapper.util Java Utility Library. If you install curn manually, be
+  sure to download and install the updated org.clapper.util jar file, as well.
+  (See http://software.clapper.org/java/util/) If you install curn via
+  the graphical installer, the new version of the utility library will be
+  installed automatically for you.
+
+----
+
+Version 2.6.3 (26 January, 2006)
+
+- RFC822 parsing would fail if system locale wasn't US. Since RFC822 dates
+  are specific to the US, RFC822 date formats are now wired to the US
+  locale. Thanks to Tobias Kroha <t.kroha /at/ seto-gmbh /dot/ de> for the
+  bug report and the suggested fix.
+
+----
+
+Version 2.6.2 (2 January, 2006)
+
+- curn can now be installed (along with all dependent jars, documentation,
+  sources, and a wrapper shell or BAT script) via a graphical installer.
+  The graphical installer is based on the IzPack installer framework
+  (http://www.izforge.com/izpack/).
+
+- The Ant build.xml file wasn't properly constructing the source zip file.
+  In particular, it was omitting properties files and FreeMarker template
+  files.
+
+----
+
+Version 2.6.1 (13 December, 2005)
+
+- In the default FreeMarker HTML template (used to generate HTML output):
+  Added some non-breaking spaces after the channel name, to ensure visual
+  separation from the first item.
+
+- `FreeMarkerOutputHandler` class now uses the FreeMarker `SimpleSequence`
+  and SimpleHash classes, instead of java.util.List and java.util.Map
+  classes. (This change has no effect on output generation and is invisible
+  to code outside the `FreeMarkerOutputHandler`.)
+
+----
+
+Version 2.6 (25 November, 2005)
+
+- Added new `FreeMarkerOutputHandler`, which uses the FreeMarker template
+  engine (freemarker.sourceforge.net) to generate output based on template
+  files. Three built-in templates are bundled with curn:
+
+  * HTML: generates output identical to existing `HTMLOutputHandler`
+  * Text: generates output identical to existing `TextOutputHandler`
+  * Summary: generates output identical to existing Simple`SummaryOutputHandler`
+
+  The configuration directives for the FreeMarkerOutputHandler permit
+  use of four kinds of templates:
+
+  * Built-in templates (listed above)
+  * Templates available via the class loader
+  * Templates residing in a file on the computer where curn is running
+  * Templates accessible via a URL
+
+  Any one familiar with FreeMarker and with curn's FreeMarker data model
+  can write a template and, thus, change curn's output without writing
+  any code (other than the simple coding instructions in a FreeMarker
+  template).
+
+  See the "curn User's Guide" for details.
+
+  The FreeMarkerOutputHandler class compiles unconditionally, so this
+  version of curn requires the freemarker.jar file.
+
+- The `HTMLOutputHandler`, `TextOutputHandler` and `SummaryOutputHandler`
+  classes are now implemented in terms of the new FreeMarkerOutputHandler.
+  This means the XMLC third-party jar is no longer necessary.
+
+- `org.clapper.curn.parser.`RSSChannel`` and `org.clapper.curn.parser.RSSItem`
+  have some new abstract methods, necessary to support the new ``clone()``
+  and ``makeCopy()`` methods. If you have written a custom RSS parser adapter
+  for curn, you'll will have to change it to get it to compile with curn
+  2.6.
+
+- Fixed a bizarre bug: If you configured a ScriptOutputHandler to run
+  before the `HTMLOutputHandler`, and one of the feeds contained only HTML
+  in the description (e.g., an image reference), the ScriptOutputHandler
+  would strip the HTML from the channel--essentially removing the
+  content--so that the `HTMLOutputHandler` wouldn't see the embedded HTML.
+  The code now makes a copy of the feed data before stripping the HTML.
+
+- Fixed `NullPointerException` in ROME parser adapter package's
+  RSSItemAdapter class; the exception occurred when the item being
+  processed had no summary data.
+
+- Added a new `TotalCacheBackups` parameter, which allows you to keep
+  any number of old caches around. If this parameter is greater than 0,
+  then curn will roll the existing cache file over (much like a rolled-over
+  log file) before overwriting it.
+
+- Removed the `CacheBackup` parameter. Use the new `TotalCacheBackups`
+  parameter instead.
+
+- Added a `SavedBackups` parameter for all output handlers except the
+  ScriptOutputHandler. If this parameter is greater than 0 for a given
+  output handler (and if a `SaveAs` parameter is also specified), then the
+  output handler will roll the `SaveAs` file over (much like a rolled-over
+  log file) before overwriting it.
+
+- The DaysToCache configuration parameter now accepts a special value of
+  `NoLimit`, indicating that the cache entries should never expire. The
+  default value of the global DaysToCache configuration parameter is now
+  365 days, not 30 days.
+
+- Fixed bug: If a feed was marked as `SaveOnly`, it was downloaded, but not
+  parsed. But not parsing the file means the cache can't be updated properly.
+  Now, downloaded files are parsed regardless, to ensure that the cache is
+  properly maintained with RSS channel and item time stamps.
+
+*** WARNING: This version of curn REQUIRES version 2.1 (or better) of
+*** the org.clapper.util Java Utility Library. See
+*** http://software.clapper.org/java/util/
+
+
+----
+
+Version 2.5.1 (25 September, 2005)
+
+- Fixed `NullPointerException` in `TextOutputHandler`, when channel has no URL.
+- MiniRSSParser now handles Atom feeds that have unescaped, but
+  well-formed, XHTML within a <content> element.
+
+
+----
+
+Version 2.5 (19 August, 2005)
+
+- ENHANCEMENT: The MiniRSSParser class now handles and stores multiple
+  <link> elements in Atom feeds. The links are saved with URL, MIME type
+  and link type (which can be one of `self` or `alternate`, a subset of all
+  the types supported by Atom). This allows output handlers to find the
+  link that is most appropriate to their type. The `HTMLOutputHandler` class
+  now searches for the "text/html" link and uses that, if it's present;
+  if that's not present, it uses the first link marked with type `self`.
+  Currently, only the org.clapper.curn.parser.minirss.MiniRSSParser
+  is capable of producing multiple links from an Atom feed.
+
+  NOTE: This change affects the org.clapper.curn.parser.RSSItem and
+  org.clapper.curn.parser.`RSSChannel` classes. Existing parser adapter
+  layers must be changed, or they won't compile. (That's why this release
+  is 2.5, not 2.4.1.)
+
+- BUG FIX: Fixed to work with latest version of the ROME parser (0.6).
+  (See http://rome.dev.java.net/)
+
+  NOTE: This breaks support for some previous versions of ROME (e.g., 0.3).
+
+
+----
+
+Version 2.4 (15 August, 2005)
+
+- ENHANCEMENT: The `HTMLOutputHandler`
+  (org.clapper.curn.output.html.`HTMLOutputHandler`) now supports a table of
+  contents, which is useful when the number of feeds or items in the
+  generated output is large. The generation of the table of contents is
+  controlled by a new `HTMLOutputHandler`-specific configuration item,
+  `TOCItemThreshold`. That value defines the minimum number of feed items
+  (across all feeds) that must be displayed before a table of contents is
+  generated. The default value is a very large number, which effectively
+  disables the table of contents completely.
+
+  See the User's Guide for details.
+
+- ENHANCEMENT: Expanded the forms of RFC-822 dates that the MiniRSSParser
+  (org.clapper.curn.parser.minirss) class can handle.
+
+- BUG FIX: MiniRSSParser (org.clapper.curn.parser.minirss) no longer aborts
+  the parsing of an entire feed if an embedded URL (e.g., within a <link>
+  element) is bad. That element is skipped, but processing of the feed
+  continues. The error is logged.
+
+- BUG FIX: Fixed problem with feeds that re-use item URLs. Previously, curn
+  assumed that a feed always specified a new URL for a new item. If it
+  found an item URL in its cache, curn would not display the item even if
+  the item had new content (because it assumed that new content implied a
+  new item URL). That broken assumption has been fixed. Now, when examining
+  each item from an RSS feed, curn:
+
+  a. First determines whether the item has a unique ID (e.g., a <guid>
+     element in an RSS 2.0 feed, or an <id> element in an Atom feed). If
+     the item has a unique ID, and that unique ID isn't in the cache, curn
+     assumes that the item is new, and displays it.
+
+  b. If the item has no ID, then curn attempts to find the item's URL in the
+     cache. If the URL is not in the cache, then curn assumes the item is new,
+     and displays it.
+
+  c. If the item is in the cache, curn then extracts the (optional) item
+     publication date from the item and the (optional) publication date
+     from the cache entry. If both dates are present, curn compares them;
+     if the item's publication date is newer than the publication date in
+     the item's cache entry, curn assumes the item is new, and displays it.
+
+  d. If all of the above tests fail (meaning the item is in the cache, but
+     no additional information is available), then curn assumes that the item
+     is old, and does not display it.
+
+  Note: Prior to this fix, the curn cache did not keep an item's
+  publication date. It does now. There is no need to update your cache,
+  however; curn will adjust the cache automatically, over time, as items
+  naturally age. The only exception is for feeds that are already
+  misbehaving--e.g., feeds that have unique IDs per item and re-use the
+  item URLs. For feeds like that, the simplest solution is to remove the
+  feed's entry from the (XML) cache file and re-run curn.
+
+
+----
+
+Version 2.3 (10 August, 2005)
+
+- curn now supports global and feed-specific `AllowEmbeddedHTML` configuration
+  options. If set for a feed (or set globally and not overridden by the feed),
+  the `HTMLOutputHandler` class will not strip any raw HTML it finds in the
+  feed title, item title, item description, or item author fields; it will,
+  instead, insert the raw HTML in the resulting HTML output. This is useful
+  when handling feeds that have embedded images, for instance (like a comic
+  site).
+
+- Enhanced the MiniRSSParser Atom feed parser to account for the Atom 1.0
+  specification. As part of this change:
+
+  * The org.clapper.curn.parser.`RSSChannel` interface has been converted to
+    an abstract class.
+
+  * The org.clapper.curn.parser.`RSSChannel` and `RSSItem` classes now
+    require new `addAuthor()`, `clearAuthors()`, and `getAuthors()` methods. The
+    old `getAuthor()` and `setAuthor()` methods have been converted to
+    concrete, final methods. These changes were necessary to support
+    multiple authors per feed and per item. Existing callers of the old
+    methods do not have to change, but existing curn parser adapters will
+    have to change. (All parser adapters shipped with curn have been
+    changed.)
+
+NOTE: This version of curn REQUIRES version 2.0.2 of the org.clapper.util
+library, since it uses some new methods in the
+org.clapper.util.text.TextUtil class. It will NOT run with earlier versions.
+
+
+----
+
+Version 2.2.1 (09 Aug, 2005)
+
+- curn's RSS date-parsing logic had a bug causing a `NullPointerException`
+  if the date was empty or null. This could happen, for instance, in an
+  RSS 1.0 feed with this construct:
+
+	<dc:date></dc:date>
+
+  That bug has been fixed. 
+
+  Thanks to Tobias Kroha <tobias /at/ esce-neun /dot/ de> for finding the
+  bug and suggesting the fix.
+
+
+----
+
+Version 2.2 (29 July, 2005)
+
+- curn's output handlers now support a `ShowCurnInfo` configuration
+  parameter. If set to `true` (the default), then the output handlers write
+  the curn version and other information to the generated output. If set to
+  `false`, the output handlers suppress that information. (Previously, the
+  output handlers wrote that information unconditionally.)
+
+  The `ShowCurnInfo` configuration parameter is actually parsed by the
+  org.clapper.curn.output.FileOutputHandler abstract base class, so it is
+  available to any subclass that wishes to query its status.
+
+- curn no longer copies the generated output files to temporary files when
+  emailing them. This buglet resulted from a combination of two things:
+
+  a) The utility library (http://software.clapper.org/java/util/) has a
+     set of email classes that provide a simplified front-end to the Java
+     Mail API. The EmailMessage class supports adding attachments to and
+     setting the text of a message from a java.io.File, a String or an
+     java.io.InputStream. When using an InputStream, the EmailMessage class
+     copies the contents to a temporary file. (It does this primarily
+     because the Java Activation Framework's DataSource interface, which is
+     used when specifying attachments, allows the caller to access the data
+     source multiple times--and the JavaMail API appears to do that. One
+     can't guarantee that an InputStream is rewindable, so the only
+     solution, when presented with an InputStream attachment, is to copy
+     the InputStream to a file.)
+
+  b) The curn OutputHandler interface specifies a `getGeneratedOutput()`
+     method that returned an InputStream, for flexibility (e.g., in case an
+     output handler generates its content in memory). But the existing
+     output handlers were all producing files anyway. So, the
+     OutputHandler.`getGeneratedOutput()` method now returns a File, instead
+     of an InputStream.
+
+     NOTE: This change breaks existing output handlers! If you have a
+     custom output handler that does not extend
+     org.clapper.curn.output.FileOutputHandler, you'll have to change its
+     `getGeneratedOutput()` method, or it won't compile.
+
+NOTE: This version of curn REQUIRES version 2.0.1 of the org.clapper.util
+library, since it uses some new methods in the
+org.clapper.util.mail.EmailMessage class. It will NOT run with version 2.0.
+
+
+----
+
+Version 2.1.2 (08 July, 2005)
+
+- curn was not honoring its `MailFrom` configuration option, so it was
+  always computing the sender based on the current user name and host name.
+  In some environments, using the default (computed) email address can
+  cause problems when curn attempts to email its output (and, in any case,
+  `curn` ought to honor one of its own documented configuration options).
+
+  Thanks to "Moon Man" <yavinty /at/ yahoo.com> for emailing me about the
+  problem.
+
+
+----
+
+Version 2.1.1 (07 July, 2005)
+
+- On Windows, curn's supplied output handler classes (`TextOutputHandler`,
+  `HTMLOutputHandler`) do not always produce output. Fix: Be sure to close
+  the PrintWriter objects those classes use internally. The `flush()` method
+  for all existing output handlers now ensure that they close their
+  underlying streams, if any. The documentation for the OutputHandler class
+  has been changed to indicate that the `flush()` method should also close
+  any open streams.
+
+  This bug does not appear to affect Unix Java VMs.
+
+  Thanks to "Moon Man" <yavinty /at/ yahoo.com> for emailing me about the
+  problem and the fix.
+
+
+----
+
+Version 2.1 (11 May, 2005)
+
+- The ShowAuthors configuration item can now be specified per-feed,
+  as well as globally. The global value is the default.
+
+- The HTML output now shows the author, if configured.
+
+- The configuration file can now contain a `CacheBackup` directive that
+  specifies the location of a cache backup. curn will copy the cache to
+  the backup file before updating the cache on disk.
+
+
+----
+
+Version 2.0 (22 April, 2005)
+
+- Now requires Java 1.5.0 JDK/JRE.
+
+- Various classes converted to use JDK 1.5 generics.
+
+- MiniRSSParser now handles (and ignores) empty <link> elements in
+  RSS version 0.92, RSS version 2.0, and Atom XML files.
+
+- The cache file is now XML, instead of serialized Java objects. Using XML
+  makes the code less sensitive to changes in the cache-related classes.
+  curn will still load an old-style serialized Java cache file, but it will
+  convert it to XML when it saves the cache.
+
+- The `mimeType` object that the ScriptOutputHandler class publishes via
+  the Bean Scripting Framework is now a java.io.StringWriter, instead of a
+  java.io.StringBuffer. Use of a StringBuffer causes exceptions with BSF
+  and the 1.5.0 JDK.
+
+- The configuration file now supports an `env` pseudosection, to
+  interpolate the values of environment variables into a configuration.
+  (The 1.5 JDK has re-established support for environment variables.)
+  See the User's Guide for details.
+
+
+----
+
+Version 1.15.12 (09 Aug, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
+
+- curn's RSS date-parsing logic had a bug causing a `NullPointerException`
+  if the date was empty or null. This could happen, for instance, in an
+  RSS 1.0 feed with this construct:
+
+	<dc:date></dc:date>
+
+  That bug has been fixed. 
+
+  Thanks to Tobias Kroha <tobias /at/ esce-neun /dot/ de> for finding the
+  bug and suggesting the fix.
+
+- curn's output handlers now support a `ShowCurnInfo` configuration
+  parameter. If set to `true` (the default), then the output handlers write
+  the curn version and other information to the generated output. If set to
+  `false`, the output handlers suppress that information. (Previously, the
+  output handlers wrote that information unconditionally.)
+
+  The `ShowCurnInfo` configuration parameter is actually parsed by the
+  org.clapper.curn.output.FileOutputHandler abstract base class, so it is
+  available to any subclass that wishes to query its status.
+
+- curn no longer copies the generated output files to temporary files when
+  emailing them. This buglet resulted from a combination of two things:
+
+  - The utility library (http://software.clapper.org/java/util/) has a set
+    of email classes that provide a simplified front-end to the Java Mail
+    API. The EmailMessage class supports adding attachments to and setting
+    the text of a message from a java.io.File, a String or an
+    java.io.InputStream. When using an InputStream, the EmailMessage class
+    copies the contents to a temporary file. (It does this primarily
+    because the Java Activation Framework's DataSource interface, which is
+    used when specifying attachments, allows the caller to access the data
+    source multiple times--and the JavaMail API appears to do that. One
+    can't guarantee that an InputStream is rewindable, so the only
+    solution, when presented with an InputStream attachment, is to copy the
+    InputStream to a file.)
+
+  - The curn `OutputHandler` interface specifies a `getGeneratedOutput()`
+    method that returned an InputStream, for flexibility (e.g., in case an
+    output handler generates its content in memory). But the existing
+    output handlers were all producing files anyway. So, the
+    `OutputHandler.getGeneratedOutput()` method now returns a File, instead
+    of an InputStream.
+
+NOTE: This change breaks existing output handlers! If you have a custom
+output handler that does not extend `org.clapper.curn.output.FileOutputHandler`,
+you'll have to change its `getGeneratedOutput()` method, or it won't compile.
+
+NOTE: This version of curn REQUIRES version 1.1.9 of the org.clapper.util
+library, since it uses some new methods in the
+org.clapper.util.mail.EmailMessage class. It will NOT run with version 1.1.8.
+
+
+----
+
+Version 1.5.11 (08 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
+
+- curn was not honoring its `MailFrom` configuration option, so it was
+  always computing the sender based on the current user name and host name.
+  In some environments, using the default (computed) email address can
+  cause problems when curn attempts to email its output (and, in any case,
+  `curn` ought to honor one of its own documented configuration options).
+
+  Thanks to "Moon Man" <yavinty /at/ yahoo.com> for emailing me about the
+  problem.
+
+
+----
+
+Version 1.5.10 (07 July, 2005) [MAINTENANCE RELEASE OF DEPRECATED CODE BRANCH]
+
+- On Windows, curn's supplied output handler classes (`TextOutputHandler`,
+  `HTMLOutputHandler`) do not always produce output. Fix: Be sure to close
+  the PrintWriter objects those classes use internally. The `flush()` method
+  for all existing output handlers now ensure that they close their
+  underlying streams, if any. The documentation for the OutputHandler class
+  has been changed to indicate that the `flush()` method should also close
+  any open streams.
+
+  This bug does not appear to affect Unix Java VMs.
+
+  Thanks to "Moon Man" <yavinty /at/ yahoo.com> for emailing me about the
+  problem and the fix.
+
+
+----
+
+Version 1.5.9 (21 April, 2005)
+
+- The `mimeType` object that the ScriptOutputHandler class publishes via
+  the Bean Scripting Framework is now a java.io.StringWriter, instead of a
+  java.io.StringBuffer. Use of a StringBuffer causes exceptions with BSF
+  and the 1.5.0 JDK.
+
+
+----
+
+Version 1.5.8 (08 April, 2005)
+
+- MiniRSSParser now handles (and ignores) empty <link> elements in
+  RSS version 0.92, RSS version 2.0, and Atom XML files.
+- When run in single-threaded mode (i.e., MaxThreads set to 1 in the
+  configuration file), an exception that occurs while processing one
+  feed doesn't abort the whole run.
+
+
+----
+
+Version 1.5.7 (09 February, 2005)
+
+- Substitution expressions (e.g., in the PreparseEdit or EditItemURL
+  configuration items) now properly properly handle substitutions of the empty
+  string. Strings like this were previously rejected as syntactically
+  incorrect:
+
+      s/foo//
+
+  They are now permitted and processed properly.
+
+- build.xml no longer hard-codes jikes compiler. To use jikes, either
+  pass 
+
+      -Dbuild.compiler=jikes 
+
+  to ant, or put that option in ANT_OPTS in your personal ant startup file
+  ($HOME/.antrc on Unix, or %HOME%\antrc_pre.bat on Windows).
+
+- build.xml corrected so it no longer unconditionally recompiles everything.
+
+- Serializable classes now provide their own serialVersionUID variable, per
+  recommendations in the JDK 1.5 java.io.Serializable docs and in jikes
+  1.22 warnings.
+
+
+----
+
+Version 1.5.6 (02 December, 2004)
+
+- Added new `MaxSummarySize` configuration parameter. If a summary exceeds
+  the specified size, it is truncated. See the User's Guide and the sample
+  configuration file for details.
+
+- Abstract `RSSItem` class now contains a `getSummaryForDisplay()` utility
+  method, which handles stripping HTML tags, optionally using the
+  description if the summary is not defined, and applying the
+  MaxSummarySize constraint (if applicable). Modified existing output
+  handlers to use this new method.
+
+
+----
+
+Version 1.5.5 (10 November, 2004)
+
+- NOTE: You MUST have version 1.1.4 (or better) of the org.clapper.util
+  library, or this version of curn WILL NOT WORK!
+
+- Added `UserAgent` configuration parameter in the [curn] section and the
+  individual feed sections. See the sample configuration or the User's
+  Guide for details.
+
+- Added `SaveAsEncoding` configuration parameter to individual feed
+  sections. Allows specification of encoding for output file. Encoding can
+  later be used via the ForceEncoding parameter for an instance of curn
+  that reads a saved file. See the sample configuration or the User's Guide
+  for details.
+
+- The `ForceCharacterEncoding` per-feed configuration parameter is now
+  called `ForceEncoding` (though `ForceCharacterEncoding` is recognized,
+  as well, for backward compatibility).
+
+- For "file:" URLs, unless `ForceEncoding` is specified, the default encoding
+  is now "utf-8", instead of the Java VM's default. This plays better with
+  the new `SaveAsEncoding` parameter.
+
+- curn now gives email attachments names with reasonable extensions.
+  Previously, default names (ending in ".tmp") were used, which gave some 
+  mail clients (e.g., some versions of Outlook) fits.
+
+
+----
+
+Version 1.5.4 (20 October, 2004)
+
+- In the org.clapper.util API, org.clapper.util.misc.Logger is now in the
+  org.clapper.util.logging package and is now uses the java.util.logging
+  API directly, instead of using Jakarta Commons Logging. This eliminates
+  another third-party library dependency, but required modifications
+  various `import` statement in curn classes.
+
+
+----
+
+Version 1.5.3 (16 October, 2004)
+
+- curn now sets an appropriate "User-Agent" HTTP header on HTTP requests,
+  instead of defaulting to whatever the Java VM uses.
+
+- An exception thrown while processing a feed now contains the feed URL
+  in its exception message. This is especially useful for emailed log
+  exceptions.
+
+- Where possible, exception messages are now stored in properties files and
+  accessed via ResourceBundle objects, allowing for localization.
+
+
+----
+
+Version 1.5.2 (12 October, 2004)
+
+- Simplified loading of API version, in build.xml. Instead of loading
+  version from Version.class, it now loads the version from a properties
+  file. The Version class uses the same properties file, as a resource
+  bundle.
+
+
+----
+
+Version 1.5.1 (10 October, 2004)
+
+- Fixed bug with PreparseEdit per-feed configuration directive (introduced
+  in version 1.5). Multiple edit commands would cause duplication of lines
+  in feeds XML file.
+
+- If there are no output handlers defined, feeds are not run through the
+  XML parser (since there's no point). This was already supposed to be
+  happening, but there was this small bug...
+
+- Added `SaveOnly` configuration option to Feed sections. See User's Guide
+  or sample config for details.
+
+
+----
+
+Version 1.5 (07 October, 2004)
+
+- Now requires JDK 1.4 or better. JDK 1.3 is no longer supported. Among
+  the reasons for this requirement:
+
+  * I wanted to use the new assertion capabilities of 1.4
+
+  * The regular expression classes that come with 1.4 are more extensible
+    than the Jakarta ORO classes, in that they work with anything that
+    implements the CharSequence interface, not just with Strings. Plus,
+    using java.util.regexp, instead of Jakarta ORO, removes a third-party
+    library dependency.
+
+- Added new PreparseEdit configuration file entry, supported in the Feed
+  section. Permits applying perl-like s/// edits to the downloaded XML file
+  before it is parsed. Useful for feeds that serve XML files that don't
+  parse properly. (One site I read insists on serving a channel that
+  contains unescaped "&" characters in the text.) See the User's Guide
+  and the sample configuration for details on this new configuration
+  parameter.
+
+- Converted code that used Jakarta ORO to use the JDK 1.4 java.util.regexp
+  classes.
+
+- Overhauled build.xml to make compilations more efficient. Requires a
+  newer version of Jikes (if compiling with Jikes).
+
+- Cleaned up a lot of unnecessary imports. Addressed minor issues that
+  Jikes warned about.
+
+
+----
+
+Version 1.4.1 (28 September, 2004):
+
+- Added ForceCharacterEncoding (per-feed) configuration parameter. If
+  specified, curn will use the supplied character encoding when parsing
+  the feed's XML, instead of the server-supplied or document-supplied
+  encoding. This is useful in the following cases:
+
+  * the remote HTTP server doesn't supply an HTTP Content-Encoding header, 
+    and the local (Java) default encoding doesn't match the document's 
+    encoding
+  * the remote HTTP server supplies the wrong encoding
+
+  See the Users Guide or the sample configuration file for more information.
+
+- Added HTMLEncoding parameter to the configuration for the `HTMLOutputHandler`
+  (org.clapper.curn.output.html.`HTMLOutputHandler`) class. This parameter
+  sets the desired character set encoding of the generated HTML file.
+  The encoding is set in a <META> tag in the document, and it is used when
+  opening the output file (to ensure proper translation of characters from
+  the in-memory Unicode character set). If not set, it defaults to "utf-8".
+
+
+----
+
+Version 1.4 (22 September, 2004):
+
+- All output handlers have been moved under "org.clapper.output". It
+  is (regrettably) necessary to update curn configuration files that
+  reference the old fully-qualified class names.
+
+  Handler class               Old Package             New Package
+  ----
+  `HTMLOutputHandler`           org.clapper.htmloutput  org.clapper.output.html
+  Simple`SummaryOutputHandler`  org.clapper.curn        org.clapper.curn.output
+  `TextOutputHandler`           org.clapper.curn        org.clapper.curn.output
+  ----
+
+- curn now supports multiple output handlers of the same class in the same
+  configuration file.
+
+- curn now comes bundled with a new ScriptOutputHandler 
+  (org.clapper.output.script.ScriptOutputHandler). This handler requires the
+  Apache Jakarta Bean Scripting Framework (BSF), available at
+  "http://jakarta.apache.org/bsf/". It's basically a shim that uses BSF
+  to permit output handlers to be written in any BSF-supported scripting
+  language (e.g., Jython, JRuby, Rhino Javascript, etc.)
+
+- The `Quiet` configuration option is no longer supported. If it appears
+  in a configuration file, it will be silently ignored. Similarly, the
+  --quiet (-q) and --no-quiet (-Q) command line options no longer exist.
+
+- (API) When parsed from the config, output handlers are now wrapped in
+  ConfiguredOutputHandler objects, which contain all the config data for
+  the handler, and provide a means to instantiate a handler easily.
+
+- (API) The ConfigFile class no longer supports the Quiet configuration
+  option, and the methods used to test for the value of that option have
+  been removed.
+
+
+----
+
+Version 1.3.3 (16 September, 2004):
+
+- Fixed slight problem when translating embedded newlines into spaces in
+  parsed XML character data.
+
+
+----
+
+Version 1.3.2 (15 September, 2004):
+
+- Now handles feeds with alternate character sets (e.g., UTF-8) better.
+  Note that there's still the possibility of information loss if a feed
+  with an alternate character set such as UTF-8 is saved to a local file,
+  and the local file is then parsed by curn. That's because curn currently
+  doesn't have a way to save the original character set, so it converts the
+  feed to the Java VM's native character set before saving it to the local
+  file.
+
+- Added adapter classes for the Rome RSS parser. (See
+  https://rome.dev.java.net/). Test with Rome 0.3. Rome supports all the
+  current RSS feed types.
+
+  NOTE: Rome requires version 1.0 of JDOM (http://www.jdom.org/)
+
+
+----
+
+Version 1.3.1 (13 September, 2004):
+
+- `HTMLOutputHandler` now displays channel link properly.
+
+
+----
+
+Version 1.3 (09 September, 2004):
+
+- Fixed some caching bugs and problems. First, cache lookups are now
+  consistent. Second, the cache now supports lookups by item ID and item
+  URL, not just ID, and curn will check for the URL if the item isn't
+  cached by ID. (Some RSS feeds provide a unique ID for each item. Some
+  don't.) This change fixes caching for (broken) RSS feeds that provide
+  different IDs for the same URL. I've seen at least one site where the
+  ID for a given item changes daily, even though the item and its link do
+  not.
+
+
+----
+
+Version 1.2 (28 August, 2004):
+
+- First version of curn posted to the web.
