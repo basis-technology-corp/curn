@@ -23,6 +23,6 @@ don't.) These measures both minimize network bandwidth and ensure that
 To download *curn*, or to read the User's Guide and other documentation,
 please visit the [*curn* home page][].
 
-*curn* is Copyright &copy; 2004-2010 Brian M. Clapper
+*curn* is Copyright &copy; 2004-2012 Brian M. Clapper
 
 [*curn* home page]: http://software.clapper.org/curn/
