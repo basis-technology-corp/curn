@@ -225,10 +225,6 @@ Version 3.2 (29 August, 2007)
   they display "1 item" instead of "1 items" when appropriate.
 
 
-				  -------
-				  Changes
-				  -------
-
 - The `PostFeedParsePlugIn` interface's ``runPostFeedParsePlugIn`()` method
   now takes a third parameter: The FeedCache.
 
@@ -270,10 +266,6 @@ Version 3.2 (29 August, 2007)
   more functional, and I don't see the point to maintaining both. I was
   only maintaining Informa to illustrate that it was possible to support
   more than one RSS parser in curn.
-
-				 ---------
-				 Bug Fixes
-				 ---------
 
 - Fixed the ROME `RSSChannel`Adapter to return the items in a LinkedHashSet,
   not a HashSet, to preserve the original sort order (i.e., the order of

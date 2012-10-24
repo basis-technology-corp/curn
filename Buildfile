@@ -12,7 +12,7 @@ ENV['IZPACK_HOME'] ||= "#{ENV['HOME']}/java/IzPack"
 
 # Constants
 
-CURN_VERSION          = '3.2.9'
+CURN_VERSION          = '3.3'
 GROUP                 = 'org.clapper'
 CURN_JAR_NAME         = 'curn'
 CURN_BOOT_JAR_NAME    = 'curn-boot'
@@ -148,6 +148,7 @@ define 'curn' do
               'DEP_JAR_DIR'       => tmp_dir,
               'JAVADOCS_DIR'      => _('target/doc')).
         run
+
       # Generate the installer.
       cmd = "#{IZPACK_HOME}/bin/compile target/install.xml -b #{TOP} " +
             "-h #{IZPACK_HOME} -o target/curn-installer-#{version}.jar"
