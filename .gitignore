@@ -2,3 +2,5 @@ build.properties
 .semantic.cache
 target
 .envrc
+.idea
+*.iml
