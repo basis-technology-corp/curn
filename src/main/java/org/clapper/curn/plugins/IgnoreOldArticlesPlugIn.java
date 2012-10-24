@@ -362,8 +362,8 @@ public class IgnoreOldArticlesPlugIn
      * @see FeedInfo
      */
     public boolean runPostFeedProcessPlugIn(FeedInfo   feedInfo,
-                                          FeedCache  feedCache,
-                                          RSSChannel channel)
+                                            FeedCache  feedCache,
+                                            RSSChannel channel)
         throws CurnException
     {
         Duration duration = perFeedSetting.get(feedInfo);
@@ -373,7 +373,7 @@ public class IgnoreOldArticlesPlugIn
         if (duration != null)
         {
             String feedURL = feedInfo.getURL().toString();
-            String sDuration = log.isDebugEnabled() ? duration.format() : null;
+            String sDuration = duration.format();
             long durationMillis = duration.getDuration();
 
             log.debug("Ignoring all articles in " + feedURL + " older than " +
