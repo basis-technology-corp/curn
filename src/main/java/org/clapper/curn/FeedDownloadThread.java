@@ -571,15 +571,16 @@ class FeedDownloadThread implements Runnable
         }
 
         if (feedInfo.getForcedCharacterEncoding() != null)
-        {
             encoding = feedInfo.getForcedCharacterEncoding();
-        }
 
         OutputStream tempOutput = null;
-        try {
+        try
+        {
             tempOutput = new FileOutputStream(tempFile);
             totalBytes = IOUtils.copy(urlStream, tempOutput);
-        } finally {
+        }
+        finally
+        {
             IOUtils.closeQuietly(tempOutput);
             IOUtils.closeQuietly(urlStream);
         }
